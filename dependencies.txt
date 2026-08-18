@@ -66,7 +66,7 @@ PYTHON
   fastapi         the API
   sqlmodel        reserved for the response store (milestone M7)
   pyyaml          the bank and the ontology snapshot
-  ai-core         shared platform foundation, PINNED BY TAG at v0.4.0.
+  ai-core         shared platform foundation, PINNED BY TAG at v0.5.0.
                   Supplies ai_core.concepts - the ontology contract. Two
                   definitions of what a concept is, is how M04's mastery map
                   and this bank quietly stop meaning the same thing by

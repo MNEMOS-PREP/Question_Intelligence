@@ -17,10 +17,10 @@ dependencies = [
     # Selection, calibration and the whole cold-start path never call a model.
     "anthropic>=0.60",
     # Shared platform foundation. PINNED BY TAG on purpose: tracking main is
-    # how you get a surprise breakage on a Tuesday. v0.4.0 carries
+    # how you get a surprise breakage on a Tuesday. v0.5.0 carries
     # `ai_core.concepts`, which is the ontology contract this module tags
     # every item against.
-    "ai-core @ git+https://github.com/MNEMOS-PREP/Platform_Core@v0.4.0#subdirectory=python",
+    "ai-core @ git+https://github.com/MNEMOS-PREP/Platform_Core@v0.5.0#subdirectory=python",
 ]
 
 [project.optional-dependencies]
