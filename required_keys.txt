@@ -1,0 +1,53 @@
+===============================================================================
+  M05 — QUESTION INTELLIGENCE · CREDENTIALS
+  Copy this file to keys.txt and fill in the real values.
+  keys.txt is gitignored. This file is committed and holds dummies only.
+===============================================================================
+
+Values already in the environment WIN over this file, so CI and a deployment
+can set real environment variables without a file, and you can override one key
+for one shell without editing anything.
+
+NOTHING HERE IS NEEDED YET.
+
+At milestone M4 — where this module currently stands — **no code path calls a
+model at all.** Selection, the three item models, the cold start, the provisional
+theta and the whole 500-student simulation are arithmetic over floats. The
+entire test suite runs with no key, no network and no database, which is what
+makes the mis-specification grid a development instrument rather than a nightly
+job.
+
+A key becomes necessary at M6 (generation and the G1-G5 gates), and the
+degradation is the platform's usual one: without it, generation is unavailable
+and /v1/deps says so, while the bank, selection and calibration are unaffected.
+
+
+-------------------------------------------------------------------------------
+  ANTHROPIC_API_KEY                                     (needed from M6)
+-------------------------------------------------------------------------------
+  Buys you:   item generation (spec 6.2) and the two gates that need an
+              independent model — G2 answerability and G3 reference-answer
+              correctness (6.3).
+
+  Without it: /v1/questions/generate is absent rather than failing, and the
+              bank grows only by human authoring. Every other endpoint is
+              unaffected.
+
+  Get one at: https://console.anthropic.com/settings/keys
+  Format:     sk-ant-api03-...
+
+  ANTHROPIC_API_KEY=sk-ant-api03-REPLACE-ME
+
+
+-------------------------------------------------------------------------------
+  A NOTE ON WHICH TIER
+-------------------------------------------------------------------------------
+  Master plan 47.1 routing rule 1 forbids the cheap tier for anything whose
+  output is scored. Generation output IS scored - a generated item's reference
+  answer becomes ground truth for every student who sees it - so G3 in
+  particular runs on a frontier model or the gate is not worth having.
+
+  Budget: 11 puts batch generation plus five gates at roughly 2.10 rupees per
+  item. 3,000 verified items is about 6,300 rupees spread over a year. Do not
+  economise on the gates to save it; an unverified item poisons the ground
+  truth for everyone who answers it.

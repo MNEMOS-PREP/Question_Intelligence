@@ -1,0 +1,59 @@
+{
+  "module": "M05",
+  "name": "Question Intelligence",
+  "spec": "plan_in_depth/M05_Question_Intelligence.md",
+  "repo": "https://github.com/MNEMOS-PREP/Question_Intelligence",
+  "owner": "E3",
+  "phase": "1-2",
+  "ports": {
+    "backend": 8105,
+    "frontend": 5205
+  },
+  "core": {
+    "repo": "https://github.com/MNEMOS-PREP/Platform_Core",
+    "version": "v0.4.0"
+  },
+
+  "_comment_depends_on": [
+    "Only M04 is a real runtime upstream. M01, M02 and M03 reach this module as",
+    "FIELDS ON A REQUEST that M06 assembles - coverage_debt on SelectionRequest,",
+    "grounding on /v1/questions/generate - so there is no client for them here",
+    "and listing them as dependencies would be lineage dressed up as coupling.",
+    "Nothing is required: true. A missing upstream narrows scope, never quality."
+  ],
+  "depends_on": [
+    {
+      "module": "M04",
+      "name": "Skill Graph & MNEMOS Memory",
+      "repo": "https://github.com/MNEMOS-PREP/Memory",
+      "reason": "the concept ontology every item is tagged against, and the posterior that seeds a session's provisional theta",
+      "on_missing": "Concepts come from the committed 120-concept ontology snapshot instead, stamped with its ontology_version. Items are authored, selected and calibrated normally; theta starts cold rather than seeded, which is the correct behaviour for an unseen candidate anyway.",
+      "base_url": "http://127.0.0.1:8104",
+      "health_path": "/health",
+      "required": false
+    },
+    {
+      "module": "M13",
+      "name": "Evaluation Engine",
+      "repo": "https://github.com/MNEMOS-PREP/Evaluation_Engine",
+      "reason": "scores the answers that give an item its Elo, and eventually its IRT parameters",
+      "on_missing": "Items are served and never scored, so no responses accrue: Elo stays at its prior and the bank cannot calibrate. Selection still works - that is what the cold-start path in 6.5 is for.",
+      "base_url": "http://127.0.0.1:8113",
+      "health_path": "/health",
+      "required": false
+    }
+  ],
+
+  "_comment_feeds": [
+    "These consume M05. QuestionPackage and SelectionResult are contracts five",
+    "modules read; additive changes are safe, renames are not."
+  ],
+  "feeds": [
+    { "module": "M06", "takes": "the next question, chosen against a provisional theta this module owns" },
+    { "module": "M13", "takes": "the question package: stem, reference answer, key points, concepts, item parameters" },
+    { "module": "M09", "takes": "viva items grounded on the student's own project" },
+    { "module": "M10", "takes": "aptitude items with 3PL parameters" },
+    { "module": "M14", "takes": "GD topics" },
+    { "module": "M16", "takes": "bank coverage per concept, to say what practice is even available" }
+  ]
+}

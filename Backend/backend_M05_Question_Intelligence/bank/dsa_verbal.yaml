@@ -1,0 +1,343 @@
+# =============================================================================
+#  SEED BANK — dsa_verbal
+#
+#  Twelve items. This is NOT the Phase-1 bank: §6.1 targets 1,200 by Phase-1
+#  exit and M04's granularity linter wants 3+ per concept across 120 concepts.
+#  What this is, is the shape — enough to exercise selection, the cold start
+#  and the round-trip into M13, and a worked example of the house style for
+#  whoever is authoring the rest.
+#
+#  The authoring rules, learned from M13's rubric work:
+#    * `difficulty_band` is a judgement about the CONCEPT's depth, not about
+#      how long the answer takes. An item that is hard because the phrasing is
+#      opaque is a badly written item (§3.2.4).
+#    * Key points are NLI-checkable statements, not topics. "Explains what
+#      happens on a collision" can be entailed or not; "collisions" cannot.
+#    * The reference answer is *a* good answer, not *the* answer. M13's
+#      evaluator is told this explicitly.
+#    * First concept listed is the primary, and it is the one that becomes
+#      mastery in M04. At most two secondary (FR-5.26).
+# =============================================================================
+
+items:
+  hashing_average_lookup:
+    stem: >-
+      Why is average-case lookup in a hash map O(1), and what has to be true
+      for that to hold?
+    modality: verbal
+    round_types: [dsa_verbal]
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+      - id: concept:hashing
+        weight: 0.7
+      - id: concept:time_complexity
+        weight: 0.2
+    reference_answer: >-
+      The key is hashed to a bucket index, so you go straight to a slot instead
+      of scanning. That holds when the hash function distributes keys roughly
+      uniformly and the load factor stays bounded — usually by resizing and
+      rehashing once it passes a threshold. If either fails, keys pile into a
+      few buckets and lookup degrades toward O(n) in the worst case.
+    key_points:
+      - id: kp_1
+        statement: States that the key is hashed to a bucket index rather than scanned for.
+        required: true
+      - id: kp_2
+        statement: Names uniform distribution or a bounded load factor as a condition.
+      - id: kp_3
+        statement: Says the worst case degrades to O(n) when keys collide heavily.
+    hint_ladder:
+      - What does hashing let you skip?
+      - What happens if every key lands in the same bucket?
+
+  hashing_collision_strategies:
+    stem: >-
+      Two keys hash to the same bucket. Walk me through how a hash map can
+      handle that, and what it costs.
+    modality: verbal
+    round_types: [dsa_verbal]
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+      - id: concept:hashing_internals
+        weight: 0.75
+      - id: concept:hashing
+        weight: 0.15
+    reference_answer: >-
+      Two families. Chaining keeps a secondary structure per bucket — a linked
+      list, or a tree once it grows — so collisions cost a traversal of that
+      bucket. Open addressing probes for another free slot, linearly or with a
+      second hash; it avoids per-bucket allocation but suffers clustering and
+      makes deletion awkward, usually needing tombstones.
+    key_points:
+      - id: kp_1
+        statement: Describes chaining as a secondary structure per bucket.
+        required: true
+      - id: kp_2
+        statement: Describes open addressing or probing as the alternative family.
+      - id: kp_3
+        statement: Names a cost — traversal, clustering, or deletion needing tombstones.
+
+  hashing_bad_hash_function:
+    stem: >-
+      Someone ships a hash function that returns the string length. What
+      actually goes wrong, and how would you notice in production?
+    modality: verbal
+    round_types: [dsa_verbal]
+    difficulty_band: hard
+    time_budget_s: 300
+    concepts:
+      - id: concept:hashing_internals
+        weight: 0.7
+      - id: concept:time_complexity
+        weight: 0.2
+    reference_answer: >-
+      Length has a tiny range and a very skewed distribution, so nearly every
+      key collides into a handful of buckets and the map degenerates into a few
+      long chains — lookups go from O(1) to O(n/k). In production you would see
+      latency that scales with data volume rather than staying flat, hot buckets,
+      and CPU spent in comparisons rather than hashing. It is also a denial-of-
+      service surface: an attacker who can choose keys can force worst case.
+    key_points:
+      - id: kp_1
+        statement: Explains that the output range is small so keys collide heavily.
+        required: true
+      - id: kp_2
+        statement: States the performance degrades toward linear.
+      - id: kp_3
+        statement: Names an observable symptom or the denial-of-service angle.
+
+  recursion_base_case:
+    stem: >-
+      What is a base case, and what happens without one? Give an example from
+      something you have written.
+    modality: verbal
+    round_types: [dsa_verbal]
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+      - id: concept:recursion
+        weight: 0.85
+    reference_answer: >-
+      The base case is the input the function answers directly instead of
+      recursing. Without one, or with one that is never reached, the call stack
+      grows until it overflows. The usual bug is not a missing base case but a
+      recursive step that does not move toward it.
+    key_points:
+      - id: kp_1
+        statement: Defines the base case as the input answered without recursing.
+        required: true
+      - id: kp_2
+        statement: States that the stack overflows or the function does not terminate.
+
+  recursion_vs_iteration:
+    stem: >-
+      When would you choose recursion over a loop, and when is that the wrong
+      call?
+    modality: verbal
+    round_types: [dsa_verbal]
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+      - id: concept:recursion
+        weight: 0.7
+      - id: concept:space_complexity
+        weight: 0.2
+    reference_answer: >-
+      Recursion is worth it when the problem is defined recursively and the
+      code follows the structure — tree traversal, divide and conquer. It is
+      the wrong call when depth can grow with input size in a language without
+      tail-call elimination, because each frame costs stack; and when an
+      iterative version is just as readable.
+    key_points:
+      - id: kp_1
+        statement: Names a structure where recursion matches the problem, such as trees.
+      - id: kp_2
+        statement: Names stack depth or memory as the cost.
+        required: true
+
+  recursion_memoisation:
+    stem: >-
+      Your recursive solution is correct but too slow. How do you decide whether
+      memoisation will help?
+    modality: verbal
+    round_types: [dsa_verbal]
+    difficulty_band: hard
+    time_budget_s: 300
+    concepts:
+      - id: concept:dynamic_programming
+        weight: 0.65
+      - id: concept:recursion
+        weight: 0.25
+    reference_answer: >-
+      Memoisation helps when the recursion revisits the same subproblems —
+      overlapping subproblems — and the answer for a given input never changes.
+      If every call has distinct arguments, caching adds memory and buys
+      nothing. The check is to look at the recursion tree and ask whether the
+      same argument tuple appears more than once.
+    key_points:
+      - id: kp_1
+        statement: Names overlapping subproblems as the condition for memoisation.
+        required: true
+      - id: kp_2
+        statement: States that the result must depend only on the arguments.
+      - id: kp_3
+        statement: Says memoisation costs memory and does not help without repeats.
+
+  complexity_amortised:
+    stem: >-
+      A dynamic array's append is O(1) amortised but sometimes O(n). Explain
+      that to someone who thinks it is a contradiction.
+    modality: verbal
+    round_types: [dsa_verbal]
+    difficulty_band: hard
+    time_budget_s: 300
+    concepts:
+      - id: concept:amortized_analysis
+        weight: 0.75
+      - id: concept:time_complexity
+        weight: 0.15
+    reference_answer: >-
+      Most appends write into spare capacity and cost O(1). Occasionally the
+      array is full and has to reallocate and copy, which is O(n). Because
+      capacity typically doubles, those expensive appends get rarer as the array
+      grows — the total cost of n appends is O(n), so the cost per append
+      averaged over the sequence is constant. Amortised is a statement about a
+      sequence, not a promise about any single call.
+    key_points:
+      - id: kp_1
+        statement: Explains that resizing copies and costs linear time.
+        required: true
+      - id: kp_2
+        statement: States that growth is geometric so resizes become rare.
+      - id: kp_3
+        statement: Says amortised describes a sequence rather than one operation.
+
+  complexity_big_o_meaning:
+    stem: >-
+      Two algorithms are both O(n log n). Is there anything left to choose
+      between them?
+    modality: verbal
+    round_types: [dsa_verbal]
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+      - id: concept:time_complexity
+        weight: 0.7
+      - id: concept:sorting
+        weight: 0.2
+    reference_answer: >-
+      Plenty. Big-O hides constants and lower-order terms, so cache behaviour,
+      branch prediction and allocation can differ by large factors. It also says
+      nothing about memory, stability, whether the algorithm is in-place, or how
+      it behaves on nearly-sorted input. Real choices are usually made on those.
+    key_points:
+      - id: kp_1
+        statement: States that Big-O hides constant factors.
+        required: true
+      - id: kp_2
+        statement: Names a non-time consideration such as memory, stability, or cache behaviour.
+
+  sorting_stability:
+    stem: What does it mean for a sort to be stable, and when does it matter?
+    modality: verbal
+    round_types: [dsa_verbal]
+    difficulty_band: easy
+    time_budget_s: 180
+    concepts:
+      - id: concept:sorting
+        weight: 0.8
+    reference_answer: >-
+      A stable sort preserves the relative order of records that compare equal.
+      It matters when you sort by more than one key in passes — sort by name,
+      then by department, and stability is what keeps names ordered inside each
+      department.
+    key_points:
+      - id: kp_1
+        statement: Defines stability as preserving the order of equal elements.
+        required: true
+      - id: kp_2
+        statement: Gives a case where it matters, such as multi-key sorting.
+
+  joins_inner_vs_left:
+    stem: >-
+      Explain the difference between an inner join and a left join, and give me
+      a case where picking the wrong one is a silent bug.
+    modality: verbal
+    round_types: [dsa_verbal, dbms_verbal]
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+      - id: concept:joins
+        weight: 0.8
+      - id: concept:sql_queries
+        weight: 0.15
+    reference_answer: >-
+      An inner join keeps only rows with a match on both sides; a left join keeps
+      every row from the left and fills nulls where the right has no match. The
+      silent bug is counting: an inner join over orders and refunds quietly drops
+      every order that was never refunded, so a "refund rate" computed that way
+      looks far worse than reality and nothing errors.
+    key_points:
+      - id: kp_1
+        statement: States that an inner join keeps only matching rows.
+        required: true
+      - id: kp_2
+        statement: States that a left join keeps unmatched left rows with nulls.
+      - id: kp_3
+        statement: Gives a concrete case where the wrong choice silently changes a result.
+
+  trees_bst_worst_case:
+    stem: >-
+      A binary search tree gives O(log n) lookup. When does that stop being
+      true, and what is done about it?
+    modality: verbal
+    round_types: [dsa_verbal]
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+      - id: concept:binary_search_trees
+        weight: 0.7
+      - id: concept:balanced_trees
+        weight: 0.2
+    reference_answer: >-
+      O(log n) assumes the tree is balanced. Insert already-sorted data into a
+      plain BST and every node has one child — it degenerates into a linked list
+      and lookup becomes O(n). Self-balancing variants such as AVL or red-black
+      trees restructure on insert and delete to bound the height, paying a small
+      constant cost per write to keep the logarithmic read.
+    key_points:
+      - id: kp_1
+        statement: States that the guarantee depends on the tree being balanced.
+        required: true
+      - id: kp_2
+        statement: Describes degeneration to linear time, e.g. on sorted input.
+      - id: kp_3
+        statement: Names a self-balancing tree or the idea of rebalancing on write.
+
+  graphs_bfs_vs_dfs:
+    stem: >-
+      You need the shortest path in an unweighted graph. BFS or DFS, and why
+      does the other one not work?
+    modality: verbal
+    round_types: [dsa_verbal]
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+      - id: concept:graph_traversal_bfs
+        weight: 0.75
+      - id: concept:shortest_paths
+        weight: 0.2
+    reference_answer: >-
+      BFS. It explores in order of distance from the source, so the first time
+      it reaches a node it has arrived by a path with the fewest edges. DFS goes
+      deep before wide, so the first path it finds to a node can be arbitrarily
+      long — you would have to explore every path and take the minimum, which
+      costs far more and gains nothing.
+    key_points:
+      - id: kp_1
+        statement: Chooses BFS and says it explores in order of distance.
+        required: true
+      - id: kp_2
+        statement: Explains that DFS can reach a node by a longer path first.

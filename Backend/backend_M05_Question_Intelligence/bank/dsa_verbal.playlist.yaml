@@ -1,0 +1,142 @@
+# =============================================================================
+#  FALLBACK PLAYLIST — dsa_verbal
+#
+#  §6.8 step 5's last line. "Build the fixed fallback playlist on day one. It is
+#  30 minutes of work and it guarantees the interview never stalls."
+#
+#  These are not good CAT items and are not meant to be. Every one is:
+#    * broadly answerable by anyone in the round's audience, so it never
+#      humiliates a student who reached here because OUR bank was thin,
+#    * short, so it fits whatever time is left,
+#    * still a real question with real key points, because it will be scored
+#      like any other and a throwaway stem produces a throwaway observation.
+#
+#  Selection reaches this only after freshness has already been relaxed. If it
+#  is being hit often, that is the bank-health console's exhaustion column
+#  telling you what to write next — not a signal to add more fallbacks.
+#
+#  Ten per round type is the target. Eight here; dsa_verbal is the only round
+#  type authored so far and the remaining five round types have none.
+# =============================================================================
+
+items:
+  fb_complexity_of_a_loop:
+    stem: >-
+      You have a single loop over an array of n elements doing constant work
+      each pass. What is the time complexity, and why?
+    difficulty_band: intro
+    time_budget_s: 120
+    concepts: [concept:time_complexity]
+    reference_answer: >-
+      O(n). The work per iteration does not depend on n, and the loop runs n
+      times, so total work grows in proportion to n.
+    key_points:
+      - statement: States the complexity is linear in n.
+        required: true
+      - statement: Justifies it by constant work repeated n times.
+
+  fb_array_vs_linked_list:
+    stem: When would you reach for a linked list instead of an array?
+    difficulty_band: easy
+    time_budget_s: 150
+    concepts: [concept:linked_lists, concept:arrays]
+    reference_answer: >-
+      When insertions and deletions in the middle are frequent and you already
+      hold a reference to the position, since those are O(1) pointer updates
+      rather than shifting elements. You give up O(1) indexing and cache
+      locality, which is why arrays win more often than people expect.
+    key_points:
+      - statement: Names cheap insertion or deletion as the linked list's advantage.
+        required: true
+      - statement: Names loss of random access or cache locality as the cost.
+
+  fb_stack_vs_queue:
+    stem: Give me a problem that needs a stack and one that needs a queue.
+    difficulty_band: intro
+    time_budget_s: 120
+    concepts: [concept:stacks, concept:queues]
+    reference_answer: >-
+      A stack suits anything that must unwind in reverse order — matching
+      brackets, undo, depth-first traversal. A queue suits anything processed in
+      arrival order — a task buffer, or breadth-first traversal.
+    key_points:
+      - statement: Gives a last-in-first-out use for the stack.
+        required: true
+      - statement: Gives a first-in-first-out use for the queue.
+
+  fb_binary_search_precondition:
+    stem: What has to be true before binary search is usable, and what does it buy?
+    difficulty_band: easy
+    time_budget_s: 150
+    concepts: [concept:binary_search, concept:time_complexity]
+    reference_answer: >-
+      The data has to be sorted on the key you are searching. Given that, each
+      comparison halves the remaining range, so lookup is O(log n) instead of
+      O(n).
+    key_points:
+      - statement: States the input must be sorted.
+        required: true
+      - statement: States the cost is logarithmic.
+
+  fb_dictionary_use_case:
+    stem: >-
+      You need to count how many times each word appears in a document. What
+      structure do you use and why?
+    difficulty_band: intro
+    time_budget_s: 150
+    concepts: [concept:hashing, concept:arrays]
+    reference_answer: >-
+      A hash map from word to count. Lookup and update are O(1) on average, and
+      the keys are arbitrary strings rather than a dense integer range, so an
+      array would waste space or need its own mapping.
+    key_points:
+      - statement: Chooses a hash map or dictionary.
+        required: true
+      - statement: Justifies it by constant-time lookup on arbitrary keys.
+
+  fb_recursion_in_your_own_words:
+    stem: Explain recursion to someone who has just learned loops.
+    difficulty_band: intro
+    time_budget_s: 150
+    concepts: [concept:recursion]
+    reference_answer: >-
+      A function that solves a problem by calling itself on a smaller version of
+      the same problem, until it reaches a case small enough to answer directly.
+      The loop equivalent keeps state in variables; recursion keeps it on the
+      call stack.
+    key_points:
+      - statement: Describes a function calling itself on a smaller input.
+        required: true
+      - statement: Mentions a stopping condition or base case.
+
+  fb_sorting_choice:
+    stem: >-
+      You have ten thousand records to sort once, in memory. Would you write
+      your own sort? Why or why not?
+    difficulty_band: easy
+    time_budget_s: 150
+    concepts: [concept:sorting]
+    reference_answer: >-
+      No. The standard library sort is O(n log n), heavily optimised, well
+      tested, and usually adaptive on partially sorted input. Writing your own
+      is worth it only with a specific constraint the library cannot meet, such
+      as an unusual memory bound or sorting on external storage.
+    key_points:
+      - statement: Chooses the library sort.
+        required: true
+      - statement: Gives a reason such as correctness, optimisation, or complexity.
+
+  fb_tradeoff_time_space:
+    stem: Describe a time you traded memory for speed, or would.
+    difficulty_band: easy
+    time_budget_s: 180
+    concepts: [concept:space_complexity, concept:time_complexity]
+    reference_answer: >-
+      Caching or precomputation: storing results so they are not recomputed —
+      a lookup table, a memoised function, an index on a database column. You
+      spend memory to avoid repeated work, and it is worth it when the same
+      values are needed repeatedly and memory is not the binding constraint.
+    key_points:
+      - statement: Names a concrete mechanism such as caching, memoisation, or an index.
+        required: true
+      - statement: States the condition under which the trade is worth making.

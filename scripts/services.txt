@@ -1,0 +1,27 @@
+#==============================================================================
+#  SERVICE TABLE  -  the only file you edit to add a service.
+#
+#  Pipe-delimited. Blank lines and lines starting with # are ignored.
+#  Fields are trimmed, so line them up however you like.
+#
+#    id        stable key. Also the PID file name: .run\<id>.pid
+#              Prefix by module (m05-*) - start_questions.bat filters on it.
+#    label     tab title, and the name in the control tab's table
+#    cwd       working directory, relative to the repo root
+#    requires  path (relative to cwd) that must exist, or the service is
+#              reported MISSING and skipped instead of failing in a dead tab
+#    command   what runs. Passed to cmd.exe, so batch syntax is fine.
+#              NEVER hardcode a port here that PORTS.txt does not reserve.
+#    url       what to print for a human. Blank = nothing to open.
+#    health    path probed for readiness. Blank = fall back to a port check.
+#
+#  Ports come from PORTS.txt: M05 is API 8105, web 5205.
+#
+#  There is no web row yet. The bank-health console (spec 8.2) arrives in
+#  milestone M8, and the three student-facing touchpoints are rendered by M06
+#  inside the interview rather than by a screen this module owns. A tab that
+#  opens on an empty page is worse than one that is honestly absent.
+#==============================================================================
+
+# id      | label   | cwd     | requires                 | command                                                                                       | url                   | health
+m05-api   | M05 API | Backend | .venv\Scripts\python.exe | .venv\Scripts\python.exe -m uvicorn backend_M05_Question_Intelligence.app:app --reload --port 8105 | http://127.0.0.1:8105 | /health

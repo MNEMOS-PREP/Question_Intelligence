@@ -1,0 +1,75 @@
+===============================================================================
+  M05 — QUESTION INTELLIGENCE · WHAT THIS MODULE NEEDS
+  The machine-readable version is module.json. This is the one for humans.
+===============================================================================
+
+THE SHORT VERSION
+-------------------------------------------------------------------------------
+Clone it, install it, run it. Nothing below is required to start, and nothing
+is marked required: true - deliberately. This module sits on the interview's
+hot path, and a student cannot be told "no questions today, the memory service
+is restarting".
+
+A missing upstream narrows the SCOPE of what M05 can do. It never lowers the
+quality of what it does, and it is never silent: /v1/deps names each one and
+what it costs.
+
+
+UPSTREAM
+-------------------------------------------------------------------------------
+  M04  Skill Graph & MNEMOS Memory          http://127.0.0.1:8104
+       Needs it for:  the concept ontology every item is tagged against, and
+                      the posterior that seeds a session's provisional theta.
+       Without it:    concepts come from the committed 120-concept snapshot in
+                      ontology/, stamped with its ontology_version. Items are
+                      authored, selected and calibrated normally. Theta starts
+                      cold rather than seeded, which is the honest belief about
+                      a candidate nobody has measured.
+
+                      This is not a stopgap - it is scheduling. M04's ontology
+                      ships reviewed: false until a faculty walk lands, and
+                      waiting for that would idle this module for weeks.
+
+  M13  Evaluation Engine                    http://127.0.0.1:8113
+       Needs it for:  scores. An item earns its Elo, and eventually its IRT
+                      parameters, from real responses.
+       Without it:    items are served and never scored, so no responses
+                      accrue: Elo stays at its prior and the bank cannot
+                      calibrate. Selection still works - that is exactly what
+                      the cold-start path in 6.5 is for.
+
+  M01 / M02 / M03 are NOT dependencies, despite the spec header's phrasing.
+  They reach this module as fields on a request that M06 assembles -
+  coverage_debt on SelectionRequest, grounding on /v1/questions/generate - so
+  there is no client for them here. Listing them would be data lineage dressed
+  up as coupling.
+
+
+DOWNSTREAM - who reads what this produces
+-------------------------------------------------------------------------------
+  M06  the next question, chosen against a provisional theta this module owns
+  M13  the question package: stem, reference answer, key points, concepts,
+       and the item parameters that decide whether an observation is
+       theta-eligible
+  M09  viva items grounded on the student's own project
+  M10  aptitude items with 3PL parameters
+  M14  GD topics
+  M16  bank coverage per concept, to say what practice is even available
+
+  QuestionPackage and SelectionResult are contracts five modules read. Adding
+  a field is safe. Renaming or removing one is not.
+
+
+PYTHON
+-------------------------------------------------------------------------------
+  3.11+           uses X | Y unions and StrEnum
+  fastapi         the API
+  sqlmodel        reserved for the response store (milestone M7)
+  pyyaml          the bank and the ontology snapshot
+  ai-core         shared platform foundation, PINNED BY TAG at v0.4.0.
+                  Supplies ai_core.concepts - the ontology contract. Two
+                  definitions of what a concept is, is how M04's mastery map
+                  and this bank quietly stop meaning the same thing by
+                  concept:hashing.
+  anthropic       generation only, from M6. Imported lazily, so a checkout
+                  without a key runs and tests fine.

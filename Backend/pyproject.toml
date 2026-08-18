@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-interviewer-backend"
+version = "0.1.0"
+description = "AI Interviewer / placement preparation platform — M05 Question Intelligence"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "sqlmodel>=0.0.22",
+    "uvicorn[standard]>=0.30",
+    "pyyaml>=6.0",
+    # Generation (§6.2) and the G2/G3 gates. Imported lazily, so a checkout
+    # without an API key — including CI — runs and tests fine either way.
+    # Selection, calibration and the whole cold-start path never call a model.
+    "anthropic>=0.60",
+    # Shared platform foundation. PINNED BY TAG on purpose: tracking main is
+    # how you get a surprise breakage on a Tuesday. v0.4.0 carries
+    # `ai_core.concepts`, which is the ontology contract this module tags
+    # every item against.
+    "ai-core @ git+https://github.com/MNEMOS-PREP/Platform_Core@v0.4.0#subdirectory=python",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "httpx>=0.27",
+    "ruff>=0.6",
+]
+
+[tool.setuptools.packages.find]
+# This repo holds ONE module. Shared wiring comes from the `ai-core` package.
+include = ["backend_*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+# The ontology snapshot and the seed bank are data, not code, and both are
+# load-bearing: the snapshot is what lets this module run without M04 (§6.11),
+# and the fallback playlist is what guarantees an interview never stalls.
+"backend_M05_Question_Intelligence" = ["ontology/*.yaml", "bank/*.yaml", "bank/*.json"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+# `N` (pep8-naming) is deliberately NOT selected: packages are named
+# backend_M05_Question_Intelligence to match plan_in_depth/, which would trip
+# N999 invalid-module-name.
+
+[tool.ruff.lint.per-file-ignores]
+# `Depends(...)` / `Query(...)` in argument defaults is the canonical FastAPI
+# idiom, not the mutable-default bug B008 exists to catch.
+"**/router.py" = ["B008"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["backend_M05_Question_Intelligence"]
+markers = [
+    "gate: release-blocking acceptance gate (spec §13)",
+]
