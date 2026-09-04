@@ -1,5 +1,10 @@
 # M05 — TODO · Question Intelligence
 
+
+> **Completion: 84%** — 21 of 28 functional requirements met, 5 partially. Two requirements have no implementation at all — FR-5.6 human review queue, a P0, and FR-5.28 exposure-bypass reporting. Five more are coded with no test behind them. §8.2's bank console (*"build it, you will live in it"*) does not exist.
+>
+> _Method: `(met + ½ × partial) ÷ total`, audited against shipped code, 2026-08-28. One measure applied the same way to all nineteen modules so they compare; it counts requirements, not screens or gates._
+
 Running list for **M05 Question Intelligence**.
 Spec: [M05_Question_Intelligence.md](M05_Question_Intelligence.md)
 
