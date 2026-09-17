@@ -221,7 +221,33 @@ def flag_question(question_id: uuid.UUID, request: FlagRequest) -> dict:
 
 @router.post("/questions/select", response_model=SelectionResult)
 def select(request: SelectionRequest) -> SelectionResult:
+    """§6.6. The provisional theta comes from THIS module unless the caller says.
+
+    `SelectionRequest.theta_provisional` used to be required of the caller,
+    which put a caller in an impossible position: §6.10 says this estimate is
+    ours, is never persisted and dies with the session — and any caller that
+    checkpoints its own state (M06 does, after every step) would have been
+    persisting it to pass it back. `ProvisionalIsNotDurable` exists to stop
+    precisely that.
+
+    So: the seeded session's estimate is the default, and an explicit
+    `theta_provisional` still wins — the simulator passes one, and a test
+    needs to.
+    """
     loaded = bank_module.load()
+    state = _SESSIONS.get(request.session_id)
+    if state is not None and not request.theta_provisional:
+        request = request.model_copy(
+            update={
+                "theta_provisional": dict(state.theta),
+                "se": dict(state.se) or request.se,
+                "theta_seeded_from": state.seeded_from,
+                "provisional_updates": state.updates,
+                # Items already administered in this session, from the state
+                # that recorded them. A caller may add its own durable history.
+                "seen_item_ids": set(request.seen_item_ids) | set(state.administered),
+            }
+        )
     try:
         return selection_module.select(
             loaded.questions, request, fallback_playlist=loaded.playlist

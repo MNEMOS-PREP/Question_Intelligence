@@ -57,7 +57,17 @@ class Bank:
     by_label: dict[str, Question] = field(default_factory=dict)
 
     def get(self, question_id: UUID) -> Question | None:
-        return next((q for q in self.questions if q.id == question_id), None)
+        """Any item this bank can ADMINISTER, playlist included.
+
+        It searched `questions` only, which made the selector and the read
+        route disagree: `select()` falls back to the playlist by design
+        (§6.8 step 5), and the id it returned then 404'd here — so a caller
+        could not fetch the item it had just been given. M06 hit exactly that
+        and had to treat a working bank as an unavailable one.
+        """
+        return next(
+            (q for q in (*self.questions, *self.playlist) if q.id == question_id), None
+        )
 
     def concept_counts(self) -> dict[str, int]:
         counts: dict[str, int] = {}

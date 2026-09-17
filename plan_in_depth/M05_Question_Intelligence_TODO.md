@@ -18,6 +18,22 @@ Spec: [M05_Question_Intelligence.md](M05_Question_Intelligence.md)
 
 Legend: ✅ done · 🟡 partly done · ⬜ not started
 
+### 2026-09-17 — two seams M06 found on its first real call
+
+- **`/questions/select` now fills the provisional θ itself** from the seeded
+  session, when the caller sends none. It used to require the caller to pass
+  it, which put M06 in an impossible position: §6.10 says the estimate is
+  ours, is never persisted and dies at close — and M06 checkpoints its own
+  state after every step, so passing it back meant writing it down.
+  `ProvisionalIsNotDurable` exists to prevent exactly that. An explicit
+  `theta_provisional` still wins, because the simulator passes one.
+- **`Bank.get()` searches the fallback playlist too.** `select()` falls back to
+  it by design (§6.8 step 5) and the id it returned then 404'd on
+  `GET /questions/{id}` — so a caller handed a playlist item had to treat a
+  working bank as an absent one, which is what M06 did.
+
+Both are covered by `tests/test_session_seam.py`, and both mutations fail it.
+
 ---
 
 ## 0. Ideas and scouting

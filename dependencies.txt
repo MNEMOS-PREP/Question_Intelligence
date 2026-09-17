@@ -48,6 +48,10 @@ UPSTREAM
 DOWNSTREAM - who reads what this produces
 -------------------------------------------------------------------------------
   M06  the next question, chosen against a provisional theta this module owns
+       and now FILLS IN itself: /v1/questions/select reads the seeded session's
+       estimate when the caller sends none, because a caller that checkpoints
+       its own state would otherwise have had to persist the one thing 6.10
+       says must never be written down.
   M13  the question package: stem, reference answer, key points, concepts,
        and the item parameters that decide whether an observation is
        theta-eligible
