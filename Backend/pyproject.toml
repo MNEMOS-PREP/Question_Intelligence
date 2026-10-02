@@ -20,7 +20,7 @@ dependencies = [
     # how you get a surprise breakage on a Tuesday. v0.6.0 carries
     # `ai_core.concepts`, which is the ontology contract this module tags
     # every item against.
-    "ai-core @ git+https://github.com/MNEMOS-PREP/Platform_Core@v0.6.0#subdirectory=python",
+    "ai-core @ git+https://github.com/MNEMOS-PREP/Platform_Core@v0.11.0#subdirectory=python",
 ]
 
 [project.optional-dependencies]

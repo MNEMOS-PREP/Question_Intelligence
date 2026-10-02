@@ -16,6 +16,7 @@ from __future__ import annotations
 import uuid
 
 import pytest
+from ai_core.guard import identity_headers
 from fastapi.testclient import TestClient
 
 from backend_M05_Question_Intelligence import bank as bank_module
@@ -55,6 +56,8 @@ def _select(client, session_id: uuid.UUID, candidate_id: uuid.UUID, **extra):
             "time_remaining_s": 1800,
             **extra,
         },
+        # As M06 does: the caller forwards the student it is acting for.
+        headers=identity_headers(candidate_id),
     )
     assert response.status_code == 200, response.text
     return response.json()
@@ -85,6 +88,7 @@ def test_selection_uses_the_theta_this_module_owns(client, seen):
             "posterior": {"concept:hashing": 2.5},
             "snapshot_id": "m04-snapshot-1",
         },
+        headers=identity_headers(candidate_id),
     )
     assert seeded.status_code == 200, seeded.text
 
@@ -101,6 +105,7 @@ def test_a_verdict_moves_what_the_next_selection_is_given(client, seen):
     client.post(
         f"/v1/sessions/{session_id}/theta/seed",
         json={"candidate_id": str(candidate_id), "posterior": {"concept:hashing": 0.0}},
+        headers=identity_headers(candidate_id),
     )
     observed = client.post(
         f"/v1/sessions/{session_id}/theta/observe",
@@ -108,6 +113,7 @@ def test_a_verdict_moves_what_the_next_selection_is_given(client, seen):
             "concept_id": "concept:hashing",
             "outcome": {"turn_id": str(uuid.uuid4()), "band": "above", "confidence": 0.9},
         },
+        headers=identity_headers(candidate_id),
     )
     assert observed.status_code == 200, observed.text
     moved = observed.json()["theta_provisional"]
@@ -124,6 +130,7 @@ def test_an_explicit_theta_still_wins(client, seen):
     client.post(
         f"/v1/sessions/{session_id}/theta/seed",
         json={"candidate_id": str(candidate_id), "posterior": {"concept:hashing": 2.5}},
+        headers=identity_headers(candidate_id),
     )
     _select(client, session_id, candidate_id, theta_provisional={"concept:hashing": -2.5})
     assert seen[-1].theta_provisional == {"concept:hashing": -2.5}

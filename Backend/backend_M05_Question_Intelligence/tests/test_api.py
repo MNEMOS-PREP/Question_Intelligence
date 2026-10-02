@@ -5,6 +5,7 @@ from __future__ import annotations
 import uuid
 
 import pytest
+from ai_core.guard import identity_headers
 from fastapi.testclient import TestClient
 
 from backend_M05_Question_Intelligence import bank as bank_module
@@ -15,7 +16,9 @@ from .conftest import CANDIDATE
 
 @pytest.fixture(name="client")
 def client_fixture():
-    with TestClient(app) as client:
+    # Signed in as the student these tests act for: M05's routes are guarded
+    # (Platform_Core v0.11.0), and every real caller forwards one.
+    with TestClient(app, headers=identity_headers(CANDIDATE)) as client:
         yield client
 
 

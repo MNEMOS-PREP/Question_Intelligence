@@ -36,10 +36,17 @@ Both are covered by `tests/test_session_seam.py`, and both mutations fail it.
 
 ### 2026-10-02 — asks from M06
 
-- ⬜ **`POST /questions/{id}/flag` takes any caller.** There is no identity
-  guard, so anybody can exclude any item from selection. M06's ⚑ forwards the
-  student (`candidate_id` in the body) and M05 should check who is asking —
-  Platform_Core v0.10.0's `candidate_guard`; M05 is still on v0.6.0.
+- ✅ **`POST /questions/{id}/flag` takes any caller** — fixed 2026-10-02. M05 is on
+  Platform_Core v0.11.0 with `candidate_guard` on its router. A session's
+  routes answer only its owner, and `seed`, `select` and the ⚑ check the
+  student their body names. `select` also refuses to read another student's
+  seeded estimate. `tests/test_guard.py` covers it, and two mutations fail it.
+- ⬜ **`GET /questions/{id}` serves the answer key to any caller.** Key points
+  and the expected answer go to whoever asks, so a student mid-interview could
+  read them through the shell. M06 and M13 need the content server-side.
+  Serve the full item to service callers (`X-Service-Secret`) and staff, and
+  only the stem to a student; M06 and M13 then send the secret, as they
+  already do for M04.
 - ⬜ **EC-5.9's retraction is still not wired.** M06's ⚑ tells the student a
   flagged question "won't be picked for anyone again", which is true, and
   deliberately does not say the observations it produced were undone, because

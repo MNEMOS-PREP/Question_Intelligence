@@ -10,6 +10,13 @@ The session endpoints are the interesting half. They exist because M05 owns the
 in-session provisional θ (§6.10), and there is deliberately **no**
 `GET /v1/sessions/{id}/theta` — the estimate is not displayable and not durable,
 and an endpoint returning it is the shortest path to it appearing in a report.
+
+Who may ask (Platform_Core v0.11.0's `candidate_guard`, on the router): a
+session's routes answer only the student whose session it is — the id resolves
+to its owner — and the routes whose BODY names a student (`seed`, `select`,
+the ⚑) check that student in the handler. Until 2026-10-02 none of this
+existed, and any caller could exclude any item from selection or read another
+student's provisional estimate through `select`.
 """
 
 from __future__ import annotations
@@ -17,7 +24,9 @@ from __future__ import annotations
 import logging
 import uuid
 
-from fastapi import APIRouter, HTTPException
+from ai_core.guard import candidate_guard, require_candidate
+from ai_core.identity import Principal
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from . import bank as bank_module
@@ -36,7 +45,18 @@ from .models_irt import BAND_TABLE_VERSION
 
 log = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/v1", tags=["questions"])
+def _session_owner(session_id: str) -> str | None:
+    """The student a seeded session belongs to, or None for one nobody seeded
+    — the guard then lets the handler 404 rather than confirm it exists."""
+    try:
+        state = _SESSIONS.get(uuid.UUID(session_id))
+    except ValueError:
+        return None
+    return str(state.candidate_id) if state is not None else None
+
+
+guard = candidate_guard({"session_id": _session_owner})
+router = APIRouter(prefix="/v1", tags=["questions"], dependencies=[Depends(guard)])
 
 #: Sessions live in memory and die with the process — that is the contract, not
 #: a shortcut (§6.10). A restart loses provisional estimates and costs nothing
@@ -186,7 +206,11 @@ def bank_health() -> dict:
 
 
 @router.post("/questions/{question_id}/flag")
-def flag_question(question_id: uuid.UUID, request: FlagRequest) -> dict:
+def flag_question(
+    question_id: uuid.UUID,
+    request: FlagRequest,
+    principal: Principal | None = Depends(guard),
+) -> dict:
     """FR-5.19 / EC-5.9 — the cheapest quality signal this module has.
 
     The half that is NOT built yet is the important half: M04's spec names
@@ -195,6 +219,12 @@ def flag_question(question_id: uuid.UUID, request: FlagRequest) -> dict:
     with the M04 client — the response says so rather than implying the student
     has been fully served.
     """
+    # A flag excludes the item for everybody, so somebody has to be asking —
+    # and when the body says on whose behalf, it has to be them.
+    if principal is None:
+        raise HTTPException(status_code=401, detail="Sign in to flag a question.")
+    if request.candidate_id is not None:
+        require_candidate(principal, request.candidate_id)
     question = bank_module.load().get(question_id)
     if question is None:
         raise HTTPException(status_code=404, detail="no such question")
@@ -220,7 +250,9 @@ def flag_question(question_id: uuid.UUID, request: FlagRequest) -> dict:
 
 
 @router.post("/questions/select", response_model=SelectionResult)
-def select(request: SelectionRequest) -> SelectionResult:
+def select(
+    request: SelectionRequest, principal: Principal | None = Depends(guard)
+) -> SelectionResult:
     """§6.6. The provisional theta comes from THIS module unless the caller says.
 
     `SelectionRequest.theta_provisional` used to be required of the caller,
@@ -234,8 +266,14 @@ def select(request: SelectionRequest) -> SelectionResult:
     `theta_provisional` still wins — the simulator passes one, and a test
     needs to.
     """
+    require_candidate(principal, request.candidate_id)
     loaded = bank_module.load()
     state = _SESSIONS.get(request.session_id)
+    if state is not None:
+        # The seeded estimate is read below; it must be this student's. A
+        # stranger naming themselves in the body and somebody else's session
+        # id would otherwise be selected for with that person's θ.
+        require_candidate(principal, state.candidate_id)
     if state is not None and not request.theta_provisional:
         request = request.model_copy(
             update={
@@ -264,7 +302,11 @@ def select(request: SelectionRequest) -> SelectionResult:
 
 
 @router.post("/sessions/{session_id}/theta/seed")
-def seed_theta(session_id: uuid.UUID, request: SeedRequest) -> dict:
+def seed_theta(
+    session_id: uuid.UUID, request: SeedRequest, principal: Principal | None = Depends(guard)
+) -> dict:
+    # A new session has no owner for the guard to resolve; the body names one.
+    require_candidate(principal, request.candidate_id)
     state = session_module.seed_from_m04(
         session_id,
         request.candidate_id,
