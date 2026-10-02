@@ -5,6 +5,7 @@ from __future__ import annotations
 import uuid
 
 import pytest
+from ai_core import service
 from ai_core.guard import identity_headers
 from fastapi.testclient import TestClient
 
@@ -88,7 +89,9 @@ def test_the_package_matches_what_m13_parses(client):
     `concepts` as a mapping. A contract is what the other side can parse."""
     question = bank_module.load().questions[0]
     body = client.get(
-        f"/v1/questions/{question.id}/package", params={"round_type": "dsa_verbal"}
+        f"/v1/questions/{question.id}/package",
+        params={"round_type": "dsa_verbal"},
+        headers=service.headers(),
     ).json()
 
     assert body["round_type"] == "dsa_verbal"
@@ -102,7 +105,9 @@ def test_the_package_matches_what_m13_parses(client):
 def test_a_package_for_the_wrong_round_type_is_refused(client):
     question = bank_module.load().questions[0]
     response = client.get(
-        f"/v1/questions/{question.id}/package", params={"round_type": "hr_behavioural"}
+        f"/v1/questions/{question.id}/package",
+        params={"round_type": "hr_behavioural"},
+        headers=service.headers(),
     )
     assert response.status_code == 422
 

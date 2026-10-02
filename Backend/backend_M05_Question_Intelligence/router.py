@@ -24,9 +24,10 @@ from __future__ import annotations
 import logging
 import uuid
 
+from ai_core import service
 from ai_core.guard import candidate_guard, require_candidate
-from ai_core.identity import Principal
-from fastapi import APIRouter, Depends, HTTPException
+from ai_core.identity import Principal, Role
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 
 from . import bank as bank_module
@@ -44,6 +45,7 @@ from .dependencies import deps
 from .models_irt import BAND_TABLE_VERSION
 
 log = logging.getLogger(__name__)
+
 
 def _session_owner(session_id: str) -> str | None:
     """The student a seeded session belongs to, or None for one nobody seeded
@@ -125,17 +127,66 @@ def read_ontology() -> dict:
 # ── the bank ─────────────────────────────────────────────────────────────
 
 
+#: The fields that answer the question. A module asking for an item gets them —
+#: M06 probes against the key points, M13 scores against the reference — and a
+#: browser does not.
+ANSWER_KEY = ("reference_answer", "key_points", "follow_ups", "hint_ladder")
+
+
+#: Each answer field at its own empty default, read from the model rather than
+#: restated, so a field added to `ANSWER_KEY` cannot be blanked with the wrong type.
+_WITHHELD = {
+    name: Question.model_fields[name].get_default(call_default_factory=True) for name in ANSWER_KEY
+}
+
+
+def _may_have_the_key(request: Request, principal: Principal | None) -> bool:
+    return service.is_service(request) or (principal is not None and principal.role is Role.admin)
+
+
 @router.get("/questions/{question_id}", response_model=Question)
-def read_question(question_id: uuid.UUID) -> Question:
+def read_question(
+    question_id: uuid.UUID,
+    request: Request,
+    response: Response,
+    principal: Principal | None = Depends(guard),
+) -> Question:
+    """One item — and its answer key only for a module (or an administrator).
+
+    Until 2026-10-02 this served every item whole to anybody holding its id:
+    the reference answer, the key points M06 probes against, the follow-ups
+    and the full hint ladder. A student who opened the network tab mid-
+    interview had the marking scheme. The stem and the item's metadata are
+    still public — they are what the student is being asked — and the four
+    answer fields come back empty, with `X-Answer-Key: withheld` saying so
+    rather than letting "no key points" pass for a fact about the item.
+
+    A GROUNDED item (FR-5.22) is built from one student's own repository, and
+    its stem carries their design decisions. It is theirs: anybody else is
+    refused, exactly as `select` already refuses to serve it to them.
+    """
     question = bank_module.load().get(question_id)
     if question is None:
         raise HTTPException(status_code=404, detail="no such question")
-    return question
+    keyed = _may_have_the_key(request, principal)
+    if question.grounded_for_candidate is not None and not keyed:
+        require_candidate(principal, question.grounded_for_candidate)
+    if keyed:
+        return question
+    response.headers["X-Answer-Key"] = "withheld"
+    return question.model_copy(update=_WITHHELD)
 
 
-@router.get("/questions/{question_id}/package", response_model=QuestionPackage)
+@router.get(
+    "/questions/{question_id}/package",
+    response_model=QuestionPackage,
+    dependencies=[Depends(service.require_service)],
+)
 def read_package(question_id: uuid.UUID, round_type: str) -> QuestionPackage:
     """What M13 receives. Its `adapters.QuestionPackage`, exactly.
+
+    Service-only (Platform_Core v0.12.0): a package is the item's answer key
+    and nothing else, so only a module holding the platform secret gets one.
 
     `round_type` is a required query parameter rather than a field on the item,
     because M13 resolves the rubric from a single round type and each rubric

@@ -31,6 +31,13 @@ OTHER_CANDIDATE = uuid.UUID("00000000-0000-4000-8000-000000000002")
 CONSENT = uuid.UUID("00000000-0000-4000-8000-0000000000c0")
 
 
+@pytest.fixture(autouse=True)
+def _service_secret(monkeypatch):
+    """A known platform secret, so no test reads or writes the developer's
+    machine secret under their home directory (Platform_Core v0.12.0)."""
+    monkeypatch.setenv("SERVICE_SECRET", "m05-test-secret")
+
+
 def make_question(
     *,
     concept: str = "concept:hashing",

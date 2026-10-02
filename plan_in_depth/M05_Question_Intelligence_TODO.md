@@ -41,12 +41,15 @@ Both are covered by `tests/test_session_seam.py`, and both mutations fail it.
   routes answer only its owner, and `seed`, `select` and the ⚑ check the
   student their body names. `select` also refuses to read another student's
   seeded estimate. `tests/test_guard.py` covers it, and two mutations fail it.
-- ⬜ **`GET /questions/{id}` serves the answer key to any caller.** Key points
-  and the expected answer go to whoever asks, so a student mid-interview could
-  read them through the shell. M06 and M13 need the content server-side.
-  Serve the full item to service callers (`X-Service-Secret`) and staff, and
-  only the stem to a student; M06 and M13 then send the secret, as they
-  already do for M04.
+- ✅ **`GET /questions/{id}` served the answer key to any caller** — fixed
+  2026-10-02 on Platform_Core v0.12.0. A browser gets the stem and metadata;
+  `reference_answer`, `key_points`, `follow_ups` and `hint_ladder` come back
+  empty with `X-Answer-Key: withheld`. A module holding the platform secret
+  (`ai_core.service`) or an admin gets the whole item; `/package` is
+  service-only. Found on the way: a GROUNDED item (FR-5.22) was readable by
+  any student holding its id, though `select` never served it to them — it is
+  now its own student's only. `tests/test_answer_key.py`; three mutations fail it.
+  M06 and M13 send the secret.
 - ⬜ **EC-5.9's retraction is still not wired.** M06's ⚑ tells the student a
   flagged question "won't be picked for anyone again", which is true, and
   deliberately does not say the observations it produced were undone, because
