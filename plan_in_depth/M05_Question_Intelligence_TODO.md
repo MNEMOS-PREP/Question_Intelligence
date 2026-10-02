@@ -44,6 +44,11 @@ Both are covered by `tests/test_session_seam.py`, and both mutations fail it.
   flagged question "won't be picked for anyone again", which is true, and
   deliberately does not say the observations it produced were undone, because
   they are not.
+- ⬜ (standing, M06 review Part 5) `difficulty_offset` on `SelectionRequest`,
+  so a mode can lean a session harder or easier without M06 second-guessing
+  the CAT.
+- ⬜ (standing) Per-round-type counts on `/bank/health`. M06's plan-time probe
+  asks per round type, and a total hides a thin corner of the bank.
 
 ---
 
