@@ -34,6 +34,17 @@ Legend: ✅ done · 🟡 partly done · ⬜ not started
 
 Both are covered by `tests/test_session_seam.py`, and both mutations fail it.
 
+### 2026-10-02 — asks from M06
+
+- ⬜ **`POST /questions/{id}/flag` takes any caller.** There is no identity
+  guard, so anybody can exclude any item from selection. M06's ⚑ forwards the
+  student (`candidate_id` in the body) and M05 should check who is asking —
+  Platform_Core v0.10.0's `candidate_guard`; M05 is still on v0.6.0.
+- ⬜ **EC-5.9's retraction is still not wired.** M06's ⚑ tells the student a
+  flagged question "won't be picked for anyone again", which is true, and
+  deliberately does not say the observations it produced were undone, because
+  they are not.
+
 ---
 
 ## 0. Ideas and scouting
