@@ -314,8 +314,14 @@ def select(
 
     # §6.8 step 5's last resort before ending the round. The playlist exists so
     # an interview never stalls; it is 30 minutes of work and it is the only
-    # thing standing between a thin bank and dead air.
+    # thing standing between a thin bank and dead air. It still honours the
+    # one filter that is never relaxed: an item already asked in THIS session.
+    # Until 2026-10-06 it did not, and a student whose history covered the
+    # bank was asked the playlist's first item at the warm-up and again at
+    # every round after it — the silent repeat §2.4 names.
     for question in fallback_playlist or []:
+        if question.id in req.seen_item_ids:
+            continue
         if question.usable_in(req.round_type) and visible_to(question, req.candidate_id):
             params = parameters_for(question, req.round_type)
             candidate = Candidate(

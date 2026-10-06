@@ -145,6 +145,21 @@ def test_the_fallback_playlist_is_the_last_line(req):
     assert result.reason is SelectionReason.fallback
 
 
+def test_the_playlist_never_repeats_an_item_within_the_session(req):
+    """§6.6's hard filter holds at the last resort too. A live M06 run asked
+    the playlist's first item at the warm-up and again at the next round
+    (2026-10-06): the student's history had emptied the bank, and the playlist
+    ignored what this session had already asked."""
+    first = make_question(concept="concept:hashing")
+    second = make_question(concept="concept:recursion")
+    asked = req.model_copy(update={"seen_item_ids": {first.id}})
+    result = sel.select([], asked, fallback_playlist=[first, second])
+    assert result.question_id == second.id
+    spent = req.model_copy(update={"seen_item_ids": {first.id, second.id}})
+    with pytest.raises(sel.NoItemAvailable, match="admitting the bank is thin"):
+        sel.select([], spent, fallback_playlist=[first, second])
+
+
 # ── AC-5.14 · selection works with nothing calibrated ────────────────────
 
 
