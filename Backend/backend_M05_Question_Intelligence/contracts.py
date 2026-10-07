@@ -440,6 +440,12 @@ class SelectionRequest(BaseModel):
     #: re-test promise and M13's promise to a disputing student.
     forced_item_ids: list[UUID] = Field(default_factory=list)
     bypass_freshness: bool = False
+    #: 2026-10-07: drafted items (`provenance: generated`, not yet approved
+    #: for scored use) may be asked — answers to them are not scored (FR-5.6),
+    #: and the result says so (`scored_use`). Approved items are always
+    #: preferred when any fit; drafts are what keeps a thin track from asking
+    #: the same handful again.
+    allow_drafts: bool = False
 
     def theta_for(self, concept_id: str) -> float:
         return self.theta_provisional.get(concept_id, 0.0)
@@ -465,6 +471,9 @@ class SelectionResult(BaseModel):
     #: unannounced one is the complaint this module is named for.
     disclosure: str | None = None
     alternatives: list[UUID] = Field(default_factory=list)
+    #: False for a drafted item a person has not approved yet (FR-5.6): the
+    #: caller asks it, and does not score the answer.
+    scored_use: bool = True
 
 
 class StopReason(StrEnum):

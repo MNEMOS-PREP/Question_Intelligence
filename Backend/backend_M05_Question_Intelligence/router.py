@@ -24,6 +24,7 @@ from __future__ import annotations
 import logging
 import uuid
 
+import yaml
 from ai_core import service
 from ai_core.guard import candidate_guard, require_candidate
 from ai_core.identity import Principal, Role
@@ -254,6 +255,49 @@ def bank_health() -> dict:
             "cannot pass yet. Authoring is the long pole and it has no code dependency."
         ),
     }
+
+
+@router.get("/bank/tracks")
+def bank_tracks() -> dict:
+    """The interview tracks a student can pick (2026-10-07): one per round type
+    the bank holds items for — a track with no questions is never offered, so
+    picking one always gets an interview in it. Names come from
+    `bank/tracks.yaml`; counts say how many items are approved for scoring and
+    how many are drafts awaiting review (FR-5.6)."""
+    loaded = bank_module.load()
+    meta = yaml.safe_load((bank_module.BANK_DIR / "tracks.yaml").read_text(encoding="utf-8")) or {}
+    named = meta.get("tracks") or {}
+    groups = list(meta.get("groups") or [])
+    found: dict[str, dict] = {}
+    for question in loaded.questions:
+        if question.status.value != "active":
+            continue
+        for round_type in question.round_types:
+            entry = found.setdefault(
+                round_type, {"approved": 0, "drafts": 0, "concepts": set()}
+            )
+            entry["approved" if question.scored_use_approved else "drafts"] += 1
+            entry["concepts"].add(question.primary_concept)
+    tracks = []
+    for round_type, entry in found.items():
+        info = named.get(round_type) or {}
+        group = info.get("group") or "Other"
+        words = round_type.split("_")
+        tracks.append(
+            {
+                "round_type": round_type,
+                "title": info.get("title")
+                or " ".join(w.upper() if len(w) <= 3 else w.capitalize() for w in words),
+                "group": group,
+                "blurb": info.get("blurb") or "",
+                "approved": entry["approved"],
+                "drafts": entry["drafts"],
+                "concepts": len(entry["concepts"]),
+            }
+        )
+    order = {g: i for i, g in enumerate(groups)}
+    tracks.sort(key=lambda t: (order.get(t["group"], len(order)), t["title"]))
+    return {"groups": groups, "tracks": tracks}
 
 
 @router.post("/questions/{question_id}/flag")

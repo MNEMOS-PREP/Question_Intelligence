@@ -87,7 +87,7 @@ def test_every_seed_item_is_scorable(client):
 def test_the_package_matches_what_m13_parses(client):
     """M13's `adapters.QuestionPackage` declares `round_type` singular and
     `concepts` as a mapping. A contract is what the other side can parse."""
-    question = bank_module.load().questions[0]
+    question = next(q for q in bank_module.load().questions if "dsa_verbal" in q.round_types)
     body = client.get(
         f"/v1/questions/{question.id}/package",
         params={"round_type": "dsa_verbal"},

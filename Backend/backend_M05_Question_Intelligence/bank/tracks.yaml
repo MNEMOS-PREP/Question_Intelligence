@@ -1,0 +1,49 @@
+# =============================================================================
+#  INTERVIEW TRACKS — what a student can pick (2026-10-07)
+#
+#  One per round type. Which tracks EXIST is not decided here: `GET
+#  /v1/bank/tracks` offers a round type only when the bank holds items for it,
+#  so a track nobody has written questions for is never offered. This file
+#  only says what each one is called and how it is grouped on the setup page.
+#  No `items:` key, so the bank loader reads nothing from it.
+# =============================================================================
+
+groups: [Core CS, AI and ML, HR]
+
+tracks:
+  dsa_verbal:
+    title: Data structures and algorithms
+    group: Core CS
+    blurb: Arrays to graphs, out loud — why it works, what it costs, when it breaks.
+  os_verbal:
+    title: Operating systems
+    group: Core CS
+    blurb: Processes and threads, scheduling, memory, synchronisation, deadlocks.
+  dbms_verbal:
+    title: Databases (DBMS and SQL)
+    group: Core CS
+    blurb: Keys and normal forms, indexes, transactions, joins and query plans.
+  cn_verbal:
+    title: Computer networks
+    group: Core CS
+    blurb: The layers, TCP and UDP, DNS, HTTP, routing and congestion.
+  oop_verbal:
+    title: OOP and language fundamentals
+    group: Core CS
+    blurb: Classes and interfaces, polymorphism, memory and exceptions, design patterns.
+  systems_verbal:
+    title: Computer systems and practice
+    group: Core CS
+    blurb: Compilers, caches and the machine underneath, and engineering habits.
+  ml_verbal:
+    title: Machine learning
+    group: AI and ML
+    blurb: Framing a problem, metrics, overfitting, and the classic models' trade-offs.
+  dl_verbal:
+    title: Deep learning
+    group: AI and ML
+    blurb: Networks and backprop, CNNs, sequence models, transformers and LLMs.
+  behavioural:
+    title: HR and behavioural
+    group: HR
+    blurb: Your own experiences, told with a situation, what you did, and the result.

@@ -111,7 +111,7 @@ def eligible(
             continue
         if question.status is not ItemStatus.active:
             continue
-        if not question.scored_use_approved:
+        if not question.scored_use_approved and not req.allow_drafts:
             continue
         if question.quality.flagged_broken > 0:
             continue
@@ -252,6 +252,7 @@ def _result(
         params_source=params.params_source,
         disclosure=disclosure,
         alternatives=[q.id for q in alternatives],
+        scored_use=question.scored_use_approved,
     )
 
 
@@ -295,6 +296,11 @@ def select(
             )
 
     pool = eligible(bank, req)
+    # An approved item, when one fits, before any draft: a draft's answer is
+    # not scored, so it is what a thin track falls back on, never the first
+    # choice over a reviewed question.
+    approved = [q for q in pool if q.scored_use_approved]
+    pool = approved or pool
     if pool:
         ranked = rank(pool, req, last_concepts=last_concepts)
         return _result(ranked[0], req, alternatives=[c.question for c in ranked[1:3]])
