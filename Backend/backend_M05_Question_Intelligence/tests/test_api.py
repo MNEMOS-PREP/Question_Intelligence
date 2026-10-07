@@ -55,7 +55,7 @@ def test_the_module_runs_without_m04(client):
     module for weeks."""
     body = client.get("/v1/ontology").json()
     assert body["source"] == "snapshot"
-    assert body["n_concepts"] == 120
+    assert body["n_concepts"] == 156  # 120 + 36 for ML (2026-10-07)
 
 
 # ── the bank ─────────────────────────────────────────────────────────────
