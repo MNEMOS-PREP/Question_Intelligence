@@ -1,0 +1,996 @@
+# DRAFTED — dl_verbal. Written by jobs/draft_items.py with a model; NOT reviewed.
+# provenance: generated + scored_use_approved: false on every item: FR-5.6 needs a
+# person to approve an item before it counts toward a score. Practise only until then.
+
+items:
+  neural_network_basics__q1:
+    stem: In a multilayer perceptron, why do we place a non-linear activation after each linear layer
+      instead of stacking many linear layers alone?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:neural_network_basics
+      weight: 0.7
+    - id: concept:backpropagation
+      weight: 0.15
+    reference_answer: If you stack several linear layers without any non-linearity, the whole network
+      is still just a single linear map because matrix multiplication is associative; you can multiply
+      all weight matrices together into one. That means the model can only represent linear relationships,
+      no matter how deep it is. By inserting a non-linear activation—ReLU, sigmoid, tanh—after each linear
+      transform, the composition becomes a piecewise-non-linear function, dramatically expanding the hypothesis
+      space. This allows the network to learn complex patterns such as decision boundaries that are curved.
+      Moreover, activations introduce gradient variation that prevents all neurons from receiving identical
+      updates, which is essential for effective back-propagation.
+    key_points:
+    - id: kp_1
+      statement: A stack of only linear layers collapses to a single linear transformation, limiting expressiveness.
+      required: true
+    - id: kp_2
+      statement: Non-linear activations enable the network to approximate complex, non-linear functions.
+      required: true
+    - id: kp_3
+      statement: Activations also break symmetry during weight updates, helping back-propagation to learn
+        useful features.
+      required: false
+    hint_ladder:
+    - Think about the function space the network can represent.
+    - Consider what happens to gradients when only linear operations are used.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  neural_network_basics__q2:
+    stem: You notice the training loss of a small MLP decreasing but the validation loss staying flat.
+      What could be happening and how would you address it?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: intro
+    time_budget_s: 240
+    concepts:
+    - id: concept:neural_network_basics
+      weight: 0.7
+    - id: concept:optimisers
+      weight: 0.15
+    reference_answer: When the training loss keeps dropping but the validation loss plateaus, the network
+      is likely overfitting—learning patterns that exist only in the training set. The validation set,
+      which the model hasn't seen, shows no improvement because those patterns don’t generalise. To combat
+      this, you can reduce model capacity (fewer hidden units or layers), add regularisation such as L2
+      weight decay or dropout, or augment the training data to increase diversity. Early stopping based
+      on validation loss is another practical fix. Simply tweaking the optimizer or learning rate won’t
+      solve the core issue unless it indirectly reduces over-fitting.
+    key_points:
+    - id: kp_1
+      statement: 'The model is overfitting: it memorises training data while failing to generalise.'
+      required: true
+    - id: kp_2
+      statement: Possible remedies include adding regularisation (L2, dropout), gathering more data, or
+        reducing model capacity.
+      required: true
+    - id: kp_3
+      statement: Adjusting the learning rate or optimizer alone does not directly fix a flat validation
+        loss.
+      required: false
+    hint_ladder:
+    - Think about the gap between training and validation performance.
+    - What regularisation or data-related techniques can close that gap?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  backpropagation__q1:
+    stem: During training you notice that after a few epochs the loss plateaus and the gradients for the
+      earlier layers become extremely small. What is happening in the backpropagation process, and how
+      can you address it?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:backpropagation
+      weight: 0.7
+    - id: concept:optimisers
+      weight: 0.15
+    reference_answer: When the loss stops improving and the earlier layers receive near-zero gradients,
+      the network is suffering from the vanishing gradient problem. In backpropagation each layer’s gradient
+      is the product of the local derivative and the gradient from the next layer; if many of those local
+      derivatives are less than one—common with sigmoid or tanh— the product shrinks exponentially as
+      it moves backward, leaving the first layers unable to learn. To fix it, you can replace saturating
+      activations with ReLU-like functions, add residual or skip connections, use He/Xavier initialization,
+      or insert batch-norm layers. These changes keep the gradient magnitude larger, allowing the whole
+      network to keep updating effectively.
+    key_points:
+    - id: kp_1
+      statement: The vanishing gradient problem arises because repeated multiplication of derivatives
+        (often <1) across many layers shrinks the gradient signal.
+      required: true
+    - id: kp_2
+      statement: Using activation functions with better gradient flow (e.g., ReLU) or employing residual
+        connections can mitigate the issue.
+      required: true
+    - id: kp_3
+      statement: Alternative strategies include careful weight initialization, batch normalization, or
+        switching to architectures like LSTM/ResNet that preserve gradients.
+      required: false
+    - id: kp_4
+      statement: Adjusting the learning rate alone will not solve vanishing gradients if the chain-rule
+        product is near zero.
+      required: false
+    hint_ladder:
+    - Think about how the chain rule propagates error through many layers.
+    - What architectural tweaks help preserve gradient magnitude?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  backpropagation__q2:
+    stem: Explain why, in a computational graph, backpropagation computes the gradient of the loss with
+      respect to each parameter only once, and what would happen if you naïvely recomputed gradients for
+      each node separately.
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:backpropagation
+      weight: 0.7
+    - id: concept:neural_network_basics
+      weight: 0.15
+    reference_answer: Backpropagation treats the computational graph as a directed acyclic graph and applies
+      the chain rule in a reverse topological order. When it reaches a node, it has already computed the
+      gradient of the loss with respect to that node’s output, so it can multiply by the local derivative
+      and store the result. Because each node’s gradient is saved, any upstream node that depends on it
+      can reuse the same value instead of recomputing it. This dynamic-programming approach makes the
+      overall cost proportional to the number of edges. If you naïvely recomputed the gradient for every
+      parent separately, you would revisit the same sub-graph many times, causing exponential time growth
+      and unnecessary memory overhead, which is why backpropagation’s single-pass reuse is essential.
+    key_points:
+    - id: kp_1
+      statement: 'Backpropagation uses dynamic programming: each node stores its local gradient and reuses
+        it for all upstream dependencies, ensuring each partial derivative is computed once.'
+      required: true
+    - id: kp_2
+      statement: Re-computing gradients per node would lead to exponential time complexity because the
+        same sub-graph would be visited many times.
+      required: true
+    - id: kp_3
+      statement: The reuse of intermediate gradients is what makes the algorithm linear in the number
+        of edges of the graph.
+      required: false
+    - id: kp_4
+      statement: Without this reuse, memory usage would also explode due to repeated storage of intermediate
+        results.
+      required: false
+    hint_ladder:
+    - Recall the concept of dynamic programming in graph algorithms.
+    - Consider the number of times a shared sub-expression would be evaluated without caching.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  optimisers__q1:
+    stem: You notice that during training a CNN the loss plateaus after a few epochs when using plain
+      SGD, but switching to Adam speeds up convergence. Explain why Adam can overcome this plateau.
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:optimisers
+      weight: 0.7
+    - id: concept:gradient_descent
+      weight: 0.15
+    - id: concept:training_deep_networks
+      weight: 0.15
+    reference_answer: Adam combines momentum and RMS-prop ideas. It keeps an exponential moving average
+      of the gradients (first moment) and of the squared gradients (second moment). By dividing the momentum-corrected
+      gradient by the square-root of the corrected second moment, each weight gets its own adaptive step
+      size. Early in training the bias-correction terms make these estimates reliable, so parameters with
+      tiny gradients receive larger updates, while those with large gradients are dampened. This adaptive
+      scaling lets Adam escape flat regions where plain SGD, with a single global learning rate, would
+      stall, thus accelerating convergence on the CNN.
+    key_points:
+    - id: kp_1
+      statement: Adam adapts individual learning rates per parameter using first-moment (mean) and second-moment
+        (uncentered variance) estimates.
+      required: true
+    - id: kp_2
+      statement: The momentum-like term helps smooth noisy gradients, allowing the optimizer to move through
+        shallow regions where SGD may get stuck.
+      required: true
+    - id: kp_3
+      statement: Bias-correction terms prevent the moments from being biased toward zero in early steps,
+        giving a more accurate step size early on.
+      required: false
+    - id: kp_4
+      statement: Adam’s effective learning rate can be larger for parameters with small gradients, preventing
+        the plateau caused by uniformly small updates in SGD.
+      required: true
+    hint_ladder:
+    - Think about how Adam modifies the learning rate per parameter.
+    - Recall the role of momentum and the variance estimate.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  optimisers__q2:
+    stem: In a production LLM service you observe sudden spikes in validation loss after a recent deployment,
+      even though training loss remains low. What optimizer-related issues could cause this, and how would
+      you debug them?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:optimisers
+      weight: 0.7
+    - id: concept:large_language_models
+      weight: 0.15
+    - id: concept:ml_deployment_and_monitoring
+      weight: 0.15
+    reference_answer: Two common optimizer-related culprits are a bad learning-rate schedule and stale
+      optimizer state. If the warm-up or decay schedule was changed or omitted during the last deployment,
+      the model may take too large steps on new data, causing the validation loss to jump while training
+      loss stays low because the model still fits the recent minibatches. Likewise, Adam stores momentum
+      and variance buffers; re-using a checkpoint without resetting these buffers can give incorrect adaptive
+      steps, especially after a domain shift. To debug, I would first verify the learning-rate schedule
+      used at inference time, then reload the checkpoint with fresh optimizer state or explicitly zero-out
+      the moments, and finally plot gradient norms and effective learning rates on a validation batch
+      to confirm the fix.
+    key_points:
+    - id: kp_1
+      statement: A mismatched learning-rate schedule (e.g., forgetting to reset or using a too-high warm-up)
+        can cause over-fitting to recent mini-batches, inflating validation loss.
+      required: true
+    - id: kp_2
+      statement: Stateful optimizers like Adam retain moment estimates; if the optimizer state is inadvertently
+        reused across fine-tuning runs, stale moments can lead to inappropriate step sizes.
+      required: true
+    - id: kp_3
+      statement: Checking the optimizer checkpoint for correct hyper-parameters and re-initialising moments
+        if needed is a primary debugging step.
+      required: false
+    - id: kp_4
+      statement: Monitoring gradient norms and learning-rate values during inference can reveal if the
+        optimizer is still being applied inadvertently.
+      required: false
+    hint_ladder:
+    - Consider what parts of Adam persist beyond a single epoch.
+    - Think about how learning-rate schedules are handled during fine-tuning vs. inference.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  training_deep_networks__q1:
+    stem: In a deep CNN you notice training loss decreasing but validation loss starts increasing after
+      a few epochs; what mechanisms can you employ to diagnose and mitigate this behavior?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:training_deep_networks
+      weight: 0.7
+    - id: concept:optimisers
+      weight: 0.15
+    - id: concept:regularisation
+      weight: 0.15
+    reference_answer: 'When validation loss climbs while training loss still falls, the model is overfitting
+      the training set. The first step is to stop training early—track validation loss and halt when it
+      stops improving. Next, increase regularisation: add dropout layers to randomly deactivate neurons,
+      or apply L2 weight decay to penalise large weights. Reducing model capacity, such as fewer filters
+      or layers, also helps. Finally, check training dynamics: batch normalization can keep activations
+      in a stable range and prevent hidden exploding or vanishing gradients, and proper weight initialization
+      ensures gradients start in a useful scale. Together these steps curb overfitting and stabilise learning.'
+    key_points:
+    - id: kp_1
+      statement: Identifies overfitting as the primary cause of rising validation loss while training
+        loss continues to drop.
+      required: true
+    - id: kp_2
+      statement: Mentions early stopping to halt training when validation loss stops improving.
+      required: true
+    - id: kp_3
+      statement: Suggests adding regularisation such as dropout or weight decay to reduce model capacity.
+      required: false
+    - id: kp_4
+      statement: Recommends monitoring gradient norms or using batch normalization to stabilise training
+        and avoid hidden exploding/vanishing gradients.
+      required: false
+    hint_ladder:
+    - Think about what the gap between training and validation indicates.
+    - Consider both model capacity and training dynamics.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  training_deep_networks__q2:
+    stem: During back-propagation you observe that gradients in the early layers are near zero while later
+      layers have large updates; explain why this happens and what initialization or architectural tricks
+      can alleviate it.
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:training_deep_networks
+      weight: 0.7
+    - id: concept:backpropagation
+      weight: 0.15
+    - id: concept:optimisers
+      weight: 0.15
+    reference_answer: 'The phenomenon arises because each layer’s gradient is the product of the next
+      layer’s gradient and the local derivative. If the weights are small or activations saturate, those
+      derivatives are < 1, so multiplying many of them drives the gradient toward zero in the first layers
+      – the vanishing gradient problem. Conversely, large weights produce derivatives > 1, causing exploding
+      gradients in deeper layers. Proper weight initialization fixes the scale: Xavier (Glorot) initialization
+      for sigmoid/tanh activations and He initialization for ReLU keep the variance of activations and
+      gradients roughly constant across layers. Adding batch normalization also normalises activations,
+      preventing saturation, and residual connections give shortcuts for gradients, both helping gradient
+      flow.'
+    key_points:
+    - id: kp_1
+      statement: Explains that repeated multiplication of derivatives less than one causes vanishing gradients
+        in early layers.
+      required: true
+    - id: kp_2
+      statement: Describes how large weight magnitudes can lead to exploding gradients in deeper layers.
+      required: true
+    - id: kp_3
+      statement: Recommends using He or Xavier initialization to keep activation variances balanced across
+        layers.
+      required: true
+    - id: kp_4
+      statement: Mentions batch normalization or residual connections as architectural ways to preserve
+        gradient flow.
+      required: false
+    hint_ladder:
+    - Recall how repeated multiplication of small derivatives affects earlier layers.
+    - Think about the role of weight scale at the start of training.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  convolutional_networks__q1:
+    stem: In a CNN you notice that after adding a second convolutional layer, the training loss stops
+      decreasing while validation loss keeps improving; what could be happening and how would you verify
+      it?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:convolutional_networks
+      weight: 0.7
+    - id: concept:backpropagation
+      weight: 0.15
+    - id: concept:training_deep_networks
+      weight: 0.15
+    reference_answer: When the second convolutional layer is added, the model starts learning higher-level
+      representations. If the training loss plateaus while validation loss still drops, it often means
+      the new layer is learning useful features but the earlier layers are no longer being updated effectively
+      – either because gradients are diminishing or the learning rate is too low for deeper weights. To
+      confirm, I would plot the gradient norms of each layer, visualise the activation maps of the first
+      and second conv layers on a few samples, and check if the earlier layers’ weights are changing.
+      If gradients are tiny, I might add batch-norm or residual links, or warm-up the learning rate. If
+      the layers are simply redundant, I could prune or reduce depth.
+    key_points:
+    - id: kp_1
+      statement: The network may be over-parameterised, causing the earlier layers to learn redundant
+        features while deeper layers capture more abstract patterns.
+      required: true
+    - id: kp_2
+      statement: Training loss stagnation can stem from vanishing gradients or learning-rate issues in
+        deeper layers.
+      required: true
+    - id: kp_3
+      statement: Verification steps include visualising feature maps of each layer, checking gradient
+        magnitudes, and possibly reducing depth or adding residual connections.
+      required: true
+    hint_ladder:
+    - Think about what each layer learns and how gradients flow.
+    - Consider visualising activations or checking weight updates.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  convolutional_networks__q2:
+    stem: Your team wants to replace a large fully-connected classifier at the end of a CNN with a global
+      average pooling layer; what trade-offs does this involve and when is it advantageous?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:convolutional_networks
+      weight: 0.7
+    - id: concept:optimisers
+      weight: 0.15
+    - id: concept:transfer_learning
+      weight: 0.15
+    reference_answer: Replacing the dense head with global average pooling cuts the parameter count from
+      millions to a few thousand, which reduces over-fitting and speeds up training, especially on limited
+      data. It also makes the model more lightweight for deployment. However, GAP collapses each feature
+      map to a single number, so any spatial cues that the fully-connected layer could exploit are lost
+      – this can hurt tasks like object detection or fine-grained classification. In practice, when fine-tuning
+      a pretrained ImageNet model for classification on a modest dataset, GAP is often beneficial because
+      the convolutional backbone already encodes strong semantic maps and the reduced head simplifies
+      optimisation. If you need precise localisation, you’d keep a small dense head or add attention mechanisms
+      instead.
+    key_points:
+    - id: kp_1
+      statement: Global average pooling drastically reduces the number of parameters, lowering over-fitting
+        risk and memory footprint.
+      required: true
+    - id: kp_2
+      statement: It discards spatial location details, which can hurt performance on tasks needing fine-grained
+        localization.
+      required: true
+    - id: kp_3
+      statement: Using GAP aligns well with transfer-learning from models trained on ImageNet, as the
+        preceding convolutional features are already spatially aggregated.
+      required: false
+    - id: kp_4
+      statement: Training may become faster and more stable because fewer weights need to be optimised,
+        but the model may lose capacity to learn complex decision boundaries.
+      required: false
+    hint_ladder:
+    - Compare parameter count and spatial information retention.
+    - Think about how this change interacts with pretrained models.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  sequence_models__q1:
+    stem: You are debugging a language-model RNN that suddenly starts producing repetitive loops after
+      a few timesteps; what could be causing this behavior and how would you diagnose and fix it?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:sequence_models
+      weight: 0.7
+    - id: concept:backpropagation
+      weight: 0.15
+    - id: concept:optimisers
+      weight: 0.15
+    reference_answer: When an RNN begins to repeat the same token over and over, the most common culprit
+      is that gradients are either vanishing or exploding, so the network can’t learn long-range dependencies.
+      I would first look at the gradient norms during training – if they are near zero or blowing up,
+      that confirms the problem. Applying gradient clipping helps with exploding gradients, but for vanishing
+      gradients the architecture needs more memory, so I’d switch to LSTM or GRU cells, maybe add residual
+      connections, and ensure proper initialization. After the change I’d re-track hidden-state statistics
+      and the loss curve to see the repetitions disappear.
+    key_points:
+    - id: kp_1
+      statement: Identifies vanishing or exploding gradients as a root cause of loss of information over
+        long sequences.
+      required: true
+    - id: kp_2
+      statement: Mentions checking gradient norms or using gradient clipping to confirm the issue.
+      required: true
+    - id: kp_3
+      statement: Proposes replacing plain RNN cells with LSTM/GRU or adding residual connections to mitigate
+        the problem.
+      required: true
+    - id: kp_4
+      statement: Suggests monitoring hidden-state activations or loss curves to verify the fix.
+      required: false
+    hint_ladder:
+    - Think about how information propagates through time steps.
+    - What diagnostics show the health of gradients?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  sequence_models__q2:
+    stem: In a production speech-to-text pipeline you replace a vanilla RNN with a bidirectional LSTM;
+      what trade-offs does this introduce in terms of latency, accuracy, and resource usage?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:sequence_models
+      weight: 0.7
+    - id: concept:ml_deployment_and_monitoring
+      weight: 0.15
+    reference_answer: A bidirectional LSTM looks at the whole sequence, so it can correct mistakes that
+      a forward-only RNN would miss, typically improving the word-error rate by a few percent. However,
+      it doubles the hidden-state size, so you end up with roughly twice the parameters and compute, which
+      raises memory usage and power draw. More importantly, you can’t emit a transcription until the backward
+      pass has seen the end of the audio, so latency grows by the length of the utterance or the chosen
+      chunk size. In a real-time service you’d have to trade that accuracy gain for added delay, perhaps
+      by using streaming-friendly approximations, pruning, or quantisation to keep the resource budget
+      in check.
+    key_points:
+    - id: kp_1
+      statement: Explains that bidirectional LSTMs see future context, usually boosting word-error rate.
+      required: true
+    - id: kp_2
+      statement: Notes that processing both directions doubles the number of parameters and compute, increasing
+        memory and CPU/GPU load.
+      required: true
+    - id: kp_3
+      statement: 'Describes the latency impact: you must wait for the entire utterance before the backward
+        pass can finish, which adds end-to-end delay.'
+      required: true
+    - id: kp_4
+      statement: Mentions possible mitigations such as chunked streaming or model pruning to keep latency
+        acceptable.
+      required: false
+    hint_ladder:
+    - Consider what information the backward direction needs.
+    - Think about what changes when you double hidden units.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  embeddings__q1:
+    stem: In a sentiment analysis model you notice that the word "great" and "terrible" have very close
+      embedding vectors after training. Why might this happen and how would you address it?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:embeddings
+      weight: 0.7
+    - id: concept:training_deep_networks
+      weight: 0.15
+    reference_answer: If "great" and "terrible" end up close, it usually means the model hasn't seen enough
+      contrasting contexts or the loss isn’t penalising that similarity. An imbalanced corpus where positive
+      and negative examples share many surrounding words can push the vectors together. To fix it, you
+      could augment the data with more balanced sentiment examples, switch to a pretrained embedding that
+      already captures polarity, or add a regulariser like a contrastive or triplet loss that explicitly
+      pushes opposite-sentiment words apart. Also double-check that the labels are correct and that the
+      loss function is appropriate for classification.
+    key_points:
+    - id: kp_1
+      statement: Explains that embeddings are learned from co-occurrence statistics and may collapse opposite
+        sentiment words if the training data is imbalanced or noisy.
+      required: true
+    - id: kp_2
+      statement: Mentions possible remedies such as increasing data diversity, using pretrained sentiment-aware
+        embeddings, or adding a contrastive loss/regularisation.
+      required: true
+    - id: kp_3
+      statement: Notes that checking the loss function and label quality can reveal why the model is not
+        separating polarity.
+      required: false
+    hint_ladder:
+    - Think about how the training data distribution influences vector positions.
+    - What extra signal could you give the model to separate opposite meanings?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  embeddings__q2:
+    stem: During inference a recommendation system uses an embedding layer to map user IDs to vectors,
+      but you observe that a newly added user gets a zero vector and no recommendations. What is happening
+      and how can you fix it?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: intro
+    time_budget_s: 150
+    concepts:
+    - id: concept:embeddings
+      weight: 0.7
+    - id: concept:ml_deployment_and_monitoring
+      weight: 0.15
+    reference_answer: The zero vector means the system is looking up an ID that never got a learned embedding
+      – the user was absent from the training set, so the embedding table returns its default entry, usually
+      all zeros. To resolve this you can allocate a new row for the user and initialise it (randomly or
+      with the mean of existing user vectors), or apply a cold-start method that derives a vector from
+      the user’s profile or similar users. In production you should also add a guard that detects unseen
+      IDs and triggers the fallback logic rather than silently returning zeros.
+    key_points:
+    - id: kp_1
+      statement: Identifies that the new user ID was not present in the embedding matrix at training time,
+        so the lookup returns the default (often zero) vector.
+      required: true
+    - id: kp_2
+      statement: Suggests solutions such as initializing a fresh embedding for the new ID, using a cold-start
+        strategy (e.g., averaging similar users or metadata), or retraining/updating the embedding table.
+      required: true
+    - id: kp_3
+      statement: Mentions the need to handle unseen IDs in production pipelines to avoid silent failures.
+      required: false
+    hint_ladder:
+    - What does an embedding layer do when it receives an index it never saw?
+    - Consider practical ways to generate a vector for a brand-new entity.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  attention_and_transformers__q1:
+    stem: In a transformer encoder, why does multi-head self-attention improve representation learning
+      compared to a single attention head?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:attention_and_transformers
+      weight: 0.7
+    - id: concept:embeddings
+      weight: 0.15
+    - id: concept:sequence_models
+      weight: 0.15
+    reference_answer: Multi-head attention splits the model dimension into several smaller heads, each
+      with its own linear projections for queries, keys and values. Because each head operates in a different
+      learned sub-space, it can attend to distinct patterns—one head might capture short-range syntactic
+      dependencies, another long-range semantic links. The outputs of all heads are concatenated and linearly
+      transformed back to the original dimension, so the model retains the full representational capacity
+      while benefiting from multiple perspectives. A single head would need a much larger dimension to
+      encode the same variety, which is less efficient and gives weaker gradient flow for learning diverse
+      features.
+    key_points:
+    - id: kp_1
+      statement: Each head projects the same input into a different sub-space, allowing the model to capture
+        multiple types of relationships (e.g., syntactic, semantic) in parallel.
+      required: true
+    - id: kp_2
+      statement: The concatenated outputs preserve the original dimensionality while aggregating diverse
+        information, which a single head cannot achieve without increasing dimension.
+      required: true
+    - id: kp_3
+      statement: Multi-head attention also provides a richer gradient signal during back-propagation,
+        helping earlier layers learn more robust embeddings.
+      required: false
+    hint_ladder:
+    - Think about the dimensionality of queries/keys/values and the diversity of sub-spaces.
+    - Consider what each head can focus on simultaneously.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  attention_and_transformers__q2:
+    stem: During inference you notice that a transformer-based language model generates repetitive text
+      after a few sentences. What could be causing this behaviour and how would you mitigate it?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:attention_and_transformers
+      weight: 0.7
+    - id: concept:large_language_models
+      weight: 0.15
+    - id: concept:ml_deployment_and_monitoring
+      weight: 0.15
+    reference_answer: The model is likely over-confident on a narrow set of next-token probabilities,
+      so after a few steps it keeps picking the same high-probability tokens, leading to loops. This can
+      stem from exposure bias during training or from aggressive decoding settings like a low temperature
+      or greedy decoding. To fix it, you can raise the temperature, switch to stochastic decoding such
+      as top-k or nucleus (top-p) sampling, and optionally add a repetition penalty that discounts logits
+      of tokens that appeared in the recent window. In production you would also monitor the distribution
+      of logits and adjust these hyper-parameters to keep the output diverse.
+    key_points:
+    - id: kp_1
+      statement: Repetition often arises from a high probability mass on a small set of tokens, caused
+        by exposure bias or a low temperature during sampling.
+      required: true
+    - id: kp_2
+      statement: Mitigation strategies include increasing sampling temperature, applying nucleus (top-p)
+        or top-k sampling, or adding a repetition penalty that reduces logits for recently generated tokens.
+      required: true
+    - id: kp_3
+      statement: Monitoring token-level statistics in production can help detect and tune these hyper-parameters
+        before deployment.
+      required: false
+    hint_ladder:
+    - Recall how the model’s probability distribution is sampled.
+    - Think about the role of attention scores and token logits in generating the next token.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  transfer_learning__q1:
+    stem: You have a small dataset of medical images for a rare disease. How would you use a pretrained
+      convolutional network to improve performance, and what are the key decisions you must make during
+      fine-tuning?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:transfer_learning
+      weight: 0.7
+    - id: concept:convolutional_networks
+      weight: 0.15
+    - id: concept:backpropagation
+      weight: 0.15
+    reference_answer: I would start with a model like ResNet-50 that’s been trained on ImageNet. First
+      I replace its final fully-connected layer with a new head sized for the number of disease classes.
+      Then I freeze the early convolutional blocks—those capture generic edges and textures—and only fine-tune
+      the later blocks and the new head. I use a small learning rate (e.g., 1e-4) for the frozen-to-unfrozen
+      transition and a slightly higher rate for the new head, often with a learning-rate scheduler. Because
+      the dataset is tiny, I add aggressive augmentation (rotation, scaling, contrast) and monitor validation
+      loss to stop early. This approach leverages the rich low-level features from the large source domain
+      while adapting higher-level representations to the medical images.
+    key_points:
+    - id: kp_1
+      statement: Chooses a model pretrained on a large, related domain (e.g., ImageNet) and replaces the
+        final classification head with one matching the medical task.
+      required: true
+    - id: kp_2
+      statement: Explains freezing early layers to retain generic feature extractors while fine-tuning
+        later layers to adapt to domain-specific patterns.
+      required: true
+    - id: kp_3
+      statement: Mentions using a lower learning rate for pretrained layers and a higher rate for the
+        new head to avoid destroying learned weights.
+      required: true
+    - id: kp_4
+      statement: Notes additional tricks such as data augmentation, regularisation, or early stopping
+        to compensate for limited data.
+      required: false
+    hint_ladder:
+    - Think about which layers to freeze and which to train.
+    - Consider learning-rate adjustments and data augmentation.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  transfer_learning__q2:
+    stem: During production you notice a pretrained language model’s predictions drifting after a month
+      of new user queries. What could be causing this, and how would you address it using transfer-learning
+      techniques?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:transfer_learning
+      weight: 0.7
+    - id: concept:large_language_models
+      weight: 0.15
+    - id: concept:ml_deployment_and_monitoring
+      weight: 0.15
+    reference_answer: 'The most likely cause is a distribution shift: users are asking about topics, slang,
+      or entities that weren’t common when the model was originally fine-tuned. To fix it, I would pull
+      a recent, representative sample of queries, label a small set with the correct intents or responses,
+      and fine-tune the pretrained transformer on this data. I’d freeze the lower-level attention layers—since
+      they capture basic language structure—and only train the top-few transformer blocks plus the task-specific
+      head, using a modest learning rate to prevent forgetting. After fine-tuning, I’d run an A/B test
+      and track metrics like accuracy and latency to ensure the updated model restores performance without
+      harming earlier cases.'
+    key_points:
+    - id: kp_1
+      statement: Identifies data distribution shift (new vocabulary, topics, or user behaviour) as the
+        root cause of drift.
+      required: true
+    - id: kp_2
+      statement: Proposes collecting a recent, labeled subset of user queries for continued fine-tuning.
+      required: true
+    - id: kp_3
+      statement: Recommends freezing most of the transformer layers and updating only the top few layers
+        or a task-specific head to avoid catastrophic forgetting.
+      required: true
+    - id: kp_4
+      statement: Describes setting up a monitoring pipeline (e.g., performance metrics, A/B test) to validate
+        that the adapted model improves the drift without degrading earlier behavior.
+      required: false
+    hint_ladder:
+    - Think about data distribution shift and model adaptation.
+    - Consider what parts of the model you would update and how you would validate changes.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  large_language_models__q1:
+    stem: In a retrieval-augmented generation (RAG) pipeline, why does adding a vector store improve factual
+      accuracy compared to using the LLM alone?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:large_language_models
+      weight: 0.7
+    - id: concept:embeddings
+      weight: 0.15
+    reference_answer: A vector store holds embeddings of external documents that can be queried at inference
+      time. Because the LLM’s weights are frozen after pre-training, it only knows what was present in
+      its training data, which quickly becomes stale. By encoding the query, retrieving the nearest document
+      vectors, and feeding those passages into the prompt, the model can ground its response in up-to-date
+      facts. This reduces hallucination and improves factual correctness, though the final answer still
+      depends on how well the prompt merges the retrieved text with the model’s generation capability.
+    key_points:
+    - id: kp_1
+      statement: The vector store provides up-to-date external knowledge that the LLM’s static parameters
+        may not contain.
+      required: true
+    - id: kp_2
+      statement: Similarity search retrieves the most relevant documents, reducing hallucination by grounding
+        the generation.
+      required: true
+    - id: kp_3
+      statement: The LLM still needs to fuse retrieved passages, so prompt design and the model’s reasoning
+        ability affect final accuracy.
+      required: false
+    hint_ladder:
+    - Think about what information the model has baked into its weights versus what can be looked up at
+      run time.
+    - Recall how similarity search works with embeddings.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  large_language_models__q2:
+    stem: During fine-tuning a 7-billion-parameter LLM on a domain-specific dataset, you notice the loss
+      plateaus early. What are three possible reasons and how would you address each?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:large_language_models
+      weight: 0.7
+    - id: concept:optimisers
+      weight: 0.15
+    - id: concept:training_deep_networks
+      weight: 0.15
+    reference_answer: One common cause is an inappropriate learning rate – a high LR can cause the optimizer
+      to jump over minima, while a very low LR stalls progress. I would experiment with a smaller LR,
+      add a warm-up phase, or switch to a cosine decay schedule. Second, the fine-tuning corpus might
+      be too tiny or homogeneous, giving the model insufficient signal; I’d enlarge the dataset, apply
+      augmentation, or increase batch size to improve gradient estimates. Third, aggressive regularisation
+      such as high weight decay or full-parameter fine-tuning can lead to catastrophic forgetting; switching
+      to low-rank adapters or reducing weight decay lets the model retain its general knowledge while
+      adapting to the new domain.
+    key_points:
+    - id: kp_1
+      statement: Learning rate is too high or too low; adjust schedule or try a smaller base LR with warm-up.
+      required: true
+    - id: kp_2
+      statement: Dataset is too small or lacks diversity; augment data or increase batch size to provide
+        richer gradients.
+      required: true
+    - id: kp_3
+      statement: Catastrophic forgetting or over-regularisation; reduce weight decay or use a lower-rank
+        adapter instead of full fine-tuning.
+      required: true
+    hint_ladder:
+    - Consider optimizer hyper-parameters and regularisation first.
+    - What aspects of the data itself could limit learning?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  ml_deployment_and_monitoring__q1:
+    stem: You notice a sudden drop in prediction accuracy of a deployed model after a week in production;
+      what steps would you take to diagnose and remediate the issue?
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:ml_deployment_and_monitoring
+      weight: 0.7
+    reference_answer: First, I would look at the monitoring dashboard to see if any alerts have fired—especially
+      data-drift or concept-drift metrics like population stability index or KL divergence. I’d pull a
+      sample of recent request payloads and compare feature distributions to the training set, using histograms
+      or statistical tests. If the features have shifted, that points to drift; if the model’s confidence
+      scores have changed without feature shift, I’d suspect concept drift or a model-version issue. I’d
+      also verify infrastructure health—CPU, memory, latency spikes, or container restarts. Depending
+      on the root cause, I might retrain the model on the newest data, enable incremental updates, roll
+      back to the previous stable version, and tighten alerts to catch future drifts earlier.
+    key_points:
+    - id: kp_1
+      statement: Checks real-time monitoring dashboards for data drift, feature distribution changes,
+        and prediction latency.
+      required: true
+    - id: kp_2
+      statement: Compares recent input feature statistics with training set statistics using statistical
+        tests or visualizations.
+      required: true
+    - id: kp_3
+      statement: Identifies whether the drop is due to data drift, concept drift, or infrastructure issues
+        (e.g., increased latency, container restarts).
+      required: true
+    - id: kp_4
+      statement: 'Proposes remediation: retrain with recent data, implement incremental learning, add
+        alerts, or roll back to a stable version.'
+      required: true
+    hint_ladder:
+    - Think about data that the model sees versus the data it was trained on.
+    - Consider both monitoring metrics and possible model-side actions.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  ml_deployment_and_monitoring__q2:
+    stem: Explain the trade-offs between batch inference and real-time serving for a recommendation model,
+      and when you would choose one over the other.
+    modality: verbal
+    round_types:
+    - dl_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:ml_deployment_and_monitoring
+      weight: 0.7
+    - id: concept:large_language_models
+      weight: 0.15
+    reference_answer: Batch inference runs on a schedule—say nightly—generating a static set of recommendations
+      that are stored in a cache. It’s cheap because you can use spot instances or GPUs in bulk, and monitoring
+      is straightforward since you only need to track job success and data freshness. However, the recommendations
+      can be stale and can’t react to a user’s immediate behavior. Real-time serving, on the other hand,
+      invokes the model for each request, delivering up-to-the-second personalization. This requires low-latency
+      APIs, autoscaling, and more sophisticated monitoring of latency, error rates, and model drift. It
+      also costs more due to always-on compute. I’d pick batch for use-cases like daily email newsletters
+      or pre-computed rankings where a few-hour lag is acceptable, and real-time for in-app suggestions,
+      search re-ranking, or any scenario where the user’s current context dramatically changes the optimal
+      result.
+    key_points:
+    - id: kp_1
+      statement: Describes batch inference as periodic, cost-effective, suitable for cold-start or offline
+        recommendation generation.
+      required: true
+    - id: kp_2
+      statement: Describes real-time serving as low-latency, on-demand inference that can incorporate
+        the latest user context.
+      required: true
+    - id: kp_3
+      statement: 'Discusses trade-offs: batch has higher latency but lower compute cost and simpler monitoring;
+        real-time has higher infrastructure complexity, need for autoscaling, and tighter SLAs.'
+      required: true
+    - id: kp_4
+      statement: 'Provides a decision rule: choose batch when recommendations can be stale (e.g., nightly
+        email digests) and real-time when personalization must reflect immediate user actions (e.g., in-app
+        suggestions).'
+      required: true
+    hint_ladder:
+    - Consider latency requirements, cost, and freshness of recommendations.
+    - Think about how the serving architecture impacts scaling and monitoring.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'

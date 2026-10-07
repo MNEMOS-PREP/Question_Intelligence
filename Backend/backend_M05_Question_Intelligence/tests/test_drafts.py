@@ -80,3 +80,6 @@ def test_the_tracks_route_offers_only_what_the_bank_can_ask(client):
         assert track["approved"] + track["drafts"] > 0, "a track with nothing to ask"
         assert track["title"] and track["group"] in body["groups"] + ["Other"]
     assert offered["dsa_verbal"]["approved"] >= 1
+    assert offered["dsa_verbal"]["kind"] == "technical"
+    if "behavioural" in offered:
+        assert offered["behavioural"]["kind"] == "behavioural"

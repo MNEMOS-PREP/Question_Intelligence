@@ -4,7 +4,9 @@
 #  One per round type. Which tracks EXIST is not decided here: `GET
 #  /v1/bank/tracks` offers a round type only when the bank holds items for it,
 #  so a track nobody has written questions for is never offered. This file
-#  only says what each one is called and how it is grouped on the setup page.
+#  only says what each one is called and how it is grouped on the setup page,
+#  and — `kind`, technical unless it says otherwise — which kind of
+#  interviewer runs it.
 #  No `items:` key, so the bank loader reads nothing from it.
 # =============================================================================
 
@@ -46,4 +48,6 @@ tracks:
   behavioural:
     title: HR and behavioural
     group: HR
+    # Who runs it: M06 seats an HR interviewer for a behavioural part.
+    kind: behavioural
     blurb: Your own experiences, told with a situation, what you did, and the result.

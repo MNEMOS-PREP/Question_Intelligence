@@ -1,0 +1,1095 @@
+# DRAFTED — os_verbal. Written by jobs/draft_items.py with a model; NOT reviewed.
+# provenance: generated + scored_use_approved: false on every item: FR-5.6 needs a
+# person to approve an item before it counts toward a score. Practise only until then.
+
+items:
+  process_vs_thread__q1:
+    stem: In a web server you notice that each incoming request creates a new process rather than a thread,
+      leading to high memory usage. Why does using a thread generally consume fewer resources than a process?
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:process_vs_thread
+      weight: 0.7
+    - id: concept:memory_management
+      weight: 0.15
+    reference_answer: Threads are lighter because they live inside a single process. They share the same
+      virtual address space, code segment, global variables and open file descriptors, so the kernel only
+      needs to allocate a tiny thread control block and a private stack. A process, on the other hand,
+      gets its own page tables and separate memory pages; creating one involves a fork or exec, which
+      copies or maps those structures. Consequently, the memory footprint per thread is much smaller,
+      and switching between threads only saves registers and a stack pointer, while a process switch must
+      reload a full set of page tables. That’s why a thread-based server typically uses far less RAM than
+      a process-based one.
+    key_points:
+    - id: kp_1
+      statement: A thread shares the same address space, code, and open file descriptors with its parent
+        process, while a process has its own separate memory pages.
+      required: true
+    - id: kp_2
+      statement: Creating a thread requires only a small thread control block and stack, whereas a process
+        creation involves duplicating page tables and possibly copying memory (fork).
+      required: true
+    - id: kp_3
+      statement: Because of the shared resources, context-switching between threads is faster than between
+        processes.
+      required: false
+    hint_ladder:
+    - Think about what each execution context needs to keep separate.
+    - Consider the cost of duplicating memory structures versus sharing them.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  process_vs_thread__q2:
+    stem: Your team is debugging a deadlock that occurs only when two worker threads update separate files
+      and then signal each other. Explain how the difference between process-level and thread-level isolation
+      affects the likelihood of such a deadlock.
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+    - id: concept:process_vs_thread
+      weight: 0.7
+    - id: concept:deadlocks
+      weight: 0.15
+    - id: concept:inter_process_communication
+      weight: 0.15
+    reference_answer: Because threads live in the same address space, any synchronization primitive—like
+      a mutex around a file buffer—is shared automatically. If thread A locks file X then waits for a
+      lock on file Y held by thread B, while thread B does the opposite, they form a circular wait and
+      deadlock. With separate processes, each has its own virtual memory and its own file descriptor table,
+      so they would only contend for a lock if they explicitly used a named semaphore or lock file. Thus,
+      thread-level isolation makes it easier to inadvertently create a circular wait, whereas process
+      isolation forces the designers to use explicit inter-process communication, reducing the chance
+      of accidental deadlocks.
+    key_points:
+    - id: kp_1
+      statement: Threads share the same address space, so mutexes protecting file buffers are visible
+        to both, making circular wait possible.
+      required: true
+    - id: kp_2
+      statement: Separate processes would need explicit IPC mechanisms; each would have its own file descriptor
+        table, reducing accidental sharing of locks.
+      required: true
+    - id: kp_3
+      statement: Even with processes, deadlock can still happen if they coordinate via OS-level locks,
+        but the scope of resources is narrower.
+      required: false
+    hint_ladder:
+    - Recall what resources are automatically shared between threads versus processes.
+    - Think about how a lock on a file is represented in each context.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  process_scheduling__q1:
+    stem: In a web server handling many short requests, you notice response latency spikes when the CPU
+      load is high. How would a preemptive Round Robin scheduler affect this behavior compared to a non-preemptive
+      FCFS scheduler?
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:process_scheduling
+      weight: 0.7
+    - id: concept:context_switching
+      weight: 0.15
+    reference_answer: With Round Robin, each incoming request gets a fixed time slice, so even if one
+      request is CPU-bound it will be pre-empted after the quantum, letting other requests make progress.
+      This limits the maximum waiting time and smooths out latency spikes. However, every pre-emptive
+      switch incurs a context-switch cost, so the CPU spends a bit of time saving and restoring registers,
+      which can raise overall overhead. In contrast, a non-preemptive FCFS scheduler will let the first
+      request run to completion; a single long request can block the queue, causing the observed latency
+      spikes. Therefore, Round Robin improves responsiveness at the expense of extra context-switch overhead,
+      and the quantum should be tuned to keep that overhead acceptable.
+    key_points:
+    - id: kp_1
+      statement: Explains that Round Robin gives each request a time quantum, preventing any single request
+        from monopolising the CPU.
+      required: true
+    - id: kp_2
+      statement: Notes that frequent context switches add overhead, which can increase average CPU utilisation
+        but reduce worst-case latency.
+      required: true
+    - id: kp_3
+      statement: Contrasts with FCFS where a long-running request can block the queue, causing higher
+        latency spikes.
+      required: false
+    - id: kp_4
+      statement: Mentions that choosing an appropriate quantum balances responsiveness and overhead.
+      required: false
+    hint_ladder:
+    - Think about what happens when a process exceeds its allotted CPU time.
+    - Consider both waiting time and the cost of switching.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  process_scheduling__q2:
+    stem: During debugging you find that a high-priority real-time task occasionally misses its deadline
+      even though the scheduler is set to preemptive Shortest Remaining Time First (SRTF). What could
+      cause this missed deadline?
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:process_scheduling
+      weight: 0.7
+    - id: concept:context_switching
+      weight: 0.15
+    - id: concept:concurrency_synchronisation
+      weight: 0.15
+    reference_answer: In SRTF the scheduler always picks the process with the smallest remaining CPU burst.
+      If a burst of shorter tasks keeps arriving, they will repeatedly pre-empt the high-priority real-time
+      job, causing it to be postponed and miss its deadline – a classic starvation scenario. Additionally,
+      if the real-time task holds a lock or the kernel disables interrupts for a period, the scheduler
+      cannot pre-empt it even when a shorter job appears, further delaying completion. Finally, SRTF relies
+      on correct remaining-time estimates; if those are off, the scheduler may choose the wrong task,
+      also leading to deadline misses.
+    key_points:
+    - id: kp_1
+      statement: Identifies that a newly arriving shorter task can pre-empt the real-time task, pushing
+        its completion later.
+      required: true
+    - id: kp_2
+      statement: Points out that if the short tasks arrive continuously, the real-time task may suffer
+        starvation.
+      required: true
+    - id: kp_3
+      statement: Mentions that lock contention or disabling interrupts can delay the scheduler’s pre-emptive
+        decision.
+      required: false
+    - id: kp_4
+      statement: Notes that inaccurate estimation of remaining burst times can mislead SRTF decisions.
+      required: false
+    hint_ladder:
+    - What can prevent the scheduler from switching immediately?
+    - Think about continuous arrival of even shorter jobs.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  context_switching__q1:
+    stem: When a CPU timer interrupt occurs and the scheduler picks another ready process, what steps
+      does the operating system perform during the context switch?
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:context_switching
+      weight: 0.7
+    - id: concept:process_scheduling
+      weight: 0.15
+    - id: concept:system_calls
+      weight: 0.15
+    reference_answer: When the timer fires, the kernel first traps to a privileged handler. It saves the
+      current process's architectural state – general-purpose registers, program counter, stack pointer
+      and any floating-point state – into its PCB and marks its state as READY. The scheduler then chooses
+      the next runnable process from the ready queue. The kernel loads that process’s saved registers,
+      PC and SP from its PCB, updates its state to RUNNING, and finally returns from the interrupt, restoring
+      the new process’s context. If the new process runs in a different protection ring, the CPU also
+      switches privilege levels during the return.
+    key_points:
+    - id: kp_1
+      statement: Saves the current process's CPU registers, program counter, and stack pointer into its
+        PCB.
+      required: true
+    - id: kp_2
+      statement: Updates the process state in the PCB (e.g., from RUNNING to READY).
+      required: true
+    - id: kp_3
+      statement: Selects the next process from the ready queue and loads its saved context (registers,
+        PC, SP) from its PCB.
+      required: true
+    - id: kp_4
+      statement: Performs a mode switch if the next process belongs to a different privilege level.
+      required: false
+    hint_ladder:
+    - Think about what the CPU needs to resume execution later.
+    - Consider both saving and restoring information.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  context_switching__q2:
+    stem: A system is experiencing high latency because context switches are taking longer than expected.
+      What are the typical sources of overhead in a context switch, and how can you reduce them?
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:context_switching
+      weight: 0.7
+    - id: concept:process_vs_thread
+      weight: 0.15
+    - id: concept:memory_management
+      weight: 0.15
+    reference_answer: 'The main overheads are: (1) saving the complete architectural state – general,
+      floating-point and SIMD registers – which can be costly; (2) invalidating or reloading TLB entries
+      and cache lines when the new process has a different address space, causing memory-management latency;
+      and (3) kernel bookkeeping like updating PCB fields and manipulating the scheduler’s queues. To
+      cut these costs you can keep the register set small (e.g., lazy FPU saving), use per-CPU run-queues
+      to improve cache locality, or move to user-level threads that avoid kernel-mode switches altogether.
+      Pinning threads to cores and using huge pages also reduce TLB misses, further lowering switch latency.'
+    key_points:
+    - id: kp_1
+      statement: Saving and restoring the full register set, especially floating-point or SIMD registers,
+        adds time.
+      required: true
+    - id: kp_2
+      statement: Flushing or updating TLB entries and cache lines when the address space changes contributes
+        overhead.
+      required: true
+    - id: kp_3
+      statement: Kernel bookkeeping such as updating PCB fields and ready-queue structures adds CPU cycles.
+      required: false
+    - id: kp_4
+      statement: Reducing overhead can be done by using lightweight threads (user-level threads) or avoiding
+        unnecessary register saves, and by employing per-CPU run-queues to limit cache/TLB misses.
+      required: true
+    hint_ladder:
+    - Identify what work the kernel does besides just copying registers.
+    - Think of hardware structures that get polluted when you change processes.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  concurrency_synchronisation__q1:
+    stem: You notice a multithreaded server occasionally returns corrupted responses when many clients
+      connect simultaneously; what synchronization issue is likely causing this and how would you fix
+      it?
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:concurrency_synchronisation
+      weight: 0.7
+    - id: concept:process_vs_thread
+      weight: 0.15
+    reference_answer: 'The symptom points to a race condition: multiple threads are updating the same
+      buffer or request queue without coordination, so interleaved writes produce garbled output. The
+      fix is to protect the shared resource with a mutex (or other lock) so only one thread can enter
+      the critical section at a time. In code you would lock before reading or modifying the data and
+      unlock immediately after. If contention becomes a bottleneck, you could use finer-grained locks,
+      read-write locks, or lock-free structures, but the primary step is to introduce proper mutual exclusion.'
+    key_points:
+    - id: kp_1
+      statement: Identifies a race condition caused by unsynchronised access to shared data structures.
+      required: true
+    - id: kp_2
+      statement: Explains that protecting the critical section with a mutex (or lock) serialises access.
+      required: true
+    - id: kp_3
+      statement: Mentions that using finer-grained locking or lock-free data structures can improve scalability.
+      required: false
+    - id: kp_4
+      statement: Notes that forgetting to unlock (or double-locking) could deadlock, so proper lock handling
+        is essential.
+      required: false
+    hint_ladder:
+    - Think about what happens when two threads write to the same memory location at the same time.
+    - What OS primitive ensures only one thread executes a piece of code at once?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  concurrency_synchronisation__q2:
+    stem: During a deadlock debugging session you find two processes each holding one semaphore and waiting
+      for the other; explain why this situation arises and what systematic approach you would use to prevent
+      it in future designs.
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:concurrency_synchronisation
+      weight: 0.7
+    - id: concept:deadlocks
+      weight: 0.15
+    reference_answer: 'The deadlock occurs because both processes satisfy the four Coffman conditions:
+      they hold one semaphore (mutual exclusion), they request another while holding the first (hold-and-wait),
+      the semaphores cannot be preempted, and they form a circular wait. To prevent this, you can enforce
+      a global ordering of semaphore acquisition so that all processes request resources in the same order,
+      breaking the circular-wait condition. Alternatively, you could avoid hold-and-wait by acquiring
+      all needed semaphores atomically or by using a timeout and rollback strategy. Detection-recovery
+      (e.g., building a resource-allocation graph) is also possible but prevention through ordering is
+      the most systematic.'
+    key_points:
+    - id: kp_1
+      statement: Describes the circular wait condition where each process holds a resource and requests
+        another held by the peer.
+      required: true
+    - id: kp_2
+      statement: Mentions that the four Coffman conditions (mutual exclusion, hold-and-wait, no preemption,
+        circular wait) are all present.
+      required: true
+    - id: kp_3
+      statement: Proposes a prevention strategy such as ordering resource acquisition or using a lock
+        hierarchy.
+      required: true
+    - id: kp_4
+      statement: Optionally discusses detection/recovery mechanisms like timeout or resource-allocation
+        graph analysis.
+      required: false
+    hint_ladder:
+    - Recall the four conditions that must all hold for a deadlock to exist.
+    - What design rule can break the circular-wait condition?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  deadlocks__q1:
+    stem: In a multi-process system you notice that two processes are each holding a lock the other needs,
+      and none are making progress. Explain why this situation is a deadlock and what conditions must
+      be true for it to occur.
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:deadlocks
+      weight: 0.7
+    - id: concept:concurrency_synchronisation
+      weight: 0.15
+    reference_answer: 'The situation is a classic deadlock because each process holds a lock (resource)
+      that the other process is waiting for, forming a circular wait. For a deadlock to arise, four Coffman
+      conditions must hold simultaneously: mutual exclusion (the locks can be held by only one process),
+      hold-and-wait (processes keep resources while requesting new ones), no preemption (the OS cannot
+      forcibly take a lock away), and circular wait (a closed chain of processes each waiting for a resource
+      held by the next). If any of these is violated—e.g., allowing preemption or ordering resource acquisition—the
+      deadlock would not occur.'
+    key_points:
+    - id: kp_1
+      statement: Identifies the circular wait where each process holds a resource needed by the other.
+      required: true
+    - id: kp_2
+      statement: Lists all four Coffman conditions (mutual exclusion, hold-and-wait, no preemption, circular
+        wait) as necessary for a deadlock.
+      required: true
+    - id: kp_3
+      statement: Notes that if any one condition is broken, the deadlock can be avoided.
+      required: false
+    hint_ladder:
+    - Recall the four Coffman conditions.
+    - Think about resource allocation and waiting.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  deadlocks__q2:
+    stem: Your team is designing a database server that uses the Banker's algorithm to avoid deadlocks.
+      A client requests 3 units of resource A and 2 of B, and the system’s available vector is (4,3).
+      Show how the safety check works and decide whether to grant the request.
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:deadlocks
+      weight: 0.7
+    - id: concept:process_scheduling
+      weight: 0.15
+    reference_answer: 'First we compute the client’s need: if its maximum claim is (5,4) and it currently
+      holds (2,2), the need is (3,2). The request (3,2) is ≤ need and also ≤ available (4,3), so the preliminary
+      test passes. For the safety check we set work = available – request = (1,1) and pretend the client’s
+      allocation becomes (5,4). We then try to find a finishing order: any other process whose remaining
+      need is ≤ work can finish, releasing its resources back to work. If we can eventually mark all processes
+      finished, the state is safe. In this example, after the request, we can still find a sequence (e.g.,
+      other process 1, then the requesting client) that satisfies the safety condition, so the request
+      is granted. If no such sequence existed, we would deny the request to keep the system safe.'
+    key_points:
+    - id: kp_1
+      statement: Calculates the client’s need as (max-allocation) − (current allocation) and verifies
+        it does not exceed the available vector.
+      required: true
+    - id: kp_2
+      statement: 'Runs the safety algorithm: finds a process whose need ≤ work, marks it finished, adds
+        its allocation to work, and repeats until all processes can finish.'
+      required: true
+    - id: kp_3
+      statement: Concludes that the state remains safe and the request can be granted, or explains why
+        it would lead to an unsafe state.
+      required: true
+    hint_ladder:
+    - Compute the need vector for the client and compare with available.
+    - Simulate the safety algorithm by finding a sequence that can finish.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  inter_process_communication__q1:
+    stem: In a server that handles client requests using a pool of worker processes, you notice the workers
+      sometimes block waiting for data from each other. How would you use IPC mechanisms to avoid this
+      blocking while keeping data consistency?
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:inter_process_communication
+      weight: 0.7
+    - id: concept:concurrency_synchronisation
+      weight: 0.15
+    reference_answer: I would replace the blocking reads on the pipe with a non-blocking or asynchronous
+      interface, using select or poll to know when data is available. If the workers need to share large
+      data structures, I’d map a shared-memory segment and protect it with a semaphore or a POSIX mutex
+      so only one process updates at a time. The workers would then send small control messages via a
+      message queue to signal when the shared buffer is ready. This combination eliminates the wait on
+      a full pipe, keeps data consistent through the lock, and lets the pool stay responsive. The overhead
+      is a tiny extra semaphore and a bit of context switching, but latency improves dramatically.
+    key_points:
+    - id: kp_1
+      statement: Describes using non-blocking pipes or message queues with select/poll to avoid indefinite
+        waits.
+      required: true
+    - id: kp_2
+      statement: Mentions a synchronization primitive (e.g., semaphore or mutex) to protect shared state
+        when using shared memory.
+      required: true
+    - id: kp_3
+      statement: Explains how the chosen IPC ensures ordering or atomicity of messages.
+      required: false
+    - id: kp_4
+      statement: Notes the trade-off between latency and memory overhead for shared memory vs. message
+        passing.
+      required: false
+    hint_ladder:
+    - Think about separating control signalling from bulk data transfer.
+    - What OS primitives let a process check readiness without blocking?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  inter_process_communication__q2:
+    stem: 'During debugging you see two processes deadlocked: each holds a lock and waits on a pipe read
+      from the other. What steps would you take to diagnose and break this deadlock using OS-level tools?'
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:inter_process_communication
+      weight: 0.7
+    - id: concept:deadlocks
+      weight: 0.15
+    - id: concept:system_calls
+      weight: 0.15
+    reference_answer: First I’d list the processes with ps -ef and note their PIDs. Then I’d inspect /proc/<pid>/fd
+      to see which pipe ends each holds and /proc/<pid>/locks to see the mutexes. Using lsof -p <pid>
+      shows the pipe descriptors, and pstack or gdb attached to each process reveals the call stack stuck
+      in read(). I’d also run strace -p <pid> to confirm the read is blocking. Once I’ve identified the
+      circular wait – process A holds lock 1 and reads from pipe B, process B holds lock 2 and reads from
+      pipe A – I can break it by sending SIGUSR1 to one process to trigger a clean-up handler that releases
+      its lock, or by temporarily changing the code to use non-blocking reads with a timeout and retry.
+      The root fix is to reorder lock acquisition so the pipe read occurs after both locks are released
+      or replace the lock with a single semaphore guarding the whole exchange.
+    key_points:
+    - id: kp_1
+      statement: Mentions using ps, pstack or /proc to view open file descriptors and lock states.
+      required: true
+    - id: kp_2
+      statement: Describes sending a signal (e.g., SIGUSR1) to trigger a dump of lock information via
+        strace or lsof.
+      required: true
+    - id: kp_3
+      statement: Proposes a remedy such as releasing one lock, reordering lock acquisition, or using non-blocking
+        reads with timeout.
+      required: false
+    - id: kp_4
+      statement: Explains why the current ordering of lock and pipe read creates a circular wait.
+      required: false
+    hint_ladder:
+    - Which /proc entries expose file-descriptor and lock information?
+    - What signal can you use to make a process dump its state without terminating it?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  system_calls__q1:
+    stem: When a user program invokes write() on a file descriptor, what steps does the OS take from the
+      point of the system call entry to returning control to the program?
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:system_calls
+      weight: 0.7
+    - id: concept:file_systems
+      weight: 0.15
+    reference_answer: When write() is called, the CPU executes a trap instruction that switches to kernel
+      mode and jumps to the system-call entry point. The dispatcher looks up the syscall number, validates
+      the file descriptor, checks that the buffer address lies in the process’s address space, and verifies
+      write permission. It then resolves the descriptor to an open file object, acquires the file-system
+      lock if needed, and calls the file-system’s write routine. That routine may copy data into the kernel
+      buffer, trigger a page-in or page-out, and update the file’s inode. Once the write is done, the
+      kernel places the number of bytes written (or an error code) in the return register, releases any
+      locks, restores the saved user registers and stack, and executes an iret to return to user mode.
+    key_points:
+    - id: kp_1
+      statement: Describes the trap from user mode to kernel mode and the role of the system call dispatcher.
+      required: true
+    - id: kp_2
+      statement: Explains validation of arguments (file descriptor, buffer address, length) and permission
+        checks.
+      required: true
+    - id: kp_3
+      statement: Mentions locating the file object, invoking the file system's write routine, and handling
+        buffering or page faults if needed.
+      required: false
+    - id: kp_4
+      statement: States that after the write completes, the kernel returns the number of bytes written
+        (or error) and restores user-mode context.
+      required: true
+    hint_ladder:
+    - Think about what changes when control moves from user to kernel.
+    - What does the kernel need to verify before touching the user buffer?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  system_calls__q2:
+    stem: A program that frequently calls getpid() seems to cause a noticeable slowdown. What could be
+      happening inside the kernel that makes this system call relatively expensive?
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:system_calls
+      weight: 0.7
+    - id: concept:context_switching
+      weight: 0.15
+    reference_answer: Even though getpid() simply returns a value, it is still a system call, so the CPU
+      must trap to kernel mode, switch stacks, and execute the dispatcher. The kernel then reads the process’s
+      task_struct to fetch the PID, which may involve acquiring a spinlock to protect the structure and
+      can cause a cache line bounce on multi-core systems. Each trap also flushes the TLB entry for the
+      user-mode page tables. If the program calls getpid() thousands of times per second, these overheads
+      add up, leading to the slowdown. Caching the PID after the first call avoids the repeated traps.
+    key_points:
+    - id: kp_1
+      statement: Notes that getpid() still requires a trap to kernel mode, incurring a mode switch overhead.
+      required: true
+    - id: kp_2
+      statement: Mentions that the kernel may need to acquire a lock or read a per-process data structure,
+        which can cause cache misses or contention.
+      required: false
+    - id: kp_3
+      statement: Points out that if the call is inside a tight loop, the cumulative cost of many traps
+        and possible TLB flushes becomes noticeable.
+      required: true
+    - id: kp_4
+      statement: Suggests alternatives such as caching the PID in user space or using gettid() only when
+        necessary.
+      required: false
+    hint_ladder:
+    - Recall what a system call actually does to the CPU state.
+    - Consider what data structures the kernel must touch for getpid.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  memory_management__q1:
+    stem: In a long-running server you notice its memory usage keeps growing even after requests finish;
+      what could be causing heap fragmentation and how would you detect and mitigate it?
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:memory_management
+      weight: 0.7
+    reference_answer: 'The growth is likely due to external fragmentation: the server repeatedly allocates
+      objects of different sizes, frees them, and leaves many small holes that cannot satisfy larger future
+      allocations, so malloc keeps requesting more pages from the OS. You can spot this by checking heap
+      statistics with tools like valgrind''s massif, malloc_info, or by printing the free-list distribution;
+      a high ratio of free blocks to total free memory indicates fragmentation. To mitigate, you can switch
+      to a memory pool or slab allocator that reuses fixed-size chunks, or redesign the code to allocate
+      objects of similar size and batch-free them, which reduces the number of size classes and keeps
+      the heap more compact.'
+    key_points:
+    - id: kp_1
+      statement: Describes how repeated allocations and deallocations of varying sizes can leave small
+        free blocks that are unusable for larger requests (external fragmentation).
+      required: true
+    - id: kp_2
+      statement: Mentions tools or techniques to observe fragmentation, e.g., heap profiling, malloc_info,
+        or looking at free-list statistics.
+      required: true
+    - id: kp_3
+      statement: Proposes mitigation strategies such as using memory pools, slab allocators, or allocating
+        objects of uniform size.
+      required: false
+    - id: kp_4
+      statement: Notes that internal fragmentation can also arise from over-allocation due to alignment
+        or size classes.
+      required: false
+    hint_ladder:
+    - Think about what malloc does when it cannot find a suitably sized free block.
+    - What observability does Linux give you about the heap?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  memory_management__q2:
+    stem: Your OS uses a simple bump-pointer allocator for the stack; a recursive function suddenly crashes
+      with a segmentation fault. Explain why stack allocation can fail and how it differs from heap allocation
+      in this scenario.
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: intro
+    time_budget_s: 150
+    concepts:
+    - id: concept:memory_management
+      weight: 0.7
+    - id: concept:pointers_and_references
+      weight: 0.15
+    reference_answer: A bump-pointer stack allocator simply moves a pointer down the pre-reserved stack
+      region for each call. The stack size is fixed at process start, and the OS places a guard page at
+      its end. When the recursive function calls itself many times, the pointer eventually crosses into
+      the guard page, which is unmapped, so the CPU raises a segmentation fault. Unlike the heap, which
+      grows on demand via malloc and can return NULL on failure, the stack cannot expand beyond its limit;
+      it overflows instead of returning an error. Thus the crash is a stack overflow, not a heap allocation
+      failure.
+    key_points:
+    - id: kp_1
+      statement: Explains that the stack grows downward (or upward) in a contiguous region and has a fixed
+        size limit; deep recursion can exceed this limit causing a stack overflow.
+      required: true
+    - id: kp_2
+      statement: Contrasts with heap allocation, which obtains memory from a much larger pool managed
+        by malloc and can fail with NULL rather than a fault.
+      required: true
+    - id: kp_3
+      statement: Mentions that the segmentation fault occurs because the CPU tries to write to an unmapped
+        page beyond the stack guard page.
+      required: false
+    hint_ladder:
+    - Recall what a guard page does for a process's stack.
+    - How does malloc behave when it cannot allocate more memory?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  virtual_memory__vm_01:
+    stem: In a production server you notice that the RSS of a critical process keeps growing even though
+      its working set should be stable; what could be happening in the virtual memory subsystem?
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:virtual_memory
+      weight: 0.7
+    - id: concept:page_replacement
+      weight: 0.15
+    - id: concept:memory_management
+      weight: 0.15
+    reference_answer: When RSS climbs unexpectedly, the process is likely incurring many page faults.
+      The OS may have swapped out pages that the process still accesses, so each fault brings a page back,
+      increasing resident memory. An aggressive replacement policy like Clock or a mis-tuned LRU can cause
+      this. Additionally, mechanisms such as transparent huge pages or copy-on-write can cause pages to
+      be materialised, inflating RSS. Checking the fault count via /proc/<pid>/stat or vmstat and looking
+      at smaps will reveal a high major-fault rate and swap-in activity, confirming the virtual-memory
+      behaviour.
+    key_points:
+    - id: kp_1
+      statement: Explains that the process may be experiencing page faults due to aggressive swapping
+        or a working-set expansion caused by memory-intensive operations.
+      required: true
+    - id: kp_2
+      statement: Describes how the OS may be using a page-replacement algorithm (e.g., LRU or Clock) that
+        evicts pages still needed, causing repeated faults and RSS growth.
+      required: true
+    - id: kp_3
+      statement: Mentions that transparent huge pages or copy-on-write mappings can inflate RSS when pages
+        are materialized.
+      required: false
+    - id: kp_4
+      statement: Suggests checking /proc/<pid>/smaps or vmstat to confirm the fault rate and swap activity.
+      required: false
+    hint_ladder:
+    - Think about what RSS measures and how pages become resident.
+    - What OS actions can cause a stable working set to appear larger?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  virtual_memory__vm_02:
+    stem: Your team wants to reduce the latency of a latency-sensitive service by pinning its memory;
+      explain why simply allocating a large contiguous virtual region may not achieve the intended performance
+      benefit.
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:virtual_memory
+      weight: 0.7
+    - id: concept:context_switching
+      weight: 0.15
+    - id: concept:memory_management
+      weight: 0.15
+    reference_answer: Allocating a huge contiguous virtual block does not guarantee contiguous physical
+      memory. The MMU still walks page tables, and each page may be scattered across different frames,
+      leading to TLB misses and cache line inefficiency. Moreover, on NUMA systems the pages could be
+      placed on a remote node, so latency stays high unless you use NUMA-aware policies or allocate huge
+      pages. Even if you pin the virtual region with mlock, the OS can swap or migrate pages unless you
+      also request huge pages and set the appropriate numa node. Finally, frequent context switches flush
+      the TLB, so the process must stay on the same core to keep the translation cache warm.
+    key_points:
+    - id: kp_1
+      statement: States that virtual addresses are translated via page tables, so a large contiguous virtual
+        region may be backed by non-contiguous physical pages, causing TLB misses.
+      required: true
+    - id: kp_2
+      statement: Notes that without NUMA-aware allocation, the pages may reside on remote memory nodes,
+        increasing access latency despite pinning.
+      required: true
+    - id: kp_3
+      statement: Mentions that the OS can still swap out or migrate pages unless mlock/hugepages and NUMA
+        policies are used.
+      required: false
+    - id: kp_4
+      statement: Highlights that context switches can flush TLB entries, so the benefit of pinning is
+        lost unless the process stays on the same core.
+      required: false
+    hint_ladder:
+    - Consider the difference between virtual contiguity and physical contiguity.
+    - What hardware structures are affected by page-level mapping?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  paging_and_segmentation__q1:
+    stem: Your OS uses paging with a single-level page table. A process suddenly experiences a huge increase
+      in page faults after a new feature is deployed. What could be causing this, and how would you diagnose
+      it?
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: core
+    time_budget_s: 150
+    concepts:
+    - id: concept:paging_and_segmentation
+      weight: 0.7
+    - id: concept:page_replacement
+      weight: 0.15
+    - id: concept:memory_management
+      weight: 0.15
+    reference_answer: The spike in faults usually means the new feature is touching memory regions that
+      weren’t previously in the process’s working set. I would first look at the fault log or use perf
+      to see which virtual addresses are faulting. If they belong to newly allocated buffers, the working
+      set has grown and the current page replacement policy may be evicting useful pages too aggressively.
+      I’d verify the allocation pattern – maybe the code is scanning a large array linearly, causing many
+      cold pages. Depending on the finding, I could increase the allocated RAM, tune the replacement algorithm
+      (e.g., switch from FIFO to LRU), or add prefetching. If the faults are on addresses that should
+      be mapped, I’d suspect a bug like an off-by-one index that walks off the end of a buffer.
+    key_points:
+    - id: kp_1
+      statement: Identifies that the new feature likely changes the program's working set, causing accesses
+        to pages that were previously unused.
+      required: true
+    - id: kp_2
+      statement: Mentions checking the page fault rate and the specific virtual addresses causing faults
+        via tools like /proc/pid/numa_maps or perf.
+      required: true
+    - id: kp_3
+      statement: Suggests possible remedies such as increasing the working set size, adjusting the page
+        replacement algorithm, or pre-loading critical pages.
+      required: false
+    - id: kp_4
+      statement: Notes that a bug like an off-by-one error could be causing accesses to unmapped regions,
+        leading to excessive faults.
+      required: false
+    hint_ladder:
+    - Think about the relationship between virtual address patterns and page table entries.
+    - Consider what the OS does when a page is not in memory.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  paging_and_segmentation__q2:
+    stem: In a system that supports both paging and segmentation, a programmer complains that a segmentation
+      fault occurs even though the address is within the segment limits. What mechanisms could let this
+      happen?
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:paging_and_segmentation
+      weight: 0.7
+    - id: concept:virtual_memory
+      weight: 0.15
+    - id: concept:memory_management
+      weight: 0.15
+    reference_answer: Even if the offset is inside the segment’s limit, the MMU first adds the segment
+      base to get a linear address, then looks up that address in the page table. If the linear address
+      lands in a page that is not present or has protection bits that deny the requested operation, the
+      hardware raises a segmentation fault. So a common cause is that the segment is correctly defined
+      but the page containing the address is unmapped or read-only. Additionally, a stale TLB entry for
+      the segment or page can cause the CPU to use an old translation that points to an invalid page,
+      also triggering a fault. Finally, sometimes the segment limit is set in units of pages while the
+      programmer assumes bytes, causing the offset to appear valid while the resulting linear address
+      is out of bounds.
+    key_points:
+    - id: kp_1
+      statement: Explains that the segment’s base address is added to the offset before paging, so the
+        resulting linear address may fall outside a valid page.
+      required: true
+    - id: kp_2
+      statement: Mentions that protection bits in the page table (e.g., read/write/execute) can cause
+        a fault even if the segment permits the access.
+      required: true
+    - id: kp_3
+      statement: Notes that a stale TLB entry for the segment or page can cause a mismatch, leading to
+        a fault.
+      required: false
+    - id: kp_4
+      statement: Points out that a mis-configured segment limit (e.g., limit in bytes vs. pages) could
+        be the root cause.
+      required: false
+    hint_ladder:
+    - Recall the order in which the MMU translates addresses.
+    - Think about protection bits and TLB behavior.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  page_replacement__q1:
+    stem: Your web server process suddenly starts swapping heavily and response time spikes; you suspect
+      a page-replacement issue. How would you determine which algorithm is currently in use and what its
+      impact is on the observed thrashing?
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:page_replacement
+      weight: 0.7
+    - id: concept:virtual_memory
+      weight: 0.15
+    - id: concept:memory_management
+      weight: 0.15
+    reference_answer: 'I would first look at the page-fault rate using tools like vmstat or /proc/vmstat;
+      a very high fault count that spikes when the server load rises hints at thrashing. Then I’d examine
+      the pattern of faults: if the same set of pages keep being evicted and re-loaded in a round-robin
+      fashion, that’s characteristic of FIFO. If faults occur on pages that were just used, that points
+      to an LRU-like behavior. On Linux you can read /sys/devices/system/cpu/present or the "swap" stats
+      to see which algorithm the kernel is using, or run a short reference trace with ‘perf record’ and
+      compare it to known FIFO/LRU traces. Once I confirm the algorithm, I can argue that FIFO’s lack
+      of recency awareness is causing the hot pages to be swapped out, leading to thrashing, and that
+      moving to an LRU or working-set replacement would keep those hot pages resident and restore response
+      times.'
+    key_points:
+    - id: kp_1
+      statement: Describes checking page fault rate and the pattern of page references (e.g., FIFO shows
+        cyclic faults, LRU shows faults on recently used pages).
+      required: true
+    - id: kp_2
+      statement: Explains that a high fault rate with repeatedly re-accessed pages indicates FIFO or sub-optimal
+        algorithm causing thrashing.
+      required: true
+    - id: kp_3
+      statement: Mentions using /proc/pid/stat or performance counters to see the current replacement
+        policy or to simulate it with a trace.
+      required: false
+    - id: kp_4
+      statement: Suggests that switching to LRU or a working-set algorithm would reduce thrashing by keeping
+        hot pages resident.
+      required: false
+    hint_ladder:
+    - Think about observable metrics and how different algorithms treat page faults.
+    - Consider a simple experiment you could run without modifying the kernel.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  page_replacement__q2:
+    stem: During a design review you must choose a page-replacement policy for an embedded real-time system
+      with limited RAM; what trade-offs would you discuss between FIFO, LRU, and the optimal algorithm?
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:page_replacement
+      weight: 0.7
+    - id: concept:process_scheduling
+      weight: 0.15
+    - id: concept:memory_management
+      weight: 0.15
+    reference_answer: I would start by saying FIFO is the cheapest to implement – a simple circular buffer
+      gives O(1) eviction, which is great for a hard-real-time guarantee, but it can suffer Belady’s anomaly
+      and may evict pages that will be needed soon, causing unpredictable miss rates. LRU offers a much
+      higher hit ratio because it keeps the most recently used pages, but tracking recency needs extra
+      data structures – a stack, timestamps, or a hardware reference bit – which adds overhead and can
+      increase worst-case page-fault latency, something a real-time system may not tolerate. The optimal
+      algorithm gives the best possible miss rate by evicting the page that will be used farthest in the
+      future, but it requires clairvoyance, so it’s only a theoretical bound. In this embedded context,
+      I would recommend a FIFO or a low-overhead approximation of LRU such as the clock algorithm, because
+      they give deterministic behavior and fit the limited RAM budget, while acknowledging the trade-off
+      of a slightly higher miss rate compared to true LRU.
+    key_points:
+    - id: kp_1
+      statement: States that FIFO is simple O(1) to implement with a queue but can suffer Belady’s anomaly,
+        leading to unpredictable miss rates.
+      required: true
+    - id: kp_2
+      statement: Explains LRU gives better hit ratio by tracking recent use, but needs extra hardware
+        or software (e.g., counters or stack) increasing overhead and worst-case latency.
+      required: true
+    - id: kp_3
+      statement: Mentions optimal replacement is unattainable in practice because it needs future reference
+        knowledge, but serves as a benchmark.
+      required: true
+    - id: kp_4
+      statement: 'Relates the real-time constraint: deterministic execution time favors FIFO or a approximated
+        LRU (clock) over true LRU.'
+      required: false
+    hint_ladder:
+    - Focus on implementation cost, predictability, and worst-case latency.
+    - Recall that optimal is theoretical and requires future knowledge.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  file_systems__q1:
+    stem: In a Linux system you notice that creating many small files in a directory makes listing it
+      sluggish; what does the underlying file system structure have to do with this behavior?
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:file_systems
+      weight: 0.7
+    reference_answer: A directory in Unix-like systems is just a special file that contains a list of
+      (name, inode) pairs. In older file systems like ext2 each entry is appended to the end, so to find
+      a name the kernel scans the list sequentially – O(n) time. When you have thousands of tiny files,
+      that linear scan for every ls or open call becomes noticeable, making the directory appear sluggish.
+      Newer file systems such as ext4, XFS or Btrfs replace the flat list with a hashed B-tree or other
+      indexed structure, giving near constant-time lookups and preventing the slowdown. Hence the performance
+      issue is directly tied to how the directory’s metadata is organized.
+    key_points:
+    - id: kp_1
+      statement: Directories are essentially files that map file names to inode numbers.
+      required: true
+    - id: kp_2
+      statement: Older file systems (e.g., ext2) store directory entries in a simple linear list, so lookup
+        is O(n).
+      required: true
+    - id: kp_3
+      statement: When many small files exist, the linear scan becomes costly, causing slow ls.
+      required: true
+    - id: kp_4
+      statement: Modern file systems (e.g., ext4, XFS) use hashed B-trees or other indexing to achieve
+        near O(1) lookup, mitigating the problem.
+      required: false
+    hint_ladder:
+    - Think about how directories are stored and searched.
+    - Consider the difference between linear and hashed directory implementations.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  file_systems__q2:
+    stem: Your application crashes after a power loss; you discover the file system uses journaling. Explain
+      why journaling helps and what scenario could still cause corruption.
+    modality: verbal
+    round_types:
+    - os_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:file_systems
+      weight: 0.7
+    reference_answer: 'Journaling works by first recording the intended changes—usually the metadata updates—in
+      a separate log area. Only after the log entry is safely on disk does the file system apply the changes
+      to the main structures. If power is lost, on reboot the FS scans the journal: completed transactions
+      are replayed, incomplete ones are ignored, bringing the metadata back to a consistent state. However,
+      most journaling modes (write-back) do not journal the actual file data, only the metadata. So if
+      the crash occurs after data blocks have been written but before their corresponding metadata entry
+      is committed, the file may contain stale or partially written data, leading to corruption despite
+      a clean journal replay. Ordered or data-journaling modes mitigate this by ensuring data is flushed
+      before its metadata is logged.'
+    key_points:
+    - id: kp_1
+      statement: Journaling writes intent (metadata changes) to a dedicated log before applying them to
+        the main file system structures.
+      required: true
+    - id: kp_2
+      statement: After a crash, the system replays the journal, replaying committed transactions and discarding
+        incomplete ones, restoring consistency.
+      required: true
+    - id: kp_3
+      statement: Data blocks themselves may not be journaled in write-back mode, so if a power loss occurs
+        after data is written but before its metadata is committed, the file can become corrupted.
+      required: true
+    - id: kp_4
+      statement: Full-data (ordered) journaling reduces this risk by ensuring data is flushed before its
+        metadata is logged.
+      required: false
+    hint_ladder:
+    - Recall the two phases of a journaled write.
+    - Think about what is not protected by the journal.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'

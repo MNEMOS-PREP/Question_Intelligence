@@ -1,0 +1,1311 @@
+# DRAFTED — behavioural. Written by jobs/draft_items.py with a model; NOT reviewed.
+# provenance: generated + scored_use_approved: false on every item: FR-5.6 needs a
+# person to approve an item before it counts toward a score. Practise only until then.
+
+items:
+  answer_structuring__star_1:
+    stem: Tell me about a time you faced a tight deadline on a project. How did you structure your response
+      to the challenge and what was the outcome?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:answer_structuring
+      weight: 0.7
+    - id: concept:quantifying_impact
+      weight: 0.15
+    reference_answer: In my final year capstone, we had to deliver a prototype in three weeks, half the
+      usual time. My role was to lead the integration testing. I first outlined the remaining tasks, prioritized
+      them, and broke each into daily sub-tasks. I communicated this plan to the team, set short stand-ups
+      to track progress, and adjusted resources when a blocker appeared. By following that structured
+      approach, we completed integration two days ahead of schedule, and the prototype passed all validation
+      criteria, earning us a top-grade and a recommendation from the faculty.
+    key_points:
+    - id: kp_1
+      statement: Clearly describes the Situation (tight deadline, project context).
+      required: true
+    - id: kp_2
+      statement: Specifies the Task they were responsible for.
+      required: true
+    - id: kp_3
+      statement: Explains the Actions taken, emphasizing a logical, step-by-step structure.
+      required: true
+    - id: kp_4
+      statement: Shares the Result with measurable impact (e.g., delivered 2 days early, 15% quality improvement).
+      required: true
+    hint_ladder:
+    - Think about the four parts of the STAR framework.
+    - Mention any numbers that show the impact.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  answer_structuring__star_2:
+    stem: Describe a situation where you received critical feedback on your work. How did you organize
+      your answer to show what you learned and how you applied it?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:answer_structuring
+      weight: 0.7
+    - id: concept:receiving_feedback
+      weight: 0.15
+    reference_answer: During my internship, my mentor pointed out that my code reviews were too verbose
+      and missed key performance issues. I first acknowledged the feedback and asked clarifying questions
+      to understand the expectations. Then I created a checklist of common pitfalls, allocated 10 minutes
+      per review to focus on those items, and practiced summarising findings concisely. After a month,
+      my review turnaround time dropped by 30% and the team's defect rate decreased by 12%, which my mentor
+      highlighted in the quarterly report.
+    key_points:
+    - id: kp_1
+      statement: Sets the Scene – who gave feedback, what the work was.
+      required: true
+    - id: kp_2
+      statement: Defines the Task – what improvement was expected.
+      required: true
+    - id: kp_3
+      statement: Details the Action – steps taken, emphasizing a logical sequence (acknowledge, reflect,
+        plan, implement).
+      required: true
+    - id: kp_4
+      statement: Conveys the Result – concrete change in performance or outcome, ideally quantified.
+      required: true
+    hint_ladder:
+    - Use the Situation-Task-Action-Result order.
+    - Include any metric that shows improvement.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  clarifying_questions__q1:
+    stem: Tell me about a time when you started working on a project but realized you didn’t have enough
+      information to begin. How did you use clarifying questions to move forward?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:clarifying_questions
+      weight: 0.7
+    - id: concept:active_listening
+      weight: 0.15
+    reference_answer: 'In my sophomore year I was assigned to develop a data-visualisation dashboard for
+      the student-council. The brief only said "show attendance trends" and I didn’t know which data sources
+      were available, the frequency of updates, or the audience’s technical level. I set up a 15-minute
+      meeting with the council lead and asked: (1) which systems store the raw attendance logs, (2) how
+      often the dashboard will be refreshed, (3) who will be the primary users and what decisions they
+      need to make. I listened carefully, took notes, and repeated back my understanding to confirm. Their
+      answers let me pick the right database, design a weekly refresh pipeline, and tailor the UI for
+      non-technical users. The final dashboard was adopted campus-wide and cut reporting time by 40 %.'
+    key_points:
+    - id: kp_1
+      statement: Describes a specific project and the missing information that blocked progress.
+      required: true
+    - id: kp_2
+      statement: Explains the exact clarifying questions asked (who, what, why, constraints).
+      required: true
+    - id: kp_3
+      statement: Shows how the answers obtained changed the approach or scope.
+      required: true
+    - id: kp_4
+      statement: Mentions the outcome (e.g., delivered on time, avoided re-work).
+      required: false
+    hint_ladder:
+    - Think of a moment when you felt stuck because the requirements were vague.
+    - What specific questions helped you fill the gaps?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  clarifying_questions__q2:
+    stem: Describe a situation where you were asked to solve a problem on the spot, but you sensed the
+      request was ambiguous. What clarifying questions did you ask, and how did you ensure the stakeholder
+      felt heard?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:clarifying_questions
+      weight: 0.7
+    - id: concept:answer_structuring
+      weight: 0.15
+    reference_answer: 'During a hackathon, our mentor asked us to "optimize the login flow" without giving
+      any metrics. I first thanked him and said I wanted to be sure I understood the goal. I asked: (1)
+      are we targeting speed, security, or both? (2) What is the current average login time and acceptable
+      target? (3) Which user segments are most affected? I listened, repeated back: "So you need a 30
+      % faster login for mobile users while keeping two-factor authentication intact." This showed I was
+      listening and gave us a clear target. We then focused on caching the authentication token, which
+      cut login time by 35 % and satisfied the mentor’s expectations.'
+    key_points:
+    - id: kp_1
+      statement: Sets the scene with a concrete, time-bound incident (e.g., a sprint planning meeting,
+        a client call).
+      required: true
+    - id: kp_2
+      statement: Lists the clarifying questions that uncovered assumptions, constraints, or success criteria.
+      required: true
+    - id: kp_3
+      statement: Shows active listening – paraphrasing the stakeholder’s reply and confirming understanding.
+      required: true
+    - id: kp_4
+      statement: Ends with a brief summary of the agreed next steps or solution direction.
+      required: false
+    hint_ladder:
+    - Recall a moment when you had to act quickly and the request seemed vague.
+    - What questions helped you pin down the exact need?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  thinking_aloud__q1:
+    stem: Tell me about a time you had to solve a technical problem while thinking aloud with a teammate;
+      what was your approach and how did you keep the conversation productive?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:thinking_aloud
+      weight: 0.7
+    - id: concept:active_listening
+      weight: 0.15
+    - id: concept:answer_structuring
+      weight: 0.15
+    reference_answer: In my internship I was debugging a memory leak in a microservice while paired with
+      a senior engineer. I started by stating the symptom, then walked through the code path I was inspecting,
+      vocalising each hypothesis—"maybe the connection pool isn’t closed"—and asked, "Does that align
+      with what you saw in the logs?" He confirmed and added his observation about a recent config change.
+      I paused after each step to let him interject, and when he suggested an alternative, I paraphrased
+      his point to show I was listening. Together we identified an unclosed file handle, fixed it, and
+      the service’s memory usage dropped by 30 %. The whole session lasted 20 minutes and demonstrated
+      how thinking aloud, combined with active listening, keeps problem-solving efficient.
+    key_points:
+    - id: kp_1
+      statement: Describes a concrete problem, context, and the team member involved.
+      required: true
+    - id: kp_2
+      statement: Explains how they narrated each reasoning step and paused for feedback.
+      required: true
+    - id: kp_3
+      statement: Shows they used active listening (e.g., paraphrasing, confirming) to keep the dialogue
+        on track.
+      required: true
+    - id: kp_4
+      statement: Mentions the outcome (e.g., bug fixed, feature delivered) and any measurable impact.
+      required: false
+    hint_ladder:
+    - Recall a specific incident where you narrated your steps.
+    - Mention how you checked the teammate's understanding.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  thinking_aloud__q2:
+    stem: Recall a situation where you were asked a question you didn’t know the answer to during an interview;
+      how did you handle it while thinking aloud?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:thinking_aloud
+      weight: 0.7
+    - id: concept:saying_i_dont_know
+      weight: 0.15
+    - id: concept:clarifying_questions
+      weight: 0.15
+    reference_answer: During a campus placement I was asked to design a cache-eviction policy for a distributed
+      system I hadn’t worked on before. I said, "I’m not familiar with that specific algorithm, but I
+      can walk through how I’d approach it." I first clarified the constraints—size, latency, consistency—by
+      asking the interviewer, "Are we optimizing for read latency or memory usage?" Then I compared LRU
+      and LFU, highlighted trade-offs, and suggested a hybrid approach that tracks recent access frequency.
+      I concluded, "I’d prototype the hybrid, benchmark it, and iterate based on results," and offered
+      to research the exact algorithm after the interview. This showed honesty, structured thinking, and
+      a willingness to fill knowledge gaps.
+    key_points:
+    - id: kp_1
+      statement: Identifies a specific interview scenario and the unknown question.
+      required: true
+    - id: kp_2
+      statement: Shows they acknowledged the gap honestly (e.g., "I’m not familiar with that exact API").
+      required: true
+    - id: kp_3
+      statement: Demonstrates thinking aloud by breaking the problem into known components or asking clarifying
+        questions.
+      required: true
+    - id: kp_4
+      statement: Ends with a concise summary or a plan to find the answer later.
+      required: false
+    hint_ladder:
+    - Think of a moment you admitted a gap but still demonstrated reasoning.
+    - Consider any clarifying question you asked to narrow scope.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  explaining_tradeoffs__q1:
+    stem: Tell me about a time you had to choose between building a feature quickly with a third-party
+      library versus developing it in-house to meet a tight release deadline. What trade-offs did you
+      consider and what did you decide?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:explaining_tradeoffs
+      weight: 0.7
+    - id: concept:project_storytelling
+      weight: 0.15
+    - id: concept:quantifying_impact
+      weight: 0.15
+    reference_answer: In my internship I needed a data-visualisation widget for a client dashboard due
+      in two weeks. Using D3.js would let us ship in a day, but it added a heavy dependency and future
+      customisation would be painful. Building it from scratch would take about a week, but we’d own the
+      code and could reuse it later. I consulted the product manager and the ops team, weighed the short-term
+      deadline against long-term maintenance, and decided to use D3 for the MVP while documenting a plan
+      to replace it later. We met the release date, the client was happy, and the later refactor cost
+      only 3 person-days, saving an estimated 15 % of future support effort.
+    key_points:
+    - id: kp_1
+      statement: Identifies at least two dimensions of the trade-off (e.g., time to market vs. long-term
+        maintainability or licensing cost vs. flexibility).
+      required: true
+    - id: kp_2
+      statement: Explains the decision-making process, mentioning any stakeholder input or risk assessment.
+      required: true
+    - id: kp_3
+      statement: Describes the outcome and quantifies impact (e.g., release date met, % reduction in future
+        bugs, cost saved).
+      required: false
+    - id: kp_4
+      statement: Reflects on what they would do differently next time.
+      required: false
+    hint_ladder:
+    - Think about what you measured – time, cost, risk, future work.
+    - Mention who you involved before deciding.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  explaining_tradeoffs__q2:
+    stem: Describe a situation where you had to balance performance optimisation against code readability
+      in a project. How did you evaluate the trade-offs and what was the result?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: hard
+    time_budget_s: 210
+    concepts:
+    - id: concept:explaining_tradeoffs
+      weight: 0.7
+    - id: concept:answer_structuring
+      weight: 0.15
+    - id: concept:quantifying_impact
+      weight: 0.15
+    reference_answer: While working on the search service for our e-commerce site, profiling showed a
+      30 % latency spike in the ranking algorithm. I could rewrite the core loop in Cython, which would
+      cut latency by roughly 20 % but would make the codebase harder for new hires to understand. I ran
+      a benchmark, consulted the senior devs, and weighed the 20 % speed gain against the expected onboarding
+      cost. We opted for a small algorithmic tweak that gave a 12 % improvement while keeping the Python
+      code readable. After release, page-load time fell by 0.15 seconds and the team reported no increase
+      in bug tickets.
+    key_points:
+    - id: kp_1
+      statement: 'Sets the context: a specific module or feature where performance mattered.'
+      required: true
+    - id: kp_2
+      statement: Lists the concrete pros and cons of optimising (e.g., speed gain, complexity increase).
+      required: true
+    - id: kp_3
+      statement: Shows a systematic evaluation (profiling data, benchmarks, team consensus).
+      required: true
+    - id: kp_4
+      statement: States the final choice and its measurable outcome (e.g., % latency reduction, maintainability
+        rating).
+      required: false
+    hint_ladder:
+    - What data did you collect to compare the options?
+    - Who did you involve to judge readability versus speed?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  summarising_concisely__q1:
+    stem: Tell me about a time when you realized you were rambling in a meeting and how you corrected
+      it to keep your point concise.
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:summarising_concisely
+      weight: 0.7
+    - id: concept:answer_structuring
+      weight: 0.15
+    - id: concept:filler_reduction
+      weight: 0.15
+    reference_answer: 'In a quarterly review last year, I started describing a feature rollout and realized
+      after two minutes that I was repeating details. I quickly noted, “Let me summarize the key outcomes,”
+      then listed three bullet points: adoption rate, revenue lift, and user satisfaction. I asked the
+      manager if that covered what they needed, and they nodded. The meeting got back on track, and I
+      received a quick thank-you for keeping it concise. Since then, I prep a one-sentence hook and a
+      3-point outline before any presentation to avoid rambling.'
+    key_points:
+    - id: kp_1
+      statement: Identifies a specific meeting situation where their explanation exceeded the needed length.
+      required: true
+    - id: kp_2
+      statement: Describes a concrete action taken to shorten the response (e.g., pausing, summarising,
+        asking for feedback).
+      required: true
+    - id: kp_3
+      statement: Shows the impact of the change – clearer understanding, saved time, or positive reaction
+        from participants.
+      required: true
+    - id: kp_4
+      statement: Reflects on what they learned and how they now ensure brevity in future communications.
+      required: false
+    hint_ladder:
+    - Think of a moment you caught yourself talking too much and what you did to trim it.
+    - Mention how you checked that the audience understood the shortened version.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  summarising_concisely__q2:
+    stem: During an interview you were asked to explain a complex project; how did you ensure your answer
+      stayed concise while still covering the essentials?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: intro
+    time_budget_s: 150
+    concepts:
+    - id: concept:summarising_concisely
+      weight: 0.7
+    - id: concept:project_storytelling
+      weight: 0.15
+    - id: concept:quantifying_impact
+      weight: 0.15
+    reference_answer: 'I was interviewing for a data-analytics role and was asked about the predictive-maintenance
+      system I built. I said: “I led a team of four to develop a machine-learning model that predicts
+      equipment failures 30% earlier, reducing downtime by 15% for a manufacturing client. We used Python,
+      Azure ML, and integrated the model into their SCADA system. The pilot saved the client $200 k in
+      the first six months.” I then asked, “Would you like more technical depth?” which let me keep the
+      answer concise while offering detail if needed.'
+    key_points:
+    - id: kp_1
+      statement: Sets the context briefly – project name, domain, and role.
+      required: true
+    - id: kp_2
+      statement: Uses a structured format (e.g., Situation-Task-Action-Result) limited to 2–3 sentences
+        per part.
+      required: true
+    - id: kp_3
+      statement: Highlights one or two measurable outcomes to prove relevance.
+      required: true
+    - id: kp_4
+      statement: Mentions a quick self-check (e.g., asking if the listener needs more detail).
+      required: false
+    hint_ladder:
+    - Recall a real interview where you had to sell a project in under a minute.
+    - Focus on the technique you used to limit yourself to the most important points.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  saying_i_dont_know__q1:
+    stem: During a technical interview you are asked a problem you have never seen before; how would you
+      handle the "I don't know" moment while still keeping the interviewer's confidence?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:saying_i_dont_know
+      weight: 0.7
+    - id: concept:thinking_aloud
+      weight: 0.15
+    - id: concept:answer_structuring
+      weight: 0.15
+    reference_answer: I would first acknowledge that I haven’t worked with that exact technology, saying
+      something like, “I’m not familiar with X, but I can walk through how I’d approach it.” Then I’d
+      think aloud, breaking the problem into pieces I do know—like the input, constraints, and possible
+      algorithms. I’d ask a clarifying question if something is ambiguous, and outline a concrete next
+      step, such as sketching a pseudo-code or researching the API after the interview. Finally, I’d summarise
+      my proposed approach and note what I’d validate next, showing I can handle uncertainty with a structured
+      plan.
+    key_points:
+    - id: kp_1
+      statement: Starts by briefly acknowledging the gap (“I’m not familiar with that exact scenario”)
+        and expresses willingness to explore.
+      required: true
+    - id: kp_2
+      statement: Uses thinking-aloud to break the problem into known components, showing logical reasoning.
+      required: true
+    - id: kp_3
+      statement: Proposes a concrete next step (e.g., sketching a solution, asking a clarifying question,
+        or outlining an approach to research).
+      required: true
+    - id: kp_4
+      statement: Closes with a concise summary of the proposed approach and what they would verify next.
+      required: false
+    hint_ladder:
+    - Consider what you say before, during, and after you admit uncertainty.
+    - Think about how you can turn the gap into a demonstration of reasoning.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  saying_i_dont_know__q2:
+    stem: In a team meeting a stakeholder asks for a feature you know little about; describe how you would
+      respond without guessing and still keep the discussion moving.
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:saying_i_dont_know
+      weight: 0.7
+    - id: concept:clarifying_questions
+      weight: 0.15
+    - id: concept:closing_questions
+      weight: 0.15
+    reference_answer: 'I would say, “I’m not fully up-to-speed on that particular feature, but I’d like
+      to understand the exact need.” Then I’d ask a specific question like, “Are you looking for real-time
+      data sync or just a periodic update?” This helps me capture the core requirement. I’d propose to
+      dive into the docs and get back to the team by tomorrow’s stand-up with a concise plan. Finally,
+      I’d recap: “I’ll investigate the sync options and share a brief proposal by 10 am tomorrow,” ensuring
+      the conversation stays productive while I fill the knowledge gap.'
+    key_points:
+    - id: kp_1
+      statement: Politely admits limited knowledge of the specific feature while showing interest.
+      required: true
+    - id: kp_2
+      statement: Asks a focused clarifying question to surface the core requirement.
+      required: true
+    - id: kp_3
+      statement: Offers a concrete short-term action (e.g., “I’ll research and get back by X”) and sets
+        a clear follow-up timeline.
+      required: true
+    - id: kp_4
+      statement: Ends with a brief recap of the agreed next step to close the loop.
+      required: false
+    hint_ladder:
+    - Think about the balance between honesty and progress.
+    - What follow-up you can offer to ensure the stakeholder feels heard?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  pace_and_pausing__q1:
+    stem: Tell me about a time when you realized you were speaking too fast in an interview or presentation.
+      How did you notice it, and what did you do to adjust your pace?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:pace_and_pausing
+      weight: 0.7
+    - id: concept:active_listening
+      weight: 0.15
+    - id: concept:answer_structuring
+      weight: 0.15
+    reference_answer: In my final year project demo, I noticed the panel kept asking me to repeat points,
+      so I realized I was rushing. I took a quick breath, reminded myself to pause after each slide, and
+      deliberately slowed my speaking rate to about 130 words per minute. I also used short silences to
+      let key ideas settle. By the end, the panel nodded more, asked deeper questions, and gave me a higher
+      presentation score. The experience taught me to monitor my tempo and use pauses as a tool rather
+      than a flaw.
+    key_points:
+    - id: kp_1
+      statement: Identifies a concrete moment (e.g., interview, team meeting) where rapid speech was observed.
+      required: true
+    - id: kp_2
+      statement: Describes how they became aware of the issue (e.g., feedback, nervousness, people asking
+        for clarification).
+      required: true
+    - id: kp_3
+      statement: Explains specific actions taken to slow down (e.g., conscious breathing, counting words,
+        inserting deliberate pauses).
+      required: true
+    - id: kp_4
+      statement: Mentions the outcome, such as clearer communication, positive feedback, or improved interview
+        result.
+      required: false
+    hint_ladder:
+    - Think about a specific event where someone gave you feedback about speed.
+    - What concrete step did you take in the moment to change your speaking rhythm?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  pace_and_pausing__q2:
+    stem: Describe a situation where you used a pause strategically during a discussion to emphasize a
+      point or to give yourself time to think. What was the impact on the conversation?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: core
+    time_budget_s: 210
+    concepts:
+    - id: concept:pace_and_pausing
+      weight: 0.7
+    - id: concept:thinking_aloud
+      weight: 0.15
+    - id: concept:handling_interruptions
+      weight: 0.15
+    reference_answer: During a sprint retrospective, I wanted to highlight that our testing bottleneck
+      was causing missed deadlines. Instead of launching straight into criticism, I paused for two seconds
+      after stating the issue, maintaining eye contact. That silence made the team focus on the statement,
+      and a few members added data they hadn’t considered. The pause also gave me a moment to frame my
+      next suggestion constructively. The discussion shifted from blame to problem-solving, and we agreed
+      on a new testing workflow that reduced cycle time by 15%. The pause helped me be heard and kept
+      the conversation productive.
+    key_points:
+    - id: kp_1
+      statement: Sets the scene with a clear context (e.g., team meeting, client call, conflict resolution).
+      required: true
+    - id: kp_2
+      statement: Explains why a pause was needed (emphasis, gathering thoughts, allowing others to react).
+      required: true
+    - id: kp_3
+      statement: Details how the pause was executed (duration, body language, eye contact).
+      required: true
+    - id: kp_4
+      statement: Shows the result—greater clarity, agreement, or smoother dialogue.
+      required: false
+    hint_ladder:
+    - Recall a time you deliberately stopped speaking before continuing.
+    - What effect did that silence have on the listeners or on your own thought process?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  filler_reduction__q1:
+    stem: Tell me about a time you realized you were using a lot of filler words in an interview or presentation.
+      What steps did you take to reduce them, and what was the outcome?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:filler_reduction
+      weight: 0.7
+    - id: concept:answer_structuring
+      weight: 0.15
+    - id: concept:pace_and_pausing
+      weight: 0.15
+    reference_answer: During my final year, I gave a project demo to potential recruiters and later heard
+      from a mentor that I used a lot of "um" and "you know". I started recording my practice runs, noting
+      each filler, and set a rule to pause for two seconds before answering. I also asked a friend to
+      give me real-time cues by tapping when I slipped. After two weeks, the filler count dropped from
+      about fifteen per minute to four, and the recruiters commented that my explanation was clear and
+      confident. The experience taught me the power of deliberate pauses and feedback in polishing spoken
+      communication.
+    key_points:
+    - id: kp_1
+      statement: Identifies a specific instance (e.g., a campus interview, a project demo) where filler
+        words were noticeable.
+      required: true
+    - id: kp_2
+      statement: Describes concrete actions taken (recording self, practicing pauses, using a timer, seeking
+        feedback).
+      required: true
+    - id: kp_3
+      statement: Quantifies the improvement (e.g., reduced filler count by 30%, smoother delivery, positive
+        feedback from interviewers).
+      required: false
+    - id: kp_4
+      statement: Reflects on how the change impacted confidence or communication effectiveness.
+      required: false
+    hint_ladder:
+    - Think of a concrete situation where you became aware of your own verbal fillers.
+    - What practical habit or feedback loop helped you cut them down?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  filler_reduction__q2:
+    stem: In a group discussion you noticed a teammate frequently using "uh" and "like" while presenting
+      ideas. How did you handle it without hurting their confidence?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+    - id: concept:filler_reduction
+      weight: 0.7
+    - id: concept:active_listening
+      weight: 0.15
+    - id: concept:disagreeing_respectfully
+      weight: 0.15
+    reference_answer: During a hackathon brainstorming session, I noticed one teammate hesitated a lot,
+      saying "uh" and "like" before every point, which slowed our pace. After the meeting, I thanked them
+      for the ideas and privately mentioned that a brief pause could make their points stand out more.
+      I also started summarising each suggestion in one sentence before moving on, which gave them a model
+      to follow. The next day they spoke more confidently, using fewer fillers, and our team finished
+      the prototype two days early. I learned that private, positive framing helps address verbal habits
+      without embarrassment.
+    key_points:
+    - id: kp_1
+      statement: Describes the observation and its effect on the group's communication flow.
+      required: true
+    - id: kp_2
+      statement: Explains a respectful, supportive approach (e.g., private feedback, modeling concise
+        speech, gentle prompts).
+      required: true
+    - id: kp_3
+      statement: Shows the result – improved clarity, smoother discussion, or positive response from the
+        teammate.
+      required: false
+    - id: kp_4
+      statement: Highlights personal learning about giving constructive feedback.
+      required: false
+    hint_ladder:
+    - Consider how you would give feedback in a one-to-one setting.
+    - What small change can you model to influence the teammate’s speaking style?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  active_listening__q1:
+    stem: Tell me about a time when you realized you had misunderstood a manager's request during a project.
+      What did you do to correct it?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:active_listening
+      weight: 0.7
+    - id: concept:clarifying_questions
+      weight: 0.15
+    - id: concept:answer_structuring
+      weight: 0.15
+    reference_answer: In my internship, my lead asked me to ‘optimize the data pipeline.’ I assumed it
+      meant reducing runtime, so I tuned the code, but the pipeline still lagged. During a stand-up I
+      noticed the lead’s frustrated tone and asked, “Just to be clear, are we focusing on latency or resource
+      usage?” He clarified that the priority was memory consumption for a cloud-cost constraint. I then
+      profiled the job, identified high-memory stages, and rewrote them using streaming transforms, cutting
+      memory usage by 40%. I updated the team on the change, and the lead thanked me for catching the
+      misinterpretation.
+    key_points:
+    - id: kp_1
+      statement: Describes the original request and how the misunderstanding was identified.
+      required: true
+    - id: kp_2
+      statement: Explains the clarifying questions asked to verify the true intent.
+      required: true
+    - id: kp_3
+      statement: Shows the actions taken to adjust the work and communicate the correction.
+      required: true
+    - id: kp_4
+      statement: Mentions the outcome, such as meeting the revised requirement or receiving positive feedback.
+      required: false
+    hint_ladder:
+    - Think about the moment you noticed the mismatch and the steps you took.
+    - Focus on how you sought clarification and realigned expectations.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  active_listening__q2:
+    stem: Recall a situation where an interview panel asked you a technical question you didn’t fully
+      understand. How did you handle it while ensuring you answered what was being asked?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+    - id: concept:active_listening
+      weight: 0.7
+    - id: concept:thinking_aloud
+      weight: 0.15
+    - id: concept:answer_structuring
+      weight: 0.15
+    reference_answer: 'During a campus placement interview, I was asked to design a fault-tolerant caching
+      layer for a distributed system. I realized I wasn’t clear on whether they wanted an in-memory cache
+      or a persistent one. I said, “Just to confirm, are you looking for a design that persists across
+      restarts, or a volatile cache for fast reads?” The interviewer clarified the persistent requirement.
+      I then thought aloud, outlining the components: a write-through cache, replication across nodes,
+      and a consistency protocol. I described trade-offs, then wrapped up with a concise summary. When
+      I hit a gap about cache eviction policies, I admitted I’d need to research the best algorithm, which
+      the interviewers appreciated.'
+    key_points:
+    - id: kp_1
+      statement: Identifies the moment the question was ambiguous or partially understood.
+      required: true
+    - id: kp_2
+      statement: Demonstrates thinking aloud or paraphrasing the question to confirm understanding.
+      required: true
+    - id: kp_3
+      statement: Shows a structured approach to answer, possibly breaking the problem into parts.
+      required: true
+    - id: kp_4
+      statement: Highlights the result – either a satisfactory answer or a graceful way to admit limitation.
+      required: false
+    hint_ladder:
+    - Consider how you kept the conversation constructive.
+    - Think about any paraphrasing or summarising you used.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  handling_interruptions__q1:
+    stem: Tell me about a time when you were presenting your project and someone interrupted you with
+      a question. How did you handle the interruption and get back on track?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:handling_interruptions
+      weight: 0.7
+    - id: concept:active_listening
+      weight: 0.15
+    - id: concept:answer_structuring
+      weight: 0.15
+    reference_answer: During my final year capstone demo, a senior engineer raised a technical question
+      midway. I smiled, thanked him, and briefly restated his point to show I was listening. I gave a
+      one-sentence answer that addressed the core of his query, then said, “I’ll dive deeper after the
+      demo to keep us on schedule.” I used a transition like, “Now, returning to the system architecture…”
+      which let me resume the flow. The demo finished within the allotted 15 minutes and the engineer
+      later praised the concise handling, noting it kept the audience focused.
+    key_points:
+    - id: kp_1
+      statement: Acknowledged the interrupter politely and summarized their concern.
+      required: true
+    - id: kp_2
+      statement: Provided a concise answer or deferred it with a promise to follow up.
+      required: true
+    - id: kp_3
+      statement: Used a brief transition phrase to steer the discussion back to the main narrative.
+      required: true
+    - id: kp_4
+      statement: Mentioned any measurable impact, such as finishing the presentation on time or receiving
+        positive feedback.
+      required: false
+    hint_ladder:
+    - 'Recall the sequence: acknowledge, address, transition.'
+    - Think about how you kept the audience engaged after the interruption.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  handling_interruptions__q2:
+    stem: Describe a situation where you were working in a team meeting, got interrupted multiple times,
+      and had to keep your point clear. What strategies did you use to manage the interruptions and ensure
+      your ideas were heard?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:handling_interruptions
+      weight: 0.7
+    - id: concept:active_listening
+      weight: 0.15
+    - id: concept:clarifying_questions
+      weight: 0.15
+    reference_answer: 'In a sprint planning session for our mobile app, two teammates kept interjecting
+      with unrelated concerns. I let them finish, then said, “If I could just finish this point, it will
+      help us decide the priority.” When an interruption veered off-topic, I asked, “Can we note that
+      for the backlog and return to the current story?” After each side discussion, I briefly restated
+      the main takeaway: “So the user-login feature remains high priority.” This kept the meeting on track,
+      and we finalized the sprint backlog within the 45-minute slot, with everyone agreeing on the priorities.'
+    key_points:
+    - id: kp_1
+      statement: Used brief pauses to let others finish and then politely asked for a moment to complete
+        the thought.
+      required: true
+    - id: kp_2
+      statement: Employed clarifying questions to redirect off-topic interruptions back to the agenda.
+      required: true
+    - id: kp_3
+      statement: Summarised key points after each interruption to reinforce the message.
+      required: true
+    - id: kp_4
+      statement: Noted any outcome, such as a decision made or a task assigned because of the clarified
+        discussion.
+      required: false
+    hint_ladder:
+    - Think about techniques like pausing, asking clarifying questions, or summarising.
+    - Consider how you balanced respect for others with staying on message.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  quantifying_impact__q1:
+    stem: Tell me about a project where you introduced a new process or tool. How did you measure its
+      success, and what numbers can you share?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:quantifying_impact
+      weight: 0.7
+    - id: concept:project_storytelling
+      weight: 0.15
+    - id: concept:answer_structuring
+      weight: 0.15
+    reference_answer: In my final year capstone, we were manually compiling test logs, which took about
+      12 hours each sprint. I proposed automating the logging with a Python script and set a goal to cut
+      that time in half. After deployment, we tracked the actual time spent each sprint and saw the average
+      drop to 5.5 hours – a 54% reduction. This saved roughly 30 man-hours per month, which we translated
+      into a cost saving of about INR 45,000. I reported the numbers to the project supervisor, and we
+      decided to roll the script out to two other teams, further multiplying the benefit.
+    key_points:
+    - id: kp_1
+      statement: Identifies a specific project, the baseline metric before the change, and the metric
+        after implementation.
+      required: true
+    - id: kp_2
+      statement: Quantifies the improvement (e.g., % reduction in cycle time, increase in test coverage,
+        cost saved).
+      required: true
+    - id: kp_3
+      statement: Explains how the metric was collected and why it mattered to the stakeholder.
+      required: false
+    - id: kp_4
+      statement: Mentions any follow-up actions taken based on the measured results.
+      required: false
+    hint_ladder:
+    - Think of a before-and-after metric you can cite.
+    - What did you track to prove the change worked?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  quantifying_impact__q2:
+    stem: Describe a situation where you had to convince a skeptical stakeholder to adopt your idea. What
+      measurable impact did you promise, and how did you follow up on that promise?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:quantifying_impact
+      weight: 0.7
+    - id: concept:active_listening
+      weight: 0.15
+    - id: concept:receiving_feedback
+      weight: 0.15
+    reference_answer: During my internship at a mid-size manufacturing firm, I suggested switching the
+      batch-size planning from a fixed 100-unit run to a demand-driven model. The operations manager doubted
+      it would improve on-time delivery, so I offered to prove a 10% increase in on-time shipments within
+      two months. I set up a dashboard tracking weekly delivery percentages and ran a pilot on one product
+      line. After eight weeks the on-time rate rose from 78% to 88%, exceeding the target. I presented
+      the data to the manager, incorporated his feedback on data granularity, and the model was later
+      adopted company-wide, saving about 200 hours of overtime annually.
+    key_points:
+    - id: kp_1
+      statement: 'Sets the context: who the stakeholder was, why they were skeptical, and what the idea
+        entailed.'
+      required: true
+    - id: kp_2
+      statement: Specifies a concrete metric promised (e.g., X% increase in throughput, Y% reduction in
+        defects).
+      required: true
+    - id: kp_3
+      statement: Shows how the candidate tracked the metric after implementation and reports the actual
+        outcome.
+      required: true
+    - id: kp_4
+      statement: Highlights any feedback loop – how the candidate addressed gaps between promised and
+        actual results.
+      required: false
+    hint_ladder:
+    - Recall a time you gave a numeric target to win approval.
+    - What data did you collect to verify that target?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  project_storytelling__project_challenge_resolution:
+    stem: Tell me about a time when you hit a major technical roadblock in a project you led; what was
+      the issue, how did you approach solving it, and what was the outcome?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:project_storytelling
+      weight: 0.7
+    - id: concept:answer_structuring
+      weight: 0.15
+    - id: concept:quantifying_impact
+      weight: 0.15
+    reference_answer: In my final year capstone, we built a real-time video analytics pipeline. Midway,
+      the inference latency spiked to 2 seconds per frame, breaking our 30 fps target. I first gathered
+      profiling data, discovered a bottleneck in the data-preprocessing thread, and then re-architected
+      that stage using batch processing and GPU-accelerated libraries. After three days of iteration,
+      latency dropped to 28 ms, restoring the 30 fps rate. The demo ran on schedule, and the client praised
+      us for a 70% speed-up. I learned to prioritize data-flow analysis early and to involve teammates
+      in rapid prototyping, which I now apply to all projects.
+    key_points:
+    - id: kp_1
+      statement: Identifies a specific, concrete technical challenge rather than a vague difficulty.
+      required: true
+    - id: kp_2
+      statement: Describes a clear, step-by-step problem-solving approach (analysis, brainstorming, prototyping,
+        testing).
+      required: true
+    - id: kp_3
+      statement: Mentions the impact of the solution with measurable results (e.g., performance improvement,
+        cost saved, deadline met).
+      required: true
+    - id: kp_4
+      statement: Reflects on a personal learning or improvement that came from the experience.
+      required: false
+    hint_ladder:
+    - Think about a specific obstacle and the concrete steps you took.
+    - Include numbers that show the improvement.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  project_storytelling__project_team_dynamics:
+    stem: Describe a situation where you had to align differing opinions within your project team to meet
+      a deadline; how did you handle the discussion and what was the result?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:project_storytelling
+      weight: 0.7
+    - id: concept:active_listening
+      weight: 0.15
+    - id: concept:explaining_tradeoffs
+      weight: 0.15
+    reference_answer: 'During my internship, I worked on a web-app redesign where the UI team wanted a
+      pixel-perfect design, while the backend team pushed for a minimal viable feature set to meet the
+      launch date. I called a short stand-up, listened to each side, and paraphrased their concerns: the
+      UI team needed brand consistency, and the backend team feared scope creep. I suggested delivering
+      a core set of screens with reusable components, postponing non-essential animations to a post-launch
+      sprint. We agreed on that compromise, completed the MVP two days early, and later added the polished
+      UI in the next release, improving user satisfaction by 15%.'
+    key_points:
+    - id: kp_1
+      statement: Sets the context with a brief project overview and the conflicting viewpoints.
+      required: true
+    - id: kp_2
+      statement: Shows active listening – summarising others' concerns before proposing a path.
+      required: true
+    - id: kp_3
+      statement: Explains the trade-offs considered and the rationale for the chosen compromise.
+      required: true
+    - id: kp_4
+      statement: States the final outcome, ideally with a quantitative metric (e.g., delivered on time,
+        % of scope completed).
+      required: false
+    hint_ladder:
+    - Recall a concrete disagreement and how you facilitated a resolution.
+    - Mention any compromise you negotiated and its effect on the deadline.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  receiving_feedback__q1:
+    stem: Tell me about a time when you were solving a technical problem and your manager gave you a hint
+      that changed your approach. What did you do after receiving that hint?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:receiving_feedback
+      weight: 0.7
+    - id: concept:active_listening
+      weight: 0.15
+    - id: concept:answer_structuring
+      weight: 0.15
+    reference_answer: In my internship I was building a data-pipeline to ingest logs, but the job kept
+      timing out. I had designed a single large batch, assuming the network could handle it. My manager
+      hinted that processing smaller chunks could reduce memory spikes. I paused, asked, “Do you think
+      splitting the batch would help with the timeout?” and re-architected the pipeline to process 10-minute
+      windows. After the change, the job completed in 70% less time and never timed out. I learned to
+      listen for hints, verify assumptions, and iterate fast rather than sticking to a fixed design.
+    key_points:
+    - id: kp_1
+      statement: Describes the original approach and why it was not working.
+      required: true
+    - id: kp_2
+      statement: Explains how they listened to the hint, asked a clarifying question (if any), and adjusted
+        their plan.
+      required: true
+    - id: kp_3
+      statement: Shows the outcome of the revised approach, ideally with a measurable impact.
+      required: true
+    - id: kp_4
+      statement: Reflects on what they learned about incorporating feedback quickly.
+      required: false
+    hint_ladder:
+    - Think about how you acknowledged the hint and whether you asked for clarification before acting.
+    - Mention the concrete result that showed the hint was effective.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  receiving_feedback__q2:
+    stem: Recall a situation where, during a group presentation, a teammate interrupted you with a suggestion.
+      How did you handle the interruption and incorporate the feedback?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:receiving_feedback
+      weight: 0.7
+    - id: concept:handling_interruptions
+      weight: 0.15
+    - id: concept:clarifying_questions
+      weight: 0.15
+    reference_answer: During my final year project demo I was explaining our algorithm’s accuracy when
+      my teammate cut in, saying, “We should also show the confusion matrix here.” I thanked him, briefly
+      paused, and asked, “Do you think the audience would benefit from a quick view of false positives?”
+      I then added a slide with the matrix, highlighted the key numbers, and continued. The panel appreciated
+      the extra insight, and we got a higher score for clarity. The episode taught me to welcome interruptions,
+      seek quick clarification, and adapt on the spot.
+    key_points:
+    - id: kp_1
+      statement: 'Sets the context: what the presentation was about and their role.'
+      required: true
+    - id: kp_2
+      statement: Describes the interruption, the hint given, and any clarifying question they asked.
+      required: true
+    - id: kp_3
+      statement: Explains how they paused, acknowledged the teammate, and adjusted the slide or explanation.
+      required: true
+    - id: kp_4
+      statement: Mentions the final impact on the audience or outcome.
+      required: false
+    hint_ladder:
+    - Recall how you acknowledged the interruption before responding.
+    - Focus on the concrete adjustment you made and its effect.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  disagreeing_respectfully__q1:
+    stem: Tell me about a time you disagreed with a senior or interviewer on a technical approach. How
+      did you express your view while keeping the conversation respectful?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:disagreeing_respectfully
+      weight: 0.7
+    - id: concept:active_listening
+      weight: 0.15
+    - id: concept:answer_structuring
+      weight: 0.15
+    reference_answer: 'In a design review for my final year project, the lead architect suggested using
+      a monolithic architecture to meet the deadline. I listened carefully, then summarized his rationale:
+      faster rollout but higher long-term maintenance. I politely said, "I understand the time pressure,
+      but our load tests showed a micro-service split would reduce response time by 30% and ease scaling
+      later." I backed it with the test numbers, asked if those metrics mattered, and invited the team
+      to discuss trade-offs. After a brief debate we agreed on a hybrid approach, meeting the deadline
+      while keeping scalability. The compromise was implemented and later saved us 15% in server costs.'
+    key_points:
+    - id: kp_1
+      statement: Describes the specific context (e.g., design review, interview) and the point of disagreement.
+      required: true
+    - id: kp_2
+      statement: Explains how they first listened fully and paraphrased the other’s reasoning before presenting
+        their own view.
+      required: true
+    - id: kp_3
+      statement: Shows they used data or logical arguments, not personal opinion, and invited feedback.
+      required: true
+    - id: kp_4
+      statement: Mentions the outcome – either a compromise, a revised solution, or a learning takeaway.
+      required: false
+    hint_ladder:
+    - Recall the situation, your perspective, and the steps you took to keep tone constructive.
+    - Mention any follow-up actions that showed you valued the other’s input.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  disagreeing_respectfully__q2:
+    stem: During an interview you’re asked to solve a problem and you think the interviewer’s hint is
+      leading you down a sub-optimal path. How would you respectfully push back and propose an alternative?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:disagreeing_respectfully
+      weight: 0.7
+    - id: concept:clarifying_questions
+      weight: 0.15
+    - id: concept:thinking_aloud
+      weight: 0.15
+    reference_answer: I thanked the interviewer for the hint and said, "I see why that direction makes
+      sense for a quick prototype." Then I asked, "Are we aiming for the most time-efficient solution
+      or for optimal space complexity as well?" I explained that the hinted greedy approach would be O(n
+      log n), but a divide-and-conquer method could achieve O(n) while still meeting the constraints.
+      I suggested we could implement the greedy version first to validate the idea and then switch to
+      the linear algorithm if performance becomes a bottleneck. The interviewer appreciated the clarification
+      and let me proceed with the linear solution.
+    key_points:
+    - id: kp_1
+      statement: Acknowledges the interviewer’s hint and shows appreciation for it.
+      required: true
+    - id: kp_2
+      statement: Uses a clarifying question to surface the underlying assumption of the hint.
+      required: true
+    - id: kp_3
+      statement: Presents an alternative approach, explaining why it may be more efficient or robust,
+        with concise reasoning.
+      required: true
+    - id: kp_4
+      statement: Offers to try either method, demonstrating flexibility and respect for the interviewer's
+        perspective.
+      required: false
+    hint_ladder:
+    - Think about how you would acknowledge the hint, ask a clarifying question, and then outline your
+      alternative reasoning.
+    - Show the mental steps you’d verbalise.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  closing_questions__q1:
+    stem: After you’ve answered all the interview questions, what thoughtful question could you ask the
+      interviewer to show you’re evaluating the role and company fit?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: intro
+    time_budget_s: 150
+    concepts:
+    - id: concept:closing_questions
+      weight: 0.7
+    - id: concept:active_listening
+      weight: 0.15
+    reference_answer: A good closing question could be, “I’m excited about the work you described on the
+      new AI platform. Could you share what the team’s top priorities are for the next six months and
+      how success will be measured?” This shows the candidate listened, links to something discussed,
+      and gauges whether the role’s challenges match their aspirations. It also signals they’re thinking
+      ahead about impact and fit.
+    key_points:
+    - id: kp_1
+      statement: Mentions asking about the team’s current priorities or upcoming projects, showing interest
+        in immediate impact.
+      required: true
+    - id: kp_2
+      statement: References a specific aspect of the company culture or growth trajectory that the candidate
+        discovered during the interview.
+      required: true
+    - id: kp_3
+      statement: Explains how the answer would help the candidate decide whether the role aligns with
+        their career goals.
+      required: false
+    hint_ladder:
+    - Tie the question to something the interviewer just mentioned.
+    - Focus on future work, metrics, or culture rather than salary.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  closing_questions__q2:
+    stem: Imagine the interview is wrapping up and you have a chance to ask a question that reveals how
+      the company supports employee growth. What would you ask and why?
+    modality: verbal
+    round_types:
+    - behavioural
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:closing_questions
+      weight: 0.7
+    - id: concept:clarifying_questions
+      weight: 0.15
+    reference_answer: I’d ask, “Can you tell me how engineers typically advance here – for example, are
+      there formal mentorship programs or tuition-reimbursement for certifications?” I’m asking because
+      I want a role where I can keep sharpening my skills and eventually take on more responsibility.
+      Understanding the growth path helps me see if the company’s trajectory aligns with my five-year
+      plan.
+    key_points:
+    - id: kp_1
+      statement: Proposes a question about mentorship, learning resources, or career progression paths.
+      required: true
+    - id: kp_2
+      statement: Explains why knowing about growth opportunities matters to the candidate’s long-term
+        plans.
+      required: true
+    - id: kp_3
+      statement: Shows the candidate is evaluating fit beyond the immediate role.
+      required: false
+    hint_ladder:
+    - Think of a question that uncovers support structures like training or promotion cycles.
+    - Mention the candidate’s own career objectives briefly.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'

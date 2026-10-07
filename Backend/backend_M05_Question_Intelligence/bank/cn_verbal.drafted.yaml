@@ -1,0 +1,1048 @@
+# DRAFTED — cn_verbal. Written by jobs/draft_items.py with a model; NOT reviewed.
+# provenance: generated + scored_use_approved: false on every item: FR-5.6 needs a
+# person to approve an item before it counts toward a score. Practise only until then.
+
+items:
+  osi_and_tcp_ip_model__q1:
+    stem: In a legacy system you notice that a client can ping an IP address but cannot reach a web server
+      on port 80; which layer of the OSI model is most likely responsible for this issue and why?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:osi_and_tcp_ip_model
+      weight: 0.7
+    - id: concept:tcp_vs_udp
+      weight: 0.15
+    reference_answer: The problem is probably at the Transport layer, which is Layer 4 of the OSI model.
+      Ping uses ICMP, a Network-layer (Layer 3) protocol, so the fact that ping succeeds shows that IP
+      routing and addressing are fine. Accessing a web server on port 80, however, requires a TCP connection;
+      ports are defined at the Transport layer. If the TCP service is not listening, or a firewall is
+      dropping TCP packets to port 80, the client will see the connection fail even though the host is
+      reachable. Thus the Transport layer is the most likely culprit.
+    key_points:
+    - id: kp_1
+      statement: Identifies the Transport layer (Layer 4) as the likely cause because ports are a transport-layer
+        concept.
+      required: true
+    - id: kp_2
+      statement: Explains that ICMP ping works at the Network layer, so connectivity at that layer is
+        fine.
+      required: true
+    - id: kp_3
+      statement: Mentions that a firewall or mis-configured service at the Transport layer could block
+        TCP port 80.
+      required: false
+    hint_ladder:
+    - Think about where ports are defined.
+    - Consider the difference between addressing and transport.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  osi_and_tcp_ip_model__q2:
+    stem: Compare how the OSI model and the TCP/IP model treat the responsibilities of the Presentation
+      and Session layers, and explain why many textbooks collapse them into a single layer.
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: intro
+    time_budget_s: 240
+    concepts:
+    - id: concept:osi_and_tcp_ip_model
+      weight: 0.7
+    reference_answer: In the OSI reference model, the Presentation layer is responsible for syntax translation,
+      encryption, and data formatting, while the Session layer manages dialog control, synchronization,
+      and connection establishment. The TCP/IP model, however, does not define these as separate layers;
+      it lumps both responsibilities into its Application layer. This is because most Internet protocols—such
+      as HTTP, SMTP, and DNS—already incorporate both data representation and session management within
+      a single protocol stack. Consequently, textbooks often collapse the two OSI layers into one to reflect
+      how the TCP/IP suite is actually implemented, simplifying the model without losing functional meaning.
+    key_points:
+    - id: kp_1
+      statement: States that the OSI model has separate Presentation (Layer 6) and Session (Layer 5) layers,
+        while the TCP/IP model merges their functions into the Application layer.
+      required: true
+    - id: kp_2
+      statement: Explains that most Internet protocols (HTTP, SMTP, DNS) handle both data formatting and
+        session management within the same protocol, making separate layers unnecessary.
+      required: true
+    - id: kp_3
+      statement: Notes that the collapse simplifies implementation and aligns with the practical design
+        of the TCP/IP suite.
+      required: false
+    hint_ladder:
+    - Recall the number of layers in each model.
+    - Think about typical real-world protocols.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  ip_addressing__q1:
+    stem: In your recent internship you noticed a server on a private network could not be reached from
+      the corporate VPN; you suspect an IP addressing issue. How would you diagnose and resolve it?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:ip_addressing
+      weight: 0.7
+    - id: concept:subnetting
+      weight: 0.15
+    - id: concept:routing
+      weight: 0.15
+    reference_answer: First I would log onto the server and run ifconfig/ip to note its IPv4 address and
+      subnet mask, confirming it sits in a private block like 10.1.2.0/24. Next, from my laptop on the
+      VPN I’d check my own address and the routing table (ip route) to see whether a route to 10.1.2.0/24
+      exists via the VPN gateway. If the route is missing, I’d add a static route or ask the VPN admin
+      to push the correct subnet. If both sides use overlapping private ranges, I’d change one side’s
+      address pool to avoid conflict. Finally I’d test connectivity with ping or traceroute to confirm
+      the issue is resolved.
+    key_points:
+    - id: kp_1
+      statement: Checks the server's IP and subnet mask to ensure it belongs to the expected private range.
+      required: true
+    - id: kp_2
+      statement: Verifies that the VPN client’s assigned IP and its route table include a path to the
+        server’s subnet.
+      required: true
+    - id: kp_3
+      statement: Identifies any overlapping private ranges (e.g., 10.0.0.0/8 on both sides) that could
+        cause routing ambiguity.
+      required: false
+    - id: kp_4
+      statement: Proposes a fix such as adjusting the VPN’s address pool, adding a static route, or re-subnetting
+        the server’s network.
+      required: true
+    hint_ladder:
+    - Think about network masks, default gateways, and overlapping address ranges.
+    - Consider what tools you would run from both ends.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  ip_addressing__q2:
+    stem: Explain why IPv6 was introduced despite the existence of IPv4, focusing on the technical limitations
+      IPv4 faces today.
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: intro
+    time_budget_s: 150
+    concepts:
+    - id: concept:ip_addressing
+      weight: 0.7
+    reference_answer: IPv4’s 32-bit address space gives roughly 4.3 billion unique addresses, and after
+      decades of growth the public pool is essentially exhausted, forcing NAT and address sharing. IPv6
+      expands the address field to 128 bits, giving an astronomically large address space that removes
+      scarcity and lets ISPs allocate hierarchical blocks without overlap. It also adds native support
+      for stateless address autoconfiguration, eliminating the need for manual configuration or DHCP in
+      many cases, and makes NAT unnecessary, simplifying end-to-end connectivity. Additionally, IPv6 mandates
+      IPsec support and has a simpler fixed-length header, improving routing efficiency and security.
+    key_points:
+    - id: kp_1
+      statement: IPv4 provides only about 4.3 billion addresses, which are exhausted for global allocation.
+      required: true
+    - id: kp_2
+      statement: IPv6 expands the address space to 2^128, eliminating scarcity and allowing hierarchical
+        allocation.
+      required: true
+    - id: kp_3
+      statement: IPv6 embeds autoconfiguration (stateless address autoconfiguration) and eliminates the
+        need for NAT.
+      required: false
+    - id: kp_4
+      statement: IPv6 includes built-in security (IPsec mandatory) and simplifies header processing for
+        routers.
+      required: false
+    hint_ladder:
+    - Consider address space and built-in features.
+    - Think about how IPv6 simplifies network configuration.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  subnetting__q1:
+    stem: 'You have been assigned the block 172.16.0.0/16 and need to create subnets for three departments:
+      HR needs 120 hosts, Engineering needs 300 hosts, and Sales needs 60 hosts. Using VLSM, how would
+      you allocate subnets and what are the resulting CIDR notations?'
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:subnetting
+      weight: 0.7
+    - id: concept:ip_addressing
+      weight: 0.15
+    reference_answer: 'First, sort departments by host requirement: Engineering (300), HR (120), Sales
+      (60). For 300 hosts we need 9 host bits (2^9-2=510), so a /23 subnet works. Assign 172.16.0.0/23
+      to Engineering. Next, HR needs 120 hosts, requiring 8 host bits (2^8-2=254), so a /24 subnet. Give
+      it 172.16.2.0/24. Sales needs 60 hosts, needing 7 host bits (2^7-2=126), so a /25 subnet. Allocate
+      172.16.3.0/25. The remaining address space starts at 172.16.4.0, leaving a /22 block for future
+      use.'
+    key_points:
+    - id: kp_1
+      statement: Identifies the required host bits for each department (Engineering 9 bits, HR 8 bits,
+        Sales 7 bits).
+      required: true
+    - id: kp_2
+      statement: Allocates subnets in descending order of size, e.g., Engineering gets 172.16.0.0/23,
+        HR gets 172.16.2.0/24, Sales gets 172.16.3.0/25.
+      required: true
+    - id: kp_3
+      statement: Shows the remaining address space after allocation (e.g., 172.16.4.0/22).
+      required: false
+    hint_ladder:
+    - Start with the largest department and allocate the smallest possible subnet that fits.
+    - Remember that each subnet must have room for network and broadcast addresses.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  subnetting__q2:
+    stem: During a network audit you notice that a /24 subnet is being used for a branch office that only
+      has 10 devices, and the same address range is also being advertised to the internet via a static
+      route. What problems could arise and how would you remediate them?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: core
+    time_budget_s: 150
+    concepts:
+    - id: concept:subnetting
+      weight: 0.7
+    - id: concept:network_security_basics
+      weight: 0.15
+    - id: concept:routing
+      weight: 0.15
+    reference_answer: The /24 is far larger than needed for ten devices, so you’re wasting valuable address
+      space that could be used elsewhere, especially in a private address plan. More critically, advertising
+      that private prefix to the internet creates a routing leak – external routers may try to send traffic
+      to that block, and it reveals internal topology, increasing attack surface. To fix it, shrink the
+      branch subnet to something like a /28 (16 addresses, 14 usable) and update the router’s interface
+      IP. Then either stop advertising the private prefix altogether, or place the branch behind NAT/firewall
+      and only advertise a summarized public prefix. Finally, clean up the static route and add ACLs to
+      block any inbound traffic to the private range.
+    key_points:
+    - id: kp_1
+      statement: Points out wasted IP space and potential exhaustion of the organization's address pool.
+      required: true
+    - id: kp_2
+      statement: Explains that advertising a private /24 to the internet can cause routing leaks and expose
+        internal network structure.
+      required: true
+    - id: kp_3
+      statement: Suggests remediations such as summarizing the branch into a smaller subnet (e.g., /28)
+        and using NAT or a firewall to prevent the private prefix from being advertised.
+      required: true
+    - id: kp_4
+      statement: Mentions updating routing configurations to remove the static advertisement and ensuring
+        proper ACLs.
+      required: false
+    hint_ladder:
+    - Think about address waste and exposure of internal topology.
+    - Consider both routing table size and security implications.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  tcp_vs_udp__udp_packet_loss_debugging_scenario:
+    stem: You notice that a video streaming application using UDP occasionally shows glitches, but the
+      server logs show packets being sent on time. What could be causing the glitches and how would you
+      investigate?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:tcp_vs_udp
+      weight: 0.7
+    - id: concept:network_security_basics
+      weight: 0.15
+    reference_answer: Because UDP is connectionless, the network can discard packets without notifying
+      anyone. The glitches are likely due to packet loss either in the path—routers dropping packets because
+      of congestion or QoS policies—or at the receiver, where the kernel receive buffer overflows if the
+      app doesn't read fast enough. To pinpoint the cause, I would capture traffic with Wireshark on both
+      ends, check sequence numbers for gaps, and run a traceroute to see any congested hops. I’d also
+      look at the socket's receive buffer size and consider increasing it or enabling socket options like
+      SO_RCVBUF. If a firewall or NAT is in the path, I’d verify that UDP ports are allowed and that state
+      timeouts aren’t too short.
+    key_points:
+    - id: kp_1
+      statement: UDP provides no delivery guarantee, so packets can be dropped by routers due to congestion
+        or buffer overflow.
+      required: true
+    - id: kp_2
+      statement: Packet loss can also occur at the receiver if the application cannot read from the socket
+        quickly enough, causing kernel buffers to overflow.
+      required: true
+    - id: kp_3
+      statement: Using tools like ping, traceroute, or Wireshark can identify where loss happens, and
+        checking socket receive buffer size or enabling QoS can mitigate it.
+      required: false
+    - id: kp_4
+      statement: Firewalls or NAT devices may silently drop UDP traffic if they see no recent activity,
+        leading to intermittent glitches.
+      required: false
+    hint_ladder:
+    - Think about what can happen to a UDP packet after it leaves the sender.
+    - Consider both network and host-side factors.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  tcp_vs_udp__choosing_transport_for_real_time_multipl:
+    stem: A startup wants to build a real-time multiplayer shooter where latency is critical but occasional
+      state loss is acceptable. Should they use TCP or UDP, and what trade-offs should they consider?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:tcp_vs_udp
+      weight: 0.7
+    - id: concept:tcp_reliability
+      weight: 0.15
+    reference_answer: For a fast-paced shooter, UDP is the better choice because it avoids the handshake
+      and retransmission delays of TCP, giving the sub-50 ms latency players expect. Since the game can
+      tolerate occasional missed position updates, dropping lost packets is acceptable and keeps the state
+      current. However, UDP gives no ordering or reliability, so the developers must add sequence numbers
+      to discard out-of-order packets and perhaps implement lightweight ACKs for critical data like health
+      changes or chat. TCP would guarantee delivery but its head-of-line blocking would introduce lag,
+      making the experience feel sluggish. A hybrid model—UDP for real-time movement and TCP or reliable
+      UDP for important state—often works best.
+    key_points:
+    - id: kp_1
+      statement: UDP is preferred because it offers lower latency and does not retransmit lost packets,
+        which aligns with the tolerance for occasional state loss.
+      required: true
+    - id: kp_2
+      statement: Using UDP means the game must implement its own handling for ordering, duplicate suppression,
+        and basic reliability for critical messages.
+      required: true
+    - id: kp_3
+      statement: TCP would guarantee delivery and ordering but adds head-of-line blocking and higher latency,
+        hurting fast action responsiveness.
+      required: false
+    - id: kp_4
+      statement: If some messages (e.g., chat or inventory updates) need reliability, the game can layer
+        a simple ACK/retry mechanism on top of UDP or use a hybrid approach.
+      required: false
+    hint_ladder:
+    - Recall the main differences in reliability and ordering guarantees.
+    - Think about how those properties affect game state synchronization.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  tcp_reliability__q1:
+    stem: During a live video streaming session you notice occasional frame freezes and the client logs
+      show duplicate ACKs followed by a retransmission; explain why TCP’s reliability mechanisms trigger
+      this behavior and how they help maintain the stream quality.
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:tcp_reliability
+      weight: 0.7
+    - id: concept:congestion_control
+      weight: 0.15
+    reference_answer: When the receiver gets out-of-order packets, it sends duplicate ACKs indicating
+      the highest in-order sequence number it has. The sender interprets three duplicate ACKs as a sign
+      that a segment was lost and immediately retransmits that segment, rather than waiting for the retransmission
+      timer. This fast-retransmit restores the missing data quickly, preventing long pauses in the video.
+      At the same time, the loss event signals congestion, so TCP reduces its congestion window, slowing
+      the send rate to avoid further packet loss. Together, fast-retransmit and congestion control keep
+      the stream flowing with minimal disruption.
+    key_points:
+    - id: kp_1
+      statement: Duplicate ACKs indicate out-of-order receipt and trigger fast-retransmit after three
+        duplicates.
+      required: true
+    - id: kp_2
+      statement: Fast-retransmit quickly resends the missing segment, reducing perceived freeze time.
+      required: true
+    - id: kp_3
+      statement: The loss event also causes TCP to cut its congestion window, throttling the send rate.
+      required: false
+    - id: kp_4
+      statement: Retransmission timer is a fallback if duplicate ACKs are not received.
+      required: false
+    hint_ladder:
+    - Think about what the receiver does when it sees a gap in sequence numbers.
+    - Recall what TCP does after three duplicate ACKs versus a timeout.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  tcp_reliability__q2:
+    stem: A server handling many short HTTP requests decides to increase its TCP sliding-window size;
+      what are the trade-offs involved, and how could an overly large window affect reliability and network
+      performance?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:tcp_reliability
+      weight: 0.7
+    - id: concept:tcp_vs_udp
+      weight: 0.15
+    reference_answer: Increasing the window lets the sender push more data before waiting for ACKs, which
+      improves throughput on high-latency links. However, a too-large window can cause more data to be
+      in flight, so a single packet loss forces retransmission of a larger amount of data, increasing
+      recovery time and memory usage. It also risks overwhelming buffers in intermediate routers, leading
+      to packet drops and higher congestion. Moreover, if the receiver’s advertised window is smaller,
+      the sender must still respect it, so the benefit is limited. The optimal size balances bandwidth-delay
+      product against buffer capacity and loss sensitivity.
+    key_points:
+    - id: kp_1
+      statement: Larger windows increase throughput by allowing more unacknowledged data.
+      required: true
+    - id: kp_2
+      statement: A bigger window means a loss can affect more data, lengthening retransmission time.
+      required: true
+    - id: kp_3
+      statement: Excessive in-flight data can overflow router buffers, causing drops and congestion.
+      required: false
+    - id: kp_4
+      statement: The sender must still obey the receiver’s advertised window, limiting gains.
+      required: false
+    hint_ladder:
+    - Consider the relationship between bandwidth-delay product and window size.
+    - What happens to buffer usage and loss recovery when many bytes are in flight?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  congestion_control__q1:
+    stem: During a live video streaming session you notice the bitrate suddenly drops and the client shows
+      buffering after a few seconds; what does TCP's congestion control likely do in response, and why
+      does it behave that way?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:congestion_control
+      weight: 0.7
+    - id: concept:tcp_reliability
+      weight: 0.15
+    reference_answer: When the client experiences buffering, it usually means packet loss has occurred
+      on the path. TCP interprets loss as a congestion signal, so the sender cuts its congestion window
+      to half (multiplicative decrease) and enters congestion avoidance. If the loss is detected by triple
+      duplicate ACKs, it performs fast retransmit and then reduces cwnd, then grows it linearly each RTT.
+      If a timeout occurs, cwnd falls to one MSS and slow start restarts, probing the network again. This
+      behavior prevents overwhelming the network and gradually finds the new available bandwidth, which
+      is why the bitrate drops until the window grows back.
+    key_points:
+    - id: kp_1
+      statement: Identifies packet loss as the congestion signal causing cwnd reduction.
+      required: true
+    - id: kp_2
+      statement: Describes multiplicative decrease (halving cwnd) and transition to congestion avoidance.
+      required: true
+    - id: kp_3
+      statement: Mentions fast retransmit vs timeout handling and the role of slow start after a timeout.
+      required: false
+    - id: kp_4
+      statement: Explains that the linear increase after reduction probes for available bandwidth.
+      required: false
+    hint_ladder:
+    - Think about what TCP does when it sees duplicate ACKs versus a timeout.
+    - Recall the terms 'slow start', 'multiplicative decrease', and 'linear increase'.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  congestion_control__q2:
+    stem: Your team is designing a new microservice that sends frequent small updates over TCP; you must
+      choose between keeping the default AIMD congestion control or disabling it in favor of a custom
+      rate limiter. What trade-offs should you discuss?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:congestion_control
+      weight: 0.7
+    - id: concept:http_and_rest
+      weight: 0.15
+    reference_answer: 'The default AIMD algorithm gives fairness and self-regulation: it backs off when
+      the network is congested and ramps up slowly, which protects other traffic and avoids packet loss.
+      Disabling it removes this safety net; a custom rate limiter can guarantee a steady send rate, which
+      may reduce latency for tiny messages, but it risks overwhelming the path, causing loss, retransmissions,
+      and hurting other services. You also lose TCP''s built-in congestion avoidance, so you must implement
+      your own loss detection and back-off logic. The trade-off is between simplicity and network friendliness
+      versus tighter control over latency at the cost of potential instability.'
+    key_points:
+    - id: kp_1
+      statement: States that AIMD provides fairness and automatic back-off on congestion.
+      required: true
+    - id: kp_2
+      statement: Notes that disabling AIMD requires a custom mechanism to detect loss and throttle.
+      required: true
+    - id: kp_3
+      statement: Mentions potential benefit of lower latency for small updates.
+      required: false
+    - id: kp_4
+      statement: Warns about possible network overload and impact on other services.
+      required: false
+    hint_ladder:
+    - Consider what happens to other flows if you ignore congestion signals.
+    - Think about latency versus stability.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  routing__item_1:
+    stem: Your company just deployed a new data center and you need to integrate it into the existing
+      ISP network using BGP. Explain why you would prefer iBGP over eBGP for internal routing and what
+      potential routing loops you must guard against.
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:routing
+      weight: 0.7
+    - id: concept:ip_addressing
+      weight: 0.15
+    reference_answer: In an internal network we use iBGP because all routers belong to the same autonomous
+      system, so the AS_PATH attribute stays unchanged and we can apply consistent policies across the
+      data center. iBGP does not modify the next-hop, which is useful for keeping the original external
+      path information. However, iBGP does not automatically prevent loops; each iBGP speaker must see
+      the same route only once, which is why we either build a full mesh of iBGP sessions or deploy route
+      reflectors/ confederations. Without that, a route could be reflected back to its origin and be re-advertised
+      endlessly, creating a routing loop and a storm of updates.
+    key_points:
+    - id: kp_1
+      statement: Describes that iBGP keeps all AS numbers the same inside the enterprise, avoiding external
+        AS path manipulation.
+      required: true
+    - id: kp_2
+      statement: Explains that iBGP requires a full mesh or route reflectors to prevent routing loops
+        within the AS.
+      required: true
+    - id: kp_3
+      statement: Mentions that without proper loop prevention, the same update could be re-advertised
+        indefinitely, causing routing storms.
+      required: false
+    hint_ladder:
+    - Think about how AS_PATH is used by BGP to detect loops.
+    - What mechanism does iBGP lack that eBGP has for loop avoidance?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  routing__item_2:
+    stem: During a network outage you notice that OSPF routers are still exchanging LSAs but traffic is
+      still black-holed. What could cause this discrepancy and how would you troubleshoot it?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:routing
+      weight: 0.7
+    - id: concept:network_security_basics
+      weight: 0.15
+    reference_answer: Even though LSAs are flooding, OSPF may not install routes if the routers belong
+      to different area types – for example, a stub area will not accept external LSAs, so traffic to
+      those prefixes is black-holed. Another common cause is a security device or ACL on the outbound
+      interface that drops the traffic after the routing decision. To troubleshoot, I would first verify
+      the OSPF database and area types, then confirm that the routes appear in the routing table with
+      ‘show ip route’. Next, I would inspect interface ACLs or firewall rules, and finally check for LSDB
+      mismatches or passive interfaces that might be preventing route installation.
+    key_points:
+    - id: kp_1
+      statement: Identifies that mismatched OSPF area types (e.g., stub vs. normal) can cause routes to
+        be omitted from the routing table.
+      required: true
+    - id: kp_2
+      statement: Points out that a firewall ACL or security policy could be dropping packets even though
+        routes exist.
+      required: true
+    - id: kp_3
+      statement: Suggests checking for LSDB inconsistencies, MTU mismatches, or passive interfaces that
+        prevent route installation.
+      required: false
+    hint_ladder:
+    - Look at the OSPF area configuration on the affected routers.
+    - Consider what happens after the routing decision is made.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  dns__q1:
+    stem: A client on your laptop tries to open https://example.com but the browser hangs after the DNS
+      lookup; what could cause the DNS resolution to fail in this scenario?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:dns
+      weight: 0.7
+    - id: concept:network_security_basics
+      weight: 0.15
+    reference_answer: The most common cause is a mis-configured recursive resolver – the client may be
+      pointing to a DNS server that is offline, has the wrong IP, or is blocked by a corporate firewall.
+      In that case the resolver never gets a response, so the browser waits indefinitely. Another possibility
+      is that a firewall or DNS-filtering device is dropping UDP/53 packets, effectively cutting off the
+      lookup. If the resolver does get a response but the authoritative servers for example.com are down
+      or returning SERVFAIL, the client will also see a hang because it cannot retrieve the final A or
+      AAAA record. Any of these issues break the DNS resolution step, causing the browser to stall before
+      establishing the TLS connection.
+    key_points:
+    - id: kp_1
+      statement: The resolver might be using an incorrect or unreachable recursive DNS server (mis-configured
+        DNS settings).
+      required: true
+    - id: kp_2
+      statement: A DNS response could be blocked or tampered with by a firewall or DNS-based filtering,
+        preventing the client from receiving an answer.
+      required: true
+    - id: kp_3
+      statement: Cache poisoning or expired TTL could cause the resolver to repeatedly query a dead authoritative
+        server.
+      required: false
+    - id: kp_4
+      statement: If the domain's authoritative name servers are down, the resolver cannot obtain the final
+        A/AAAA record.
+      required: false
+    hint_ladder:
+    - Think about the steps a resolver performs after receiving a query.
+    - Consider both configuration and external factors.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  dns__q2:
+    stem: Compare iterative and recursive DNS queries from the perspective of a recursive resolver – when
+      would you prefer one over the other?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+    - id: concept:dns
+      weight: 0.7
+    reference_answer: A recursive query asks the resolver to fetch the final answer, so the resolver contacts
+      the root, the TLD, and the authoritative name servers in sequence, returning the A/AAAA record to
+      the client. This hides the lookup complexity from the client and typically gives lower overall latency
+      for the client, but it puts the processing and network load on the resolver and on the upstream
+      DNS hierarchy. An iterative query, on the other hand, returns a referral – the IP of the next server
+      – and the client (or a forwarding resolver) follows the chain itself. Iterative mode is lighter
+      on the resolver and can be useful for forwarders or when you want to distribute load across the
+      DNS tree, but it adds round-trip latency for the client and requires the client to understand referrals.
+      In practice, recursive queries are the default for end-user resolvers, while iterative queries are
+      used internally by DNS servers and for special low-resource scenarios.
+    key_points:
+    - id: kp_1
+      statement: In a recursive query the resolver does all the work, contacting root, TLD, and authoritative
+        servers on behalf of the client.
+      required: true
+    - id: kp_2
+      statement: In an iterative query the resolver returns a referral to the client, which then contacts
+        the next server itself.
+      required: true
+    - id: kp_3
+      statement: Recursive queries reduce client complexity and latency for the client, but increase load
+        on the resolver and on the DNS infrastructure.
+      required: false
+    - id: kp_4
+      statement: Iterative queries are useful for DNS servers that act as forwarders or for low-power
+        devices that prefer minimal processing.
+      required: false
+    hint_ladder:
+    - Recall who does the work in each mode.
+    - Think about network load and latency.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  http_and_rest__q1:
+    stem: A client receives a 404 response from a REST endpoint after sending a GET request; what does
+      this status code indicate about the request and the server's handling of the resource?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:http_and_rest
+      weight: 0.7
+    reference_answer: A 404 Not Found tells us that the HTTP request reached the server and was correctly
+      formed, but the server has no representation for the URI you asked for. It’s not a client-side syntax
+      error or a server failure; the resource simply isn’t present at that path. The client should verify
+      the endpoint, maybe query a different URL, or present a user-friendly error. The network stack worked
+      fine – the issue is purely about resource existence.
+    key_points:
+    - id: kp_1
+      statement: Explains that 404 means the server could not find a current representation of the requested
+        resource at the given URI.
+      required: true
+    - id: kp_2
+      statement: Notes that the request was syntactically valid and reached the server, so the network
+        layer worked correctly.
+      required: false
+    - id: kp_3
+      statement: Mentions that the client may need to check the URL, use a different endpoint, or handle
+        the error gracefully.
+      required: false
+    hint_ladder:
+    - Think about what the first digit of the status code means.
+    - Consider whether the request reached the server or got blocked earlier.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  http_and_rest__q2:
+    stem: During a load test you notice that POST requests to create new orders are returning 429 Too
+      Many Requests; how would you explain why this happens and what steps you could take to mitigate
+      it while keeping the API RESTful?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+    - id: concept:http_and_rest
+      weight: 0.7
+    - id: concept:network_security_basics
+      weight: 0.15
+    reference_answer: A 429 Too Many Requests response means the server has enforced a rate-limit policy
+      because the client sent more POST calls than allowed in a given window. This is a protective measure
+      to prevent overload and can also deter abuse, tying into basic network security. To stay RESTful,
+      the client should respect the Retry-After header, implement exponential back-off, and possibly batch
+      or throttle requests. On the server side you could tune the quota, use leaky-bucket or token-bucket
+      algorithms, and ensure the endpoint remains stateless and idempotent where applicable.
+    key_points:
+    - id: kp_1
+      statement: Identifies that 429 signals the server is applying rate limiting because the client exceeded
+        a configured request quota.
+      required: true
+    - id: kp_2
+      statement: Describes that rate limiting protects the service from overload and can be part of a
+        security strategy against abuse.
+      required: false
+    - id: kp_3
+      statement: Suggests mitigation actions such as exponential back-off, retry-after header handling,
+        or adjusting client request patterns, while preserving statelessness of the API.
+      required: true
+    - id: kp_4
+      statement: Mentions that the API should still be idempotent where appropriate and that the client
+        can cache the Retry-After value.
+      required: false
+    hint_ladder:
+    - What does the 4xx class of codes represent?
+    - Think about how a client can react to a Retry-After header.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  https_and_tls__q1:
+    stem: A client connects to https://example.com and you notice the TLS handshake takes noticeably longer
+      than usual; what could cause this delay and how would you investigate it?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:https_and_tls
+      weight: 0.7
+    - id: concept:network_security_basics
+      weight: 0.15
+    reference_answer: The delay can stem from several handshake phases. First, DNS lookup or the TCP three-way
+      handshake may be slow, especially on a congested link. Once the TCP connection is up, the client
+      sends a ClientHello; if the server presents a large certificate chain or the client must fetch revocation
+      data via OCSP or CRL, that adds time. Lack of session resumption forces a full handshake, which
+      is longer. To debug, I’d capture the flow with Wireshark to see where the pause occurs, test the
+      server with openssl s_client -tls1_2 -servername example.com, check whether OCSP stapling is enabled,
+      and verify the certificate chain size. On the client side I’d ensure the root store is up-to-date
+      and test on a different network to rule out latency.
+    key_points:
+    - id: kp_1
+      statement: Identifies that DNS resolution, TCP three-way handshake, or certificate validation can
+        add latency before TLS negotiation.
+      required: true
+    - id: kp_2
+      statement: Mentions possible server-side issues such as large certificate chain, OCSP/CRL checks,
+        or lack of session resumption.
+      required: true
+    - id: kp_3
+      statement: 'Suggests practical debugging steps: capture traffic with Wireshark/tcpdump, check server
+        logs, test with openssl s_client, and verify OCSP stapling.'
+      required: false
+    - id: kp_4
+      statement: Notes that client-side problems like outdated root store or slow network can also contribute.
+      required: false
+    hint_ladder:
+    - Think about each step of the TLS handshake and what external factors can affect them.
+    - Consider both client-side and server-side configurations.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  https_and_tls__q2:
+    stem: In a microservice architecture, one service calls another over HTTPS and you notice occasional
+      "certificate pinning" failures after a deployment; why does this happen and what strategy would
+      you use to avoid it?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:https_and_tls
+      weight: 0.7
+    - id: concept:http_and_rest
+      weight: 0.15
+    reference_answer: Certificate pinning makes the client accept only a known certificate or its public
+      key. When the service is redeployed, the TLS termination may get a new cert—perhaps from an automated
+      renewal—so the pinned value no longer matches, and the client aborts the request. To avoid this,
+      I’d pin to the issuing CA’s public key instead of the leaf certificate, or use a key-rotation approach
+      where the new cert is deployed alongside the old one and the client is allowed to accept either
+      for a transition period. Another option is to implement a fallback to the system trust store after
+      a configurable number of pin failures, balancing security with availability.
+    key_points:
+    - id: kp_1
+      statement: Explains that pinning ties the client to a specific server certificate or public key,
+        so rotating certificates breaks the check.
+      required: true
+    - id: kp_2
+      statement: Describes how automated certificate renewal (e.g., Let’s Encrypt) or rolling updates
+        can replace the cert, causing failures.
+      required: true
+    - id: kp_3
+      statement: Proposes a mitigation such as pinning to the CA’s public key, using a trust-on-first-use
+        fallback, or implementing a key-rotation strategy with overlapping certificates.
+      required: false
+    - id: kp_4
+      statement: Mentions the trade-off between strict security and operational flexibility.
+      required: false
+    hint_ladder:
+    - Recall what certificate pinning validates.
+    - Think about what changes during a deployment.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  sockets__q1:
+    stem: In a microservice you notice that occasional client requests hang for several seconds before
+      timing out; you suspect the socket handling code. What could cause these hangs and how would you
+      diagnose and fix them?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:sockets
+      weight: 0.7
+    - id: concept:tcp_reliability
+      weight: 0.15
+    - id: concept:network_security_basics
+      weight: 0.15
+    reference_answer: The hangs are usually a symptom of the server thread blocking on a socket operation.
+      If accept() or recv() is called in blocking mode without a timeout, a client that disconnects or
+      stops sending will leave the thread stuck, and subsequent requests queue up. Another common cause
+      is the listen backlog filling up because the process cannot accept fast enough, or the OS limit
+      on open file descriptors being reached, which makes new connections wait. To diagnose, I would enable
+      socket-level logging, inspect /proc/sys/net/core/somaxconn and ulimit -n, and use netstat or ss
+      to see sockets in LISTEN, ESTABLISHED, or TIME_WAIT. The fix is to set non-blocking mode or use
+      select/poll/epoll with a reasonable timeout, configure SO_RCVTIMEO, increase the backlog, and ensure
+      the process raises its FD limit. Also handling SIGPIPE and checking for zero-byte reads avoids accidental
+      hangs.
+    key_points:
+    - id: kp_1
+      statement: Blocking accept()/recv() without a timeout can make the thread wait indefinitely if the
+        peer stops sending.
+      required: true
+    - id: kp_2
+      statement: Exhausted file descriptor limit or backlog queue full can cause new connections to be
+        delayed.
+      required: true
+    - id: kp_3
+      statement: Using select/poll or setting socket options like SO_RCVTIMEO and SO_REUSEADDR mitigates
+        the issue.
+      required: true
+    - id: kp_4
+      statement: Checking for half-closed connections and handling SIGPIPE prevents unexpected termination.
+      required: false
+    hint_ladder:
+    - Think about what happens after accept() returns.
+    - Consider both blocking behavior and resource limits.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  sockets__q2:
+    stem: Your team needs to expose a secure REST endpoint over HTTPS on a Linux server that already runs
+      a TCP service on port 443. How can you make both services coexist using sockets?
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: core
+    time_budget_s: 150
+    concepts:
+    - id: concept:sockets
+      weight: 0.7
+    - id: concept:https_and_tls
+      weight: 0.15
+    - id: concept:tcp_vs_udp
+      weight: 0.15
+    reference_answer: You cannot have two independent processes both binding to 0.0.0.0:443 directly.
+      The usual solution is to bind one service to a different IP address on the same machine, leaving
+      port 443 free for HTTPS. If that isn’t possible, you place a TLS-terminating reverse proxy (like
+      Nginx or HAProxy) on port 443; it performs the TLS handshake, then based on ALPN or the HTTP request
+      path forwards the traffic either to the HTTPS backend or to the raw TCP service on a different internal
+      port. Another option is to use SO_REUSEPORT with careful load-balancing logic, but that is rarely
+      recommended. In practice, the proxy approach cleanly separates the protocols while keeping a single
+      public port.
+    key_points:
+    - id: kp_1
+      statement: You can bind the existing TCP service to a specific IP address and bind the HTTPS listener
+        to another IP (or use different IP families).
+      required: true
+    - id: kp_2
+      statement: Alternatively, use a single listener and implement Application-Layer Protocol Negotiation
+        (ALPN) or a proxy (e.g., Nginx) that inspects the first bytes to route to the correct backend.
+      required: true
+    - id: kp_3
+      statement: If both must share the exact same IP and port, you need a TLS-terminating reverse proxy
+        that terminates HTTPS and forwards plain TCP to the other service.
+      required: false
+    - id: kp_4
+      statement: Setting SO_REUSEPORT allows multiple processes to bind to the same port, but they must
+        coordinate to avoid race conditions.
+      required: false
+    hint_ladder:
+    - Think about how the kernel distinguishes traffic before the application sees it.
+    - Consider using a multiplexing technique at the socket layer.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  network_security_basics__q1:
+    stem: You notice that a web server you manage is suddenly receiving a flood of requests from many
+      IPs, overwhelming the service. Explain how a firewall can be configured to mitigate this attack
+      and what limitations it might have.
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:network_security_basics
+      weight: 0.7
+    - id: concept:ip_addressing
+      weight: 0.15
+    reference_answer: A firewall can be set to drop traffic from suspicious source IP ranges or to rate-limit
+      connections per IP, effectively throttling a flood. By enabling stateful inspection, it only permits
+      packets that belong to an established TCP handshake, discarding stray SYN packets typical of a SYN-flood.
+      You can also create rules that block traffic to the service port unless it originates from known
+      clients. However, if attackers spoof IPs or use legitimate ports, the firewall alone may not stop
+      the flood; you’d need upstream DDoS mitigation, traffic scrubbing, or an intrusion-prevention system.
+      So the firewall mitigates the symptom but has limits against sophisticated volumetric attacks.
+    key_points:
+    - id: kp_1
+      statement: Describes setting up inbound rule blocks based on source IP ranges or rate-limiting thresholds.
+      required: true
+    - id: kp_2
+      statement: Mentions using stateful inspection to allow only established connections and drop new
+        SYN floods.
+      required: true
+    - id: kp_3
+      statement: Notes that firewalls cannot stop attacks that spoof IPs or use legitimate ports, requiring
+        upstream DDoS protection.
+      required: false
+    hint_ladder:
+    - Think about rule granularity – IP, port, and connection state.
+    - Consider what traffic a firewall sees versus what an attacker can disguise.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  network_security_basics__q2:
+    stem: During a code review you find that a team stored user passwords using a simple hash function
+      without a salt. Explain why this is insecure and how adding a salt and using a stronger construction
+      improves security.
+    modality: verbal
+    round_types:
+    - cn_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:network_security_basics
+      weight: 0.7
+    reference_answer: A plain hash like SHA-256 of a password is deterministic, so an attacker can compute
+      a rainbow table of common passwords and compare hashes directly. Without a salt, every user with
+      the same password has the same stored hash, making bulk cracking trivial. Adding a unique random
+      salt to each password means the hash input differs per user, so pre-computed tables are useless;
+      the attacker must recompute hashes for each salt. Moreover, using a purpose-built password-hashing
+      algorithm such as bcrypt, scrypt, or Argon2 adds computational cost and memory hardness, dramatically
+      slowing brute-force attempts. Together, salt and a strong hash protect against both dictionary and
+      large-scale offline attacks.
+    key_points:
+    - id: kp_1
+      statement: States that unsalted hashes allow pre-computed rainbow table attacks.
+      required: true
+    - id: kp_2
+      statement: Explains that a unique per-user salt makes each hash distinct, preventing reuse of pre-computed
+        tables.
+      required: true
+    - id: kp_3
+      statement: Mentions using a slow, memory-hard hash (e.g., bcrypt, scrypt, Argon2) to raise brute-force
+        cost.
+      required: false
+    hint_ladder:
+    - Recall what a rainbow table does.
+    - Think about the properties of a good password-hashing function.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'

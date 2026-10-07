@@ -1,0 +1,4066 @@
+# DRAFTED — dsa_verbal. Written by jobs/draft_items.py with a model; NOT reviewed.
+# provenance: generated + scored_use_approved: false on every item: FR-5.6 needs a
+# person to approve an item before it counts toward a score. Practise only until then.
+
+items:
+  variables_and_types__q1:
+    stem: In Java, you have an int variable a = 2000000000 and you add 1000000000 to it. What happens,
+      and why does the result differ from your expectation?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:variables_and_types
+      weight: 0.7
+    reference_answer: When you add 1,000,000,000 to 2,000,000,000, the mathematical sum is 3,000,000,000,
+      which is larger than the maximum value an int can store (2,147,483,647). Because int is a 32-bit
+      signed type, the operation overflows and wraps around using two's-complement, yielding a negative
+      result (-1294967296). The JVM does not raise an error; it silently wraps. If you cast either operand
+      to long, the addition is performed in 64-bit, giving the correct 3,000,000,000.
+    key_points:
+    - id: kp_1
+      statement: The addition overflows because int is a 32-bit signed type with max value 2,147,483,647.
+      required: true
+    - id: kp_2
+      statement: Overflow wraps around to a negative number due to two's-complement representation.
+      required: true
+    - id: kp_3
+      statement: Casting one operand to long before the addition prevents overflow.
+      required: false
+    hint_ladder:
+    - Think about the range of the int type.
+    - Consider what happens when a value exceeds that range.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  variables_and_types__q2:
+    stem: You need to store the size of a dynamic array that may grow up to 10^9 elements. Which primitive
+      type would you choose for the length field in C++, and what are the trade-offs?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+    - id: concept:variables_and_types
+      weight: 0.7
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: For an array that might reach a billion elements, you should store its length in
+      size_t (or unsigned long long on a typical 64-bit system). size_t is defined to be big enough to
+      index any object in memory, usually 64 bits, so it comfortably exceeds 10^9. A signed 32-bit int
+      would only go up to about 2.1 × 10^9 and could overflow if the array grows further, leading to undefined
+      behavior. The extra memory cost of an 8-byte unsigned type is minimal compared to the safety it
+      gives, and it also matches the type returned by the standard library’s size() methods.
+    key_points:
+    - id: kp_1
+      statement: size_t (or unsigned long long on 64-bit) is appropriate because it can represent values
+        up to at least 2^64-1, covering 10^9.
+      required: true
+    - id: kp_2
+      statement: Using a signed 32-bit int would overflow at around 2.1×10^9, so it is unsafe for future
+        growth beyond that.
+      required: true
+    - id: kp_3
+      statement: Choosing a larger unsigned type adds negligible memory overhead (still 8 bytes on 64-bit)
+        but avoids undefined behavior from overflow.
+      required: false
+    hint_ladder:
+    - Consider the maximum value each integer type can represent.
+    - Think about memory usage versus range.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  control_flow__q1:
+    stem: You need to find the first duplicate element in an array of integers while scanning it only
+      once. Which control-flow construct would you use and why?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:control_flow
+      weight: 0.7
+    reference_answer: I would iterate over the array with a for loop because we need to examine each element
+      in order. Inside the loop I would have an if statement that checks whether the current value already
+      exists in a hash set that stores the numbers we have seen so far. If the check is true, I immediately
+      break out of the loop (or return the element) because we have found the first duplicate. If not,
+      I insert the value into the set and continue. This combination of a loop for traversal and an if-condition
+      for detection lets us stop as soon as the condition is satisfied, giving O(n) time and O(n) extra
+      space.
+    key_points:
+    - id: kp_1
+      statement: Uses a loop (for/while) to iterate through the array.
+      required: true
+    - id: kp_2
+      statement: Inside the loop, uses an if-else (or if) to check whether the current element is already
+        in a set.
+      required: true
+    - id: kp_3
+      statement: Breaks out of the loop (or returns) as soon as a duplicate is found, demonstrating early
+        termination.
+      required: true
+    - id: kp_4
+      statement: Mentions that the set provides O(1) average lookup, keeping overall time O(n).
+      required: false
+    hint_ladder:
+    - Think about early exit when a condition is met.
+    - You may need a data structure to track what you have seen.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  control_flow__q2:
+    stem: Imagine you are debugging a program that unexpectedly runs forever. The only loop in the code
+      is a while loop that increments a counter until it reaches a target value. What typical control-flow
+      mistake could cause the infinite run?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:control_flow
+      weight: 0.7
+    reference_answer: The most likely control-flow error is that the while condition never becomes false
+      because the counter isn’t moving toward the target as expected. A typical cause is using the wrong
+      relational operator – for example writing while (i <= n) and then incrementing i inside the loop,
+      but the loop body also contains a statement that resets i or the increment skips the exact value,
+      so i never exceeds n. In short, the loop condition and the update are mismatched, causing the loop
+      to run forever. The fix is to verify the operator (< vs <=) and ensure the increment reliably moves
+      i toward the bound.
+    key_points:
+    - id: kp_1
+      statement: Identifies that the loop condition may never become false because the counter is not
+        updated correctly.
+      required: true
+    - id: kp_2
+      statement: 'Points out a common mistake: using the wrong relational operator (e.g., <= instead of
+        <) together with an increment that skips the terminating value.'
+      required: true
+    - id: kp_3
+      statement: Suggests checking that the increment actually moves the counter toward the target and
+        that the condition reflects the intended bound.
+      required: false
+    - id: kp_4
+      statement: Mentions that placing the increment inside the loop body versus the loop header can also
+        cause the condition to stay unchanged.
+      required: false
+    hint_ladder:
+    - Consider the loop condition and the update statement.
+    - Think about off-by-one errors.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  functions_and_scope__q1:
+    stem: In a recursive function that computes the nth Fibonacci number, why does each recursive call
+      have its own copy of the local variable `n`, and what would happen if `n` were mistakenly declared
+      as a global variable?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:functions_and_scope
+      weight: 0.7
+    reference_answer: When you call a recursive function, the runtime pushes an activation record onto
+      the call stack. That record contains the function's parameters and local variables, so each invocation
+      gets its own copy of `n`. As the recursion goes deeper, each frame holds the `n` value for that
+      level, and when the function returns, the frame is popped, restoring the previous `n`. If you declared
+      `n` as a global variable, every call would share the same memory location. Updating `n` in one call
+      would affect all other pending calls, breaking the independence of each step. The result would be
+      wrong Fibonacci numbers, and in many cases the recursion would never reach its base case because
+      the global `n` keeps changing, leading to a stack overflow.
+    key_points:
+    - id: kp_1
+      statement: Each call gets its own `n` because function parameters are stored on the call stack as
+        part of the activation record.
+      required: true
+    - id: kp_2
+      statement: If `n` were global, all recursive calls would read and write the same variable, causing
+        incorrect results and likely infinite recursion.
+      required: true
+    - id: kp_3
+      statement: The call stack unwinds, restoring each caller's `n` value, which is why recursion works
+        correctly with local scope.
+      required: false
+    hint_ladder:
+    - Think about where parameters are stored during a function call.
+    - What does ‘global’ mean for variable visibility across calls?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  functions_and_scope__q2:
+    stem: During a code review you notice a function that modifies a passed-in array but also returns
+      a new array; the caller uses the returned value and later accesses the original array. What scope-related
+      bugs could arise, and how would you redesign the function?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:functions_and_scope
+      weight: 0.7
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: 'The problem is that the array is passed by reference, so when the function changes
+      it, the caller’s original variable sees those changes. If the caller later reads the original array
+      assuming it’s unchanged, they’ll get unexpected values, leading to bugs that are hard to trace.
+      The clean fix is to avoid side-effects: either work on a copy of the input and return that, or,
+      if in-place modification is intended, make that explicit in the API—e.g., name the function `sortInPlace`
+      and document that it mutates its argument. This way the caller knows whether to keep the original
+      or use the returned array, eliminating scope-related surprises.'
+    key_points:
+    - id: kp_1
+      statement: Modifying the passed-in array creates side-effects because the caller still holds a reference
+        to that same memory.
+      required: true
+    - id: kp_2
+      statement: If the caller expects the original array unchanged, the side-effect can cause logical
+        errors or data corruption later.
+      required: true
+    - id: kp_3
+      statement: A better design is to either (a) make the function pure by not mutating the input and
+        only returning a new array, or (b) clearly document the mutation and perhaps rename the function
+        to indicate it works in-place.
+      required: false
+    hint_ladder:
+    - Remember how Java/Python handle passing mutable objects.
+    - What does ‘pure function’ mean in terms of side-effects?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  pointers_and_references__q1:
+    stem: In C++, you have a function that takes a pointer to an int and sets the value to 0. If you call
+      it with a null pointer, what happens at runtime and how would you safely guard against it?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:pointers_and_references
+      weight: 0.7
+    reference_answer: 'When you pass a null pointer and the function dereferences it, the program invokes
+      undefined behavior; on most systems it crashes with a segmentation fault. To avoid that, you should
+      first check if the pointer equals nullptr (or NULL) and return early or signal an error. A common
+      pattern is: if (!p) return; *p = 0;. Alternatively, you could redesign the API to take an int& so
+      the caller must provide a valid object, eliminating the null-pointer risk.'
+    key_points:
+    - id: kp_1
+      statement: Dereferencing a null pointer leads to undefined behavior, often a crash (segmentation
+        fault).
+      required: true
+    - id: kp_2
+      statement: A safe guard is to test if the pointer is nullptr before dereferencing.
+      required: true
+    - id: kp_3
+      statement: Optionally, the function could return a bool indicating success or take a reference instead
+        of a pointer.
+      required: false
+    hint_ladder:
+    - Think about dereferencing a null pointer.
+    - Consider adding a check before using the pointer.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  pointers_and_references__q2:
+    stem: During a debugging session you notice that two different variables in a linked-list implementation
+      point to the same node unexpectedly. Explain how aliasing with pointers can cause this and what
+      practice prevents accidental sharing.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+    - id: concept:pointers_and_references
+      weight: 0.7
+    - id: concept:linked_lists
+      weight: 0.15
+    reference_answer: When you write something like `Node* a = head; Node* b = a;` you are not creating
+      a new node; you are just copying the address, so `a` and `b` become aliases of the same node. Any
+      change through one pointer instantly changes what the other sees, which can corrupt the list – for
+      example, deleting through `a` leaves `b` dangling, or inserting a new node via `b` may create an
+      unintended cycle. The usual safeguard is to avoid shallow copies of list nodes; instead allocate
+      a fresh node and copy the payload (deep copy), or use ownership-aware smart pointers (unique_ptr)
+      so that only one pointer can own a node at a time.
+    key_points:
+    - id: kp_1
+      statement: Assigning one pointer to another creates an alias; both variables refer to the same memory
+        location.
+      required: true
+    - id: kp_2
+      statement: If a node is unintentionally shared, modifications through one alias affect the other,
+        leading to bugs like cycles or lost nodes.
+      required: true
+    - id: kp_3
+      statement: Prevent this by performing a deep copy of the node (allocating a new node and copying
+        its data) or by using smart pointers with clear ownership semantics.
+      required: false
+    hint_ladder:
+    - Recall that assigning one pointer to another copies the address, not the object.
+    - Think about deep vs shallow copy.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  space_complexity__q1:
+    stem: When you implement quicksort on an array of size N, does the algorithm require O(N) extra space,
+      and why is it still considered an in-place sort?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:space_complexity
+      weight: 0.7
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: Quicksort is classified as an in-place algorithm because it sorts the elements by
+      rearranging them inside the original array; it never allocates another array of size N. The only
+      extra memory it needs is the recursion stack. On average, the depth of recursive calls is O(log
+      N), so the auxiliary space is O(log N). In the worst case, when the pivot choices are poor and the
+      recursion becomes linear, the stack can grow to O(N), but even then no extra array is created. Hence
+      quicksort’s extra space is sub-linear, which satisfies the definition of an in-place sort.
+    key_points:
+    - id: kp_1
+      statement: Quicksort uses only O(log N) extra space for the recursion stack in its average case.
+      required: true
+    - id: kp_2
+      statement: No extra arrays or data structures proportional to N are allocated, so it is called in-place.
+      required: true
+    - id: kp_3
+      statement: In the worst case (already sorted input) the recursion depth can become O(N), increasing
+        space usage.
+      required: false
+    - id: kp_4
+      statement: The partition step itself works within the original array without additional memory.
+      required: false
+    hint_ladder:
+    - Think about what part of quicksort uses additional memory.
+    - Recall the difference between recursive call stack space and auxiliary data structures.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  amortized_analysis__q1:
+    stem: You have a binary counter implemented with an array of bits that you increment repeatedly; each
+      increment flips some trailing 1s to 0 and a 0 to 1. What is the amortised time per increment and
+      why?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:amortized_analysis
+      weight: 0.7
+    - id: concept:arrays
+      weight: 0.15
+    - id: concept:bit_manipulation
+      weight: 0.15
+    reference_answer: When we increment a binary counter, we start at the least-significant bit and flip
+      1s to 0 until we hit a 0, which we turn to 1. The i-th bit (0-based) changes state every 2^i increments,
+      so over N increments it flips at most N/2^i times. Summing over all bits gives Σ_{i=0}^{log N} N/2^i
+      = 2N, i.e., O(N) total flips. Dividing by N gives an amortised cost of O(1) per increment. Occasionally
+      an increment may flip many bits, costing O(log N), but such expensive steps are rare enough that
+      the average stays constant.
+    key_points:
+    - id: kp_1
+      statement: Each bit flips from 0 to 1 at most once every 2^k increments, where k is its position.
+      required: true
+    - id: kp_2
+      statement: Summing the flips over all bits for N increments yields O(N) total work.
+      required: true
+    - id: kp_3
+      statement: Therefore the amortised cost per increment is O(1).
+      required: true
+    - id: kp_4
+      statement: The worst-case cost of a single increment can be O(log N) when many trailing 1s are flipped.
+      required: false
+    hint_ladder:
+    - Think about how many times each bit changes over many increments.
+    - Total work over N increments divided by N gives the amortised cost.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  recurrence_relations__q1:
+    stem: You have a recursive function that splits an array of size n into three equal parts and recursively
+      processes each part, with O(n) work to combine the results. What is its time complexity using the
+      Master Theorem?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:recurrence_relations
+      weight: 0.7
+    - id: concept:divide_and_conquer
+      weight: 0.15
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: The recurrence is T(n) = 3 T(n/3) + Θ(n). Here a = 3, b = 3, so log_b a = log_3
+      3 = 1, giving n^{log_b a} = n. The combine cost f(n) is also Θ(n), which matches the n^{log_b a}
+      term. This is the second case of the Master Theorem, yielding T(n) = Θ(n log n). Hence the algorithm
+      runs in n log n time.
+    key_points:
+    - id: kp_1
+      statement: Identifies a = 3, b = 3, and f(n) = Θ(n).
+      required: true
+    - id: kp_2
+      statement: Computes n^{log_b a} = n^{log_3 3} = n.
+      required: true
+    - id: kp_3
+      statement: Compares f(n) with n^{log_b a} and concludes they are Θ-equal, so case 2 of the Master
+        Theorem applies.
+      required: true
+    - id: kp_4
+      statement: States the overall recurrence solves to Θ(n log n).
+      required: true
+    hint_ladder:
+    - Write the recurrence in the form T(n) = a T(n/b) + f(n).
+    - Compare f(n) with n^{log_b a} to pick the correct Master case.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  recurrence_relations__q2:
+    stem: During a code review you notice a recursive binary-search implementation that makes two recursive
+      calls instead of one. The recurrence is T(n)=2T(n/2)+O(1). Explain why this is inefficient and state
+      its asymptotic running time.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:recurrence_relations
+      weight: 0.7
+    - id: concept:binary_search
+      weight: 0.15
+    - id: concept:recursion
+      weight: 0.15
+    reference_answer: The recurrence is T(n)=2T(n/2)+Θ(1). Here a=2, b=2, so log_b a =1 and n^{log_b a}=n.
+      Since the non-recursive work is constant, we fall into Master case 1, giving T(n)=Θ(n). That means
+      the function runs linear time, whereas a proper binary search does Θ(log n). The extra recursive
+      call destroys the logarithmic divide-and-conquer advantage, making the implementation inefficient.
+    key_points:
+    - id: kp_1
+      statement: Writes the recurrence T(n)=2T(n/2)+Θ(1).
+      required: true
+    - id: kp_2
+      statement: Shows that n^{log_b a}=n^{log_2 2}=n, so by Master case 1 the solution is Θ(n).
+      required: true
+    - id: kp_3
+      statement: Points out that optimal binary search should be Θ(log n), so making two calls doubles
+        work and loses the logarithmic advantage.
+      required: true
+    - id: kp_4
+      statement: 'Mentions the fix: keep only one recursive call after comparing the middle element.'
+      required: false
+    hint_ladder:
+    - Identify a and b in the recurrence and compute n^{log_b a}.
+    - Recall the optimal time for binary search.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  arrays__q1:
+    stem: You have an array of size N that you need to insert an element at the beginning repeatedly.
+      In an interview, how would you explain the time complexity of this operation and why a dynamic array
+      may not be ideal here?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:arrays
+      weight: 0.7
+    reference_answer: When you insert at the front of a plain array you have to move every existing element
+      one slot to the right to keep the data contiguous. That shift is O(N) for a single insert. If you
+      do this N times, the total work becomes O(N²). Even though a dynamic array can grow automatically,
+      it still stores elements in a contiguous block, so the shifting cost doesn’t disappear. The only
+      way to get constant-time front insertions is to use a structure that doesn’t require shifting, such
+      as a singly linked list, where you just adjust the head pointer.
+    key_points:
+    - id: kp_1
+      statement: Inserting at index 0 of a contiguous array requires shifting all existing elements one
+        position to the right.
+      required: true
+    - id: kp_2
+      statement: Therefore each insertion costs O(N) time, leading to O(N²) for N repeated insertions.
+      required: true
+    - id: kp_3
+      statement: A dynamic array (like vector) still stores elements contiguously, so the shift cost remains
+        the same.
+      required: false
+    - id: kp_4
+      statement: Using a linked list would give O(1) insertion at the front.
+      required: false
+    hint_ladder:
+    - Think about what must happen to the existing elements when you add a new one at index 0.
+    - Consider the difference between contiguous storage and pointer-based storage.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  arrays__q2:
+    stem: During a coding test you notice the solution uses a sliding-window over an integer array to
+      find the longest subarray with sum ≤ K. Explain why the sliding-window works here and what the underlying
+      array property is.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+    - id: concept:arrays
+      weight: 0.7
+    - id: concept:sliding_window
+      weight: 0.15
+    - id: concept:time_complexity
+      weight: 0.15
+    reference_answer: The sliding-window works because the array consists of non-negative integers. When
+      you extend the right end, the sum can only stay the same or increase, never drop, so you can safely
+      keep expanding until you exceed K. At that point you move the left end forward, subtracting elements,
+      which reduces the sum. Because each element is added and removed at most once, the total work is
+      linear, O(N). This relies on the monotonic increase of the sum; with negative numbers the sum could
+      decrease after adding an element and the window would no longer be valid.
+    key_points:
+    - id: kp_1
+      statement: The window can be moved because all numbers are non-negative, so expanding the window
+        never decreases the sum.
+      required: true
+    - id: kp_2
+      statement: When the sum exceeds K, shrinking from the left reduces the sum while preserving order,
+        keeping the algorithm O(N).
+      required: true
+    - id: kp_3
+      statement: If the array contained negative numbers the monotonic property would break and the technique
+        would fail.
+      required: false
+    - id: kp_4
+      statement: The algorithm maintains the best length seen so far as it slides.
+      required: false
+    hint_ladder:
+    - What happens to the sum when you add a non-negative element?
+    - Why can you safely move the left pointer only when the sum is too large?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  strings__q1:
+    stem: You need to check if a given string can be rearranged to form a palindrome; describe how you
+      would determine this in linear time.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:strings
+      weight: 0.7
+    - id: concept:hashing
+      weight: 0.15
+    - id: concept:time_complexity
+      weight: 0.15
+    reference_answer: 'I would first count how many times each character appears. Since the alphabet size
+      is constant (say ASCII), I can use an array of size 256 and increment the slot for each character
+      as I scan the string – that’s O(n) time. After the pass, I look at the counts: for an even-length
+      string every count must be even; for an odd-length string exactly one count may be odd. I just iterate
+      over the 256 slots and keep a tally of odd frequencies. If the odd tally is more than one, the string
+      cannot be rearranged into a palindrome; otherwise it can. The whole algorithm runs in linear time
+      with constant extra space.'
+    key_points:
+    - id: kp_1
+      statement: Counts the frequency of each character using a fixed-size array or hashmap.
+      required: true
+    - id: kp_2
+      statement: Explains that at most one character may have an odd count for a palindrome of odd length,
+        and none for even length.
+      required: true
+    - id: kp_3
+      statement: Concludes that scanning the frequency table once more yields the answer in O(n) time
+        and O(1) extra space for ASCII.
+      required: true
+    hint_ladder:
+    - Think about what property a palindrome has regarding character counts.
+    - You only need to know how many characters appear an odd number of times.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  strings__q2:
+    stem: During a code review you notice a function that builds all substrings of a string using nested
+      loops; what is the time and space complexity, and how would you improve it if only the longest repeated
+      substring is needed?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:strings
+      weight: 0.7
+    - id: concept:sliding_window
+      weight: 0.15
+    - id: concept:hashing
+      weight: 0.15
+    reference_answer: Generating every substring with two loops produces about n·(n+1)/2 substrings, so
+      the time is Θ(n^2) and if you keep them in a list the space is also Θ(n^2). If the goal is just
+      the longest repeated substring, you don’t need to materialise all of them. One practical improvement
+      is to use a sliding window of increasing length and store each window’s hash in a hash set; when
+      a collision occurs you’ve found a repeated substring of that length. You can binary-search the length
+      and use a rolling hash (Rabin-Karp) to check each length in O(n) time, giving O(n log n) overall,
+      or use suffix-array based methods for O(n). This cuts both time and space dramatically, keeping
+      only O(n) auxiliary space.
+    key_points:
+    - id: kp_1
+      statement: States that generating all substrings takes O(n^2) time and O(n^2) space if they are
+        stored.
+      required: true
+    - id: kp_2
+      statement: Mentions that for the longest repeated substring you can use a sliding-window with a
+        hash set or binary search plus rolling hash to achieve O(n log n) or O(n) average time.
+      required: true
+    - id: kp_3
+      statement: Notes that you can avoid storing all substrings, reducing space to O(n) or O(1) extra.
+      required: false
+    hint_ladder:
+    - How many substrings does a string of length n have?
+    - What technique lets you compare substrings without storing them all?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  matrix_operations__q1:
+    stem: You need to rotate an N×N matrix 90 degrees clockwise in place; explain how you would do it
+      and discuss its time and space complexity.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:matrix_operations
+      weight: 0.7
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: To rotate an N×N matrix 90 degrees clockwise in place, I would first transpose the
+      matrix – swap element (i, j) with (j, i) for all i < j – which turns rows into columns. Then I would
+      reverse each row, swapping the first and last column elements in that row. This two-step process
+      moves every element exactly once per step, so the overall time is O(N^2). Because we only use a
+      few index variables and do the swaps in the original array, the extra space is O(1). The approach
+      relies on the matrix being square; otherwise we’d need to allocate a new matrix to hold the rotated
+      result.
+    key_points:
+    - id: kp_1
+      statement: Describes layer-by-layer swapping of four cells at a time (transpose then reverse each
+        row or vice-versa).
+      required: true
+    - id: kp_2
+      statement: States the algorithm runs in O(N^2) time because each element is moved a constant number
+        of times.
+      required: true
+    - id: kp_3
+      statement: Mentions only O(1) extra space is used beyond the input matrix.
+      required: true
+    - id: kp_4
+      statement: Notes that the method works only for square matrices; for non-square you would need a
+        new matrix.
+      required: false
+    hint_ladder:
+    - Think about how rows become columns after a transpose.
+    - What simple operation on each row finishes the clockwise rotation?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  matrix_operations__q2:
+    stem: During a live coding interview you are asked to find the number of islands in a binary grid;
+      what algorithm would you use and why is it suitable for this problem?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+    - id: concept:matrix_operations
+      weight: 0.7
+    - id: concept:graph_traversal_dfs
+      weight: 0.15
+    - id: concept:dp_on_grids
+      weight: 0.15
+    reference_answer: I would treat the grid as a graph where each cell with value 1 is a node and edges
+      connect orthogonal neighbours. Starting from the top-left, whenever I encounter an unvisited 1 I
+      launch a DFS (or BFS) that recursively/iteratively visits all 1s reachable via up, down, left, right,
+      marking them visited. After the flood-fill finishes I increment the island count. This continues
+      until every cell is processed. Each cell is visited at most once, giving O(R·C) time, and the extra
+      space is the recursion stack or queue, O(R·C) in the worst case when the whole grid is one island.
+      This approach is simple, works for any grid size, and directly captures the connectivity definition
+      of an island.
+    key_points:
+    - id: kp_1
+      statement: Proposes using DFS/BFS to flood-fill each unvisited '1' and mark all connected '1's as
+        visited.
+      required: true
+    - id: kp_2
+      statement: Explains that each island corresponds to one flood-fill traversal, so the count increments
+        each time a new DFS/BFS starts.
+      required: true
+    - id: kp_3
+      statement: Analyzes time complexity as O(R·C) where R and C are rows and columns, because each cell
+        is visited at most once.
+      required: true
+    - id: kp_4
+      statement: Mentions space complexity O(R·C) in the worst case for the recursion stack or queue.
+      required: false
+    hint_ladder:
+    - What graph traversal can you run from each land cell to mark the whole landmass?
+    - How do you ensure you don’t count the same island twice?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  prefix_sums__item_1:
+    stem: 'You have an array of daily sales for the last year and need to answer many queries of the form:
+      total sales from day L to day R inclusive. How would you preprocess the data and answer each query
+      efficiently?'
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:prefix_sums
+      weight: 0.7
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: I would create a prefix-sum array of length N+1, initializing pref[0] = 0. While
+      scanning the original sales array once, I set pref[i] = pref[i-1] + sales[i-1]. After this O(N)
+      preprocessing, any range query [L,R] can be answered instantly by returning pref[R] – pref[L-1],
+      which is O(1). This uses O(N) extra space. If the sales data were mutable, we’d need to rebuild
+      or switch to a Fenwick or segment tree, but for static queries this is optimal.
+    key_points:
+    - id: kp_1
+      statement: Build a prefix-sum array where pref[i] = sum of first i elements (1-based).
+      required: true
+    - id: kp_2
+      statement: Answer a query [L,R] as pref[R] - pref[L-1] in O(1) time.
+      required: true
+    - id: kp_3
+      statement: Preprocessing takes O(N) time and O(N) extra space.
+      required: false
+    - id: kp_4
+      statement: Mention that updates to the original array would require recomputation or a different
+        structure.
+      required: false
+    hint_ladder:
+    - Think about a one-time scan that stores cumulative information.
+    - What arithmetic on two stored values gives the range sum?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  prefix_sums__item_2:
+    stem: During a code-review you notice a function that repeatedly computes the sum of the first k elements
+      of an array inside a loop, leading to O(N²) time. How can you refactor it using prefix sums, and
+      what trade-offs does this introduce?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:prefix_sums
+      weight: 0.7
+    - id: concept:amortized_analysis
+      weight: 0.15
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: 'I’d first build a prefix-sum array in a single pass: pref[i] = pref[i-1] + arr[i-1].
+      Then, instead of looping over the first k elements each time, I just return pref[k] (or pref[k]-pref[0]
+      for 0-based) inside the outer loop. This changes the overall complexity from O(N²) to O(N) because
+      the heavy work is done once. The downside is we need O(N) extra memory for the prefix array and
+      we pay an upfront O(N) cost, but the amortized cost per query becomes constant, which is a net win
+      for large N.'
+    key_points:
+    - id: kp_1
+      statement: Compute a prefix-sum array once before the loop.
+      required: true
+    - id: kp_2
+      statement: Inside the loop, replace the inner summation with pref[k] – pref[0] (or pref[k] if 0-based).
+      required: true
+    - id: kp_3
+      statement: Overall time drops from O(N²) to O(N) for the whole routine.
+      required: false
+    - id: kp_4
+      statement: The trade-off is O(N) extra space and a one-time O(N) preprocessing cost.
+      required: false
+    hint_ladder:
+    - Replace the inner loop with a constant-time lookup.
+    - Consider the cost of building the auxiliary structure versus the repeated work.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  two_pointers__q1:
+    stem: You have a sorted array of integers that may contain duplicates. How would you use two pointers
+      to find the first and last position of a given target value in O(n) time, and why does this work?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:two_pointers
+      weight: 0.7
+    - id: concept:arrays
+      weight: 0.15
+    - id: concept:binary_search
+      weight: 0.15
+    reference_answer: I’d start with two indices, i = 0 and j = n-1. While i ≤ j, I check the element
+      at i; if it’s less than the target I increment i, otherwise I stop because i now points at the first
+      possible target. Similarly, I move j backwards while arr[j] > target, stopping when arr[j] ≤ target.
+      After these two scans, i is at the first occurrence and j at the last occurrence of the target,
+      provided i ≤ j. If i > j, the value isn’t present. Because each element is examined at most once,
+      the total work is O(n) and we only need O(1) extra space.
+    key_points:
+    - id: kp_1
+      statement: Initialises left pointer at start and right pointer at end of array.
+      required: true
+    - id: kp_2
+      statement: Moves left pointer forward until it points to the target or passes the right pointer.
+      required: true
+    - id: kp_3
+      statement: Moves right pointer backward until it points to the target or crosses the left pointer.
+      required: true
+    - id: kp_4
+      statement: If pointers cross without finding the target, reports that the target is absent.
+      required: false
+    hint_ladder:
+    - Think about moving one pointer from the left until you can’t go further without skipping the target.
+    - Do a symmetric scan from the right side.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  two_pointers__q2:
+    stem: In a linked list you suspect there is a cycle. Explain how the fast-slow two-pointer (Floyd’s)
+      algorithm detects the cycle and what the pointers’ positions tell you after detection.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:two_pointers
+      weight: 0.7
+    - id: concept:linked_lists
+      weight: 0.15
+    - id: concept:space_complexity
+      weight: 0.15
+    reference_answer: We start both pointers at the head; slow advances one node per loop, fast advances
+      two. If the list has no loop, fast will reach null and we stop. If there is a loop, fast will eventually
+      lap slow and they meet inside the cycle. That meeting proves a cycle exists. To find the entry node,
+      we move one pointer back to the head while keeping the other at the meeting point, then advance
+      both one step each iteration; they will meet at the cycle’s start because the distance from head
+      to start equals the distance from meeting point to start around the loop. Throughout, we only store
+      two pointers, so the space overhead is constant.
+    key_points:
+    - id: kp_1
+      statement: Initialises slow pointer at head moving one step and fast pointer at head moving two
+        steps each iteration.
+      required: true
+    - id: kp_2
+      statement: If fast ever meets slow, a cycle exists.
+      required: true
+    - id: kp_3
+      statement: After meeting, resetting one pointer to head and moving both one step at a time makes
+        them meet at the cycle start.
+      required: true
+    - id: kp_4
+      statement: The algorithm uses O(1) extra space.
+      required: false
+    hint_ladder:
+    - What happens to the distance between the two pointers each iteration?
+    - After they meet, how can you use the distance travelled to locate the entry point?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  sliding_window__q1:
+    stem: You have an array of daily temperatures and need to find the length of the longest contiguous
+      subarray where the temperature never drops more than 5 degrees; how would you solve this with a
+      sliding window?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:sliding_window
+      weight: 0.7
+    - id: concept:arrays
+      weight: 0.15
+    - id: concept:amortized_analysis
+      weight: 0.15
+    reference_answer: I’d start with two indices, left and right, both at 0. As I expand right, I keep
+      the minimum and maximum temperature in the current window. If max-min exceeds 5, I shrink the window
+      by moving left forward until the condition holds again, updating min and max as needed. After each
+      right move, I record the window length if it’s larger than the best so far. Because each element
+      is added once and removed at most once, the total work is linear, O(n), and the extra space is O(1)
+      besides a few variables for min and max.
+    key_points:
+    - id: kp_1
+      statement: Describes maintaining two pointers (left and right) to define the current window.
+      required: true
+    - id: kp_2
+      statement: Explains updating the window when the temperature difference exceeds 5 by moving the
+        left pointer forward.
+      required: true
+    - id: kp_3
+      statement: Keeps track of the maximum window size seen so far.
+      required: true
+    - id: kp_4
+      statement: Mentions that each element is visited at most twice, giving O(n) time.
+      required: false
+    hint_ladder:
+    - Think about how you can expand the window until a condition breaks, then contract it.
+    - What data you need to check the condition quickly?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  sliding_window__q2:
+    stem: In a production log-processing service you notice occasional spikes in latency; you suspect
+      a burst of requests exceeding a threshold within any 10-second window. How would you use a sliding
+      window to detect such bursts in real time?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:sliding_window
+      weight: 0.7
+    - id: concept:queues
+      weight: 0.15
+    - id: concept:time_complexity
+      weight: 0.15
+    reference_answer: I’d keep a deque of request timestamps. When a new request arrives, I push its timestamp
+      onto the back. Then I pop timestamps from the front while they’re older than current_time minus
+      10 seconds. The deque now contains exactly the requests in the last 10-second window; if its length
+      exceeds the burst threshold I raise an alert. Each request is inserted and removed once, so the
+      amortized cost per request is O(1) and memory is proportional to the window size.
+    key_points:
+    - id: kp_1
+      statement: Proposes storing timestamps of incoming requests in a queue (or deque).
+      required: true
+    - id: kp_2
+      statement: Describes removing timestamps from the front that are older than current_time − 10 seconds.
+      required: true
+    - id: kp_3
+      statement: Checks the queue size against the latency-spike threshold to flag a burst.
+      required: true
+    - id: kp_4
+      statement: Notes that each request is enqueued and dequeued at most once, giving O(1) amortized
+        work per request.
+      required: false
+    hint_ladder:
+    - What structure lets you add at one end and remove from the other efficiently?
+    - How do you keep the window size bounded in time?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  linked_lists__q1:
+    stem: You notice that after inserting nodes at the head of a singly linked list, traversing from the
+      head sometimes skips nodes; what could be causing this bug and how would you fix it?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:linked_lists
+      weight: 0.7
+    reference_answer: 'The most common cause is that when you prepend a node you forget to link the new
+      node to the existing list. If you create a node and then set head = newNode without first doing
+      newNode.next = oldHead, the old list becomes unreachable, so traversal skips those nodes. The fix
+      is simple: store the current head in a temporary, set newNode.next = temp, then update head = newNode.
+      After this change, every node remains linked and a full traversal will visit all inserted elements.'
+    key_points:
+    - id: kp_1
+      statement: The bug is likely due to not updating the new node's next pointer to the previous head.
+      required: true
+    - id: kp_2
+      statement: Fix by setting newNode.next = oldHead before moving the head reference to newNode.
+      required: true
+    - id: kp_3
+      statement: Mention that forgetting this step can create a broken chain, causing nodes to be lost
+        during traversal.
+      required: false
+    - id: kp_4
+      statement: Explain that the head pointer must always reference the most recent node after insertion.
+      required: false
+    hint_ladder:
+    - Think about pointer updates during insertion.
+    - Consider what the head pointer should point to after each operation.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  stacks__q1:
+    stem: In a recursive depth-first search you notice the call stack growing beyond limits and causing
+      a crash; how would you replace the recursion with an explicit stack, and what are the trade-offs?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:stacks
+      weight: 0.7
+    - id: concept:graph_traversal_dfs
+      weight: 0.15
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: To eliminate the recursion you create an explicit stack, push the source vertex,
+      and then loop while the stack isn’t empty. Inside the loop you pop the top node, mark it visited,
+      and push its adjacent unvisited neighbours onto the stack – typically in reverse order so that the
+      leftmost neighbour is processed first, mimicking recursive DFS. This turns the call-stack into heap-allocated
+      storage, so you avoid stack-overflow for deep graphs. The trade-off is that you now manage the stack
+      yourself, which adds a few lines of code and may use slightly more memory than the call stack, but
+      you gain control over the traversal and can easily add extra state if needed.
+    key_points:
+    - id: kp_1
+      statement: Describes initializing an empty stack and pushing the start node.
+      required: true
+    - id: kp_2
+      statement: 'Explains the loop: pop a node, process it, then push its unvisited neighbours in reverse
+        order to preserve DFS order.'
+      required: true
+    - id: kp_3
+      statement: Mentions that the explicit stack uses heap memory, avoiding stack-overflow but may use
+        more memory overall.
+      required: false
+    - id: kp_4
+      statement: Notes that recursion has implicit backtracking and cleaner code, while the manual stack
+        makes the algorithm iterative and easier to control.
+      required: false
+    hint_ladder:
+    - Think about the order in which nodes are pushed and popped.
+    - Consider memory usage versus call-stack overhead.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  queues__q1:
+    stem: You need to implement a circular queue using a fixed-size array for a real-time sensor buffer;
+      what are the key steps and edge cases you must handle to ensure enqueue and dequeue remain O(1)?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:queues
+      weight: 0.7
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: 'To build a circular queue on a static array, keep two pointers: front points to
+      the element to dequeue, rear points to the next free slot for enqueue. Both move forward modulo
+      the array size, so when they reach the end they wrap to zero. The tricky part is distinguishing
+      empty from full; you can either store a size counter or reserve one array cell and consider the
+      queue full when (rear + 1) % N == front. Enqueue checks the full condition, writes at rear, then
+      rear = (rear + 1) % N. Dequeue checks empty, reads at front, then front = (front + 1) % N. All steps
+      are simple arithmetic, so both operations are O(1).'
+    key_points:
+    - id: kp_1
+      statement: Uses two indices (front and rear) that wrap around with modulo arithmetic.
+      required: true
+    - id: kp_2
+      statement: Distinguishes empty vs full state, typically by keeping a count or leaving one slot unused.
+      required: true
+    - id: kp_3
+      statement: Updates indices correctly after each enqueue/dequeue and checks bounds before operation.
+      required: true
+    - id: kp_4
+      statement: Ensures both operations run in constant time without shifting elements.
+      required: false
+    hint_ladder:
+    - Think about what information tells you the queue has no elements versus when it cannot accept more.
+    - Modulo arithmetic is your friend for the wrap-around.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  queues__q2:
+    stem: During a breadth-first search you notice the queue size growing to millions before the target
+      is found; what could be causing this blow-up and how would you mitigate it?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:queues
+      weight: 0.7
+    - id: concept:graph_traversal_bfs
+      weight: 0.15
+    reference_answer: A BFS queue expands by the number of frontier nodes each level. If the queue explodes,
+      either the graph has a huge branching factor or you are enqueuing the same node multiple times because
+      you forgot to mark visited nodes. Without a visited set, each edge can generate a new entry, causing
+      exponential growth. To fix it, maintain a visited hash or boolean array so each vertex is queued
+      at most once, and consider early exit conditions or depth limits if the search space is huge. These
+      steps dramatically curb the queue size.
+    key_points:
+    - id: kp_1
+      statement: Identifies that the graph has a very high branching factor or many duplicate nodes being
+        enqueued.
+      required: true
+    - id: kp_2
+      statement: Points out missing visited/marked set leading to revisiting nodes.
+      required: true
+    - id: kp_3
+      statement: Suggests pruning strategies such as early termination, limiting depth, or using a visited
+        hash to avoid repeats.
+      required: false
+    - id: kp_4
+      statement: Mentions that using a more memory-efficient queue implementation (e.g., deque) can help
+        but does not solve the fundamental blow-up.
+      required: false
+    hint_ladder:
+    - What bookkeeping is usually done when you traverse a graph level by level?
+    - Think about the relationship between edges, branching factor, and queue growth.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  monotonic_stack__q1:
+    stem: You are given an array of daily temperatures and need to output, for each day, how many days
+      you must wait until a warmer temperature; the naive O(N²) solution is too slow. How does a monotonic
+      stack solve this in linear time?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:monotonic_stack
+      weight: 0.7
+    - id: concept:arrays
+      weight: 0.15
+    - id: concept:amortized_analysis
+      weight: 0.15
+    reference_answer: We iterate the temperature array once, keeping a stack that stores indices of days
+      whose next warmer day hasn't been found yet. The stack is kept monotonic decreasing – the temperatures
+      at those indices are in non-increasing order. For each new day i, while the stack isn’t empty and
+      temp[i] > temp[stack.top()], we pop the top index j and set answer[j] = i - j because i is the first
+      warmer day for j. After processing all pops we push i onto the stack. Because each index is pushed
+      once and popped once, the total work is linear, O(N), and we use O(N) extra space for the stack
+      and answer array. Days that never see a warmer temperature remain with the default value, e.g.,
+      0.
+    key_points:
+    - id: kp_1
+      statement: Describes maintaining a decreasing stack of indices while scanning left to right.
+      required: true
+    - id: kp_2
+      statement: Explains that when a higher temperature is encountered, indices are popped and answer
+        for those positions is set to current index minus popped index.
+      required: true
+    - id: kp_3
+      statement: Shows that each index is pushed and popped at most once, giving O(N) time and O(N) space.
+      required: true
+    - id: kp_4
+      statement: Mentions handling days with no warmer future temperature by leaving answer as 0 (or -1).
+      required: false
+    hint_ladder:
+    - Think about what property of the stack lets you stop early when you find a warmer day.
+    - Why does each element get removed only once?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  monotonic_stack__q2:
+    stem: In a production service you notice occasional spikes where the “largest rectangle in a histogram”
+      computation hangs for a few seconds. What could be going wrong with the monotonic-stack implementation,
+      and how would you debug it?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:monotonic_stack
+      weight: 0.7
+    - id: concept:stacks
+      weight: 0.15
+    - id: concept:amortized_analysis
+      weight: 0.15
+    reference_answer: The most common cause is that the stack is not truly monotonic – for example, when
+      two consecutive bars have the same height we might push both without popping, so later bars cause
+      many redundant pops and the algorithm degrades to quadratic time. In production you can add counters
+      to track push and pop operations per request; if pushes far exceed pops, the amortized O(N) guarantee
+      is broken. Also verify that a sentinel bar of height zero is appended so the final cleanup loop
+      runs. Once the stack is correctly maintained as strictly decreasing (or non-increasing with proper
+      handling of equals) each index is pushed and popped once, restoring the linear runtime and eliminating
+      the spikes.
+    key_points:
+    - id: kp_1
+      statement: Identifies that an unbounded stack growth (e.g., forgetting to pop equal heights) can
+        cause O(N²) behaviour.
+      required: true
+    - id: kp_2
+      statement: Suggests adding instrumentation or logging to verify each bar is pushed and popped at
+        most once.
+      required: true
+    - id: kp_3
+      statement: Recommends checking edge cases such as duplicate heights or missing sentinel bars that
+        force extra passes.
+      required: false
+    - id: kp_4
+      statement: 'Proposes a fix: ensure the stack stores indices with strictly increasing heights or
+        use a sentinel zero height at the end.'
+      required: true
+    hint_ladder:
+    - What invariant must hold for the stack at every iteration?
+    - How can you measure whether that invariant is being violated during a slow request?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  heaps__q1:
+    stem: You need to continuously serve the highest-priority task in a system where new tasks arrive
+      with arbitrary priorities. How would you use a heap to support insertion and extraction efficiently,
+      and what are the time complexities?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:heaps
+      weight: 0.7
+    - id: concept:queues
+      weight: 0.15
+    reference_answer: 'I would keep all pending tasks in a max-heap, where the key is the task’s priority.
+      The heap is stored in an array, so the highest-priority task is always at index 0. When a new task
+      arrives I push it onto the heap: I place it at the end of the array and bubble it up, which takes
+      O(log n) time. When I need to serve the next task I pop the root: I swap the root with the last
+      element, remove the last element, and then heapify down to restore the heap property, also O(log
+      n). Both operations are logarithmic, and the heap gives constant-time access to the top element,
+      which is ideal for a priority-queue workload.'
+    key_points:
+    - id: kp_1
+      statement: Describes using a max-heap (or min-heap with inverted priorities) to store tasks, with
+        each node containing the task and its priority.
+      required: true
+    - id: kp_2
+      statement: States that insertion (push) is O(log n) because the new element is added at the end
+        of the array and then bubbled up.
+      required: true
+    - id: kp_3
+      statement: States that extracting the highest-priority task (pop) is O(log n) due to swapping the
+        root with the last element and heapifying down.
+      required: true
+    - id: kp_4
+      statement: Mentions that the heap is typically implemented with an array, giving O(1) access to
+        the root.
+      required: false
+    hint_ladder:
+    - Think about how a binary heap is represented in an array.
+    - Recall the two basic heap operations and their costs.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  heaps__q2:
+    stem: During a production outage you notice that a priority-queue backed by a binary heap is suddenly
+      taking much longer to insert new jobs. What could cause the heap operations to degrade, and how
+      would you diagnose and fix it?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:heaps
+      weight: 0.7
+    - id: concept:amortized_analysis
+      weight: 0.15
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: The most common hidden cost is the dynamic array that backs the binary heap. If
+      the heap keeps growing and the resize policy is to increase capacity by a small factor, each resize
+      copies the whole array, which is O(n) and can show up as a spike in insert latency. I would first
+      log the heap size before each insert and watch for frequent growth events. If I see many resizes,
+      I’d either pre-allocate a larger buffer or change the growth factor to something like 2×, which
+      makes the amortized cost of inserts stay O(log n). I’d also profile the insert routine to ensure
+      the extra time isn’t coming from cache misses or excessive swaps due to many equal priorities. Fixing
+      the resize strategy or switching to a more cache-friendly implementation restores the expected logarithmic
+      performance.
+    key_points:
+    - id: kp_1
+      statement: Identifies that the underlying array may be resizing frequently, causing occasional O(n)
+        re-allocations.
+      required: true
+    - id: kp_2
+      statement: Points out that a badly balanced heap (e.g., many duplicate priorities) does not affect
+        asymptotic time but may increase constant factors due to extra swaps.
+      required: false
+    - id: kp_3
+      statement: Suggests monitoring heap size growth and checking if the resize factor is too small,
+        then increasing the growth factor or pre-allocating sufficient capacity.
+      required: true
+    - id: kp_4
+      statement: Recommends profiling the insert path to see if memory copying dominates, and possibly
+        switching to a custom allocator or a different priority-queue implementation.
+      required: false
+    hint_ladder:
+    - What data structure does a binary heap use under the hood?
+    - Consider the cost of expanding that structure.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  non_comparison_sorting__q1:
+    stem: You have an array of 10 million non-negative integers each less than 5000. How would you sort
+      it efficiently without using comparison-based algorithms, and what is the time and space complexity?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:non_comparison_sorting
+      weight: 0.7
+    - id: concept:arrays
+      weight: 0.15
+    - id: concept:space_complexity
+      weight: 0.15
+    reference_answer: I would choose counting sort. First, allocate a frequency array of size 5,000 initialized
+      to zero. Scan the input once, incrementing the count for each value – that’s O(n). Then iterate
+      over the frequency array, outputting each value the number of times it appears, which is another
+      O(k) pass. Since k = 5,000 is tiny compared to n = 10 million, the overall time is O(n + k) ≈ O(n).
+      The extra space is the frequency array, O(k), plus the output array, so overall O(k) auxiliary space.
+      This gives a linear-time, stable sort perfectly suited to the given constraints.
+    key_points:
+    - id: kp_1
+      statement: Proposes using counting sort because the key range (0-4999) is small relative to n.
+      required: true
+    - id: kp_2
+      statement: Describes building a frequency array of size 5000 and then reconstructing the sorted
+        output.
+      required: true
+    - id: kp_3
+      statement: States time complexity O(n + k) ≈ O(n) and space complexity O(k) where k = 5000.
+      required: true
+    - id: kp_4
+      statement: Mentions stability is inherent and that the algorithm is linear for this data set.
+      required: false
+    hint_ladder:
+    - Think about the range of possible values versus the number of elements.
+    - What auxiliary structure can hold counts of each possible key?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  non_comparison_sorting__q2:
+    stem: In a production log-processing pipeline you need to sort 64-bit timestamps that arrive in real-time,
+      but you can only store a few megabytes of auxiliary data. Which non-comparison sort would you pick
+      and why?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:non_comparison_sorting
+      weight: 0.7
+    - id: concept:amortized_analysis
+      weight: 0.15
+    - id: concept:bit_manipulation
+      weight: 0.15
+    reference_answer: 'I would use radix sort, processing the 64-bit timestamps a few bits at a time—say
+      8 bits per pass, giving a base of 256. Each pass uses counting sort on the current byte, which needs
+      a count array of size 256 (just 1 KB). With 8 passes we cover all 64 bits, so the total work is
+      8 × (O(n + 256)) ≈ O(n). The auxiliary memory stays under a few megabytes: the count array plus
+      a temporary output buffer of size n, which can be reused. This approach meets the real-time requirement,
+      stays linear, and respects the tight space budget.'
+    key_points:
+    - id: kp_1
+      statement: Selects radix sort with a base that fits the memory constraint (e.g., 2⁸ or 2¹⁶).
+      required: true
+    - id: kp_2
+      statement: Explains processing the timestamps digit by digit (least-significant to most-significant)
+        using counting sort as the stable sub-routine.
+      required: true
+    - id: kp_3
+      statement: Justifies that with d passes (d = 64 / bits-per-digit) the total time is O(d·(n + b))
+        ≈ O(n), and auxiliary space is O(b) where b is the base size, fitting a few MB.
+      required: true
+    - id: kp_4
+      statement: Mentions that the algorithm is cache-friendly and amortized linear for the stream.
+      required: false
+    hint_ladder:
+    - What sort works digit by digit and can use a small fixed-size bucket array?
+    - Consider how many passes are needed if you process a few bits each time.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  binary_search__q1:
+    stem: You notice a function that should return the index of a target in a sorted array is sometimes
+      returning -1 even though the target is present. What could be going wrong in the binary search implementation?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:binary_search
+      weight: 0.7
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: The most common cause is an off-by-one error when moving the low and high pointers.
+      If you set low = mid + 1 after a comparison but compute mid as (low + high)/2 without guarding against
+      overflow, you might skip the target index. Also, if the loop condition is while(low <= high) but
+      you update high = mid - 1 incorrectly, the search space can shrink past the target. Another subtle
+      bug is integer overflow in mid calculation; using mid = low + (high - low)/2 avoids that. Finally,
+      ensure the array is actually sorted, because binary search assumes a monotonic order. Fixing these
+      pointer updates and mid computation usually resolves the -1 returns.
+    key_points:
+    - id: kp_1
+      statement: The low/high pointers may be updated incorrectly, causing the search space to skip the
+        target.
+      required: true
+    - id: kp_2
+      statement: Using integer overflow or wrong mid calculation (e.g., (low+high)/2) can lead to infinite
+        loops or missed indices.
+      required: true
+    - id: kp_3
+      statement: Not handling the case when low exceeds high properly results in premature termination
+        with -1.
+      required: false
+    - id: kp_4
+      statement: Ensuring the array is truly sorted in non-decreasing order is a prerequisite for binary
+        search correctness.
+      required: false
+    hint_ladder:
+    - Think about the loop termination condition and how mid is computed.
+    - Consider off-by-one errors when updating low and high.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  binary_search_on_answer__q1:
+    stem: You have N machines, each can produce a product in a different amount of time; you need to produce
+      at least K products as fast as possible. How would you use binary search on the answer to find the
+      minimum time?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:binary_search_on_answer
+      weight: 0.7
+    reference_answer: 'We treat the answer – the minimum time required – as a monotonic function. The
+      lower bound is 0 and the upper bound can be the slowest machine''s time multiplied by K. For any
+      candidate time mid, we compute how many items each machine can finish: floor(mid / t_i) and sum
+      them. If the sum is at least K, the predicate is true, meaning we can try a smaller time; otherwise
+      we need more time. Because the predicate is monotonic, a standard binary search on the interval
+      [low, high] converges to the smallest time where the predicate holds. The loop runs O(log(max_time*K))
+      iterations, each O(N) to evaluate, giving overall O(N log T) time.'
+    key_points:
+    - id: kp_1
+      statement: Defines the search space as time ranging from 0 to max_time * K.
+      required: true
+    - id: kp_2
+      statement: Shows that for a given mid-time you can compute how many products all machines can finish
+        by summing floor(mid / machine_time).
+      required: true
+    - id: kp_3
+      statement: 'Explains the monotonic predicate: if K products can be made in mid time, they can also
+        be made in any larger time.'
+      required: true
+    - id: kp_4
+      statement: Describes the binary-search loop that narrows the interval until low == high, returning
+        the minimal feasible time.
+      required: false
+    hint_ladder:
+    - Think about what you can check quickly for a given time.
+    - What property makes binary search possible?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  binary_search_on_answer__q2:
+    stem: In a video-streaming service you must choose the highest bitrate that keeps buffering under
+      2 seconds for 95% of users. How would you apply binary search on the answer to determine that bitrate?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:binary_search_on_answer
+      weight: 0.7
+    reference_answer: 'First, list all possible bitrates in increasing order. The predicate we need is:
+      "does this bitrate keep buffering ≤2 seconds for 95 % of users?" Because lowering the bitrate can
+      only improve buffering, the predicate is monotonic. We binary-search the array: pick the middle
+      bitrate, run the measurement (or use historical data) to see if the predicate holds. If it does,
+      we record this as a candidate and search the higher half; if not, we search the lower half. When
+      low meets high, the last successful candidate is the maximum bitrate satisfying the requirement.
+      The approach runs in O(log B) feasibility checks, where B is the number of bitrate options.'
+    key_points:
+    - id: kp_1
+      statement: Identifies the search domain as the sorted list of available bitrate levels.
+      required: true
+    - id: kp_2
+      statement: 'Defines the feasibility test: run a simulation or A/B test for a candidate bitrate and
+        measure the 95th-percentile buffering time.'
+      required: true
+    - id: kp_3
+      statement: Notes that the feasibility predicate is monotonic – if a bitrate X meets the 2-second
+        target, any lower bitrate will also meet it.
+      required: true
+    - id: kp_4
+      statement: Outlines the binary-search procedure that repeatedly picks the middle bitrate, runs the
+        test, and moves the low/high pointers accordingly until the optimal bitrate is isolated.
+      required: false
+    hint_ladder:
+    - What ordering do the possible answers have?
+    - What makes the predicate monotonic in this scenario?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  string_matching__q1:
+    stem: You have a large text of length N and need to find all occurrences of a pattern of length M
+      using KMP. Explain why KMP runs in O(N+M) time and what the failure function represents.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:string_matching
+      weight: 0.7
+    - id: concept:strings
+      weight: 0.15
+    reference_answer: KMP first builds a failure (or prefix) table for the pattern. For each position
+      i it records the length of the longest proper prefix that matches a suffix ending at i, which tells
+      us how far we can shift the pattern without re-examining characters. Building this table scans the
+      pattern once, so O(M). In the search phase we compare characters of the text and pattern; when a
+      mismatch occurs we jump the pattern index to the failure value instead of resetting to zero. This
+      jump never moves the text pointer backward, so each text character is compared at most twice. Hence
+      the matching runs in O(N). Adding the O(M) preprocessing gives a total O(N+M) time bound.
+    key_points:
+    - id: kp_1
+      statement: The failure function stores the length of the longest proper prefix of the pattern that
+        is also a suffix for each prefix.
+      required: true
+    - id: kp_2
+      statement: During the scan, the algorithm never moves the text index backwards, ensuring each character
+        is examined at most twice.
+      required: true
+    - id: kp_3
+      statement: Computing the failure function itself takes O(M) time by iterating once over the pattern.
+      required: false
+    - id: kp_4
+      statement: Overall time is O(N+M) because the matching phase is linear in N and the preprocessing
+        phase is linear in M.
+      required: true
+    hint_ladder:
+    - Think about what happens when a mismatch occurs.
+    - How many times can each character of the text be examined?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  string_matching__q2:
+    stem: During a code review you notice a Rabin-Karp implementation that recomputes the hash of the
+      pattern for every slide of the window. What is the impact on performance and how would you fix it?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:string_matching
+      weight: 0.7
+    - id: concept:hashing
+      weight: 0.15
+    reference_answer: 'If the hash of the pattern is recomputed for each shift, the inner loop runs over
+      M characters each time, turning the algorithm into O(N·M), which defeats the purpose of Rabin-Karp.
+      The fix is to compute the pattern hash once, then maintain a rolling hash for the current text window:
+      subtract the contribution of the outgoing character, multiply by the base, add the incoming character,
+      and take modulus. This update is O(1), so scanning the whole text is O(N). Combined with the one-time
+      O(M) pattern hash, the expected runtime is O(N+M), with occasional extra checks for hash collisions.'
+    key_points:
+    - id: kp_1
+      statement: Recomputing the pattern hash each slide makes the algorithm O(N·M) instead of the intended
+        average O(N).
+      required: true
+    - id: kp_2
+      statement: A rolling hash allows updating the window hash in O(1) by removing the leading character
+        and adding the trailing one.
+      required: true
+    - id: kp_3
+      statement: Using a large prime modulus and a base (e.g., 256) prevents overflow and reduces collisions.
+      required: false
+    - id: kp_4
+      statement: After fixing, the overall expected time becomes O(N+M) with a low probability of false
+        positives.
+      required: true
+    hint_ladder:
+    - What does a rolling hash let you do when the window moves one position?
+    - Compare the cost of recomputing versus updating the hash.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  divide_and_conquer__q1:
+    stem: You need to count inversions in an array of 10^5 integers. Explain how a divide-and-conquer
+      approach works and why its time complexity is O(n log n).
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:divide_and_conquer
+      weight: 0.7
+    - id: concept:recurrence_relations
+      weight: 0.15
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: We split the array into two halves recursively until each sub-array has one element
+      – a trivially sorted segment with zero inversions. During the merge step we have two sorted halves;
+      while merging we count how many elements from the right half jump ahead of elements in the left
+      half. Every time an element from the right is placed before a left element, it forms an inversion
+      with all remaining elements in the left, so we add that count. This gives a recurrence T(n)=2T(n/2)+Θ(n)
+      for the merge work. Solving it with the Master theorem (a=2, b=2, f(n)=Θ(n)) yields T(n)=Θ(n log
+      n). Thus the algorithm runs in O(n log n) time and uses O(n) auxiliary space for the temporary buffer.
+    key_points:
+    - id: kp_1
+      statement: Describes splitting the array recursively into halves until size 1.
+      required: true
+    - id: kp_2
+      statement: Explains merging step counts cross-inversions by comparing left and right sorted halves.
+      required: true
+    - id: kp_3
+      statement: Derives recurrence T(n)=2T(n/2)+O(n) and solves it to O(n log n) using Master theorem.
+      required: true
+    - id: kp_4
+      statement: Mentions that extra O(n) space is used for temporary merge buffer.
+      required: false
+    hint_ladder:
+    - Think about what extra work is done when you combine the results of the two halves.
+    - Recall the standard recurrence for mergesort.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  divide_and_conquer__q2:
+    stem: During a code-review you notice a recursive solution for the closest-pair-of-points problem
+      that runs in O(n²). Suggest a divide-and-conquer modification and discuss the trade-offs compared
+      to the naïve approach.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:divide_and_conquer
+      weight: 0.7
+    - id: concept:balanced_trees
+      weight: 0.15
+    - id: concept:recursion
+      weight: 0.15
+    reference_answer: The classic divide-and-conquer algorithm first sorts all points by their x-coordinate.
+      It then recursively finds the closest pair in the left half and the right half, each of size roughly
+      n/2. Let δ be the smaller of those two distances. In the merge step we consider only points whose
+      x-coordinate lies within δ of the dividing line, forming a vertical strip. Those points are sorted
+      by y-coordinate, and for each point we compare it with the next up to seven points in the strip
+      – a property that follows from geometry. This merge work is linear, so the recurrence is T(n)=2T(n/2)+Θ(n),
+      which solves to Θ(n log n). Compared with the naïve O(n²) double loop, the divide-and-conquer version
+      needs extra O(n) auxiliary space for the sorted lists and incurs the cost of the initial sort, but
+      it dramatically reduces runtime for large n.
+    key_points:
+    - id: kp_1
+      statement: Proposes sorting points by x-coordinate and recursively solving left and right halves.
+      required: true
+    - id: kp_2
+      statement: Describes merging step that examines a strip of width 2δ and uses sorting by y-coordinate
+        to limit checks to at most 7 neighbours.
+      required: true
+    - id: kp_3
+      statement: States the resulting recurrence T(n)=2T(n/2)+O(n) giving O(n log n) time.
+      required: true
+    - id: kp_4
+      statement: Mentions extra O(n) space or the need for auxiliary arrays and the overhead of sorting,
+        but overall better asymptotic performance than O(n²).
+      required: false
+    hint_ladder:
+    - Recall the geometric property that limits the number of points to check in the strip.
+    - Think about how sorting once can be reused in recursive calls.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  backtracking__q1:
+    stem: You need to generate all subsets of a set of size N using backtracking. Explain how you would
+      prune the search space if you only want subsets whose sum is exactly K.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:backtracking
+      weight: 0.7
+    - id: concept:combinatorics
+      weight: 0.15
+    - id: concept:recursion
+      weight: 0.15
+    reference_answer: 'I would start with a recursive function that takes the current index, the current
+      subset, and the current sum. At each call I have two branches: include the element at the index
+      or skip it. Before recursing on the include branch I add the element to the running sum; if that
+      sum exceeds K I stop that branch immediately – that’s the prune. If the sum equals K I record the
+      subset as a valid answer, but I still backtrack because later elements might also be excluded to
+      form other subsets. The exclude branch simply recurses without changing the sum. This way the recursion
+      explores the subset tree but cuts off any path that can’t possibly reach the target sum, reducing
+      the average work compared to the full 2^N enumeration. The worst-case complexity remains O(2^N)
+      when no pruning occurs.'
+    key_points:
+    - id: kp_1
+      statement: 'Describes the recursive decision tree: at each index choose include or exclude the element.'
+      required: true
+    - id: kp_2
+      statement: Shows that you keep a running sum and stop recursing when the sum exceeds K (pruning).
+      required: true
+    - id: kp_3
+      statement: Mentions that when the running sum equals K you can record the current subset and still
+        backtrack to find other solutions.
+      required: false
+    - id: kp_4
+      statement: Notes the time complexity in the worst case is O(2^N) but pruning can reduce it for many
+        inputs.
+      required: false
+    hint_ladder:
+    - Think about what information you can maintain as you go deeper in the recursion.
+    - When does a branch become hopeless for reaching the target sum?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  backtracking__q2:
+    stem: During a live coding interview you implement the classic N-Queens solver with backtracking,
+      but it runs extremely slowly for N=12. What common inefficiency might be causing this, and how would
+      you fix it?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:backtracking
+      weight: 0.7
+    - id: concept:bit_manipulation
+      weight: 0.15
+    - id: concept:space_complexity
+      weight: 0.15
+    reference_answer: 'The usual slowdown comes from the way you test whether a queen placement is safe.
+      If you iterate over all previously placed queens or scan the whole board for column and diagonal
+      conflicts, each recursive call does O(N) work, which explodes for N=12. A standard fix is to maintain
+      three auxiliary structures: a boolean array for columns, one for the main diagonal (row-col constant),
+      and one for the anti-diagonal (row+col constant). With these, you can check safety in O(1) time.
+      An even faster variant uses bit masks for the three arrays and bitwise AND/OR to test and set bits,
+      cutting the constant factor dramatically. The algorithm’s theoretical O(N!) bound remains, but the
+      per-node work drops from linear to constant, making N=12 solve in milliseconds.'
+    key_points:
+    - id: kp_1
+      statement: Identifies that checking column and diagonal conflicts with O(N) scans at each placement
+        is a bottleneck.
+      required: true
+    - id: kp_2
+      statement: Proposes using three boolean arrays (or bit masks) to record occupied columns, main diagonals,
+        and anti-diagonals for O(1) conflict checks.
+      required: true
+    - id: kp_3
+      statement: Mentions that the bit-mask version can further speed up by representing the three arrays
+        as integers and using bit operations.
+      required: false
+    - id: kp_4
+      statement: Notes that the overall time complexity stays O(N!), but the constant factor drops dramatically
+        with O(1) checks.
+      required: false
+    hint_ladder:
+    - What does the solver do every time it tries to place a queen?
+    - Can you keep some state that tells you instantly whether a column or diagonal is already occupied?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  dynamic_programming__dp_advanced_scenario_1:
+    stem: In a production service you notice a function that recomputes the number of ways to reach each
+      node in a DAG for every incoming request, and the latency spikes as request volume grows. What DP
+      technique would you apply to fix this and why?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:dynamic_programming
+      weight: 0.7
+    - id: concept:graphs_representation
+      weight: 0.15
+    - id: concept:topological_sort
+      weight: 0.15
+    reference_answer: The latency issue stems from recomputing the number of paths for every request,
+      even though the DAG structure doesn’t change. Since each node’s path count depends on its predecessors,
+      the same sub-problems are solved repeatedly – classic overlapping subproblems. I would preprocess
+      the DAG with a topological sort and then run a bottom-up DP, storing the number of ways to reach
+      each node in an array (memoisation). After this one-time O(V+E) pass, any request can retrieve the
+      answer instantly, or at worst traverse a small set of queried nodes, giving O(1) per query. The
+      main trade-off is the extra O(V) memory for the cache and the need to recompute it only when the
+      graph updates, but overall it cuts the per-request latency dramatically.
+    key_points:
+    - id: kp_1
+      statement: Identifies that the problem has overlapping subproblems because each node's count is
+        recomputed for every request.
+      required: true
+    - id: kp_2
+      statement: Proposes using memoisation (caching results) or a bottom-up DP after a topological sort
+        to compute all counts once.
+      required: true
+    - id: kp_3
+      statement: Explains that after preprocessing, each request can answer queries in O(1) or O(k) where
+        k is number of queried nodes, reducing latency.
+      required: true
+    - id: kp_4
+      statement: Mentions trade-off of extra memory for the cache and need to invalidate it when the DAG
+        changes.
+      required: false
+    hint_ladder:
+    - Think about the property of overlapping subproblems in a DAG.
+    - Consider preprocessing once versus per request.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  dp_on_grids__item_1:
+    stem: You have an N×M grid where some cells are blocked. In an interview you are asked to count the
+      number of ways to go from the top-left to the bottom-right moving only right or down. How would
+      you formulate the DP and what is its time and space complexity?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:dp_on_grids
+      weight: 0.7
+    - id: concept:dynamic_programming
+      weight: 0.15
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: I would set up a DP table dp[i][j] representing the number of ways to reach cell
+      (i, j) from (0,0). If a cell is blocked, dp[i][j] is zero. Otherwise the recurrence is dp[i][j]
+      = dp[i-1][j] + dp[i][j-1] because we can only come from the cell above or the cell to the left.
+      We initialise dp[0][0] = 1 if the start isn’t blocked, and fill the first row and column respecting
+      blocked cells. Scanning the grid once gives O(N·M) time. The naïve table uses O(N·M) space, but
+      we can compress it to a single row of size M, achieving O(M) space while still O(N·M) time.
+    key_points:
+    - id: kp_1
+      statement: Defines dp[i][j] as the number of ways to reach cell (i,j) from the start.
+      required: true
+    - id: kp_2
+      statement: Shows the recurrence dp[i][j] = 0 if cell is blocked, else dp[i-1][j] + dp[i][j-1].
+      required: true
+    - id: kp_3
+      statement: Mentions initializing dp[0][0] = 1 when the start cell is not blocked.
+      required: true
+    - id: kp_4
+      statement: States O(N·M) time and O(N·M) space, and optionally O(M) space by rolling array.
+      required: false
+    hint_ladder:
+    - Think about what information you need to know when you arrive at a cell.
+    - Can you drop one dimension of the DP table?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  knapsack__q1:
+    stem: You have a set of 12 items each with weight and value, and a knapsack capacity of 30. Explain
+      how you would solve the 0/1 knapsack problem using dynamic programming, and discuss the time and
+      space complexity of your approach.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:knapsack
+      weight: 0.7
+    - id: concept:dynamic_programming
+      weight: 0.15
+    reference_answer: 'To solve 0/1 knapsack with DP we create a table dp where dp[i][w] stores the maximum
+      value achievable using the first i items within weight w. The base case dp[0][w] = 0 for all w.
+      For each item i we fill the row using the recurrence: if the item''s weight exceeds w, dp[i][w]
+      = dp[i-1][w]; otherwise dp[i][w] = max(dp[i-1][w], dp[i-1][w-weight_i] + value_i). We iterate i
+      from 1 to n and w from 0 to capacity. This fills an (n+1)×(C+1) table, giving O(n·C) time and O(n·C)
+      space. By updating the table in place with a one-dimensional array and iterating w backwards, we
+      can cut space to O(C) while keeping the same time complexity.'
+    key_points:
+    - id: kp_1
+      statement: Describes building a DP table dp[i][w] where i indexes items and w indexes weight up
+        to capacity.
+      required: true
+    - id: kp_2
+      statement: 'Shows the recurrence: dp[i][w] = max(dp[i-1][w], dp[i-1][w-weight_i] + value_i) when
+        weight_i ≤ w.'
+      required: true
+    - id: kp_3
+      statement: Mentions that the table has size (n+1) × (capacity+1) leading to O(n·C) time and space.
+      required: true
+    - id: kp_4
+      statement: Notes that space can be reduced to O(C) by using a 1-D array and iterating weights backwards.
+      required: false
+    hint_ladder:
+    - Think about how you would fill a matrix row by row.
+    - Recall the classic DP recurrence for choosing or skipping an item.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  knapsack__q2:
+    stem: During a coding interview you implement a recursive backtracking solution for subset-sum and
+      it times out on n = 30 items. What optimisation can you apply to make it feasible, and why does
+      it improve the worst-case runtime?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:knapsack
+      weight: 0.7
+    - id: concept:backtracking
+      weight: 0.15
+    - id: concept:dynamic_programming
+      weight: 0.15
+    reference_answer: 'The recursive backtracking version tries every subset, giving a 2^n search tree.
+      Many branches recompute the same sub-problem: reaching the same index with the same remaining capacity.
+      By adding memoisation – a hash map keyed by (i, remaining) – we store the boolean result for each
+      state. When the recursion reaches a previously seen state we return the cached answer instead of
+      exploring again. This collapses the exponential tree to at most n × C distinct states, so the worst-case
+      runtime becomes O(n·C) with O(n·C) memory. Additional pruning, like cutting off branches when the
+      current sum already exceeds the target or when the remaining items cannot fill the gap, can further
+      speed it up.'
+    key_points:
+    - id: kp_1
+      statement: Identifies that the naive recursion explores 2^n subsets, leading to exponential time.
+      required: true
+    - id: kp_2
+      statement: Proposes using memoisation (top-down DP) to cache results for a given (index, remaining_weight)
+        pair.
+      required: true
+    - id: kp_3
+      statement: Explains that memoisation reduces the state space to O(n·C), turning exponential to pseudo-polynomial
+        time.
+      required: true
+    - id: kp_4
+      statement: Optionally mentions branch-and-bound pruning based on current sum and remaining possible
+        sum.
+      required: false
+    hint_ladder:
+    - What repeated sub-problems does the recursion generate?
+    - Can you store intermediate results to avoid recomputation?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  longest_increasing_subsequence__q1_debugging_lis_implementation:
+    stem: You run an O(N log N) LIS routine that maintains a tails array and uses binary search, but on
+      the input [3, 1, 2, 1, 2, 3] it returns length 2 instead of 4. What is likely wrong?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:longest_increasing_subsequence
+      weight: 0.7
+    - id: concept:binary_search
+      weight: 0.15
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: The most common bug is using the wrong bound in the binary search. In the patience-sorting
+      LIS algorithm, tails[i] must store the smallest possible tail for a subsequence of length i+1, so
+      when we process a new number we should replace the first element that is greater than or equal to
+      it (lower_bound). If the code uses a strict ‘>’ check, equal values overwrite a later slot, preventing
+      the algorithm from extending the sequence. In the array [3,1,2,1,2,3], the second ‘2’ should replace
+      the tail of length-2 subsequence, allowing a length-4 LIS (1,2,2,3). Changing the binary search
+      to return the first index with value ≥ key fixes the result.
+    key_points:
+    - id: kp_1
+      statement: The binary search is updating the tails array with ‘>’ instead of ‘>=’, causing equal
+        values to replace earlier entries incorrectly.
+      required: true
+    - id: kp_2
+      statement: Because of the wrong comparison, the algorithm treats the second ‘2’ as not extending
+        the subsequence, limiting the length.
+      required: true
+    - id: kp_3
+      statement: Fixing the comparison to use lower_bound (first element ≥ key) restores the correct length
+        4.
+      required: false
+    hint_ladder:
+    - Think about how you update the tails array when you find a position with binary search.
+    - Recall the invariant that tails[i] is the smallest possible tail of an increasing subsequence of
+      length i+1.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  longest_increasing_subsequence__q2_tradeoff_dp_vs_patience:
+    stem: A recruiter asks you to compare the classic O(N^2) DP solution for LIS with the O(N log N) patience-sorting
+      method in terms of time, space, and ease of reconstruction of the actual subsequence.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:longest_increasing_subsequence
+      weight: 0.7
+    - id: concept:dynamic_programming
+      weight: 0.15
+    - id: concept:binary_search
+      weight: 0.15
+    reference_answer: The DP approach computes dp[i] = 1 + max{dp[j] | j<i and a[j] < a[i]}, giving O(N^2)
+      time and O(N) space. Because we store the index of the predecessor that gave the max, we can reconstruct
+      the LIS by following those links, which is straightforward. The patience-sorting method maintains
+      a tails array and uses binary search, achieving O(N log N) time with the same O(N) auxiliary space
+      for tails and a parent array. However, reconstruction is not automatic; we must keep an extra array
+      of predecessors and the index of the last element of the longest pile, then walk back. So DP is
+      easier to implement and to retrieve the sequence, while the O(N log N) version wins on speed for
+      large inputs but adds a small bookkeeping overhead.
+    key_points:
+    - id: kp_1
+      statement: DP runs in O(N^2) time, O(N) space, and naturally provides predecessor pointers for easy
+        reconstruction.
+      required: true
+    - id: kp_2
+      statement: Patience sorting runs in O(N log N) time, O(N) space, but needs extra bookkeeping (parent
+        indices) to rebuild the sequence.
+      required: true
+    - id: kp_3
+      statement: Both use linear extra space; the DP method is simpler to code, while the O(N log N) method
+        is preferred for large N where performance matters.
+      required: false
+    hint_ladder:
+    - Recall what each algorithm stores for every element.
+    - Think about how you would backtrack the subsequence in each approach.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  edit_distance__q1:
+    stem: Suppose you have two strings, "kitten" and "sitting". In an interview you are asked to compute
+      the minimum number of single-character insertions, deletions or substitutions to convert the first
+      into the second. How would you approach this problem and what is the answer?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:edit_distance
+      weight: 0.7
+    - id: concept:dynamic_programming
+      weight: 0.15
+    - id: concept:strings
+      weight: 0.15
+    reference_answer: I would use the standard dynamic-programming solution. Create a table dp of size
+      (|kitten|+1)×(|sitting|+1). dp[i][j] holds the edit distance between the first i characters of "kitten"
+      and the first j characters of "sitting". Initialise dp[i][0]=i and dp[0][j]=j. For each cell, if
+      the characters are equal we copy dp[i-1][j-1]; otherwise we take 1 plus the minimum of deletion
+      (dp[i-1][j]), insertion (dp[i][j-1]) and substitution (dp[i-1][j-1]). Filling the table gives dp[6][7]=3,
+      meaning three operations (substitute k→s, substitute e→i, insert g). The algorithm runs in O(m·n)
+      time and can be reduced to O(min(m,n)) space with a rolling array.
+    key_points:
+    - id: kp_1
+      statement: Describes the classic DP formulation with a (m+1)×(n+1) table where dp[i][j] stores edit
+        distance between prefixes of lengths i and j.
+      required: true
+    - id: kp_2
+      statement: 'States the recurrence: if characters match dp[i][j]=dp[i-1][j-1]; else dp[i][j]=1+min(dp[i-1][j],
+        dp[i][j-1], dp[i-1][j-1]).'
+      required: true
+    - id: kp_3
+      statement: Computes the final value for "kitten" (len 6) and "sitting" (len 7) as 3.
+      required: true
+    - id: kp_4
+      statement: Mentions O(m·n) time and O(m·n) (or O(min(m,n)) with rolling array) space.
+      required: false
+    hint_ladder:
+    - Recall the DP table is built row by row using previous row/column values.
+    - What operation does each of the three min terms correspond to?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  edit_distance__q2:
+    stem: Your production service stores user passwords after applying a custom edit-distance based similarity
+      check to prevent weak passwords. Suddenly you notice many login attempts failing even for correct
+      passwords. What could be going wrong in the edit-distance implementation?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:edit_distance
+      weight: 0.7
+    - id: concept:dynamic_programming
+      weight: 0.15
+    - id: concept:space_complexity
+      weight: 0.15
+    reference_answer: A likely culprit is a bug in the DP initialization. If the first row or column is
+      not set to 0…i or 0…j, every cell will be off by a constant, making the computed distance larger
+      than it should be, so a correct password may be rejected. Another common issue is storing the distance
+      in an 8-bit integer; for strings longer than 127 characters the value overflows and wraps around,
+      again causing false mismatches. Finally, when optimizing space to two rows, forgetting to copy the
+      current row to the previous one before the next iteration corrupts the recurrence. Debugging by
+      printing the DP matrix for simple pairs like "abc" vs "abd" quickly reveals the problem, and adding
+      proper unit tests fixes it.
+    key_points:
+    - id: kp_1
+      statement: Points out that an off-by-one error in the DP base-case (initialising first row/column)
+        can shift all distances.
+      required: true
+    - id: kp_2
+      statement: Mentions possible integer overflow if distances are stored in a small type, causing wrap-around
+        and incorrect comparisons.
+      required: true
+    - id: kp_3
+      statement: Suggests that using only O(min(m,n)) space without keeping previous row correctly can
+        corrupt the recurrence.
+      required: false
+    - id: kp_4
+      statement: Recommends adding unit tests for known string pairs and checking that the function returns
+        the expected distance.
+      required: false
+    hint_ladder:
+    - Think about how the DP table is seeded before the main loops.
+    - What data type are you using to hold the distance values?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  dp_on_trees__tree_dp_rerooting_to_compute_max_distanc:
+    stem: You have a tree with N nodes, each edge weight 1. How would you compute for every node the sum
+      of distances to all other nodes in O(N) using a DP-on-trees approach?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:dp_on_trees
+      weight: 0.7
+    - id: concept:graph_traversal_dfs
+      weight: 0.15
+    - id: concept:time_complexity
+      weight: 0.15
+    reference_answer: 'Start by rooting the tree at any node, say 1. In the first DFS we compute two arrays:
+      sz[u] – number of nodes in u''s subtree, and dp[u] – sum of distances from u to nodes in its subtree.
+      dp[u] = Σ(dp[child] + sz[child]) because each node in a child''s subtree is one edge farther from
+      u. After the first pass, dp[1] gives the total distance sum for the root. In the second DFS we reroot:
+      when we move the root from u to its child v, the distance to every node in v''s subtree decreases
+      by 1 (size = sz[v]) and to all other nodes increases by 1 (N-sz[v]). So ans[v] = ans[u] + (N - 2*sz[v]).
+      Propagate this formula to all children. Both traversals are linear, O(N) time and O(N) memory, yielding
+      the required sum for every node.'
+    key_points:
+    - id: kp_1
+      statement: First DFS computes subtree sizes and the total distance sum for an arbitrary root (e.g.,
+        node 1).
+      required: true
+    - id: kp_2
+      statement: 'Second DFS reroots: when moving from parent u to child v, distance sum for v = sum_u
+        + (N - 2*size_v).'
+      required: true
+    - id: kp_3
+      statement: Both passes run in O(N) time and O(N) space, giving the answer for every node.
+      required: true
+    - id: kp_4
+      statement: Explain why the formula adjusts by adding N-size_v and subtracting size_v.
+      required: false
+    hint_ladder:
+    - 'Think of a two-pass DP: one bottom-up, one top-down.'
+    - What information can you reuse when you move the root from a parent to a child?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  dp_on_trees__tree_dp_maximum_independent_set_on_a_tre:
+    stem: A company wants to select a set of employees represented by nodes in a hierarchy tree such that
+      no manager and direct report are both chosen, maximizing total skill score. How would you solve
+      this with tree DP?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:dp_on_trees
+      weight: 0.7
+    - id: concept:recursion
+      weight: 0.15
+    - id: concept:dynamic_programming
+      weight: 0.15
+    reference_answer: 'We treat the hierarchy as a rooted tree. For each node u we keep two values: dp[u][0]
+      – best total skill when u is excluded, and dp[u][1] – best total when u is included. If we include
+      u we cannot take any child, so dp[u][1] = skill[u] + Σ dp[child][0]. If we exclude u we may either
+      take or skip each child, giving dp[u][0] = Σ max(dp[child][0], dp[child][1]). We compute these bottom-up
+      with a post-order DFS, starting from leaves where dp[leaf][1]=skill[leaf] and dp[leaf][0]=0. After
+      processing the whole tree, the answer is max(dp[root][0], dp[root][1]). The traversal visits each
+      edge once, so the algorithm runs in O(N) time and uses O(N) extra space.'
+    key_points:
+    - id: kp_1
+      statement: Define dp[u][0] as the maximum score in u's subtree when u is NOT selected, dp[u][1]
+        when u IS selected.
+      required: true
+    - id: kp_2
+      statement: 'Transition: dp[u][1] = score[u] + Σ dp[child][0]; dp[u][0] = Σ max(dp[child][0], dp[child][1]).'
+      required: true
+    - id: kp_3
+      statement: Perform a post-order DFS to fill the DP tables, then answer is max(dp[root][0], dp[root][1]).
+      required: true
+    - id: kp_4
+      statement: Complexity is O(N) time and O(N) space.
+      required: false
+    hint_ladder:
+    - 'Consider two states for each node: taken or not taken.'
+    - What sub-problem values do you need from children to compute the parent's states?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  greedy__greedy_vs_dp_trade_off:
+    stem: You have a set of jobs, each with a deadline and profit, and you can schedule at most one job
+      per day. Why does the greedy algorithm that picks the highest-profit job fitting the latest possible
+      slot give the optimal total profit?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:greedy
+      weight: 0.7
+    - id: concept:interval_scheduling
+      weight: 0.15
+    - id: concept:sorting
+      weight: 0.15
+    reference_answer: The greedy choice works because the job with the highest profit that still fits
+      a free day cannot be replaced by any other job without losing profit. Suppose an optimal schedule
+      differs; take the first day where it doesn’t use the greedy job. That day must contain a lower-profit
+      job, and the greedy job must be scheduled later or not at all. By swapping the two, we keep all
+      deadlines satisfied and increase (or keep) total profit. Repeating this exchange transforms any
+      optimal schedule into the greedy one, proving optimality. The algorithm sorts jobs by profit and
+      slots each in the latest free day before its deadline, guaranteeing the maximum achievable profit.
+    key_points:
+    - id: kp_1
+      statement: Shows that choosing the highest-profit job that can still meet its deadline never harms
+        the ability to schedule remaining jobs.
+      required: true
+    - id: kp_2
+      statement: 'Uses an exchange argument: any optimal schedule can be transformed to the greedy schedule
+        without decreasing profit.'
+      required: true
+    - id: kp_3
+      statement: Mentions that after sorting jobs by profit descending, we place each in the latest free
+        slot before its deadline, which ensures maximal utilization of early slots for lower-profit jobs.
+      required: false
+    hint_ladder:
+    - Think about how you could modify an optimal schedule to include the greedy choice.
+    - What happens to the feasibility of deadlines when you swap a lower-profit job with a higher-profit
+      one?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  greedy__greedy_correctness_via_matroid_property:
+    stem: In a graph you need to build a minimum-cost spanning tree. Explain why Kruskal’s algorithm,
+      which repeatedly adds the cheapest edge that doesn’t create a cycle, is guaranteed to produce the
+      optimal tree.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:greedy
+      weight: 0.7
+    - id: concept:minimum_spanning_tree
+      weight: 0.15
+    - id: concept:heaps
+      weight: 0.15
+    reference_answer: 'Kruskal’s algorithm works because of the cut property: for any cut in the graph,
+      the minimum-weight edge crossing that cut must be part of some minimum spanning tree. When the algorithm
+      picks the cheapest edge that connects two different components, it is exactly such a minimum-weight
+      crossing edge, so adding it cannot prevent an optimal solution. If an optimal MST omitted this edge,
+      it would contain a heavier edge linking the same two components; swapping the heavier edge with
+      the greedy one yields another spanning tree with no greater total weight. Repeating this exchange
+      shows that the forest built by Kruskal can be extended to an MST, and when all vertices are connected
+      the result is the minimum-cost spanning tree.'
+    key_points:
+    - id: kp_1
+      statement: 'Identifies the cut property: the cheapest edge crossing any cut belongs to some MST.'
+      required: true
+    - id: kp_2
+      statement: 'Uses an exchange argument: if a cheaper edge is omitted, swapping it with a heavier
+        edge in the current tree yields another spanning tree of lower or equal weight.'
+      required: true
+    - id: kp_3
+      statement: Notes that Kruskal maintains a forest, adding edges only when they connect two different
+        components, which preserves acyclicity.
+      required: false
+    hint_ladder:
+    - Recall the cut property of MSTs and how it relates to the edge you are about to add.
+    - Consider what would happen if the optimal tree used a different, heavier edge across the same cut.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  interval_scheduling__q1:
+    stem: You have a list of meeting requests with start and end times; the conference room can host only
+      one meeting at a time. How would you select the maximum number of non-overlapping meetings, and
+      why does your method guarantee optimality?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:interval_scheduling
+      weight: 0.7
+    - id: concept:greedy
+      weight: 0.15
+    - id: concept:sorting
+      weight: 0.15
+    reference_answer: First, I would sort all meeting intervals by their end time. Then I scan the sorted
+      list, keeping track of the end time of the last meeting I accepted. For each interval, if its start
+      time is ≥ that end time, I add it to my schedule and update the end marker. This greedy choice works
+      because an optimal solution can always be transformed to one that picks the earliest-finishing meeting
+      among those that start earliest, without reducing the total count. By repeatedly applying this exchange
+      argument, the algorithm yields the maximum possible number of non-overlapping meetings. The sort
+      dominates the runtime, giving O(N log N) time and O(1) extra space.
+    key_points:
+    - id: kp_1
+      statement: Sort the intervals by their finishing times in ascending order.
+      required: true
+    - id: kp_2
+      statement: Iterate once, picking an interval only if its start time is after or equal to the end
+        time of the last chosen interval.
+      required: true
+    - id: kp_3
+      statement: Explain that picking the earliest-finishing compatible interval leaves the most room
+        for the remaining meetings, which is the exchange argument proving optimality.
+      required: true
+    - id: kp_4
+      statement: State the overall time complexity O(N log N) for sorting plus O(N) for the scan.
+      required: false
+    hint_ladder:
+    - Think about which meeting leaves the most time for the rest of the day.
+    - What property of the chosen interval lets you swap it with any optimal solution’s first interval?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  interval_scheduling__q2:
+    stem: During a live video-streaming service you notice that the server sometimes runs out of buffer
+      space when many streams overlap. You have the start and end timestamps of each stream. How would
+      you compute the maximum number of concurrent streams in O(N log N) time, and what data structure
+      helps you achieve it?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:interval_scheduling
+      weight: 0.7
+    - id: concept:heaps
+      weight: 0.15
+    - id: concept:sorting
+      weight: 0.15
+    reference_answer: 'I would separate all timestamps into two lists: one for starts and one for ends,
+      then sort each list. Using two pointers, I walk through the start list; each time I encounter a
+      start I increment a current-streams counter, and each time the next end is earlier than the next
+      start I decrement the counter. The maximum value the counter reaches is the peak concurrency. This
+      works because the sorted order lets us process events chronologically, and the two-pointer sweep
+      is linear after sorting, giving O(N log N) time overall. A min-heap of end times can be used similarly:
+      for each start we push its end, and we pop while the smallest end is ≤ the current start; the heap
+      size’s maximum is the answer.'
+    key_points:
+    - id: kp_1
+      statement: 'Create two arrays: one of all start times, one of all end times, and sort both.'
+      required: true
+    - id: kp_2
+      statement: Traverse the two arrays with two pointers, incrementing a counter on a start and decrementing
+        on an end, tracking the peak count.
+      required: true
+    - id: kp_3
+      statement: Alternatively, push end times into a min-heap while iterating sorted starts, popping
+        when the earliest end ≤ current start, and keep the heap size’s maximum.
+      required: false
+    - id: kp_4
+      statement: Explain that the algorithm runs in O(N log N) because of the sorting (or heap operations)
+        and O(N) additional work.
+      required: false
+    hint_ladder:
+    - Treat each start as “+1” and each end as “-1” in a timeline.
+    - What structure lets you quickly discard streams that have already finished when you see a new start?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  trees__q1:
+    stem: You notice a binary tree where each node stores the size of its subtree; during an insertion
+      you need to update these sizes. Explain why updating only the nodes on the path from the root to
+      the inserted node is sufficient, and state the time complexity.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:trees
+      weight: 0.7
+    reference_answer: When we insert a new node, only the subtrees that contain that node grow, so only
+      the ancestors on the root-to-node path need their stored size incremented. We start at the inserted
+      node, move up to its parent, grand-parent, and so on, adding one to each size field. No other node’s
+      subtree count changes because its structure is unchanged. Traversing that path touches h nodes,
+      where h is the tree height, giving O(h) time. In a balanced binary tree h = O(log n), while in the
+      worst case of a completely skewed tree h = O(n).
+    key_points:
+    - id: kp_1
+      statement: Only ancestors of the inserted node have their subtree sizes changed because other subtrees
+        remain untouched.
+      required: true
+    - id: kp_2
+      statement: The update proceeds by walking up the path from the inserted node to the root, incrementing
+        each stored size by one.
+      required: true
+    - id: kp_3
+      statement: The time complexity is O(h), where h is the height of the tree; in a balanced tree this
+        is O(log n).
+      required: true
+    - id: kp_4
+      statement: If the tree is skewed, the worst-case complexity degrades to O(n).
+      required: false
+    hint_ladder:
+    - Think about which parts of the tree are structurally altered by the insertion.
+    - Relate the number of nodes you touch to the height of the tree.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  trees__q2:
+    stem: During a depth-first traversal of an n-ary tree you accidentally revisit some nodes, causing
+      an infinite loop. What could cause this, and how would you fix the traversal to guarantee each node
+      is visited exactly once?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:trees
+      weight: 0.7
+    - id: concept:graph_traversal_dfs
+      weight: 0.15
+    - id: concept:recursion
+      weight: 0.15
+    reference_answer: The infinite loop happens because the DFS is walking back up to a node’s parent
+      and then down again, essentially treating the structure as a graph with cycles. To stop revisiting,
+      we either avoid following parent pointers altogether or keep a visited flag for each node. Before
+      recursing into a child we check if it’s already marked; if so we skip it. This guarantees each node
+      is processed once, turning the traversal into a true tree DFS with linear O(n) time and a recursion
+      depth equal to the tree height.
+    key_points:
+    - id: kp_1
+      statement: The loop occurs because the tree is being treated as a general graph without marking
+        visited nodes, allowing back-edges (e.g., parent pointers) to be followed repeatedly.
+      required: true
+    - id: kp_2
+      statement: Introduce a visited set (or a boolean flag in each node) and check it before recursing
+        into a child.
+      required: true
+    - id: kp_3
+      statement: Alternatively, ensure the recursion only follows child pointers and never traverses the
+        parent link.
+      required: false
+    - id: kp_4
+      statement: With the visited check, the DFS runs in O(n) time and O(h) recursion stack, where h is
+        the tree height.
+      required: false
+    hint_ladder:
+    - What extra information can you store on a node to remember that you have already processed it?
+    - Consider how a tree differs from a general graph in terms of edges.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  tree_traversals__item_1:
+    stem: You have a binary tree where each node stores an integer. If you perform a preorder traversal,
+      what order of nodes will you visit relative to the root, left, and right sub-trees, and why does
+      this order naturally correspond to a recursive implementation?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:tree_traversals
+      weight: 0.7
+    reference_answer: 'In preorder we always visit the current node before any of its children. So the
+      sequence is: root, then the entire left subtree in preorder, then the right subtree in preorder.
+      The recursive code reflects this because the function first processes the node, then calls itself
+      on the left child, and after that returns and calls itself on the right child. The call stack naturally
+      preserves this order, and an equivalent iterative version uses a stack that pushes the right child
+      first so that the left child is processed next.'
+    key_points:
+    - id: kp_1
+      statement: Visits the root first, then recursively traverses the left subtree, then the right subtree.
+      required: true
+    - id: kp_2
+      statement: 'Explains that recursion follows the call stack: after processing a node, the function
+        calls itself on the left child before the right, preserving the order.'
+      required: true
+    - id: kp_3
+      statement: Mentions that the same order can be produced iteratively using a stack, pushing right
+        child before left child.
+      required: false
+    hint_ladder:
+    - Think about what the function does before making any recursive calls.
+    - Consider the order in which you would push children onto a stack for an iterative version.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  tree_traversals__item_2:
+    stem: During a production incident you notice that a depth-first search on a very deep binary tree
+      is causing a stack overflow. Which tree traversal would you switch to, and what trade-offs does
+      it introduce in terms of memory usage and order of node processing?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+    - id: concept:tree_traversals
+      weight: 0.7
+    - id: concept:queues
+      weight: 0.15
+    - id: concept:stacks
+      weight: 0.15
+    reference_answer: The overflow comes from the recursive call stack of a depth-first traversal. Switching
+      to a level-order traversal eliminates recursion; we use a queue to hold nodes of the current level.
+      This uses memory proportional to the maximum width of the tree, which for a highly unbalanced tree
+      is much smaller than the recursion depth that caused the overflow. The trade-off is that we lose
+      the DFS order – nodes are visited breadth-first rather than root-left-right – which may affect algorithms
+      that depend on preorder or postorder properties, but it solves the immediate stack-size problem.
+    key_points:
+    - id: kp_1
+      statement: Suggest switching to level-order (breadth-first) traversal using a queue.
+      required: true
+    - id: kp_2
+      statement: Explain that level-order uses O(width) memory, which for a balanced tree is O(n) in the
+        worst case but typically far less than recursion depth for a skewed tree.
+      required: true
+    - id: kp_3
+      statement: Contrast that the node processing order changes from depth-first (root-left-right) to
+        visiting nodes level by level, which may affect algorithms that rely on DFS ordering.
+      required: false
+    hint_ladder:
+    - What traversal can be implemented without recursion?
+    - Consider the data structure that naturally processes items in FIFO order.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  binary_search_trees__bst_deletion_balance_tradeoff:
+    stem: You need to delete a node with two children from a BST in a time-critical service; explain the
+      two standard replacement strategies and their impact on tree balance and subsequent operation costs.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:binary_search_trees
+      weight: 0.7
+    - id: concept:tree_traversals
+      weight: 0.15
+    - id: concept:balanced_trees
+      weight: 0.15
+    reference_answer: When deleting a node with two children we replace it with either its inorder predecessor
+      – the rightmost node in its left subtree – or its inorder successor – the leftmost node in its right
+      subtree. Both preserve the BST ordering because the replacement is the next smaller or larger key.
+      After swapping, we delete the predecessor/successor, which now has at most one child, so the actual
+      removal is O(1). However, if we always pick the predecessor, the left side may shrink more often,
+      and if the tree was already skewed, that side can become deeper, gradually unbalancing the tree.
+      The same risk exists with the successor on the right side. Over many deletions this bias can turn
+      a balanced BST into a near-linear chain, making lookups, inserts, and further deletes degrade to
+      O(n). To avoid that, we either alternate the choice, use randomised BSTs, or periodically rebalance
+      the tree with an AVL or Red-Black rotation scheme, restoring the logarithmic guarantees.
+    key_points:
+    - id: kp_1
+      statement: Describes using the inorder predecessor (maximum in left subtree) as replacement.
+      required: true
+    - id: kp_2
+      statement: Describes using the inorder successor (minimum in right subtree) as replacement.
+      required: true
+    - id: kp_3
+      statement: Explains that both choices keep the BST property but may cause the tree to become unbalanced
+        if the chosen subtree is deep.
+      required: true
+    - id: kp_4
+      statement: Mentions that repeated deletions using one side can bias the tree, leading to degraded
+        O(n) performance, and that rebalancing (e.g., AVL or Red-Black rotations) may be needed.
+      required: false
+    hint_ladder:
+    - Recall the two nodes that are immediate neighbours of the deleted key in sorted order.
+    - Think about what part of the tree actually gets removed after the swap.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  balanced_trees__q1:
+    stem: You notice the AVL tree you maintain for a live leaderboard has become unbalanced after a series
+      of insertions, causing search depth to increase. Explain why rotations restore balance and how many
+      rotations are needed in the worst case for a single insertion.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:balanced_trees
+      weight: 0.7
+    - id: concept:binary_search_trees
+      weight: 0.15
+    reference_answer: In an AVL tree each node stores a balance factor – the height difference between
+      its left and right subtrees – which must stay within –1 to +1. When we insert a key, only the nodes
+      on the path from the root to the inserted node can have their heights changed, so at most one node
+      will end up with a balance factor of ±2. A rotation (single or double) locally re-arranges the three
+      involved nodes, preserving the in-order ordering, and restores the balance factor to the allowed
+      range. Because the imbalance can only appear at the deepest unbalanced node, a single rotation (LL
+      or RR case) or a double rotation (LR or RL case) suffices; thus the worst case for one insertion
+      is two rotations. After the rotation the height of that subtree drops by at most one, keeping the
+      overall tree height O(log n).
+    key_points:
+    - id: kp_1
+      statement: A rotation restructures a local subtree while preserving the in-order sequence of keys.
+      required: true
+    - id: kp_2
+      statement: After insertion, the tree may violate the AVL balance factor by at most 2, so at most
+        one single or double rotation is required.
+      required: true
+    - id: kp_3
+      statement: The worst-case height reduction after the necessary rotation(s) brings the height back
+        within O(log n).
+      required: false
+    hint_ladder:
+    - Recall the AVL balance factor limits and which nodes' heights change after insertion.
+    - Think about the four classic cases (LL, RR, LR, RL) and how many rotations each needs.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  balanced_trees__q2:
+    stem: During a code review you see a red-black tree implementation that uses colour flips and rotations
+      after deletions. Why is deletion more complex than insertion in a red-black tree, and what is the
+      worst-case number of colour changes and rotations required?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:balanced_trees
+      weight: 0.7
+    - id: concept:binary_search_trees
+      weight: 0.15
+    reference_answer: When we delete a node from a red-black tree, we might remove a black node, which
+      reduces the black-height on one side of the tree and breaks the property that every path from a
+      node to its leaves contains the same number of black nodes. To repair this, we propagate a “double-black”
+      up the tree, performing colour flips at each step to rebalance the black count. This can involve
+      up to O(log n) recolourings as we move toward the root, but the structural fix requires at most
+      two rotations – either a single rotation when a sibling is red, or a double rotation when the sibling
+      and its children are black and the far child is red. Thus deletion is more involved than insertion,
+      which needs at most one colour change and one rotation, while deletion may need many colour flips
+      but no more than two rotations in the worst case.
+    key_points:
+    - id: kp_1
+      statement: Deletion may remove a black node, potentially violating the black-height property along
+        the path to the root.
+      required: true
+    - id: kp_2
+      statement: Fixing the violation may require a series of colour flips (re-coloring) and up to two
+        rotations as the “double black” is pushed upward.
+      required: true
+    - id: kp_3
+      statement: In the worst case, O(log n) colour changes but at most two rotations are performed.
+      required: false
+    hint_ladder:
+    - Remember the five cases for fixing a double-black after deletion.
+    - Compare the number of recolourings needed versus structural changes.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  tries__debugging_a_trie_autocomplete_issue:
+    stem: Your live autocomplete service sometimes returns unrelated words for the prefix "app"; what
+      common mistakes in a trie implementation could cause this behavior?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:tries
+      weight: 0.7
+    - id: concept:strings
+      weight: 0.15
+    - id: concept:space_complexity
+      weight: 0.15
+    reference_answer: A typical cause is an incorrect end-of-word flag. If internal nodes aren’t marked
+      as word endings, the search may stop early and return whatever leaf it reaches, pulling in unrelated
+      words. Another issue is mishandling child pointers – for example, treating a missing child as an
+      empty node and continuing the search, which can walk down a wrong branch. Also, when deleting words,
+      if you don’t prune nodes that become useless, stale paths remain and may still be visited for a
+      prefix, causing spurious suggestions. Finally, inconsistent case handling can mix words that shouldn’t
+      match. Fixing these points usually restores correct autocomplete results.
+    key_points:
+    - id: kp_1
+      statement: Missing or incorrect end-of-word marker causes non-terminal nodes to be treated as complete
+        words.
+      required: true
+    - id: kp_2
+      statement: Improper handling of null/undefined child pointers can lead to traversing wrong branches.
+      required: true
+    - id: kp_3
+      statement: Failure to prune empty branches after deletions may leave stale paths that match the
+        prefix.
+      required: false
+    - id: kp_4
+      statement: Using case-insensitive comparison inconsistently can mix unrelated entries.
+      required: false
+    hint_ladder:
+    - Think about node termination flags and child traversal.
+    - Consider what happens when you delete or update nodes.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  tries__trie_vs_hash_map_for_dictionary_lookup:
+    stem: Compare using a trie with a hash map for storing a large English dictionary in terms of lookup
+      speed, memory usage, and support for prefix queries.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:tries
+      weight: 0.7
+    - id: concept:arrays
+      weight: 0.15
+    - id: concept:strings
+      weight: 0.15
+    reference_answer: A trie searches character by character, so lookup cost is O(L) where L is the length
+      of the query, and prefix searches stop as soon as the prefix node is reached, giving O(P) for a
+      prefix of length P. A hash map, on the other hand, hashes the entire word and gives average O(1)
+      lookup for exact matches, but it cannot answer prefix queries without scanning keys or building
+      extra indexes. In memory, a trie stores a node for each character, leading to high overhead especially
+      when many nodes have few children; a hash map stores only full keys, usually using less memory if
+      the hash function is efficient. However, hash maps benefit from better cache locality because entries
+      are in contiguous buckets, while tries suffer pointer chasing. So, tries excel when you need fast
+      prefix operations despite higher space, whereas hash maps are preferable for pure exact-match lookups
+      with tighter memory constraints.
+    key_points:
+    - id: kp_1
+      statement: Tries give O(L) lookup where L is word length, independent of dictionary size, and naturally
+        support prefix search in O(P) time.
+      required: true
+    - id: kp_2
+      statement: Hash maps provide average O(1) lookup for full words but cannot handle prefix queries
+        without extra work.
+      required: true
+    - id: kp_3
+      statement: Tries consume more memory due to per-character node overhead, especially with sparse
+        branching, while hash maps store only whole keys and values, often using less space with a good
+        hash function.
+      required: false
+    - id: kp_4
+      statement: Cache locality is better in hash maps because of contiguous array storage, whereas tries
+        involve pointer chasing, which can be slower in practice despite theoretical bounds.
+      required: false
+    hint_ladder:
+    - Think about how each structure accesses data for a full word versus a prefix.
+    - Consider the overhead of nodes versus hash buckets.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  segment_trees__q1:
+    stem: In a live leaderboard you need to support point updates to a player's score and queries for
+      the total score of players ranked between positions L and R; how would you use a segment tree with
+      lazy propagation to handle both efficiently?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:segment_trees
+      weight: 0.7
+    - id: concept:divide_and_conquer
+      weight: 0.15
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: 'We would build a segment tree over the array of player scores, where each leaf
+      stores a single score and each internal node stores the sum of its children. For a point update
+      we treat it as a range update of length one: we descend the tree, applying any pending lazy tags,
+      update the leaf, and then recompute sums while unwinding. For a range-sum query we start at the
+      root and recursively visit only those children whose intervals intersect [L, R]; before using a
+      child’s stored sum we push down its lazy tag so that any deferred updates are reflected. Both operations
+      touch at most O(log n) nodes, giving O(log n) time, and the tree uses O(n) space.'
+    key_points:
+    - id: kp_1
+      statement: Describes building the tree where each leaf holds a player's score and internal nodes
+        store the sum of their segment.
+      required: true
+    - id: kp_2
+      statement: Explains that a point update is a range update of size one, propagated down to the leaf,
+        updating ancestors' sums.
+      required: true
+    - id: kp_3
+      statement: Shows that a range-sum query traverses O(log n) nodes, using lazy tags to ensure pending
+        updates are applied before reading child sums.
+      required: true
+    - id: kp_4
+      statement: Mentions the overall time complexity per operation is O(log n) and space is O(n).
+      required: false
+    hint_ladder:
+    - Think about what each node of the tree should store.
+    - Recall how lazy tags are applied during range updates.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  segment_trees__q2:
+    stem: During a code-review you notice a segment-tree implementation that rebuilds the entire tree
+      after every update instead of using lazy propagation. What are the performance implications, and
+      why is lazy propagation the preferred technique?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:segment_trees
+      weight: 0.7
+    - id: concept:time_complexity
+      weight: 0.15
+    - id: concept:space_complexity
+      weight: 0.15
+    reference_answer: Rebuilding the whole segment tree after each update forces you to touch every node,
+      which is O(n) work per update. If you have m updates, the total time becomes O(m·n), which quickly
+      blows up even for moderate n. Lazy propagation, on the other hand, stores a pending update flag
+      at each node; an update only modifies O(log n) nodes and defers the rest until a query needs the
+      exact values. This keeps each operation at O(log n) and the overall memory overhead at O(n) for
+      the tree plus another O(n) array of lazy tags. Hence, lazy propagation preserves the logarithmic
+      performance guarantee and avoids the quadratic blow-up of the naive rebuild method.
+    key_points:
+    - id: kp_1
+      statement: States that rebuilding the whole tree costs O(n) per update, turning a sequence of m
+        updates into O(m·n) time.
+      required: true
+    - id: kp_2
+      statement: Notes that lazy propagation limits each update to O(log n) by deferring work to future
+        queries.
+      required: true
+    - id: kp_3
+      statement: Points out that the extra memory for lazy tags is only O(n), negligible compared to rebuilding
+        cost.
+      required: false
+    - id: kp_4
+      statement: Highlights that in the worst case (e.g., many range updates) the naive rebuild approach
+        can cause time-outs, while lazy propagation maintains logarithmic guarantees.
+      required: true
+    hint_ladder:
+    - Compare the cost of a single update in both approaches.
+    - Consider worst-case scenarios with many updates.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  fenwick_trees__bit_01:
+    stem: You have an array of 10^6 integers that receives point updates and prefix sum queries online.
+      Explain why a Fenwick Tree is suitable and how you would implement both operations.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:fenwick_trees
+      weight: 0.7
+    - id: concept:arrays
+      weight: 0.15
+    - id: concept:prefix_sums
+      weight: 0.15
+    reference_answer: A Fenwick Tree, or BIT, stores cumulative information in a 1-based array. At position
+      i we keep the sum of the last LSB(i) elements, so the tree implicitly represents prefix sums. To
+      add a value at index p we update tree[p] and then move to p += p & -p, repeating until we exceed
+      n; each step merges the update into larger ranges, giving O(log n) time. To query the sum of the
+      first k elements we start with ans = 0 and repeatedly add tree[k] then set k -= k & -k, climbing
+      down the tree, also O(log n). The structure needs only n+1 integers, so memory is linear, and it
+      handles a million-size array easily without the extra constants of a segment tree.
+    key_points:
+    - id: kp_1
+      statement: Describes the BIT structure as a 1-based array where each index stores the sum of a range
+        defined by its least-significant set bit.
+      required: true
+    - id: kp_2
+      statement: Shows point-update runs in O(log n) by walking up using i += i & -i.
+      required: true
+    - id: kp_3
+      statement: Shows prefix-sum query runs in O(log n) by walking down using i -= i & -i.
+      required: true
+    - id: kp_4
+      statement: Mentions memory usage is O(n) and no need for segment tree overhead.
+      required: false
+    hint_ladder:
+    - Recall how the least-significant set bit determines the range a node covers.
+    - Think about moving upward for updates and downward for queries.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  fenwick_trees__bit_02:
+    stem: During a code-review you notice a function that builds a Fenwick Tree by repeatedly calling
+      the point-update routine for each element. What is the time-complexity issue and how would you improve
+      the build to O(n)?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:fenwick_trees
+      weight: 0.7
+    - id: concept:amortized_analysis
+      weight: 0.15
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: Calling the update routine for every element gives O(n log n) because each update
+      climbs O(log n) levels. You can build the BIT in linear time by first copying the raw array into
+      a 1-based BIT array. Then, for i from 1 to n, compute j = i + (i & -i); if j ≤ n, add BIT[i] to
+      BIT[j]. This propagates each element’s contribution to the next responsible node exactly once, so
+      the total work is Θ(n). The method uses the same LSB logic as updates but performs it in a single
+      pass, turning the build into O(n).
+    key_points:
+    - id: kp_1
+      statement: Identifies that naïvely calling update n times costs O(n log n).
+      required: true
+    - id: kp_2
+      statement: 'Explains the linear-time construction: copy the original array into BIT and then for
+        each i add BIT[i] to BIT[i + LSB(i)] if that index exists.'
+      required: true
+    - id: kp_3
+      statement: Shows that each element is moved at most once, giving overall O(n) work.
+      required: true
+    - id: kp_4
+      statement: Mentions this is an amortized-analysis view of the build process.
+      required: false
+    hint_ladder:
+    - What does the update loop actually do to the internal array?
+    - Can you push those contributions forward in one sweep?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  graphs_representation__q1:
+    stem: In a social network you need to frequently add new users and friendships, and also list all
+      friends of a given user. Which graph representation would you choose and why?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:graphs_representation
+      weight: 0.7
+    - id: concept:space_complexity
+      weight: 0.15
+    - id: concept:graph_traversal_bfs
+      weight: 0.15
+    reference_answer: I would pick an adjacency-list representation. Adding a new user is just adding
+      an empty list, O(1), and inserting a friendship means appending the neighbour to each list, also
+      O(1). Listing a user’s friends then costs O(k), where k is the number of friends, which is optimal.
+      An adjacency matrix would need V × V entries, so for a sparse network it wastes a lot of memory
+      and enumerating friends would be O(V). The list also works naturally with BFS or DFS when we need
+      to explore a friend-of-friend graph. Hence adjacency list gives the best time-space trade-off for
+      this scenario.
+    key_points:
+    - id: kp_1
+      statement: Chooses adjacency list because it supports O(1) addition of vertices and edges and O(k)
+        enumeration of a vertex's neighbours, where k is its degree.
+      required: true
+    - id: kp_2
+      statement: Mentions that adjacency matrix would waste O(V^2) space for a sparse network and makes
+        neighbour enumeration O(V).
+      required: true
+    - id: kp_3
+      statement: Notes that adjacency list also allows easy traversal (BFS/DFS) of a user’s friend circle.
+      required: false
+    hint_ladder:
+    - Think about how many edges you expect compared to the number of vertices.
+    - Consider both the cost of adding edges and of iterating neighbours.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  graphs_representation__q2:
+    stem: You are debugging a program that stores a directed graph in an adjacency matrix but crashes
+      when the graph has more than 5000 vertices. What is the likely cause and how would you fix it?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:graphs_representation
+      weight: 0.7
+    - id: concept:space_complexity
+      weight: 0.15
+    reference_answer: The crash is most likely due to running out of memory. An adjacency matrix for 5000
+      vertices needs 5000 × 5000 entries; even with a single byte per entry that’s about 25 MB, and with
+      ints it’s over 100 MB, which can exceed the process heap or stack limits. The fix is to move to
+      a sparse representation, such as an adjacency list, which stores only existing edges and uses O(V+E)
+      space. If the graph is still dense, you could compress the matrix using a bitset or allocate it
+      on the heap instead of the stack, but the usual solution is to replace the matrix with a list.
+    key_points:
+    - id: kp_1
+      statement: Identifies that an adjacency matrix for 5000 vertices needs 25 million boolean/int entries,
+        consuming ~100 MB or more, leading to memory exhaustion.
+      required: true
+    - id: kp_2
+      statement: Proposes switching to an adjacency-list (or a sparse structure) to reduce memory usage
+        to O(V+E).
+      required: true
+    - id: kp_3
+      statement: Mentions possible alternative fixes such as using a bitset to halve memory or allocating
+        the matrix dynamically if it was on the stack.
+      required: false
+    hint_ladder:
+    - Recall the memory size of a 2-D array of size N × N.
+    - What alternative data structure stores only present edges?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  graph_traversal_bfs__bfs_debug_scenario:
+    stem: In a game map represented as a 2D grid, you run BFS from the player’s start cell to find the
+      nearest health pack, but the algorithm keeps visiting the same cell repeatedly. What could be wrong
+      and how would you fix it?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:graph_traversal_bfs
+      weight: 0.7
+    - id: concept:queues
+      weight: 0.15
+    - id: concept:graphs_representation
+      weight: 0.15
+    reference_answer: 'The problem is that BFS isn’t marking cells as visited when they are put into the
+      queue. Because each neighbour checks the grid independently, the same cell can be enqueued from
+      multiple directions, so the algorithm keeps pulling it out and re-adding it, leading to repeated
+      visits or an infinite loop. The fix is simple: maintain a visited boolean array (or set) and set
+      visited[row][col] = true at the moment you enqueue the cell. This ensures each cell is processed
+      only once, restores the linear O(V+E) time, and the search will correctly return the distance to
+      the nearest health pack.'
+    key_points:
+    - id: kp_1
+      statement: The likely bug is that the visited-set (or visited array) is not being updated when a
+        cell is enqueued.
+      required: true
+    - id: kp_2
+      statement: Fix by marking a cell as visited at the time of enqueue, not when it is dequeued.
+      required: true
+    - id: kp_3
+      statement: Explain that BFS uses a queue, so without proper visited tracking the same cell can be
+        enqueued from multiple neighbours, causing an infinite loop or exponential blow-up.
+      required: false
+    - id: kp_4
+      statement: Mention that the time complexity returns to O(V+E) once the visited check is correct.
+      required: false
+    hint_ladder:
+    - Think about what BFS uses to avoid revisiting nodes.
+    - Consider the data structure that marks visited cells.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  graph_traversal_dfs__dfs_vs_bfs_in_detecting_cycles_in_an_und:
+    stem: In an interview you are given an undirected graph and asked to detect whether it contains a
+      cycle. Which traversal would you choose, DFS or BFS, and why does that choice make cycle detection
+      straightforward?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:graph_traversal_dfs
+      weight: 0.7
+    reference_answer: I would use DFS. While exploring, each time we move to an unvisited neighbor we
+      record the current node as its parent. If we encounter a neighbor that is already visited and is
+      not the parent, that edge is a back-edge and proves a cycle exists. The parent check prevents the
+      trivial edge back to where we came from from being mis-identified as a cycle. BFS can also work
+      by checking visited neighbors that aren't the parent, but the back-edge notion in DFS makes the
+      logic cleaner. Both traversals run in O(V+E) time and use O(V) extra space for the visited array
+      and recursion stack or queue.
+    key_points:
+    - id: kp_1
+      statement: Chooses DFS because back-edges in the DFS tree directly indicate a cycle in an undirected
+        graph.
+      required: true
+    - id: kp_2
+      statement: Explains that during DFS we keep track of the parent node to avoid mistaking the immediate
+        edge back to the parent for a cycle.
+      required: true
+    - id: kp_3
+      statement: Mentions that BFS can also detect cycles but requires checking if a visited neighbor
+        is not the parent, which is less natural than the back-edge test in DFS.
+      required: false
+    - id: kp_4
+      statement: States the overall time complexity is O(V+E) and space is O(V) for the recursion/queue.
+      required: false
+    hint_ladder:
+    - Think about what extra information DFS naturally gives you about the edge you are traversing.
+    - How do you differentiate the edge you came from versus a true cross edge?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  graph_traversal_dfs__dfs_order_impact_on_connected_components:
+    stem: You have a huge sparse graph stored as an adjacency list. Explain how a single DFS run can be
+      used to list all connected components, and why the order in which you start DFS matters for the
+      component count you report.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:graph_traversal_dfs
+      weight: 0.7
+    reference_answer: To find all connected components, we keep a visited array initialized to false.
+      We loop over every vertex; if a vertex is unvisited we start a DFS from it. The DFS marks all vertices
+      reachable from that start as visited – that whole set is one component, so we increment a component
+      counter. We then continue the outer loop; every time we meet another unvisited vertex we start a
+      new DFS and count another component. The order in which we pick the next unvisited vertex only affects
+      which component is reported first, not the total count. Because we visit each vertex and edge once,
+      the algorithm runs in O(V+E) time and uses O(V) extra space for the visited flags and recursion
+      stack.
+    key_points:
+    - id: kp_1
+      statement: Describes iterating over all vertices, launching a DFS from any vertex that is still
+        unvisited, and marking all reachable vertices as one component.
+      required: true
+    - id: kp_2
+      statement: States that each time a new unvisited vertex is found, a new component counter is incremented.
+      required: true
+    - id: kp_3
+      statement: Notes that the order of the outer loop (which vertex you pick next) does not change the
+        number of components, only the order in which they are discovered.
+      required: false
+    - id: kp_4
+      statement: Mentions the overall complexity O(V+E) time and O(V) auxiliary space for the visited
+        array and recursion stack.
+      required: false
+    hint_ladder:
+    - What do you do when you encounter a vertex that has never been visited?
+    - How does the outer loop interact with the DFS calls?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  topological_sort__q1:
+    stem: You have a set of courses with prerequisites forming a directed graph; a student tells you they
+      detected a cycle and can't finish. Explain how you would use topological sort to detect the cycle
+      and what the algorithm’s outcome tells you.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:topological_sort
+      weight: 0.7
+    - id: concept:graph_traversal_bfs
+      weight: 0.15
+    - id: concept:graphs_representation
+      weight: 0.15
+    reference_answer: To detect a cycle we can run Kahn's topological sort. First compute indegrees for
+      all courses, then repeatedly pick any course with indegree zero, add it to the order and decrement
+      indegrees of its neighbours. If the graph is acyclic we will eventually process every vertex, producing
+      a full ordering. However, if at some step there is no vertex with indegree zero while some vertices
+      are still unprocessed, the remaining vertices form a cycle, meaning the student cannot finish those
+      courses. Thus, a completed ordering signals no cycle, and an early stop signals a cycle.
+    key_points:
+    - id: kp_1
+      statement: 'Describes Kahn''s algorithm: repeatedly remove nodes with indegree zero.'
+      required: true
+    - id: kp_2
+      statement: States that if at any point no zero-indegree node exists while vertices remain, a cycle
+        exists.
+      required: true
+    - id: kp_3
+      statement: Mentions that a successful topological order (all vertices processed) implies the graph
+        is acyclic.
+      required: false
+    hint_ladder:
+    - Think about what Kahn's algorithm does when it cannot find a node with indegree 0.
+    - Relate the number of processed vertices to the total number of courses.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  topological_sort__q2:
+    stem: In a build system, tasks depend on each other and you need to schedule them efficiently. Compare
+      using a DFS-based topological sort versus Kahn’s algorithm in terms of space usage, recursion risk,
+      and ease of detecting cycles.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:topological_sort
+      weight: 0.7
+    - id: concept:graph_traversal_dfs
+      weight: 0.15
+    - id: concept:queues
+      weight: 0.15
+    reference_answer: 'A DFS-based topological sort performs a depth-first search, pushing nodes onto
+      a stack when the recursion unwinds. It needs O(V) space for the recursion stack (or an explicit
+      stack) and uses three colour states to spot back edges, so a cycle is found when a back edge appears.
+      Kahn’s algorithm, on the other hand, keeps an indegree array and a queue of zero-indegree vertices;
+      it also uses O(V) space but avoids deep recursion, making it safer for very large or deep graphs.
+      Cycle detection in Kahn’s is implicit: if the queue empties while vertices remain, a cycle exists.
+      Both produce a valid ordering, but DFS gives a reverse-postorder and can be easier to implement
+      if recursion is acceptable, while Kahn’s is iterative and often preferred for its straightforward
+      cycle check and lower risk of stack overflow.'
+    key_points:
+    - id: kp_1
+      statement: DFS version uses recursion (or explicit stack) and marks nodes as visited, on-stack,
+        and finished to detect back edges.
+      required: true
+    - id: kp_2
+      statement: DFS needs O(V) extra space for recursion stack; Kahn’s uses a queue and indegree array,
+        also O(V) but no deep recursion.
+      required: true
+    - id: kp_3
+      statement: Cycle detection in DFS is natural via back-edge detection; Kahn’s detects a cycle when
+        the queue becomes empty before all vertices are processed.
+      required: false
+    - id: kp_4
+      statement: DFS gives a reverse post-order directly, while Kahn’s produces a forward order; both
+        are valid topological orders.
+      required: false
+    hint_ladder:
+    - Consider what data structures each algorithm maintains during execution.
+    - Think about what happens when the graph is deep versus when many nodes have zero indegree.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  shortest_paths__q1_debugnegativecycle:
+    stem: You run Bellman-Ford on a directed graph and after |V|-1 relaxations the distances still change.
+      What does this indicate, and how would you identify the vertices involved in the problem?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:shortest_paths
+      weight: 0.7
+    - id: concept:graphs_representation
+      weight: 0.15
+    - id: concept:dynamic_programming
+      weight: 0.15
+    reference_answer: If distances still improve after |V|-1 passes, Bellman-Ford has detected a negative-weight
+      cycle reachable from the source. The algorithm guarantees that any further relaxation must be due
+      to such a cycle. To locate the cycle, run one more full relaxation pass and record any vertex whose
+      distance gets updated; these vertices lie on or can reach the cycle. Starting from any of them,
+      follow the predecessor pointers for |V| steps to ensure you’re inside the cycle, then continue until
+      you revisit a vertex, which gives the cycle’s nodes. Note that cycles not reachable from the source
+      won’t be reported, so the source’s reachability matters.
+    key_points:
+    - id: kp_1
+      statement: A change after |V|-1 iterations means the graph contains a negative-weight cycle reachable
+        from the source.
+      required: true
+    - id: kp_2
+      statement: To find vertices in the cycle, one can run another pass and mark any vertex whose distance
+        relaxes, then follow predecessor links to trace the cycle.
+      required: true
+    - id: kp_3
+      statement: If the cycle is not reachable from the source, Bellman-Ford will not report it, so reachability
+        must be considered.
+      required: false
+    hint_ladder:
+    - Think about what Bellman-Ford guarantees after |V|-1 iterations.
+    - Consider a second pass to capture which vertices still change.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  shortest_paths__q2_choosealgorithmforallpairs:
+    stem: A company needs the shortest travel time between every pair of cities in a road network that
+      has about 10,000 cities and 50,000 roads. Which algorithm would you pick and why, considering graph
+      density and implementation concerns?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:shortest_paths
+      weight: 0.7
+    - id: concept:heaps
+      weight: 0.15
+    - id: concept:graphs_representation
+      weight: 0.15
+    reference_answer: Given about 10,000 vertices and 50,000 edges, the graph is sparse (average degree
+      five). Running Dijkstra from every source with a binary heap gives O(V·(E log V)) ≈ 10⁴·(5·10⁴ log
+      10⁴), which is far less than Floyd-Warshall’s O(V³) ≈ 10¹² operations. An adjacency-list representation
+      together with a min-heap keeps both time and space efficient. Since the problem statement mentions
+      travel times, we can assume non-negative weights; thus plain Dijkstra from each node is appropriate.
+      If negative weights existed, we would switch to Johnson’s algorithm (reweighting with Bellman-Ford
+      then Dijkstra).
+    key_points:
+    - id: kp_1
+      statement: The network is sparse (E ≈ 5V), so running Dijkstra from each vertex with a binary heap
+        (O(V·(E log V))) is faster than Floyd-Warshall's O(V³).
+      required: true
+    - id: kp_2
+      statement: Using an adjacency list representation and a min-heap keeps memory low and leverages
+        the sparse structure.
+      required: true
+    - id: kp_3
+      statement: If edge weights could be negative, Johnson’s reweighting plus Dijkstra would be needed;
+        otherwise Dijkstra alone suffices.
+      required: false
+    hint_ladder:
+    - Compare the asymptotic complexities for sparse versus dense graphs.
+    - Recall which algorithms require non-negative edge weights.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  minimum_spanning_tree__mst_01:
+    stem: You have a dense graph with 10,000 vertices and about 20 million edges. Which MST algorithm
+      would you pick and why?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:minimum_spanning_tree
+      weight: 0.7
+    - id: concept:heaps
+      weight: 0.15
+    - id: concept:graphs_representation
+      weight: 0.15
+    reference_answer: For a graph that dense, Prim’s algorithm is the better choice. Using an adjacency
+      list plus a min-heap gives O(E log V) time, which for 20 M edges is far less work than sorting all
+      edges for Kruskal (O(E log E)). Even if we used an adjacency matrix, Prim runs in O(V²) – about
+      10⁸ operations – still cheaper than the sort. The heap lets us pull the cheapest edge to the growing
+      tree efficiently, while Kruskal would need to sort 20 M edges and then do union-find operations,
+      which adds extra overhead.
+    key_points:
+    - id: kp_1
+      statement: Chooses Prim's algorithm with a binary/min-heap (or Fibonacci heap) because it runs in
+        O(E log V) on dense graphs when adjacency lists are used.
+      required: true
+    - id: kp_2
+      statement: Explains that Kruskal would be O(E log E) and the union-find overhead plus sorting 20
+        M edges is heavier than Prim's heap operations.
+      required: true
+    - id: kp_3
+      statement: Mentions that with an adjacency matrix Prim can be O(V^2), which is still better than
+        sorting all edges for Kruskal in this case.
+      required: false
+    hint_ladder:
+    - Think about the cost of sorting all edges versus repeatedly extracting the minimum edge.
+    - Consider how the graph is stored and which data structure each algorithm relies on.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  minimum_spanning_tree__mst_02:
+    stem: During a production run you notice the total weight of the spanning tree returned by your MST
+      service has increased after a recent code change. What could be going wrong?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:minimum_spanning_tree
+      weight: 0.7
+    - id: concept:union_find
+      weight: 0.15
+    - id: concept:greedy
+      weight: 0.15
+    reference_answer: 'The most common cause is that the greedy ordering got corrupted – perhaps the sorting
+      step now compares wrong fields or the comparator is unstable, so Kruskal may pick a heavier edge
+      before a lighter one. Another likely culprit is a union-find bug: if path compression or union by
+      rank is missing or implemented incorrectly, the algorithm can fail to detect cycles and inadvertently
+      add extra edges, inflating the total weight. Finally, a subtle issue could be a change in how edge
+      weights are stored – overflow or sign flips can make a light edge appear heavy, again breaking the
+      MST guarantee.'
+    key_points:
+    - id: kp_1
+      statement: Points out that the change may have broken the greedy property – e.g., edges are no longer
+        processed in non-decreasing weight order.
+      required: true
+    - id: kp_2
+      statement: Identifies a possible bug in the union-find implementation (missing path compression
+        or incorrect rank updates) causing cycles to be added.
+      required: true
+    - id: kp_3
+      statement: Mentions that edge weights might have been altered (e.g., integer overflow or sign error)
+        leading to a different ordering.
+      required: false
+    hint_ladder:
+    - 'Recall the two key invariants Kruskal relies on: sorted edges and correct cycle detection.'
+    - What could go wrong if the data type for weight changes?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  union_find__q1:
+    stem: In a social network you notice that after repeatedly merging friend groups, the find operation
+      is still taking noticeably longer than expected. What could be causing this slowdown and how would
+      you fix it?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:union_find
+      weight: 0.7
+    - id: concept:amortized_analysis
+      weight: 0.15
+    reference_answer: If find is getting slower it usually means the trees are getting deep. That happens
+      when we don't compress paths during find, so each find walks up a long chain of parents. Without
+      compression the amortized cost rises to O(log n) or even O(n) in the worst case. The fix is to implement
+      path compression – make every node on the find path point directly to the root – and ideally combine
+      it with union by rank or size, which always attaches the smaller tree under the larger. With both
+      heuristics the amortized time per operation drops to almost constant, inverse-Ackermann, and the
+      slowdown disappears.
+    key_points:
+    - id: kp_1
+      statement: Identifies that path compression is missing or not applied during find, leading to tall
+        trees.
+      required: true
+    - id: kp_2
+      statement: Explains that without path compression the amortized cost degrades from near-constant
+        to O(log n) or worse.
+      required: true
+    - id: kp_3
+      statement: Suggests adding path compression (or both path compression and union by rank) to restore
+        inverse-Ackermann amortized time.
+      required: true
+    - id: kp_4
+      statement: Mentions that the union heuristic (e.g., union by size/rank) also helps keep trees shallow.
+      required: false
+    hint_ladder:
+    - Think about what each find does to the parent pointers.
+    - What extra step can you take while walking up to the root?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  union_find__q2:
+    stem: You are designing Kruskal's algorithm for a dense graph with 10,000 vertices. How would you
+      choose the DSU implementation, and what trade-offs does it involve?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:union_find
+      weight: 0.7
+    - id: concept:minimum_spanning_tree
+      weight: 0.15
+    reference_answer: 'For Kruskal we need a DSU that gives almost O(1) amortized union and find, so we
+      should use the classic parent array with two extra arrays: rank (or size) and path compression.
+      The parent array stores each node’s representative, rank helps us attach the shallower tree under
+      the deeper one, and path compression flattens the structure on each find. This gives inverse-Ackermann
+      amortized time, which is effectively constant even for 10,000 vertices. The implementation is simple
+      – just three integer arrays – and uses O(n) memory, which is trivial for this size. The only real
+      trade-off is recursion depth if you write find recursively; an iterative loop avoids possible stack
+      overflow, but both give the same asymptotic performance.'
+    key_points:
+    - id: kp_1
+      statement: States that for Kruskal we need near-constant union and find, so DSU with both union
+        by rank and path compression is ideal.
+      required: true
+    - id: kp_2
+      statement: Notes that a simple array parent representation is sufficient; no need for extra structures
+        like segment trees.
+      required: true
+    - id: kp_3
+      statement: 'Discusses trade-off: recursive path compression may cause stack overflow for very deep
+        recursion, so an iterative implementation may be safer.'
+      required: false
+    - id: kp_4
+      statement: Mentions memory usage is O(n) and acceptable for 10,000 vertices; any extra bookkeeping
+        (rank/size array) is negligible.
+      required: false
+    hint_ladder:
+    - Recall what Kruskal repeatedly does with edges.
+    - Which DSU operations dominate the runtime?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  strongly_connected_components__scc_01:
+    stem: In a large directed graph representing web pages, you run Kosaraju's algorithm and notice the
+      first DFS finishes in a different order than the second pass. Why does the finishing-time order
+      matter for correctly identifying strongly connected components?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:strongly_connected_components
+      weight: 0.7
+    - id: concept:graph_traversal_dfs
+      weight: 0.15
+    - id: concept:graphs_representation
+      weight: 0.15
+    reference_answer: Kosaraju relies on the fact that the condensation of a directed graph is a DAG.
+      The first DFS on the original graph records finishing times; vertices that finish later belong to
+      source SCCs in the DAG. When we reverse the graph and process vertices in decreasing finishing-time
+      order, each DFS is confined to exactly one SCC because there are no outgoing edges to unvisited
+      components in the transpose. This guarantees that we collect all vertices of an SCC before we ever
+      start exploring another. If we ignored the order, a DFS could walk across component boundaries and
+      incorrectly merge distinct SCCs, breaking the algorithm.
+    key_points:
+    - id: kp_1
+      statement: Finishing times give a reverse topological order of the condensation DAG, ensuring that
+        the second DFS explores each SCC completely before reaching another.
+      required: true
+    - id: kp_2
+      statement: The first pass on the original graph records when each vertex's recursion ends, which
+        is later used to order vertices for the second pass on the transpose.
+      required: true
+    - id: kp_3
+      statement: If vertices are processed in arbitrary order in the second pass, a DFS could cross component
+        boundaries and merge separate SCCs.
+      required: true
+    hint_ladder:
+    - Think about what the transpose does to edge directions.
+    - Why does a source component in the original graph become a sink in the transpose?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  strongly_connected_components__scc_02:
+    stem: During a live system you observe that after adding a new directed edge, the number of strongly
+      connected components drops from 12 to 9. What is happening in the graph, and how would you efficiently
+      update the SCC decomposition without recomputing from scratch?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:strongly_connected_components
+      weight: 0.7
+    - id: concept:graph_traversal_dfs
+      weight: 0.15
+    - id: concept:amortized_analysis
+      weight: 0.15
+    reference_answer: Adding the edge introduces a new directed path that links two or more previously
+      disjoint SCCs, so they collapse into a single component, reducing the count. To update efficiently,
+      we look at the tail of the edge and run a forward DFS in the original graph to find all vertices
+      that become reachable, and a backward DFS from the head to find all vertices that can now reach
+      it. The intersection of these two reachability sets forms the merged SCC. By maintaining the condensation
+      DAG and using a union-find on its nodes, we can merge the affected components in almost linear time
+      overall, giving an amortized cost far lower than recomputing Kosaraju or Tarjan from scratch.
+    key_points:
+    - id: kp_1
+      statement: The new edge creates a path that connects previously separate SCCs, merging them into
+        a larger component.
+      required: true
+    - id: kp_2
+      statement: An incremental SCC algorithm can update the decomposition by exploring only the vertices
+        reachable from the edge’s tail and those that can reach its head.
+      required: true
+    - id: kp_3
+      statement: Using a union-find structure on the condensation DAG or a dynamic DFS/BFS from the affected
+        vertices gives amortized near-linear update time.
+      required: true
+    hint_ladder:
+    - Consider reachability both forward from the source and backward from the destination of the new
+      edge.
+    - What structure represents SCCs compactly and supports quick merges?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  bit_manipulation__q1:
+    stem: You need to check if an integer is a power of two using only bitwise operations; how would you
+      do it and why does it work?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:bit_manipulation
+      weight: 0.7
+    reference_answer: I would test n > 0 and then compute n & (n-1). For a power of two, the binary form
+      has a single 1, and subtracting one turns that 1 into 0 and sets all lower bits to 1. AND-ing the
+      original number with n-1 therefore yields zero only for powers of two. So the condition n > 0 &&
+      (n & (n-1)) == 0 correctly identifies powers of two.
+    key_points:
+    - id: kp_1
+      statement: Uses the expression n > 0 && (n & (n - 1)) == 0.
+      required: true
+    - id: kp_2
+      statement: Explains that a power of two has exactly one set bit.
+      required: true
+    - id: kp_3
+      statement: Shows that n-1 flips all lower bits, so the AND clears the only set bit only when n is
+        a power of two.
+      required: false
+    hint_ladder:
+    - Think about the binary representation of powers of two.
+    - Consider what happens when you subtract one from such a number.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  bit_manipulation__q2:
+    stem: In a system that stores user permissions as a 32-bit mask, you notice a bug where revoking a
+      permission sometimes leaves other bits unchanged. How would you correctly clear a specific permission
+      bit using bitwise operators?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+    - id: concept:bit_manipulation
+      weight: 0.7
+    - id: concept:arrays
+      weight: 0.15
+    reference_answer: 'To clear permission k, first build a mask with a 1 at that position: 1 << k. Then
+      invert the mask: ~(1 << k). Finally AND this with the current permission integer: perms = perms
+      & ~(1 << k). This forces that bit to 0 while leaving all others untouched. Using XOR would flip
+      the bit, which explains why the bug appeared when the wrong operator was used.'
+    key_points:
+    - id: kp_1
+      statement: Creates a mask with 1 << k where k is the permission index.
+      required: true
+    - id: kp_2
+      statement: Negates the mask and ANDs it with the current permission integer to clear that bit.
+      required: true
+    - id: kp_3
+      statement: Mentions that using XOR would toggle the bit, which is not what we want.
+      required: false
+    hint_ladder:
+    - Recall how to create a mask that has zeros only at the position you want to clear.
+    - Think about the NOT operator.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  number_theory__q1:
+    stem: Your service needs to answer millions of primality checks for numbers up to 10⁷ in real time.
+      What preprocessing technique would you choose, how does it work, and what are its time and space
+      trade-offs?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:number_theory
+      weight: 0.7
+    - id: concept:arrays
+      weight: 0.15
+    - id: concept:binary_search
+      weight: 0.15
+    reference_answer: I would pre-compute a Sieve of Eratosthenes up to 10⁷. The sieve marks multiples
+      of each prime, running in O(N log log N) time and O(N) space for a boolean array – about ten megabytes
+      for 10⁷. Once built, checking if a number is prime is just a direct array lookup, O(1). If we store
+      the list of primes we can also binary-search it in O(log N). The main trade-off is the upfront memory
+      and preprocessing time, but for a server that stays up for long periods the constant-time queries
+      more than justify the ~10 MB cost.
+    key_points:
+    - id: kp_1
+      statement: Proposes building a Sieve of Eratosthenes up to 10⁷ as a preprocessing step.
+      required: true
+    - id: kp_2
+      statement: Explains that the sieve runs in O(N log log N) time and uses O(N) space for a boolean
+        array.
+      required: true
+    - id: kp_3
+      statement: Mentions that after the sieve, each primality query is O(1) by array lookup, optionally
+        O(log N) if using binary search on a list of primes.
+      required: false
+    - id: kp_4
+      statement: 'Discusses the trade-off: high one-time memory cost versus constant-time queries, and
+        that for N=10⁷ the memory (~10 MB) is acceptable on modern servers.'
+      required: true
+    hint_ladder:
+    - Think about a classic pre-processing method for generating all primes up to a limit.
+    - Consider both the one-time cost and the per-query cost.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  number_theory__q2:
+    stem: Why does the product of the greatest common divisor and the least common multiple of two positive
+      integers equal the product of the numbers themselves?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: intro
+    time_budget_s: 150
+    concepts:
+    - id: concept:number_theory
+      weight: 0.7
+    - id: concept:modular_arithmetic
+      weight: 0.15
+    reference_answer: 'Write a and b in prime-factor form: a = ∏p p^{α_p}, b = ∏p p^{β_p}. The GCD takes
+      the lower exponent for each prime, min(α_p,β_p), while the LCM takes the higher, max(α_p,β_p). When
+      you multiply them, the exponents add: min+max = α_p+β_p, so gcd·lcm = ∏p p^{α_p+β_p} = (∏p p^{α_p})(∏p
+      p^{β_p}) = a·b. Hence the product of GCD and LCM always equals the product of the two numbers.'
+    key_points:
+    - id: kp_1
+      statement: 'Writes each number as a product of prime powers: a = ∏p p^{α_p}, b = ∏p p^{β_p}.'
+      required: true
+    - id: kp_2
+      statement: Shows that gcd(a,b) = ∏p p^{min(α_p,β_p)} and lcm(a,b) = ∏p p^{max(α_p,β_p)}.
+      required: true
+    - id: kp_3
+      statement: Multiplying gcd and lcm gives ∏p p^{min+max} = ∏p p^{α_p+β_p} = a·b.
+      required: true
+    - id: kp_4
+      statement: Notes that the identity holds for any pair of positive integers, independent of their
+        specific values.
+      required: false
+    hint_ladder:
+    - Express both numbers via their prime factorisation.
+    - Recall how GCD and LCM pick min and max exponents.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  modular_arithmetic__modexp_scenario:
+    stem: In a cryptographic library you need to compute (1234567^987654) mod 1000000007 quickly; how
+      would you do it and why is it efficient?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:modular_arithmetic
+      weight: 0.7
+    - id: concept:number_theory
+      weight: 0.15
+    reference_answer: I would use binary exponentiation, also called exponentiation by squaring. Start
+      with result = 1, base = 1234567 mod 1,000,000,007. While the exponent is non-zero, if the current
+      exponent bit is 1 multiply result by base and take mod; then square the base and take mod, shift
+      the exponent right. This performs at most 2·log₂(987654) modular multiplications, so the overall
+      time is O(log exponent). Because we reduce modulo after every multiplication, the numbers never
+      grow beyond the modulus, avoiding overflow and keeping the computation fast.
+    key_points:
+    - id: kp_1
+      statement: Describes binary exponentiation (exponentiation by squaring) that repeatedly squares
+        the base and multiplies when the current exponent bit is 1.
+      required: true
+    - id: kp_2
+      statement: Mentions taking the modulus after each multiplication to keep intermediate values within
+        range and avoid overflow.
+      required: true
+    - id: kp_3
+      statement: States the time complexity is O(log exponent) multiplications.
+      required: false
+    - id: kp_4
+      statement: Notes that this method works because (a·b) mod m = [(a mod m)·(b mod m)] mod m.
+      required: false
+    hint_ladder:
+    - Think about how you can use the binary representation of the exponent.
+    - Remember the property (a·b) mod m = [(a mod m)·(b mod m)] mod m.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  modular_arithmetic__fermat_application_debug:
+    stem: During a coding interview you notice your solution for computing modular inverses using Fermat's
+      little theorem fails when the modulus is 8. Explain why and how to fix it.
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:modular_arithmetic
+      weight: 0.7
+    - id: concept:number_theory
+      weight: 0.15
+    reference_answer: Fermat's little theorem states that a^(p-1) ≡ 1 (mod p) when p is prime, so the
+      inverse of a is a^(p-2) mod p. With modulus 8, which is not prime, this property breaks; for example
+      3^6 mod 8 = 1, but 3^6 ≠ 1 for all a, and 3^6 does not give the inverse of 3. The fix is to compute
+      the modular inverse with the extended Euclidean algorithm, which finds x such that a·x + m·y = gcd(a,m).
+      When gcd is 1, x is the inverse modulo m. This works for any composite modulus as long as a and
+      m are coprime.
+    key_points:
+    - id: kp_1
+      statement: Points out Fermat's little theorem requires the modulus to be prime.
+      required: true
+    - id: kp_2
+      statement: Shows that 8 is composite, so a^(m-2) mod m does not give the inverse for all a coprime
+        to 8.
+      required: true
+    - id: kp_3
+      statement: Proposes using the extended Euclidean algorithm to compute the inverse for any modulus
+        where a and m are coprime.
+      required: true
+    - id: kp_4
+      statement: Mentions that for prime moduli the FLT method works and is O(log m).
+      required: false
+    hint_ladder:
+    - Recall the condition under which Fermat's little theorem holds.
+    - What algorithm finds coefficients for Bézout's identity?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  combinatorics__q1:
+    stem: You have 12 distinct books and want to place them on a shelf so that no two science books are
+      adjacent; there are 5 science books. How many valid arrangements are there?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:combinatorics
+      weight: 0.7
+    reference_answer: First place the seven non-science books; they can be ordered in 7! ways. This creates
+      eight slots – before, after, and between each consecutive pair. To keep science books apart we must
+      pick five distinct slots for them, which can be done in C(8,5) ways, and then arrange the five distinct
+      science books within those slots in 5! ways. The total number of valid arrangements is 7! × C(8,5)
+      × 5! = 5040 × 56 × 120 = 33,868,800.
+    key_points:
+    - id: kp_1
+      statement: Arrange the 7 non-science books in 7! ways.
+      required: true
+    - id: kp_2
+      statement: There are 8 gaps (including ends) where science books can be placed.
+      required: true
+    - id: kp_3
+      statement: Choose 5 of those gaps and permute the 5 science books, giving C(8,5)·5! ways.
+      required: true
+    - id: kp_4
+      statement: Multiply the two results to obtain the final count.
+      required: true
+    hint_ladder:
+    - First arrange the non-science books, then insert the science books into the gaps.
+    - Count the number of gaps created by the first arrangement.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  combinatorics__q2:
+    stem: A company assigns 8 distinct tasks to 4 employees, each employee must get at least one task.
+      In how many ways can the tasks be distributed if the order of tasks for each employee matters?
+    modality: verbal
+    round_types:
+    - dsa_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:combinatorics
+      weight: 0.7
+    - id: concept:recursion
+      weight: 0.15
+    reference_answer: First order the eight distinct tasks; there are 8! permutations. To allocate them
+      to four distinct employees with each receiving at least one, we place three separators in the seven
+      gaps between consecutive tasks. Choosing three gaps out of seven gives C(7,3) possibilities, and
+      each choice uniquely defines which consecutive tasks go to each employee because order matters.
+      Hence the total number of distributions is 8! × C(7,3) = 40,320 × 35 = 1,411,200.
+    key_points:
+    - id: kp_1
+      statement: Treat the ordered tasks as a permutation of 8 items (8! ways).
+      required: true
+    - id: kp_2
+      statement: Insert three dividers into the 7 gaps between tasks to create four non-empty groups;
+        number of ways is C(7,3).
+      required: true
+    - id: kp_3
+      statement: Since employees are distinct, each grouping corresponds to a unique assignment.
+      required: true
+    - id: kp_4
+      statement: Multiply 8! by C(7,3) to get the final count.
+      required: true
+    hint_ladder:
+    - Think of arranging the 8 tasks in a line and then cutting the line into 4 non-empty segments.
+    - Use Stirling numbers of the second kind or a recursive counting argument.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'

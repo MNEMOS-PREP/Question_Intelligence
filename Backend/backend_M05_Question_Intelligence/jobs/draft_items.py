@@ -250,15 +250,25 @@ class Writer:
         return []
 
 
+#: The model writes non-breaking hyphens (U+2011) in "trade-off" and
+#: "credit-card": 1,445 of them in the first pass. They look right on screen
+#: and are a character the interviewer's voice has to guess at.
+HYPHENS = {0x2010: "-", 0x2011: "-"}
+
+
+def _flat(value: object) -> str:
+    return " ".join(str(value).translate(HYPHENS).split())
+
+
 def valid(item: dict, allowed: set[str], seen: list[str]) -> dict | None:
     """The item as the bank stores it, or None when it breaks the house style."""
-    stem = " ".join(str(item.get("stem", "")).split())
+    stem = _flat(item.get("stem", ""))
     words = len(stem.split())
     if not 6 <= words <= 60:
         return None
     if any(difflib.SequenceMatcher(None, stem.lower(), s.lower()).ratio() > 0.75 for s in seen):
         return None
-    answer = " ".join(str(item.get("reference_answer", "")).split())
+    answer = _flat(item.get("reference_answer", ""))
     if not 25 <= len(answer.split()) <= 240:
         return None
     points = [
@@ -276,10 +286,10 @@ def valid(item: dict, allowed: set[str], seen: list[str]) -> dict | None:
         "secondaries": secondaries,
         "reference_answer": answer,
         "key_points": [
-            {"statement": " ".join(str(kp["statement"]).split()), "required": bool(kp["required"])}
+            {"statement": _flat(kp["statement"]), "required": bool(kp["required"])}
             for kp in points
         ],
-        "hints": [" ".join(str(h).split()) for h in (item.get("hints") or [])][:2],
+        "hints": [_flat(h) for h in (item.get("hints") or [])][:2],
         "label": re.sub(r"[^a-z0-9]+", "_", str(item.get("label", "")).lower()).strip("_")[:40]
         or "item",
     }

@@ -1,0 +1,336 @@
+# DRAFTED — systems_verbal. Written by jobs/draft_items.py with a model; NOT reviewed.
+# provenance: generated + scored_use_approved: false on every item: FR-5.6 needs a
+# person to approve an item before it counts toward a score. Practise only until then.
+
+items:
+  computer_architecture_basics__q1:
+    stem: In a simple 5-stage pipeline, why does a branch instruction often cause a stall, and what hardware
+      technique can reduce that penalty?
+    modality: verbal
+    round_types:
+    - systems_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:computer_architecture_basics
+      weight: 0.7
+    reference_answer: When a branch reaches the decode stage, the processor does not yet know whether
+      the branch will be taken or what the target address is. Meanwhile the fetch stage continues pulling
+      the next sequential instruction, which may be wrong. Those fetched instructions occupy pipeline
+      slots and must be flushed once the branch resolves, causing a stall. Branch prediction mitigates
+      this by guessing the outcome and target early – a static scheme always assumes not-taken or taken,
+      while a dynamic predictor learns patterns and speculatively fetches the predicted target. Correct
+      predictions keep the pipeline full; a misprediction still forces a flush, but the average stall
+      is much smaller.
+    key_points:
+    - id: kp_1
+      statement: Explains that the pipeline fetches sequential instructions while the branch outcome is
+        being resolved, leading to wasted work.
+      required: true
+    - id: kp_2
+      statement: Describes branch prediction (static or dynamic) as a technique to fetch the likely target
+        early, reducing stalls.
+      required: true
+    - id: kp_3
+      statement: Mentions that misprediction still incurs a penalty because wrong instructions must be
+        flushed.
+      required: false
+    hint_ladder:
+    - Think about what the pipeline has fetched when the branch target is not yet known.
+    - Consider a method that guesses the target before it is resolved.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  computer_architecture_basics__q2:
+    stem: You notice a program running slower on a new CPU despite the same clock speed; the instruction
+      mix is unchanged. What architectural factors could explain the slowdown?
+    modality: verbal
+    round_types:
+    - systems_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:computer_architecture_basics
+      weight: 0.7
+    - id: concept:caching_and_locality
+      weight: 0.15
+    reference_answer: Even with the same clock, a newer CPU may have a deeper or wider pipeline, different
+      cache sizes, or a different branch predictor. If the new chip has smaller L1/L2 caches or higher
+      latency, memory accesses will stall more often, slowing the program. Likewise, a wider pipeline
+      can increase the number of cycles an instruction spends in flight, and if the branch predictor is
+      weaker, more mispredictions cause flushes. Any of these architectural changes—especially cache hierarchy—can
+      degrade effective throughput despite identical clock rates.
+    key_points:
+    - id: kp_1
+      statement: Mentions that cache hierarchy differences (size, latency, associativity) can increase
+        memory access stalls.
+      required: true
+    - id: kp_2
+      statement: Notes that pipeline depth or width changes can affect instruction throughput per cycle.
+      required: false
+    - id: kp_3
+      statement: References possible differences in branch predictor quality or execution unit availability.
+      required: false
+    hint_ladder:
+    - Think about resources beyond clock frequency that affect how fast instructions retire.
+    - One factor relates to how quickly data is fetched from memory.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  caching_and_locality__q1:
+    stem: In a high-traffic web service you notice the cache hit rate dropping after a recent deployment;
+      what could cause this and how would you investigate?
+    modality: verbal
+    round_types:
+    - systems_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:caching_and_locality
+      weight: 0.7
+    - id: concept:testing_and_debugging
+      weight: 0.15
+    reference_answer: A sudden drop in hit rate usually means the service is no longer looking up the
+      same keys that were cached. A deployment might have changed the request-parameter order, added a
+      version prefix, or altered the TTL logic, so the generated cache key no longer matches existing
+      entries. I would first diff the code to see any key-construction changes, then instrument a few
+      requests to log the keys before and after the change. Checking cache logs for miss reasons and running
+      a small-scale A/B test can confirm the culprit. Once identified, I’d either revert the key change,
+      adjust the invalidation policy, or update the TTL to bring the hit rate back up.
+    key_points:
+    - id: kp_1
+      statement: Identifies possible causes such as changed cache keys, altered TTLs, or data-format incompatibility
+        introduced by the deployment.
+      required: true
+    - id: kp_2
+      statement: 'Describes a systematic debugging approach: check deployment diff, monitor key generation,
+        examine logs for cache misses, and run a controlled A/B test.'
+      required: true
+    - id: kp_3
+      statement: Mentions restoring hit rate by fixing the root cause (e.g., reverting key schema or updating
+        invalidation logic).
+      required: false
+    hint_ladder:
+    - Think about what the cache actually stores and how the service looks it up.
+    - What artefacts change when you deploy new code?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  caching_and_locality__q2:
+    stem: Explain why a write-through cache can improve read latency but may hurt write throughput, and
+      when you would prefer a write-back policy instead.
+    modality: verbal
+    round_types:
+    - systems_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:caching_and_locality
+      weight: 0.7
+    - id: concept:memory_management
+      weight: 0.15
+    reference_answer: With a write-through cache, every write operation updates both the cache line and
+      the underlying storage immediately. This guarantees that the persistent copy is always current,
+      but the write latency now includes the slower store access, reducing overall write throughput. Reads,
+      however, are fast because the data is already cached, avoiding the store round-trip. A write-back
+      cache, by contrast, writes only to the cache and marks the line dirty, flushing to the backing store
+      later in batches. This removes the store latency from the critical path, boosting write throughput,
+      but it introduces a window where a crash could lose recent updates. You’d pick write-back when you
+      have a write-heavy workload and can tolerate brief inconsistency—for example, logging or analytics
+      pipelines that buffer data before persisting to disk.
+    key_points:
+    - id: kp_1
+      statement: States that write-through updates the backing store on every write, guaranteeing consistency
+        but adding the store’s write latency to each operation.
+      required: true
+    - id: kp_2
+      statement: Notes that reads benefit because the data is already in the cache, eliminating a round-trip
+        to main memory or disk.
+      required: true
+    - id: kp_3
+      statement: Explains that write-back defers writes, batching them in the cache, which raises write
+        throughput at the risk of data loss on failure.
+      required: true
+    - id: kp_4
+      statement: Provides a scenario where write-back is preferable, such as high-write workloads with
+        tolerable staleness or when the backing store is a slow disk.
+      required: false
+    hint_ladder:
+    - Separate the path of a read from that of a write.
+    - Consider what happens if the system crashes after a write.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  compilation_and_interpretation__q1:
+    stem: You notice a Java application’s startup time spikes after a recent code change; the JIT compiler
+      seems to be re-compiling many methods. What could be causing this behavior?
+    modality: verbal
+    round_types:
+    - systems_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:compilation_and_interpretation
+      weight: 0.7
+    - id: concept:testing_and_debugging
+      weight: 0.15
+    reference_answer: A likely cause is that the recent change altered method signatures or added enough
+      new bytecode to overflow the JIT’s code cache. When the cache fills, the VM evicts older compiled
+      code, forcing it to re-compile methods on the next execution, which shows up as a startup spike.
+      Additionally, tiered compilation may reset its profiling data if the bytecode layout changes, causing
+      methods to start again in the interpreter stage before being hot-compiled. Turning off the JIT temporarily
+      or inspecting the compilation log with -XX:+PrintCompilation can verify whether the methods are
+      being re-compiled repeatedly.
+    key_points:
+    - id: kp_1
+      statement: Identifies that profile-guided optimizations or tiered compilation may be invalidated
+        by changed bytecode signatures.
+      required: true
+    - id: kp_2
+      statement: Explains that adding or removing methods can increase the size of the code cache, causing
+        previous compiled code to be evicted and re-compiled.
+      required: true
+    - id: kp_3
+      statement: Mentions that disabling the JIT or using -XX:+PrintCompilation can confirm the re-compilation
+        pattern.
+      required: false
+    hint_ladder:
+    - Think about what the JIT stores about compiled methods.
+    - What happens when the code cache runs out of space?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  compilation_and_interpretation__q2:
+    stem: Compare static linking performed by a traditional compiler with dynamic linking used by an interpreter’s
+      runtime. What are the main trade-offs for performance and deployment?
+    modality: verbal
+    round_types:
+    - systems_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:compilation_and_interpretation
+      weight: 0.7
+    - id: concept:computer_architecture_basics
+      weight: 0.15
+    reference_answer: Static linking embeds all required code into the final binary, so at launch the
+      OS can load and run it without any symbol lookup, giving the fastest start-up and consistent performance.
+      However, the executable is larger and any library update requires recompiling the whole program.
+      Dynamic linking, used by many interpreters and JIT runtimes, loads shared objects at run-time, allowing
+      multiple programs to share the same memory pages and letting developers patch or upgrade libraries
+      without rebuilding the application. The downside is a small runtime cost for resolving symbols and
+      possible version-mismatch issues, which can affect start-up latency and introduce indirection overhead
+      during execution.
+    key_points:
+    - id: kp_1
+      statement: Static linking produces a single executable, eliminating runtime symbol resolution and
+        thus faster start-up and predictable performance.
+      required: true
+    - id: kp_2
+      statement: Dynamic linking reduces binary size, enables shared library reuse, and allows updates
+        without recompiling the whole program, but adds runtime lookup overhead.
+      required: true
+    - id: kp_3
+      statement: Mentions that interpreters typically load bytecode and resolve symbols on demand, offering
+        flexibility at the cost of slower execution compared to fully compiled code.
+      required: false
+    hint_ladder:
+    - Consider what happens at load time versus execution time.
+    - Think about binary size versus the ability to update components independently.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  testing_and_debugging__q1:
+    stem: You are adding a new feature to a legacy codebase and decide to write unit tests first. Explain
+      why starting with tests helps you catch bugs early and how you would choose representative test
+      cases.
+    modality: verbal
+    round_types:
+    - systems_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:testing_and_debugging
+      weight: 0.7
+    reference_answer: 'Starting with unit tests forces you to think about the contract of the new feature
+      before you write any implementation. That contract becomes a safety net: once the code is added,
+      the tests verify it works and will catch any future regression. To pick good test cases, I would
+      include a happy-path scenario, edge values (like zero, max size, empty input), and error cases such
+      as invalid arguments or resource failures. By covering these categories, the suite quickly surfaces
+      bugs that would otherwise appear only during integration or in production, letting me debug early
+      and confidently refactor the legacy code.'
+    key_points:
+    - id: kp_1
+      statement: Describes that writing tests before code defines expected behavior and creates a safety
+        net for regressions.
+      required: true
+    - id: kp_2
+      statement: Mentions selecting test cases that cover typical, boundary, and error-handling paths.
+      required: true
+    - id: kp_3
+      statement: Explains that failing tests give immediate feedback, reducing debugging time later.
+      required: false
+    hint_ladder:
+    - What does a test define before code exists?
+    - Think about typical, boundary, and error inputs.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  testing_and_debugging__q2:
+    stem: During a production outage you notice a spike in latency for a specific API endpoint. Walk me
+      through how you would debug the issue using logs, metrics, and a minimal reproducible test.
+    modality: verbal
+    round_types:
+    - systems_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:testing_and_debugging
+      weight: 0.7
+    - id: concept:caching_and_locality
+      weight: 0.15
+    reference_answer: First I’d look at the deployment timeline to see if a recent change coincides with
+      the spike. Then I’d pull the service logs for that endpoint, filtering for errors or unusually long
+      request times, and check the latency metrics – especially the 95th-percentile histogram – to confirm
+      the pattern. If the logs show cache-miss warnings or repeated DB calls, I’d suspect a caching issue,
+      perhaps a key-eviction or stale data causing extra work. To verify, I’d craft a minimal curl request
+      that mimics the failing payload and run it against a staging copy of the service, watching the same
+      logs and metrics. If the reproducer shows the same delay, I can pinpoint the offending component
+      and either roll back the change or apply a hot-fix, then monitor the metrics to ensure latency returns
+      to baseline.
+    key_points:
+    - id: kp_1
+      statement: 'Outlines a systematic approach: check recent deployments, examine logs for errors, and
+        look at latency histograms.'
+      required: true
+    - id: kp_2
+      statement: Considers whether a cache miss or eviction pattern could cause the latency spike.
+      required: true
+    - id: kp_3
+      statement: Describes creating a small reproducer (e.g., curl with same payload) to isolate the problem.
+      required: false
+    - id: kp_4
+      statement: Mentions rolling back or disabling the offending change if needed.
+      required: false
+    hint_ladder:
+    - What observability data helps you narrow down where time is spent?
+    - How can you isolate the problem with a tiny test request?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'

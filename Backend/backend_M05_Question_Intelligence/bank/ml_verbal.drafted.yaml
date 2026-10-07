@@ -1,0 +1,2227 @@
+# DRAFTED — ml_verbal. Written by jobs/draft_items.py with a model; NOT reviewed.
+# provenance: generated + scored_use_approved: false on every item: FR-5.6 needs a
+# person to approve an item before it counts toward a score. Practise only until then.
+
+items:
+  ml_problem_framing__q1:
+    stem: You have a dataset of house features and prices; the business wants to predict future prices.
+      How would you frame this ML problem, and what key decisions does that framing dictate?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:ml_problem_framing
+      weight: 0.7
+    reference_answer: I would treat this as a supervised regression problem because the goal is to predict
+      a numeric value – the house price – from known features. That means we need a labelled dataset where
+      each row includes the price. I would choose a regression-oriented model such as linear regression
+      or a tree-based regressor, and use a loss like mean squared error. Since we care about how well
+      the model will work on unseen houses, I would set aside a validation set or use k-fold cross-validation
+      to estimate performance. Finally, I’d plan for feature engineering – encoding categorical variables
+      like neighbourhood, scaling area, and possibly creating interaction terms – before training the
+      model.
+    key_points:
+    - id: kp_1
+      statement: Identifies the task as a supervised regression problem.
+      required: true
+    - id: kp_2
+      statement: Mentions that the target variable is continuous (price) and that a loss function like
+        MSE will be used.
+      required: true
+    - id: kp_3
+      statement: Notes that a train-test split or cross-validation is needed to evaluate generalisation.
+      required: false
+    - id: kp_4
+      statement: States that feature engineering (e.g., handling categorical location data) will be part
+        of the pipeline.
+      required: false
+    hint_ladder:
+    - Think about the nature of the target variable.
+    - What evaluation strategy ensures the model will work on new data?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  ml_problem_framing__q2:
+    stem: A retailer has millions of transaction logs but no labels; they want to discover customer segments.
+      From a problem-framing perspective, what type of ML task is this and what considerations guide your
+      approach?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:ml_problem_framing
+      weight: 0.7
+    - id: concept:clustering
+      weight: 0.15
+    reference_answer: Since the data have no labels, the problem is an unsupervised learning task – we’re
+      looking for natural groupings of customers, i.e., clustering. The objective is to represent each
+      transaction by features (frequency, monetary value, product categories) and then apply a similarity
+      measure and a clustering algorithm such as K-means or DBSCAN. Because there’s no ground-truth label,
+      we evaluate the result with internal metrics like silhouette score or by checking whether the discovered
+      segments align with business insights (e.g., high-value vs occasional shoppers). The framing also
+      tells us we must preprocess the data (normalisation, handling sparsity) before clustering.
+    key_points:
+    - id: kp_1
+      statement: Classifies the task as unsupervised learning, specifically clustering.
+      required: true
+    - id: kp_2
+      statement: Explains that there is no target variable, so the goal is to find structure in the feature
+        space.
+      required: true
+    - id: kp_3
+      statement: Mentions the need to choose a similarity metric and a clustering algorithm (e.g., K-means,
+        hierarchical).
+      required: false
+    - id: kp_4
+      statement: Highlights evaluation challenges, such as using silhouette score or business validation
+        rather than traditional accuracy.
+      required: false
+    hint_ladder:
+    - What’s missing that would make this a supervised problem?
+    - Which family of algorithms works without explicit labels?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  probability_for_ml__q1_bayes_interpretation:
+    stem: Suppose a medical test for a disease is 99% sensitive and 95% specific, and the disease prevalence
+      is 1%. If a patient tests positive, what is the probability they actually have the disease?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:probability_for_ml
+      weight: 0.7
+    reference_answer: Using Bayes theorem, the posterior probability P(Disease|Positive) = (0.99 × 0.01)
+      / [(0.99 × 0.01) + (0.05 × 0.99)] ≈ 0.0099 / 0.0594 ≈ 0.166, or about 16.6%. So even with a test
+      that is 99% sensitive and 95% specific, a positive result only implies roughly a 17% chance of actually
+      having the disease because the disease is rare.
+    key_points:
+    - id: kp_1
+      statement: Computes the posterior probability as (sensitivity × prevalence) / [(sensitivity × prevalence)
+        + (1-specificity) × (1-prevalence)]
+      required: true
+    - id: kp_2
+      statement: Arrives at approximately 17% chance that the patient truly has the disease
+      required: true
+    - id: kp_3
+      statement: Highlights why a highly accurate test can still give many false positives when prevalence
+        is low
+      required: false
+    hint_ladder:
+    - Apply Bayes theorem using sensitivity, specificity, and prevalence.
+    - Remember specificity relates to true negatives.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  probability_for_ml__q2_mle_parameter_estimation:
+    stem: You have a dataset of independent coin flips that resulted in 7 heads out of 10 tosses. Using
+      maximum likelihood estimation, what is the estimated probability of heads, and how would you explain
+      the intuition behind this estimate?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+    - id: concept:probability_for_ml
+      weight: 0.7
+    - id: concept:linear_regression
+      weight: 0.15
+    reference_answer: 'The likelihood of observing 7 heads and 3 tails given a head probability p is L(p)=p⁷(1-p)³.
+      Maximising this, we take the log-likelihood, differentiate: d/dp [7 log p + 3 log(1-p)] = 7/p –
+      3/(1-p). Setting to zero yields 7(1-p)=3p, so p̂=7/10=0.7. This estimate equals the empirical frequency
+      of heads, which makes sense because the MLE selects the parameter that makes the observed data most
+      likely.'
+    key_points:
+    - id: kp_1
+      statement: The likelihood L(p) = p^7 (1-p)^3 for 7 heads and 3 tails.
+      required: true
+    - id: kp_2
+      statement: Taking the log, differentiating, and solving gives p̂ = 7/10 = 0.7 as the MLE.
+      required: true
+    - id: kp_3
+      statement: Intuitively, the MLE chooses the parameter that makes the observed data most probable,
+        which for a Bernoulli is simply the observed frequency of heads.
+      required: false
+    hint_ladder:
+    - Write the likelihood function for a Bernoulli parameter p.
+    - Take the derivative with respect to p and set it to zero.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  linear_algebra_for_ml__q1:
+    stem: If you have two feature vectors **a** and **b**, why does their dot product tell you about the
+      similarity of the corresponding data points?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: intro
+    time_budget_s: 150
+    concepts:
+    - id: concept:linear_algebra_for_ml
+      weight: 0.7
+    reference_answer: The dot product of two vectors a and b is defined as |a|·|b|·cosθ, where θ is the
+      angle between them. Because the cosine ranges from -1 to 1, the dot product is large and positive
+      when the vectors point in roughly the same direction (small θ), indicating high similarity. If they
+      are orthogonal (θ = 90°), the cosine is zero and the dot product is zero, meaning no linear similarity.
+      A negative value means they point opposite each other. Since the magnitude factors can dominate,
+      we usually normalise the vectors to unit length; then the dot product directly equals cosθ, giving
+      a clean similarity score between -1 and 1.
+    key_points:
+    - id: kp_1
+      statement: Explains that the dot product equals the product of magnitudes times the cosine of the
+        angle between the vectors.
+      required: true
+    - id: kp_2
+      statement: States that a larger positive dot product means a smaller angle, i.e., higher similarity,
+        while a zero or negative value indicates orthogonal or opposite directions.
+      required: true
+    - id: kp_3
+      statement: Mentions that scaling either vector scales the dot product proportionally, so normalization
+        is often applied before using it as a similarity measure.
+      required: false
+    hint_ladder:
+    - Think about the geometric interpretation of the dot product.
+    - Consider what happens when the vectors are orthogonal or point in the same direction.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  linear_algebra_for_ml__q2:
+    stem: During training a linear regression model, you notice the weight matrix is singular. What does
+      that imply about the data, and how would you fix it?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:linear_algebra_for_ml
+      weight: 0.7
+    - id: concept:regularisation
+      weight: 0.15
+    - id: concept:dimensionality_reduction
+      weight: 0.15
+    reference_answer: A singular weight matrix arises because the normal-equation matrix XᵀX is not full
+      rank – some columns of the design matrix are linear combinations of others. Consequently the least-squares
+      solution is not unique and the inverse required for OLS does not exist, causing numerical instability.
+      To resolve this you can drop or combine the collinear features, or introduce regularisation such
+      as ridge regression, which adds λI to XᵀX and makes it invertible. Another approach is to apply
+      dimensionality reduction (e.g., PCA) to obtain a set of independent components before fitting the
+      model.
+    key_points:
+    - id: kp_1
+      statement: States that a singular weight matrix means the design matrix X'X is not full rank, i.e.,
+        columns are linearly dependent.
+      required: true
+    - id: kp_2
+      statement: Describes that this leads to infinite solutions for the normal equations, making ordinary
+        least squares unstable.
+      required: true
+    - id: kp_3
+      statement: Proposes remedies such as removing redundant features, applying regularisation (e.g.,
+        ridge regression), or using dimensionality reduction like PCA.
+      required: true
+    - id: kp_4
+      statement: Optionally mentions checking for duplicate or constant columns as a quick fix.
+      required: false
+    hint_ladder:
+    - Recall the condition for a matrix to be invertible.
+    - Think about the relationship between columns of the design matrix.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  loss_functions__q1:
+    stem: When training a binary classifier, why is cross-entropy loss generally preferred over mean-squared
+      error, and what does its shape imply for gradient-based optimization?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:loss_functions
+      weight: 0.7
+    - id: concept:logistic_regression
+      weight: 0.15
+    reference_answer: Cross-entropy loss measures the negative log-likelihood of the true class, so it
+      heavily penalises predictions that are both confident and wrong, which aligns with the goal of a
+      probabilistic classifier. Its gradient with respect to the logit is simply (p − y), where p is the
+      predicted probability and y the label, giving a steady signal even when predictions are far from
+      the target. In contrast, mean-squared error treats the output as a regression target; when combined
+      with a sigmoid it multiplies the error by the sigmoid derivative, which can become very small near
+      the extremes, slowing learning. Hence cross-entropy leads to faster, more stable convergence for
+      binary logistic models.
+    key_points:
+    - id: kp_1
+      statement: Cross-entropy penalises confident wrong predictions much more than MSE, encouraging probability-calibrated
+        outputs.
+      required: true
+    - id: kp_2
+      statement: Its derivative with respect to the logits is proportional to (prediction – label), leading
+        to smoother, non-vanishing gradients.
+      required: true
+    - id: kp_3
+      statement: MSE can cause vanishing gradients when using a sigmoid output because the derivative
+        includes the sigmoid derivative squared.
+      required: false
+    hint_ladder:
+    - Think about how each loss reacts to a prediction of 0.99 when the true label is 0.
+    - Consider the form of the gradient for a sigmoid output.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  loss_functions__q2:
+    stem: You notice that after a few epochs your model’s training loss keeps dropping but validation
+      loss starts rising sharply. How could the choice of loss function be contributing to this over-fitting
+      symptom?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 240
+    concepts:
+    - id: concept:loss_functions
+      weight: 0.7
+    - id: concept:regularisation
+      weight: 0.15
+    - id: concept:overfitting
+      weight: 0.15
+    reference_answer: When you minimise a pure loss like MSE or cross-entropy, the optimizer focuses solely
+      on reducing error on the training set, so it can increase model complexity to fit noise, which shows
+      up as a rising validation loss. If the loss is augmented with a regularisation component—say, L2
+      weight decay—the objective also penalises large weight magnitudes, effectively constraining capacity
+      and encouraging smoother solutions that generalise better. Moreover, using a loss that is highly
+      sensitive to outliers, such as MSE on noisy labels, can force the model to chase rare extreme errors,
+      further driving over-fitting. Adding regularisation or switching to a more robust loss helps keep
+      validation loss from diverging.
+    key_points:
+    - id: kp_1
+      statement: A loss without regularisation (e.g., plain MSE or cross-entropy) only measures fit to
+        the training data, giving the optimizer freedom to memorize noise.
+      required: true
+    - id: kp_2
+      statement: Adding a regularisation term (L2 or L1) to the loss penalises large weights, limiting
+        model capacity and helping validation loss stay stable.
+      required: true
+    - id: kp_3
+      statement: Choosing a loss that is overly sensitive to outliers, such as MSE on noisy targets, can
+        push the model to fit rare extreme points, worsening generalisation.
+      required: false
+    hint_ladder:
+    - What term can you add to the loss to discourage large weights?
+    - Which loss is known to be sensitive to outliers?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  gradient_descent__q1:
+    stem: You notice the training loss keeps decreasing but the validation loss plateaus and then rises
+      after a few epochs; what does this tell you about your gradient descent setup?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:gradient_descent
+      weight: 0.7
+    - id: concept:overfitting
+      weight: 0.15
+    reference_answer: When the training loss keeps falling but validation loss stops improving and then
+      climbs, it signals that the model is starting to overfit. The optimizer is still finding directions
+      that reduce error on the training set, but those directions do not generalise. Often this pattern
+      appears when the learning rate is too large, causing the updates to bounce around the optimum and
+      make the model chase noise. To fix it, you can lower the learning rate, use learning-rate decay,
+      or add regularisation such as L2 or early stopping, which will keep the validation loss from rising.
+    key_points:
+    - id: kp_1
+      statement: 'The model is beginning to overfit: it continues to fit training data while generalisation
+        degrades.'
+      required: true
+    - id: kp_2
+      statement: A learning rate that is too high can cause the optimizer to overshoot minima, leading
+        to unstable validation loss.
+      required: false
+    - id: kp_3
+      statement: Reducing the learning rate or adding regularisation can help the validation loss improve.
+      required: true
+    hint_ladder:
+    - Think about what drives the gap between training and validation curves.
+    - Consider the role of step size and when you might need to adjust it.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  gradient_descent__q2:
+    stem: In a mini-batch gradient descent run, you accidentally shuffle the data once at the start and
+      then keep the same batch ordering for every epoch. How could this affect convergence compared to
+      proper reshuffling each epoch?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:gradient_descent
+      weight: 0.7
+    reference_answer: If you shuffle only once, each mini-batch contains the same subset of examples every
+      epoch, so the gradient estimate becomes biased toward that ordering. The updates become highly correlated,
+      reducing the stochastic noise that helps the optimizer escape shallow minima and plateaus. Consequently,
+      convergence can be slower and may settle in a sub-optimal region. Regularly reshuffling each epoch
+      restores the randomness, giving a more unbiased gradient estimate and typically faster, more robust
+      convergence.
+    key_points:
+    - id: kp_1
+      statement: Repeated batch ordering reduces gradient noise, making updates more correlated and potentially
+        causing the optimizer to get stuck in poor local minima.
+      required: true
+    - id: kp_2
+      statement: Lack of reshuffling can lead to slower convergence because the algorithm sees the same
+        data pattern each epoch.
+      required: false
+    - id: kp_3
+      statement: Proper reshuffling each epoch restores the stochastic property, improving exploration
+        of the loss surface.
+      required: true
+    hint_ladder:
+    - Recall why stochasticity is introduced in SGD.
+    - Think about the gradient estimate bias when batches repeat.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  train_test_split__q1:
+    stem: You notice that your model’s validation accuracy is consistently higher than its test accuracy.
+      What could be causing this discrepancy and how would you fix it?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: intro
+    time_budget_s: 120
+    concepts:
+    - id: concept:train_test_split
+      weight: 0.7
+    - id: concept:data_leakage
+      weight: 0.15
+    reference_answer: If validation accuracy is higher than test accuracy, it often means validation data
+      has been contaminated. A common leak is fitting scalers, encoders, or feature selection on the full
+      dataset before splitting, so the model indirectly sees information from the validation set. To fix
+      it, you should split the data first, then fit any preprocessing only on the training portion and
+      apply the same transformation to validation and test sets. Also ensure that no target-related features
+      are included. By keeping the test set completely untouched until final evaluation, the discrepancy
+      should disappear.
+    key_points:
+    - id: kp_1
+      statement: Identifies that data leakage (e.g., using target information or scaling parameters from
+        the whole dataset) can inflate validation performance.
+      required: true
+    - id: kp_2
+      statement: Recommends re-splitting the data so that preprocessing is fit only on the training set
+        and applied to validation and test separately.
+      required: true
+    - id: kp_3
+      statement: Mentions that using a proper hold-out test set that is never touched during model development
+        prevents the gap.
+      required: false
+    hint_ladder:
+    - Think about what information might unintentionally flow from training to validation.
+    - Consider how you split the data and any preprocessing steps.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  train_test_split__q2:
+    stem: Explain why you would keep a separate validation set instead of using the test set for hyper-parameter
+      tuning, and what risk you avoid by doing so.
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: intro
+    time_budget_s: 120
+    concepts:
+    - id: concept:train_test_split
+      weight: 0.7
+    - id: concept:bias_variance_tradeoff
+      weight: 0.15
+    reference_answer: The test set is meant to give an unbiased estimate of how the model will perform
+      on truly unseen data, so it must stay untouched until the very end. If you tune hyper-parameters
+      on the test set, you start over-fitting to it, inflating performance and introducing optimistic
+      bias. A separate validation set lets you experiment with model choices, regularisation, and architecture
+      while keeping the test set pristine. This separation preserves a reliable estimate of generalisation
+      and helps you gauge the bias-variance trade-off before committing to the final model.
+    key_points:
+    - id: kp_1
+      statement: States that the test set should represent unseen data for final performance estimation.
+      required: true
+    - id: kp_2
+      statement: Explains that using the test set for hyper-parameter tuning leads to optimistic bias
+        because the model is indirectly fitted to it.
+      required: true
+    - id: kp_3
+      statement: Mentions that a separate validation set allows unbiased tuning and helps assess bias-variance
+        trade-off before final testing.
+      required: false
+    hint_ladder:
+    - Recall the purpose of each data split.
+    - Think about what happens when you repeatedly evaluate on the same set.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  overfitting__q1:
+    stem: You train a decision-tree model and notice the training accuracy is 99% but validation accuracy
+      drops to 70%; what is happening and how would you address it?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:overfitting
+      weight: 0.7
+    - id: concept:regularisation
+      weight: 0.15
+    - id: concept:cross_validation
+      weight: 0.15
+    reference_answer: 'The pattern you’re seeing is classic overfitting: the tree has learned the training
+      set almost perfectly, including its noise, so it cannot generalise to unseen data, which is why
+      validation accuracy is much lower. To fix it, you can simplify the tree – limit its maximum depth,
+      require a minimum number of samples per leaf, or prune branches that don’t improve validation loss.
+      Adding regularisation like cost-complexity pruning also helps. It’s good practice to evaluate the
+      model with k-fold cross-validation so you’re not relying on a single split, and if possible, collect
+      more data or engineer more robust features to improve generalisation.'
+    key_points:
+    - id: kp_1
+      statement: 'Identifies the situation as overfitting: model captures noise in training data leading
+        to high training but low validation performance.'
+      required: true
+    - id: kp_2
+      statement: Mentions reducing model complexity (e.g., limiting depth, pruning) or adding regularisation
+        as a remedy.
+      required: true
+    - id: kp_3
+      statement: Suggests using cross-validation or a held-out test set to get a more reliable estimate
+        of generalisation error.
+      required: false
+    - id: kp_4
+      statement: Notes that gathering more data or feature engineering can also help mitigate overfitting.
+      required: false
+    hint_ladder:
+    - Think about the gap between training and validation performance.
+    - What levers does a decision-tree offer to control its capacity?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  overfitting__q2:
+    stem: During a Kaggle competition you notice your model’s training loss keeps decreasing while the
+      validation loss starts to increase after epoch 12; explain why this occurs and what steps you would
+      take next.
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:overfitting
+      weight: 0.7
+    - id: concept:regularisation
+      weight: 0.15
+    reference_answer: 'What you’re observing is the textbook sign of overfitting: the model continues
+      to fit the training data, so training loss keeps falling, but it starts to memorise noise, causing
+      validation loss to rise after epoch 12. The quickest fix is to employ early stopping – monitor validation
+      loss and halt training when it stops improving. You can also add regularisation such as L2 weight
+      decay or dropout, or shrink the network’s depth/width to reduce capacity. Finally, verify that your
+      validation split is clean and there’s no data leakage, because that can also distort the curves.'
+    key_points:
+    - id: kp_1
+      statement: Describes the phenomenon as overfitting manifested by a diverging training and validation
+        loss curve.
+      required: true
+    - id: kp_2
+      statement: Proposes early stopping as a practical countermeasure, stopping training when validation
+        loss stops improving.
+      required: true
+    - id: kp_3
+      statement: Mentions adding regularisation (L2, dropout) or reducing model capacity as alternative
+        remedies.
+      required: false
+    - id: kp_4
+      statement: Suggests checking data leakage or re-splitting data if the pattern seems abnormal.
+      required: false
+    hint_ladder:
+    - Look at the shape of the loss curves over epochs.
+    - What techniques can you apply during training to prevent a model from memorising the training set?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  bias_variance_tradeoff__q1:
+    stem: You notice your model's training error is low but validation error is high; what does this indicate
+      about bias and variance, and how would you address it?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:bias_variance_tradeoff
+      weight: 0.7
+    - id: concept:overfitting
+      weight: 0.15
+    - id: concept:cross_validation
+      weight: 0.15
+    reference_answer: When training error is low but validation error spikes, the model is fitting noise
+      in the training set – a classic high-variance situation. High bias would manifest as both errors
+      being large and similar. To curb variance we can gather more data, prune the model, add regularisation,
+      or switch to a less complex algorithm. Running k-fold cross-validation helps confirm that the gap
+      persists across folds, reinforcing that variance, not bias, is the problem.
+    key_points:
+    - id: kp_1
+      statement: Identifies low training error and high validation error as a sign of high variance (overfitting).
+      required: true
+    - id: kp_2
+      statement: Mentions that high bias would show both errors high and close together.
+      required: false
+    - id: kp_3
+      statement: Suggests remedies such as more data, regularisation, or simpler model to reduce variance.
+      required: true
+    - id: kp_4
+      statement: Recommends using cross-validation to verify the variance issue.
+      required: false
+    hint_ladder:
+    - Think about the relationship between training and validation errors.
+    - What techniques shrink a model’s flexibility?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  bias_variance_tradeoff__q2:
+    stem: In a Kaggle competition you try a deep tree and get a training RMSE of 2.5 but a test RMSE of
+      7.2. Explain the bias-variance trade-off behind this result and why a bagging ensemble might help.
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:bias_variance_tradeoff
+      weight: 0.7
+    - id: concept:ensemble_methods
+      weight: 0.15
+    - id: concept:decision_trees
+      weight: 0.15
+    reference_answer: A deep decision tree captures almost all training patterns, giving it very low bias,
+      but it also memorises noise, so its variance is high – reflected in the jump from 2.5 to 7.2 RMSE
+      on unseen data. Bagging builds many such trees on different bootstrap samples and averages their
+      outputs, which smooths out the fluctuations caused by variance while leaving the low bias largely
+      intact. Consequently, the ensemble’s test error typically drops, narrowing the gap with training
+      error.
+    key_points:
+    - id: kp_1
+      statement: Describes the deep tree as low-bias, high-variance, causing the large test error gap.
+      required: true
+    - id: kp_2
+      statement: Explains that bagging reduces variance by averaging predictions from multiple trees trained
+        on bootstrapped samples.
+      required: true
+    - id: kp_3
+      statement: Notes that bias remains roughly unchanged because each tree is still deep.
+      required: false
+    - id: kp_4
+      statement: Mentions that the ensemble’s test RMSE should move closer to the training RMSE.
+      required: false
+    hint_ladder:
+    - What does a deep tree do to bias and variance?
+    - How does averaging many high-variance models affect the overall variance?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  regularisation__q1:
+    stem: You notice your linear regression model's training error is much lower than its validation error.
+      How does adding an L2 regularisation term help, and what trade-off does it introduce?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:regularisation
+      weight: 0.7
+    - id: concept:bias_variance_tradeoff
+      weight: 0.15
+    - id: concept:linear_regression
+      weight: 0.15
+    reference_answer: 'Adding an L2 term means we minimise the loss plus λ times the sum of squared weights.
+      The penalty shrinks all coefficients toward zero, preventing any single feature from dominating
+      and thus reducing model variance. As λ grows, the model becomes smoother and less sensitive to training
+      noise, which raises bias but lowers over-fitting, so validation error improves. In effect, λ lets
+      us balance bias and variance: a small λ keeps the model flexible, a large λ forces it toward a simpler,
+      higher-bias solution.'
+    key_points:
+    - id: kp_1
+      statement: Explains that L2 adds a penalty proportional to the sum of squared weights, discouraging
+        large coefficients.
+      required: true
+    - id: kp_2
+      statement: Describes how the penalty reduces variance (overfitting) at the cost of increasing bias.
+      required: true
+    - id: kp_3
+      statement: Mentions that the regularisation strength λ controls the bias-variance trade-off.
+      required: false
+    - id: kp_4
+      statement: Notes that weight decay is equivalent to L2 regularisation in gradient-descent training.
+      required: false
+    hint_ladder:
+    - Think about what happens to the weight vector when the penalty term is large.
+    - Recall the bias-variance diagram when you tighten or loosen regularisation.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  regularisation__q2:
+    stem: During a Kaggle competition you applied L1 regularisation to a logistic regression model and
+      observed many coefficients become exactly zero. Why does L1 produce sparsity, and when might that
+      be advantageous over L2?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:regularisation
+      weight: 0.7
+    - id: concept:logistic_regression
+      weight: 0.15
+    - id: concept:feature_engineering
+      weight: 0.15
+    reference_answer: L1 regularisation adds the absolute value of each weight to the loss, producing
+      a diamond-shaped constraint region with corners at the axes. Because the optimisation can reduce
+      loss by moving to those corners, many weights are driven exactly to zero, giving a sparse model.
+      This acts as built-in feature selection, which is handy when you have thousands of predictors, want
+      a simpler, more interpretable model, or need to reduce inference cost. In contrast, L2 shrinks weights
+      smoothly but rarely makes them zero, so it retains all features even if some are noisy.
+    key_points:
+    - id: kp_1
+      statement: States that L1 adds a penalty equal to the absolute value of weights, creating a kink
+        at zero that encourages coefficients to hit exactly zero.
+      required: true
+    - id: kp_2
+      statement: Explains that sparsity performs implicit feature selection, reducing model size and improving
+        interpretability.
+      required: true
+    - id: kp_3
+      statement: Mentions scenarios such as high-dimensional data or when deployment resources are limited
+        where L1 is preferable.
+      required: false
+    - id: kp_4
+      statement: Notes that L2 keeps all features but shrinks them, so it may retain noisy predictors.
+      required: false
+    hint_ladder:
+    - Recall the shape of the L1 penalty geometry compared to L2.
+    - Think about what happens when many features are irrelevant or costly to compute.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  cross_validation__item_1:
+    stem: You have a small, imbalanced dataset for a binary classification problem. Explain why plain
+      k-fold cross-validation might give misleading performance estimates and how you would adjust the
+      procedure.
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:cross_validation
+      weight: 0.7
+    - id: concept:class_imbalance
+      weight: 0.15
+    - id: concept:data_leakage
+      weight: 0.15
+    reference_answer: With an imbalanced binary dataset, a random k-fold split can put most minority samples
+      in a few folds, leaving other folds with almost no positives. That makes the measured accuracy swing
+      wildly and hides poor recall. The remedy is to use stratified k-fold, which forces each fold to
+      keep the original class proportion, so every validation set contains a representative minority sample.
+      Also, any preprocessing that uses the whole data—like scaling or feature selection—must be performed
+      inside the training part of each fold to avoid data leakage. Finally, report metrics such as precision,
+      recall, F1-score or AUROC, which reflect performance on the minority class better than plain accuracy.
+    key_points:
+    - id: kp_1
+      statement: Mentions that each fold may contain very few minority-class examples, causing high variance
+        in metrics.
+      required: true
+    - id: kp_2
+      statement: Describes using stratified k-fold to preserve class distribution in every split.
+      required: true
+    - id: kp_3
+      statement: Notes that leaking information through preprocessing done before splitting can further
+        bias results.
+      required: false
+    - id: kp_4
+      statement: Suggests evaluating with metrics suited to imbalance (e.g., F1, AUROC) rather than accuracy.
+      required: false
+    hint_ladder:
+    - Think about what each fold’s class distribution looks like.
+    - Consider the order of preprocessing relative to the split.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  cross_validation__item_2:
+    stem: During model development you notice training error decreasing while validation error stays flat
+      after a few epochs. From a bias-variance viewpoint, what does this indicate about your current cross-validation
+      setup, and what change would you make?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:cross_validation
+      weight: 0.7
+    - id: concept:bias_variance_tradeoff
+      weight: 0.15
+    - id: concept:overfitting
+      weight: 0.15
+    reference_answer: When the training loss keeps dropping but the validation loss plateaus, the model
+      is fitting the training folds too closely – a classic high-variance situation. It often means the
+      validation folds are too few or not representative enough, so the estimate is noisy and the model
+      appears to over-fit. To get a better picture, you can increase the number of folds, say from 5-fold
+      to 10-fold, which gives each validation set more data and reduces variance in the estimate. Alternatively,
+      you could set aside a larger hold-out validation set. Of course, you could also address the variance
+      directly by adding regularisation or simplifying the model, but the immediate cross-validation fix
+      is to use more folds for a more reliable estimate.
+    key_points:
+    - id: kp_1
+      statement: Identifies that low training error and unchanged validation error suggests high variance
+        (overfitting) on the training folds.
+      required: true
+    - id: kp_2
+      statement: Explains that the validation folds may be too small or not representative, causing optimistic
+        training performance.
+      required: false
+    - id: kp_3
+      statement: Recommends increasing the number of folds (e.g., from 5-fold to 10-fold) or using a hold-out
+        validation set to get a more stable estimate.
+      required: true
+    - id: kp_4
+      statement: Mentions regularisation or simplifying the model as alternative ways to reduce variance.
+      required: false
+    hint_ladder:
+    - What does a gap between training and validation error usually signal?
+    - How does the size of each validation fold affect variance of the estimate?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  feature_engineering__q1:
+    stem: You notice that a linear regression model’s training error is low but its test error is high
+      after you one-hot encode a categorical variable with many levels. What could be going wrong and
+      how would you fix it?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:feature_engineering
+      weight: 0.7
+    - id: concept:data_leakage
+      weight: 0.15
+    - id: concept:overfitting
+      weight: 0.15
+    reference_answer: 'When you one-hot encode a categorical variable with dozens or hundreds of distinct
+      values, each level becomes its own binary column. This inflates the feature space dramatically,
+      making the model highly flexible and prone to fit noise in the training data, which shows up as
+      a low training error but a high test error – classic overfitting. To address it, you can reduce
+      the dimensionality: group rare categories into an "Other" bucket, use target/mean encoding, or apply
+      a technique like PCA on the sparse matrix. Adding regularisation such as L1 (which also performs
+      feature selection) or L2 helps constrain the coefficients. Finally, make sure the encoder is fitted
+      only on the training split so that no information leaks into the test set.'
+    key_points:
+    - id: kp_1
+      statement: One-hot encoding many levels creates a high-dimensional sparse feature space, increasing
+        variance and causing overfitting.
+      required: true
+    - id: kp_2
+      statement: Possible remedies include dropping rare categories, using target/mean encoding, applying
+        dimensionality reduction (e.g., PCA), or adding regularisation (L1/L2).
+      required: true
+    - id: kp_3
+      statement: Ensuring the encoding is fitted only on training data avoids data leakage into the test
+        set.
+      required: false
+    hint_ladder:
+    - Think about the effect of high-dimensional sparse vectors on model variance.
+    - Consider techniques that reduce dimensionality or regularise the model.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  feature_engineering__q2:
+    stem: During a Kaggle competition you built a gradient-boosted tree model and observed that scaling
+      numeric features (standardisation) improved its performance. Why does scaling affect tree-based
+      models, and is it always advisable?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:feature_engineering
+      weight: 0.7
+    - id: concept:decision_trees
+      weight: 0.15
+    - id: concept:gradient_descent
+      weight: 0.15
+    reference_answer: Pure decision-tree splits look only at orderings of values, so multiplying a numeric
+      feature by a constant does not affect where the optimal split lies – the algorithm is scale-invariant.
+      However, many modern gradient-boosted frameworks (like XGBoost or LightGBM) add regularisation terms
+      on leaf weights that are optimised with gradient descent; these terms depend on the scale of the
+      feature values. When features have vastly different ranges, the gradient steps can be dominated
+      by large-scale features, hurting convergence. In such cases standardising numeric columns can lead
+      to smoother training and slightly better performance. That said, scaling is not a blanket requirement
+      for tree-based models; it only matters for implementations that blend tree learning with gradient-based
+      optimisation or when you combine trees with linear models.
+    key_points:
+    - id: kp_1
+      statement: Tree algorithms are invariant to monotonic transformations, so pure scaling should not
+        change split decisions.
+      required: true
+    - id: kp_2
+      statement: Scaling can help when the implementation uses gradient-based leaf-weight optimisation
+        or regularisation that depends on feature magnitudes.
+      required: true
+    - id: kp_3
+      statement: Therefore scaling is not universally required; it is only beneficial for certain implementations
+        or when features are combined with linear components.
+      required: false
+    hint_ladder:
+    - Recall how tree splits are chosen.
+    - Think about interaction with regularisation or early-stopping.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  data_leakage__q1_debug_timeseries_leakage:
+    stem: You are building a model to predict next month's sales using past sales data, and you notice
+      the validation RMSE is unrealistically low. What could be causing data leakage in this time-series
+      setup, and how would you fix it?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:data_leakage
+      weight: 0.7
+    - id: concept:cross_validation
+      weight: 0.15
+    reference_answer: 'In a time-series problem, a random split mixes future observations into the training
+      set, so the model sees data it shouldn''t have when predicting the next month. Also, engineered
+      features such as a 3-month moving average that includes the month you are trying to predict directly
+      leak the target into the inputs. The fix is to respect temporal order: use a chronological train-test
+      split or walk-forward (rolling) validation, and ensure every feature is computed only from data
+      available before the prediction point. After these changes, the validation RMSE will rise to a realistic
+      level, reflecting true generalisation.'
+    key_points:
+    - id: kp_1
+      statement: Using random train-test split on time-ordered data leaks future information into training.
+      required: true
+    - id: kp_2
+      statement: Features like rolling averages that include the target month cause target leakage.
+      required: true
+    - id: kp_3
+      statement: Switch to a chronological split or walk-forward validation to prevent leakage.
+      required: true
+    - id: kp_4
+      statement: Re-engineer leaking features so they only use past information.
+      required: false
+    hint_ladder:
+    - Think about how you split the data over time.
+    - Consider any features that might contain future information.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  data_leakage__q2_impact_metrics_leakage:
+    stem: During a Kaggle competition you achieve 0.98 AUC on the hold-out set, but later discover your
+      pipeline leaked the label. Explain why such leakage inflates evaluation metrics and what the practical
+      consequences are.
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:data_leakage
+      weight: 0.7
+    - id: concept:classification_metrics
+      weight: 0.15
+    reference_answer: When label leakage occurs, the model receives features that are directly derived
+      from or highly correlated with the target, so it can almost perfectly rank positive versus negative
+      instances. This pushes the AUC to near 1, making the metric look excellent even though the model
+      hasn't learned any genuine patterns. Consequently, the reported performance is misleading; once
+      the model is deployed on clean, non-leaked data, its predictive power drops dramatically, potentially
+      causing wrong forecasts or decisions. The practical impact is wasted engineering effort, possible
+      financial loss, and damage to stakeholder confidence. Detecting and removing leakage is essential
+      to obtain a realistic evaluation.
+    key_points:
+    - id: kp_1
+      statement: Leakage gives the model access to information that correlates perfectly with the label,
+        so it can separate classes almost flawlessly, driving AUC close to 1.
+      required: true
+    - id: kp_2
+      statement: The inflated metric hides the model's true ability to generalise to unseen, clean data.
+      required: true
+    - id: kp_3
+      statement: In production the model will perform far worse, leading to poor business decisions or
+        loss of trust.
+      required: true
+    - id: kp_4
+      statement: Detecting leakage early saves time and resources by prompting a redesign of the feature
+        pipeline.
+      required: false
+    hint_ladder:
+    - Recall what AUC measures and what the model actually sees.
+    - Think about deployment versus competition environment.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  classification_metrics__q1_debugging_metrics_mismatch:
+    stem: You trained a binary classifier and notice that the accuracy is 95% but the F1-score is only
+      0.45; what could be causing this discrepancy and how would you investigate?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:classification_metrics
+      weight: 0.7
+    - id: concept:class_imbalance
+      weight: 0.15
+    reference_answer: A 95% accuracy with a low F1 usually signals a class-imbalance problem. If, say,
+      90% of samples belong to the negative class, a model that predicts everything negative will still
+      be 90% accurate, but precision and recall for the positive class will be near zero, dragging the
+      F1 down to around 0.45. I would first look at the confusion matrix to see how many true positives
+      we actually have and compare it with the class distribution. If imbalance is confirmed, I’d try
+      techniques like oversampling the minority class, using class-weighted loss, or switching to a metric
+      such as ROC-AUC that is less affected by skewed classes. This would give a clearer picture of the
+      model’s real performance.
+    key_points:
+    - id: kp_1
+      statement: Identifies that the data is highly imbalanced, with the majority class dominating accuracy.
+      required: true
+    - id: kp_2
+      statement: Explains that precision and recall (hence F1) are sensitive to minority-class performance,
+        unlike accuracy.
+      required: true
+    - id: kp_3
+      statement: Suggests checking the confusion matrix and class distribution to confirm imbalance.
+      required: false
+    - id: kp_4
+      statement: Recommends using resampling, class weighting, or alternative metrics (e.g., ROC-AUC)
+        to get a more realistic assessment.
+      required: false
+    hint_ladder:
+    - What does the confusion matrix reveal about true/false positives?
+    - Think about how class distribution influences each metric.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  classification_metrics__q2_tradeoff_choosing_threshold:
+    stem: In a medical diagnosis model you must decide the decision threshold; how does changing the threshold
+      affect precision, recall, and the ROC-AUC, and what trade-offs would you consider?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:classification_metrics
+      weight: 0.7
+    - id: concept:class_imbalance
+      weight: 0.15
+    reference_answer: Changing the decision threshold slides the operating point along the ROC curve.
+      If we lower the threshold we label more instances as positive, which raises recall because we catch
+      more true disease cases, but precision drops because we also generate more false positives. Raising
+      the threshold does the opposite – higher precision, lower recall. The ROC-AUC, however, is computed
+      by integrating over all possible thresholds, so moving the threshold does not alter the AUC itself;
+      it only changes where we are on the curve. In a medical setting the priority is often high recall
+      to avoid missing patients, even if it means more unnecessary follow-ups, so I would pick a threshold
+      that gives an acceptable balance, perhaps by maximizing F1 or by assigning explicit costs to false
+      negatives versus false positives.
+    key_points:
+    - id: kp_1
+      statement: Describes that lowering the threshold increases recall (more positives detected) but
+        reduces precision (more false positives).
+      required: true
+    - id: kp_2
+      statement: Notes that ROC-AUC is threshold-independent; moving the threshold moves you along the
+        ROC curve but does not change the AUC value.
+      required: true
+    - id: kp_3
+      statement: 'Explains the practical trade-off: in medicine you may prefer higher recall to catch
+        disease cases, accepting lower precision and more follow-up tests.'
+      required: false
+    - id: kp_4
+      statement: Mentions that the optimal threshold can be chosen by maximizing a metric like F1 or using
+        a cost-sensitive analysis.
+      required: false
+    hint_ladder:
+    - What happens to true-positive and false-positive rates when you move the threshold?
+    - Recall the definition of ROC-AUC.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  regression_metrics__q1:
+    stem: You have built a linear regression model and notice its RMSE on the validation set is much higher
+      than the training RMSE. What could be causing this, and how would you diagnose the issue?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:regression_metrics
+      weight: 0.7
+    - id: concept:overfitting
+      weight: 0.15
+    - id: concept:cross_validation
+      weight: 0.15
+    reference_answer: 'A higher validation RMSE compared to training RMSE usually signals that the model
+      is overfitting – it has learned patterns specific to the training data that don’t generalise. I
+      would first look at model complexity: many features, high-degree polynomial terms, or no regularisation
+      can inflate variance. Adding L2 regularisation or reducing the feature set can help. I’d also run
+      k-fold cross-validation to see if the error gap is consistent across folds, confirming it isn’t
+      a fluke. Finally, I’d verify that preprocessing (scaling, encoding) is applied identically to training
+      and validation data to rule out data leakage.'
+    key_points:
+    - id: kp_1
+      statement: Identifies that a large gap between training and validation error indicates overfitting.
+      required: true
+    - id: kp_2
+      statement: Suggests checking model complexity, feature count, and regularisation strength.
+      required: true
+    - id: kp_3
+      statement: Recommends using cross-validation or a hold-out set to verify the gap persists.
+      required: false
+    - id: kp_4
+      statement: Mentions possible data leakage or mismatched preprocessing as alternative causes.
+      required: false
+    hint_ladder:
+    - Think about what the error gap tells you about bias vs variance.
+    - What steps can you take to reduce variance without hurting bias too much?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  regression_metrics__q2:
+    stem: A stakeholder asks you to compare MAE and MSE for a sales-forecasting model. How would you explain
+      the practical differences and when you’d prefer one metric over the other?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: intro
+    time_budget_s: 150
+    concepts:
+    - id: concept:regression_metrics
+      weight: 0.7
+    reference_answer: Mean Absolute Error (MAE) is the average of the absolute differences between predicted
+      and actual values, so each error contributes linearly and the result is in the same units as the
+      target, making it easy to interpret. Mean Squared Error (MSE) squares each error before averaging,
+      which amplifies larger mistakes; it’s more sensitive to outliers and penalises big deviations heavily.
+      If the business can tolerate occasional large errors, MAE is preferable because it’s robust. If
+      large errors are very costly—say, stock-outs or over-production—MSE (or its square root, RMSE) highlights
+      those risks and is more appropriate.
+    key_points:
+    - id: kp_1
+      statement: Explains that MAE measures average absolute error, giving equal weight to all errors.
+      required: true
+    - id: kp_2
+      statement: Explains that MSE squares errors, penalising larger deviations more heavily.
+      required: true
+    - id: kp_3
+      statement: Notes that MSE is more sensitive to outliers, making it useful when large errors are
+        especially costly.
+      required: false
+    - id: kp_4
+      statement: Mentions that MAE is easier to interpret in the original units and is robust to outliers.
+      required: false
+    hint_ladder:
+    - Consider how each metric treats a single large mistake versus many small ones.
+    - Think about the business impact of occasional big forecast errors.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  class_imbalance__q1:
+    stem: You have a credit-card fraud detection model trained on a dataset where fraudulent transactions
+      are only 0.3% of the data. What steps would you take to handle this class imbalance before training?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:class_imbalance
+      weight: 0.7
+    - id: concept:classification_metrics
+      weight: 0.15
+    - id: concept:cross_validation
+      weight: 0.15
+    reference_answer: 'First, I would avoid using plain accuracy because the 0.3% fraud class would be
+      swamped by the majority. I’d start with a data-level fix: either undersample the legitimate transactions
+      to get a more balanced ratio, oversample the fraud cases, or apply SMOTE to synthesize new fraud
+      examples. I’d keep the test set untouched and use stratified k-fold cross-validation on the resampled
+      training folds to prevent leakage. In parallel, I’d consider algorithmic fixes like setting a higher
+      class weight for fraud in the loss function. Finally, I’d evaluate using recall, precision, F1-score,
+      or the precision-recall AUC to ensure the model truly captures the minority class.'
+    key_points:
+    - id: kp_1
+      statement: Mentions resampling methods such as random undersampling of the majority class, oversampling
+        the minority class, or using SMOTE.
+      required: true
+    - id: kp_2
+      statement: Discusses adjusting evaluation metrics to focus on minority-class performance (e.g.,
+        precision, recall, F1, PR-AUC) rather than overall accuracy.
+      required: true
+    - id: kp_3
+      statement: Notes the need to keep a proper validation split or use stratified cross-validation to
+        avoid data leakage after resampling.
+      required: false
+    - id: kp_4
+      statement: Suggests algorithm-level options like class-weighting or cost-sensitive learning.
+      required: false
+    hint_ladder:
+    - Think about both data-level and algorithm-level techniques.
+    - Consider how you would evaluate the model after resampling.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  class_imbalance__q2:
+    stem: During production you notice the model’s false-negative rate for the minority class has risen
+      sharply after a recent data update. What could be causing this degradation and how would you debug
+      it?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:class_imbalance
+      weight: 0.7
+    - id: concept:data_leakage
+      weight: 0.15
+    - id: concept:train_test_split
+      weight: 0.15
+    reference_answer: A sudden rise in false negatives usually signals a distribution shift – perhaps
+      the new batch has far fewer fraud cases or the features that distinguished them have changed. It
+      could also mean the preprocessing pipeline was altered, for example the SMOTE step was skipped or
+      the class-weight parameter was reset, leading to a model that’s now biased toward the majority.
+      To debug, I’d first pull the latest data statistics and compare minority-class prevalence and feature
+      means to the training set. Then I’d run the current model on a fresh, stratified validation set
+      to see if the drop is reproducible. I’d also check the pipeline logs to ensure resampling and scaling
+      are still applied. If the issue is a drift, I’d retrain with recent balanced data or adjust thresholds,
+      and set up ongoing class-wise metric monitoring.
+    key_points:
+    - id: kp_1
+      statement: Identifies a shift in the underlying class distribution (e.g., fewer minority examples)
+        as a possible cause.
+      required: true
+    - id: kp_2
+      statement: Considers that the recent update may have introduced data leakage or altered the preprocessing
+        pipeline, affecting the minority class representation.
+      required: true
+    - id: kp_3
+      statement: 'Proposes concrete debugging steps: compare recent batch statistics with training data,
+        re-evaluate on a held-out validation set, and check if the sampling/SMOTE step is still applied
+        correctly.'
+      required: false
+    - id: kp_4
+      statement: Suggests monitoring class-wise metrics over time and possibly retraining with more recent
+        balanced data.
+      required: false
+    hint_ladder:
+    - Think about changes in data distribution and how the training pipeline might be handling them.
+    - Ask what you would inspect in logs or monitoring metrics.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  hyperparameter_tuning__q1:
+    stem: You have trained a random forest on a dataset and notice the validation accuracy plateaus; how
+      would you systematically tune its hyperparameters to improve performance?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:hyperparameter_tuning
+      weight: 0.7
+    - id: concept:cross_validation
+      weight: 0.15
+    - id: concept:overfitting
+      weight: 0.15
+    reference_answer: 'First, I’d list the most influential hyperparameters for a random forest: number
+      of trees (n_estimators), maximum depth, min_samples_split, min_samples_leaf, and max_features. I’d
+      set up a nested cross-validation where the outer loop holds out a validation fold and the inner
+      loop runs a grid or random search over a coarse range for each parameter. For example, start with
+      n_estimators = [100,300,500], max_depth = [None,10,20,30], and max_features = [''sqrt'',''log2'',0.8].
+      After locating a promising region, I’d narrow the ranges and perhaps switch to a random or Bayesian
+      search to reduce compute. Throughout I’d compare training and validation scores to watch for over-fitting;
+      if the gap widens I’d tighten max_depth or increase min_samples_leaf. The final model would be the
+      configuration that yields the highest validation accuracy while keeping the train-validation gap
+      small.'
+    key_points:
+    - id: kp_1
+      statement: Identifies key hyperparameters such as number of trees, max depth, min samples split/leaf,
+        and max features.
+      required: true
+    - id: kp_2
+      statement: Explains using nested cross-validation or a held-out validation set to evaluate each
+        configuration.
+      required: true
+    - id: kp_3
+      statement: Describes a search strategy – e.g., coarse grid then random/fine grid, or Bayesian optimisation
+        – to balance coverage and compute.
+      required: false
+    - id: kp_4
+      statement: Mentions monitoring for over-fitting (train vs validation gap) and possibly adjusting
+        regularisation-like parameters.
+      required: false
+    hint_ladder:
+    - Think about which hyperparameters control model complexity and how you would explore them efficiently.
+    - Recall how you can estimate generalisation while searching.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  hyperparameter_tuning__q2:
+    stem: During a Kaggle competition you notice your model’s AUC improves when you increase the learning
+      rate but then sharply drops; what does this indicate about your hyperparameter tuning, and how would
+      you address it?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:hyperparameter_tuning
+      weight: 0.7
+    - id: concept:gradient_descent
+      weight: 0.15
+    - id: concept:regularisation
+      weight: 0.15
+    reference_answer: A rising AUC followed by a sudden drop signals that the learning rate is too aggressive
+      – the optimizer is jumping over the loss surface’s minima and causing divergence or noisy updates,
+      which hurts generalisation. I would first reduce the learning rate to a safer range (e.g., 0.01–0.001)
+      and re-run a short validation using cross-validation. Adding a schedule – such as step decay or
+      cosine annealing – or switching to an adaptive method like Adam can give the model a chance to converge
+      smoothly. If the model still over-fits after the learning rate is stable, I’d introduce or increase
+      regularisation (weight decay or dropout) and re-tune both together, always checking validation AUC
+      to confirm the improvement.
+    key_points:
+    - id: kp_1
+      statement: Recognises that a too-high learning rate causes the optimizer to overshoot minima, leading
+        to unstable training and degraded performance.
+      required: true
+    - id: kp_2
+      statement: Suggests lowering the learning rate and possibly using a learning-rate schedule or adaptive
+        optimizer.
+      required: true
+    - id: kp_3
+      statement: Mentions coupling learning-rate tuning with regularisation (e.g., weight decay) to prevent
+        over-fitting after rapid convergence.
+      required: false
+    - id: kp_4
+      statement: Proposes evaluating the effect with cross-validation to ensure the observed drop isn’t
+        data-leakage.
+      required: false
+    hint_ladder:
+    - Consider what a high learning rate does to the optimisation landscape.
+    - Think about balancing speed of convergence with stability.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  linear_regression__item_1:
+    stem: You have a dataset with a single numeric feature and a target; after fitting an OLS line you
+      notice the residuals fan out as the feature increases. What does this pattern indicate about the
+      model assumptions, and what simple step could you take to improve the fit?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:linear_regression
+      weight: 0.7
+    - id: concept:regression_metrics
+      weight: 0.15
+    reference_answer: When the residuals spread out as the predictor grows, it signals heteroscedasticity
+      – the error variance is not constant, violating a key OLS assumption. This means our confidence
+      intervals and p-values may be unreliable. A quick fix is to transform the target, for example take
+      log(y), which often stabilises variance, or alternatively fit a weighted least-squares model that
+      gives less weight to points with larger residuals. Either approach helps restore the homoscedasticity
+      assumption and improves the model’s reliability.
+    key_points:
+    - id: kp_1
+      statement: Identifies heteroscedasticity – variance of errors increasing with the predictor.
+      required: true
+    - id: kp_2
+      statement: Explains that OLS assumes constant variance (homoscedasticity) and that violation can
+        bias standard errors.
+      required: true
+    - id: kp_3
+      statement: Suggests a simple remedy such as applying a log transformation to the target or using
+        weighted least squares.
+      required: true
+    hint_ladder:
+    - Look at the shape of the residual plot.
+    - Think about what OLS assumes about error variance.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  linear_regression__item_2:
+    stem: During a Kaggle competition you split the data, train a linear regression on the training set,
+      and achieve an R² of 0.92. On the hidden test set the score drops to 0.68. What are the likely reasons
+      for this gap, and how would you diagnose the problem?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:linear_regression
+      weight: 0.7
+    - id: concept:data_leakage
+      weight: 0.15
+    - id: concept:cross_validation
+      weight: 0.15
+    reference_answer: A large drop from 0.92 on the internal split to 0.68 on the hidden test usually
+      points to leakage or an unrepresentative split. If you, for example, computed scaling parameters
+      or engineered features using the whole dataset, the model has seen information it shouldn’t have.
+      Also, a single random split can be lucky; the training set may not capture the true variability.
+      To diagnose, I would first verify that all preprocessing (imputation, scaling) is fitted only on
+      the training folds, then run k-fold cross-validation to see a more realistic performance distribution.
+      Comparing feature statistics between train and hidden test can also reveal distribution shift.
+    key_points:
+    - id: kp_1
+      statement: Mentions possible data leakage where information from the test set unintentionally influenced
+        training.
+      required: true
+    - id: kp_2
+      statement: Notes that the single train-test split may not represent the data distribution, suggesting
+        cross-validation to get a stable estimate.
+      required: true
+    - id: kp_3
+      statement: 'Proposes concrete diagnostics: check feature distributions, re-run with k-fold CV, verify
+        preprocessing steps are fit only on training data.'
+      required: true
+    hint_ladder:
+    - Ask yourself whether any step used the full data before splitting.
+    - Consider whether one split is enough to estimate generalisation.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  logistic_regression__q1:
+    stem: You notice that a logistic regression model you trained on a credit-card default dataset has
+      95% accuracy but the ROC-AUC is only 0.62. What could be causing this discrepancy and how would
+      you address it?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:logistic_regression
+      weight: 0.7
+    - id: concept:class_imbalance
+      weight: 0.15
+    - id: concept:classification_metrics
+      weight: 0.15
+    reference_answer: The gap usually means the data are heavily imbalanced – the model predicts the majority
+      class most of the time, so it gets high accuracy but fails to separate the minority class, giving
+      a low AUC. Accuracy alone hides this. To fix it, I would first examine the class distribution, then
+      try techniques like oversampling the minority class, undersampling the majority, or adding class
+      weights in the loss function. I’d also switch to more informative metrics such as balanced accuracy,
+      F1-score, or precision-recall AUC, and possibly tune the decision threshold to improve recall for
+      the minority class.
+    key_points:
+    - id: kp_1
+      statement: Identifies that high accuracy with low AUC often signals severe class imbalance.
+      required: true
+    - id: kp_2
+      statement: Explains that accuracy is misleading when the majority class dominates, while AUC reflects
+        ranking ability across thresholds.
+      required: true
+    - id: kp_3
+      statement: Suggests remedial actions such as resampling, using class-weighting, or switching to
+        metrics like F1-score or balanced accuracy.
+      required: true
+    - id: kp_4
+      statement: Mentions evaluating the model with precision-recall curves or adjusting decision threshold.
+      required: false
+    hint_ladder:
+    - Think about what each metric measures and how class distribution affects them.
+    - What can you change in training to make the model care about the minority class?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  logistic_regression__q2:
+    stem: During model development you decide to add L2 regularisation to a logistic regression that is
+      over-fitting on a small text-classification dataset. Explain how the regularisation term changes
+      the optimisation and what effect you expect on the learned coefficients.
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:logistic_regression
+      weight: 0.7
+    - id: concept:regularisation
+      weight: 0.15
+    - id: concept:gradient_descent
+      weight: 0.15
+    reference_answer: Adding L2 regularisation means the loss becomes the usual log-loss plus λ times
+      the sum of squares of the weights. During gradient descent the update rule gains an extra term 2λw,
+      which pushes every coefficient a little toward zero on each step. As a result the model prefers
+      smaller weights, which reduces variance and helps it generalise better on unseen data, though it
+      introduces a bit more bias. The strength of λ controls how aggressive this shrinkage is, so we normally
+      pick it with cross-validation.
+    key_points:
+    - id: kp_1
+      statement: Describes that L2 adds λ‖w‖² to the loss, penalising large weights.
+      required: true
+    - id: kp_2
+      statement: States that the gradient now includes 2λw, pulling coefficients toward zero during each
+        update.
+      required: true
+    - id: kp_3
+      statement: Predicts that coefficients will shrink, reducing variance and improving generalisation,
+        at the cost of a slight bias increase.
+      required: true
+    - id: kp_4
+      statement: Notes that λ must be tuned, often via cross-validation, to balance bias-variance.
+      required: false
+    hint_ladder:
+    - Recall the form of the L2 penalty and how it appears in the gradient.
+    - What happens to large vs. small coefficients when you add that penalty?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  decision_trees__q1:
+    stem: Imagine you are training a decision tree on a dataset with many categorical features. After
+      fitting, you notice the tree is very deep and overfits the training data. What strategies can you
+      use to control the depth and improve generalization?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 150
+    concepts:
+    - id: concept:decision_trees
+      weight: 0.7
+    - id: concept:overfitting
+      weight: 0.15
+    - id: concept:hyperparameter_tuning
+      weight: 0.15
+    reference_answer: 'To curb over-fitting you can restrict the tree’s complexity. The most direct knobs
+      are max_depth, min_samples_split, min_samples_leaf or max_leaf_nodes – setting any of these stops
+      the tree from growing indefinitely. Another approach is pruning: either stop splitting early (pre-pruning)
+      by requiring a minimum impurity reduction, or grow the full tree then cut back branches that give
+      little gain (post-pruning) using a validation set. Both methods raise bias but lower variance, which
+      usually improves test accuracy. In practice you would run a few folds of cross-validation to choose
+      the depth or pruning threshold that yields the best validation score.'
+    key_points:
+    - id: kp_1
+      statement: Mentions limiting max depth or setting min samples per leaf as hyper-parameters.
+      required: true
+    - id: kp_2
+      statement: Describes pruning (pre- or post-pruning) to remove nodes that do not improve impurity
+        significantly.
+      required: true
+    - id: kp_3
+      statement: Explains that reducing depth reduces variance at the cost of a bit more bias.
+      required: false
+    - id: kp_4
+      statement: Suggests using cross-validation to pick the optimal depth or pruning threshold.
+      required: false
+    hint_ladder:
+    - Think about the hyper-parameters that directly limit tree size.
+    - Recall the two main types of pruning and why they help.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  decision_trees__q2:
+    stem: During a production run, you see a sudden drop in the accuracy of a decision-tree model that
+      was previously stable. The recent data includes a new minority class that appears rarely. What could
+      be happening and how would you diagnose and fix it?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:decision_trees
+      weight: 0.7
+    - id: concept:class_imbalance
+      weight: 0.15
+    - id: concept:bias_variance_tradeoff
+      weight: 0.15
+    reference_answer: The most likely cause is that the new rare class has shifted the class distribution,
+      so the tree’s impurity criterion (Gini or entropy) now treats splits that favour the majority class
+      as optimal. This leads to poor recall on the minority and an overall accuracy drop. First, I would
+      examine the recent data’s class frequencies and plot a confusion matrix to see which class is mis-predicted.
+      If the minority class is indeed suffering, I could rebalance the training set – either by oversampling
+      the rare class, undersampling the majority, or assigning class weights in the impurity calculation.
+      Another option is to switch to a metric-driven split like information gain with class-weighted entropy.
+      After adjusting, I would retrain and validate the model, monitoring both overall accuracy and per-class
+      recall to ensure the fix works.
+    key_points:
+    - id: kp_1
+      statement: Identifies that the new minority class causes class imbalance, making impurity measures
+        favor the majority class.
+      required: true
+    - id: kp_2
+      statement: Suggests checking the class distribution and confusion matrix to confirm degradation
+        on the new class.
+      required: true
+    - id: kp_3
+      statement: Proposes remedies such as re-weighting classes, using a different impurity metric, or
+        applying stratified sampling.
+      required: false
+    - id: kp_4
+      statement: Mentions retraining with updated data and possibly limiting tree depth to avoid over-fitting
+        the rare class.
+      required: false
+    hint_ladder:
+    - Look at what changed in the data distribution.
+    - What tree-specific metric could be biased toward the majority class?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  ensemble_methods__q1:
+    stem: Imagine you trained a decision-tree classifier on a small noisy dataset and observed high variance.
+      You then apply bagging with 100 trees. What effect does bagging have on bias and variance, and why?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:ensemble_methods
+      weight: 0.7
+    - id: concept:bias_variance_tradeoff
+      weight: 0.15
+    reference_answer: Bagging does not substantially change the bias of a decision-tree base learner because
+      each tree is still built on the same algorithm and depth, so the systematic error stays about the
+      same. However, by training each tree on a different bootstrap sample and then averaging (or majority
+      voting), the random fluctuations caused by the particular training set are averaged out. This reduces
+      variance dramatically – the ensemble’s prediction variance drops roughly by a factor of 1 / N where
+      N is the number of trees, assuming the trees are not perfectly correlated. Hence, bagging mainly
+      combats over-fitting on noisy, small data by stabilising the model while leaving bias largely untouched.
+    key_points:
+    - id: kp_1
+      statement: Bagging leaves bias roughly unchanged because each base learner is still a high-bias
+        decision tree.
+      required: true
+    - id: kp_2
+      statement: Bagging reduces variance by averaging predictions over many decorrelated trees.
+      required: true
+    - id: kp_3
+      statement: The variance reduction comes from the law of large numbers and the fact that each tree
+        sees a different bootstrap sample.
+      required: false
+    hint_ladder:
+    - Think about what changes when you average many noisy estimates.
+    - Recall the bias-variance decomposition for an ensemble.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  ensemble_methods__q2:
+    stem: During production you notice that a gradient-boosted model’s AUC has dropped after a recent
+      data-drift event, while a random-forest model remains stable. Explain why boosting is more sensitive
+      to such drift and what you could do to mitigate it.
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:ensemble_methods
+      weight: 0.7
+    - id: concept:data_leakage
+      weight: 0.15
+    - id: concept:cross_validation
+      weight: 0.15
+    reference_answer: Boosting methods such as XGBoost fit each new tree on the residuals of the previous
+      ensemble, essentially learning the exact error pattern of the training data. When the data distribution
+      changes, those residuals become stale – the later trees are now correcting mistakes that no longer
+      exist, and the model over-fits to an outdated pattern, so metrics like AUC fall. Random forests,
+      by contrast, grow trees independently on bootstrap samples, so each tree captures a broader view
+      of the data and is less dependent on a specific error distribution, making them more drift-tolerant.
+      To mitigate the issue you can schedule regular retraining on recent data, employ a sliding-window
+      or online boosting variant, add drift detection to switch models, and validate with cross-validation
+      that respects temporal ordering.
+    key_points:
+    - id: kp_1
+      statement: Boosting builds trees sequentially, each correcting errors of the previous model, so
+        it tightly fits the training distribution.
+      required: true
+    - id: kp_2
+      statement: When the underlying data distribution shifts, the residuals the later trees were trained
+        on no longer represent the current errors, causing performance degradation.
+      required: true
+    - id: kp_3
+      statement: Random forests train trees independently, so they are less tied to the exact error pattern
+        and are more robust to drift.
+      required: false
+    - id: kp_4
+      statement: Mitigation strategies include periodic retraining, using online/partial-fit boosting,
+        or incorporating drift detection and model-selection pipelines.
+      required: true
+    hint_ladder:
+    - Recall how residuals are used in gradient boosting.
+    - Consider what part of the model is tied to the training distribution.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  support_vector_machines__q1:
+    stem: You train a linear SVM on a highly imbalanced dataset where the minority class is only 5% of
+      the samples; the model reports 98% accuracy. What is likely happening, and how would you address
+      it?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:support_vector_machines
+      weight: 0.7
+    - id: concept:class_imbalance
+      weight: 0.15
+    - id: concept:classification_metrics
+      weight: 0.15
+    reference_answer: With a 5 % minority class, a 98 % accuracy usually means the SVM is just labeling
+      everything as the majority class, so it never learns the decision boundary for the rare class. Accuracy
+      alone is therefore misleading. To see the real performance we should look at precision, recall or
+      F1 for the minority class, or the ROC-AUC. To improve it we can give the SVM a higher penalty for
+      misclassifying minority samples (the class_weight parameter), or resample the data – either oversample
+      the minority with SMOTE or undersample the majority. Using stratified cross-validation ensures those
+      metrics are reliable across folds.
+    key_points:
+    - id: kp_1
+      statement: Recognises that high accuracy is misleading due to class imbalance and the model is likely
+        predicting the majority class for almost all instances.
+      required: true
+    - id: kp_2
+      statement: Mentions appropriate metrics such as precision, recall, F1-score or AUC-ROC to evaluate
+        the minority class performance.
+      required: true
+    - id: kp_3
+      statement: 'Suggests remedial actions: re-sampling (SMOTE or undersampling), class-weight adjustment
+        in the SVM loss, or using a different decision threshold.'
+      required: true
+    - id: kp_4
+      statement: Optionally notes that cross-validation with stratified folds helps avoid optimistic estimates.
+      required: false
+    hint_ladder:
+    - Think about what accuracy measures when one class dominates.
+    - What loss parameter in an SVM can counteract imbalance?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  support_vector_machines__q2:
+    stem: During a production deployment you notice the SVM’s decision boundary has shifted after a recent
+      data-drift event; predictions are suddenly less accurate. What steps would you take to diagnose
+      and fix the issue?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:support_vector_machines
+      weight: 0.7
+    - id: concept:data_leakage
+      weight: 0.15
+    - id: concept:cross_validation
+      weight: 0.15
+    reference_answer: The sudden drop in performance is a classic sign of data drift – the feature statistics
+      the SVM was trained on have changed. I would first compare histograms or KS-tests of each feature
+      between the original training set and the live data to confirm the shift. I would also verify that
+      the same preprocessing steps (scaling, encoding) are applied and that no leakage (e.g., using future
+      information) has crept in. Once confirmed, I would retrain the SVM on a recent, representative sample,
+      perhaps using a rolling-window approach, and evaluate it with stratified cross-validation that mirrors
+      the new distribution. Finally, I’d put monitoring in place to trigger alerts when performance metrics
+      fall below a threshold, so the model can be refreshed automatically.
+    key_points:
+    - id: kp_1
+      statement: Identifies data drift as the likely cause and describes checking feature distributions
+        between training and current data.
+      required: true
+    - id: kp_2
+      statement: Mentions monitoring for data leakage or changes in preprocessing pipelines that could
+        corrupt the feature space.
+      required: true
+    - id: kp_3
+      statement: 'Proposes a remediation plan: retrain the SVM on recent data, possibly with incremental
+        learning or a rolling window, and validate with a hold-out or cross-validation set that reflects
+        the new distribution.'
+      required: true
+    - id: kp_4
+      statement: Suggests setting up automated alerts on key performance metrics and periodic model re-evaluation.
+      required: false
+    hint_ladder:
+    - What statistical checks can reveal that the input distribution changed?
+    - How can you keep the model up-to-date without manual intervention?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  k_nearest_neighbours__q1:
+    stem: In a dataset with many irrelevant features, you train a k-NN classifier and notice test accuracy
+      drops as you increase k. Why does adding irrelevant dimensions hurt k-NN, and how would you mitigate
+      it?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:k_nearest_neighbours
+      weight: 0.7
+    - id: concept:dimensionality_reduction
+      weight: 0.15
+    reference_answer: k-NN relies on Euclidean (or similar) distance, so in high-dimensional space the
+      distance between any two points becomes almost the same – the curse of dimensionality. Irrelevant
+      features add noise to those distances, making neighbours less meaningful. When you increase k, you
+      average over more noisy neighbours, so accuracy drops. To fix it, you can first drop useless columns
+      or apply dimensionality reduction like PCA or LDA, keeping the components that explain most variance.
+      Normalising features is also essential so that a high-range irrelevant feature doesn’t dominate
+      the distance metric.
+    key_points:
+    - id: kp_1
+      statement: Explains that distance calculations become dominated by noise in high-dimensional space,
+        causing the curse of dimensionality.
+      required: true
+    - id: kp_2
+      statement: Describes that increasing k smooths predictions, further amplifying the effect of irrelevant
+        features.
+      required: false
+    - id: kp_3
+      statement: Suggests dimensionality reduction (e.g., PCA) or feature selection to retain only informative
+        attributes.
+      required: true
+    - id: kp_4
+      statement: Mentions scaling/normalising features before distance computation.
+      required: false
+    hint_ladder:
+    - Think about how distance behaves when you add many random dimensions.
+    - What preprocessing step can compress the feature space?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  k_nearest_neighbours__q2:
+    stem: During cross-validation you notice that a k-NN model with k=1 overfits, while k=7 underfits.
+      How would you choose an optimal k, and what trade-off are you balancing?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:k_nearest_neighbours
+      weight: 0.7
+    - id: concept:cross_validation
+      weight: 0.15
+    - id: concept:bias_variance_tradeoff
+      weight: 0.15
+    reference_answer: k-NN suffers from a classic bias-variance trade-off. With k=1 the model memorises
+      the training set – zero bias but huge variance, so it overfits. With a large k like 7 the model
+      smooths too much – high bias, low variance, leading to under-fitting. The usual way to pick k is
+      to run a grid search over a range (e.g., 1 to 20) and evaluate each using k-fold cross-validation,
+      selecting the k that gives the lowest average validation error or highest accuracy. This balances
+      bias and variance, and using an odd k helps avoid tie votes in binary problems.
+    key_points:
+    - id: kp_1
+      statement: 'Identifies the bias-variance trade-off: small k gives low bias high variance, large
+        k gives high bias low variance.'
+      required: true
+    - id: kp_2
+      statement: Proposes using grid search with cross-validation to evaluate several k values and pick
+        the one with highest validation accuracy (or lowest error).
+      required: true
+    - id: kp_3
+      statement: Mentions that the chosen k should minimise validation error, not just training error.
+      required: false
+    - id: kp_4
+      statement: May note that odd k avoids ties in binary classification.
+      required: false
+    hint_ladder:
+    - Recall the effect of k on model flexibility.
+    - What systematic method lets you compare many k values fairly?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  naive_bayes__q1:
+    stem: You have a text classification task with highly imbalanced classes; you decide to use Multinomial
+      Naive Bayes. What effect does class imbalance have on the classifier's predictions and how can you
+      mitigate it?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:naive_bayes
+      weight: 0.7
+    - id: concept:class_imbalance
+      weight: 0.15
+    - id: concept:classification_metrics
+      weight: 0.15
+    reference_answer: In Naive Bayes the posterior is proportional to the class prior times the likelihood.
+      When classes are imbalanced the prior for the minority class is tiny, so even if the document’s
+      words fit that class well, the posterior often stays lower than the majority class. Consequently
+      the model tends to predict the majority label and accuracy looks fine while recall for the minority
+      suffers. To mitigate this you can set the priors manually, for example using a uniform prior or
+      the inverse of class frequencies, which raises the minority posterior. Additionally you should evaluate
+      with precision, recall or F1 rather than raw accuracy, and you may also apply oversampling/undersampling
+      or class-weighting before training.
+    key_points:
+    - id: kp_1
+      statement: Explains that Naive Bayes predicts the class with highest posterior probability, so minority
+        classes get lower priors and are often mis-classified.
+      required: true
+    - id: kp_2
+      statement: Mentions adjusting class priors (e.g., using balanced class prior or prior smoothing)
+        to compensate for imbalance.
+      required: true
+    - id: kp_3
+      statement: Suggests evaluation with metrics such as precision, recall or F1 rather than accuracy
+        to detect the problem.
+      required: false
+    - id: kp_4
+      statement: Notes that oversampling/undersampling or using a different loss weighting can also help.
+      required: false
+    hint_ladder:
+    - Think about what part of the Bayes formula reflects how common a class is.
+    - What metric would reveal poor performance on a rare class?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  naive_bayes__q2:
+    stem: During a production run you notice the Naive Bayes spam filter suddenly starts labeling many
+      legitimate emails as spam. What kind of data-leakage issue could cause this, and how would you debug
+      it?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:naive_bayes
+      weight: 0.7
+    - id: concept:data_leakage
+      weight: 0.15
+    - id: concept:cross_validation
+      weight: 0.15
+    reference_answer: A common leakage in a Naive Bayes spam filter is that the training set contains
+      features that are only available after an email is classified, such as a ‘spam-score’ column or
+      timestamps that differ between train and live data. When the model is deployed, those features are
+      missing or have different distributions, so the posterior probabilities become unreliable and many
+      ham messages get high spam posteriors. To debug, I would first compare the feature matrix used in
+      training with the one generated in production, looking for columns that are always zero or have
+      shifted means. I’d also run the model on a recent hold-out set that follows the exact production
+      pipeline; if performance drops, the culprit is likely a leaking feature. The fix is to remove that
+      feature or recompute priors on live data, and then re-validate with proper cross-validation that
+      respects the temporal split.
+    key_points:
+    - id: kp_1
+      statement: Identifies that training data may have included future information, such as email headers
+        that change after deployment, leading to leakage.
+      required: true
+    - id: kp_2
+      statement: Describes checking the feature extraction pipeline for features that are only present
+        in training (e.g., label-encoded target words).
+      required: true
+    - id: kp_3
+      statement: Recommends reproducing the issue on a hold-out set that mimics production and verifying
+        that the same preprocessing steps are applied.
+      required: false
+    - id: kp_4
+      statement: Suggests fixing the pipeline by removing the leaking feature or recomputing priors on
+        live data.
+      required: false
+    hint_ladder:
+    - What could be different about the data you see at training time versus at inference time?
+    - How would you verify the preprocessing steps are identical?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  clustering__q1:
+    stem: You have a dataset of customer transactions and you run K-means with K=4; the clusters look
+      reasonable but one cluster contains 70% of the points. What could be causing this imbalance and
+      how would you address it?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:clustering
+      weight: 0.7
+    - id: concept:feature_engineering
+      weight: 0.15
+    - id: concept:dimensionality_reduction
+      weight: 0.15
+    reference_answer: If one cluster swallows most points, the most common cause is that the feature space
+      isn’t properly scaled or that some dimensions dominate the Euclidean distance, so K-means keeps
+      pulling points into that region. I would first standardise or normalise all numeric features, and
+      possibly drop or transform outlier-heavy attributes. Running PCA to keep the principal components
+      that capture most variance can also help the algorithm see the true structure. After preprocessing,
+      I’d re-run K-means and check silhouette scores; if the imbalance persists, I might switch to a density-based
+      method like DBSCAN, which can separate dense groups from sparse noise without assuming equal-sized
+      clusters.
+    key_points:
+    - id: kp_1
+      statement: Identifies that poor feature scaling or irrelevant features can cause one cluster to
+        dominate.
+      required: true
+    - id: kp_2
+      statement: Suggests scaling (e.g., StandardScaler) or applying dimensionality reduction (PCA) before
+        clustering.
+      required: true
+    - id: kp_3
+      statement: Mentions alternative algorithms (e.g., DBSCAN) that are less sensitive to cluster size.
+      required: false
+    - id: kp_4
+      statement: Discusses evaluating cluster quality with silhouette score or within-cluster sum of squares.
+      required: false
+    hint_ladder:
+    - Think about how K-means measures distance between points.
+    - What preprocessing steps change the geometry of the data?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  clustering__q2:
+    stem: During production you notice that a hierarchical clustering service suddenly returns many tiny
+      clusters for new data. What steps would you take to debug the issue?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:clustering
+      weight: 0.7
+    - id: concept:data_leakage
+      weight: 0.15
+    - id: concept:cross_validation
+      weight: 0.15
+    reference_answer: My first move would be to confirm that the same linkage (e.g., average) and distance
+      metric (e.g., Euclidean) used during model building are still configured in production; a silent
+      switch to single linkage can explode the dendrogram into many tiny clusters. Next, I’d audit the
+      preprocessing steps – scaling, encoding, missing-value handling – to ensure the live pipeline mirrors
+      the training pipeline; a missing scaler can change the geometry dramatically. I’d also examine the
+      incoming batch for distribution shift or a surge of outliers that compress distances, perhaps by
+      plotting pairwise distance histograms. Finally, I’d review recent commits for accidental feature
+      additions or data-leakage bugs that could alter the distance matrix, rolling back any suspect change
+      and re-testing on a held-out validation set.
+    key_points:
+    - id: kp_1
+      statement: Checks whether the linkage method or distance metric was unintentionally changed.
+      required: true
+    - id: kp_2
+      statement: Verifies that the preprocessing pipeline (e.g., scaling, encoding) applied to training
+        data is identical for incoming data.
+      required: true
+    - id: kp_3
+      statement: Looks for data drift or outliers in the new batch that could shrink inter-point distances.
+      required: false
+    - id: kp_4
+      statement: Considers whether a recent code change introduced data leakage or altered the feature
+        set.
+      required: false
+    hint_ladder:
+    - What parts of the clustering pipeline are easy to forget when moving to production?
+    - How can a change in data distribution affect hierarchical linkage?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  dimensionality_reduction__q1:
+    stem: You have a high-dimensional dataset of 10,000 features for a classification task, but training
+      is too slow. Explain how you would use PCA to speed up training and what you must watch out for
+      regarding model performance.
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:dimensionality_reduction
+      weight: 0.7
+    - id: concept:feature_engineering
+      weight: 0.15
+    - id: concept:overfitting
+      weight: 0.15
+    reference_answer: I would first standardise the features because PCA is sensitive to scale. Then I
+      would compute the covariance matrix and extract eigenvectors, selecting the top components that
+      explain, say, 95% of variance. Projecting the data onto these components reduces dimensionality
+      dramatically, cutting training time. However, I must verify that the discarded variance does not
+      contain discriminative information – I would compare validation accuracy before and after PCA. If
+      accuracy drops, I might retain more components or use a supervised technique like LDA. Also, I would
+      ensure the PCA transformation is fitted only on the training split to avoid data leakage.
+    key_points:
+    - id: kp_1
+      statement: Mentions standardising features before applying PCA.
+      required: true
+    - id: kp_2
+      statement: Describes selecting components based on explained variance (e.g., 95%).
+      required: true
+    - id: kp_3
+      statement: Notes the need to evaluate impact on validation accuracy.
+      required: true
+    - id: kp_4
+      statement: Warns about fitting PCA only on training data to prevent data leakage.
+      required: true
+    hint_ladder:
+    - Think about scaling and the covariance matrix.
+    - What could go wrong if you compute PCA on the whole dataset?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  dimensionality_reduction__q2:
+    stem: During a clustering project you visualise the data with t-SNE and see two tight groups, yet
+      the silhouette score is low. What could be causing this discrepancy and how would you resolve it?
+    modality: verbal
+    round_types:
+    - ml_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:dimensionality_reduction
+      weight: 0.7
+    - id: concept:clustering
+      weight: 0.15
+    reference_answer: t-SNE is a non-linear embedding that prioritises local structure, so it can show
+      apparent clusters even when the high-dimensional space is not well separated. A low silhouette score
+      indicates that, in the original space, points are not clearly assigned to distinct clusters. The
+      mismatch may arise from using t-SNE with a perplexity that exaggerates local neighbourhoods or from
+      high noise dimensions. To resolve it, I would first evaluate clustering on the original features
+      using a metric like silhouette or Davies-Bouldin, possibly after reducing dimensions with a linear
+      method such as PCA to denoise. I might also tune t-SNE parameters (perplexity, learning rate) and
+      compare with other embeddings like UMAP to ensure the visual pattern reflects true cluster structure.
+    key_points:
+    - id: kp_1
+      statement: Explains that t-SNE preserves local structure and can create visual clusters even when
+        global separation is weak.
+      required: true
+    - id: kp_2
+      statement: Links low silhouette score to poor separation in the original space.
+      required: true
+    - id: kp_3
+      statement: Suggests evaluating clustering on original or PCA-reduced data before trusting the t-SNE
+        plot.
+      required: true
+    - id: kp_4
+      statement: Mentions tuning t-SNE parameters or trying alternative embeddings like UMAP.
+      required: false
+    hint_ladder:
+    - What does t-SNE optimise versus what silhouette measures?
+    - Consider preprocessing before visualisation.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'

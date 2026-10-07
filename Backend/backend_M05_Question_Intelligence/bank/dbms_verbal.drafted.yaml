@@ -1,0 +1,1040 @@
+# DRAFTED — dbms_verbal. Written by jobs/draft_items.py with a model; NOT reviewed.
+# provenance: generated + scored_use_approved: false on every item: FR-5.6 needs a
+# person to approve an item before it counts toward a score. Practise only until then.
+
+items:
+  relational_model__q1:
+    stem: Imagine you are designing a new e-commerce order database. Why is it important to choose a proper
+      primary key for the Orders table, and what could go wrong if you pick a non-unique or mutable attribute?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:relational_model
+      weight: 0.7
+    - id: concept:functional_dependencies
+      weight: 0.15
+    reference_answer: A primary key is the unique, immutable identifier for a row. If you pick something
+      like an order status or a timestamp, the same order could appear twice or the key could change,
+      breaking referential integrity when other tables reference it. This leads to duplicate rows, update
+      and delete anomalies, and makes joins unreliable. A stable surrogate key, like an auto-increment
+      integer, guarantees uniqueness, keeps foreign-key links intact, and allows the database to build
+      efficient indexes, ensuring consistent query results.
+    key_points:
+    - id: kp_1
+      statement: Explains that a primary key must uniquely identify each row and remain stable over time.
+      required: true
+    - id: kp_2
+      statement: Describes how using a non-unique or mutable attribute can cause duplicate rows, update
+        anomalies, and broken foreign-key relationships.
+      required: true
+    - id: kp_3
+      statement: Mentions that a good primary key simplifies referential integrity and indexing.
+      required: false
+    hint_ladder:
+    - Think about what happens when other tables reference this column.
+    - Consider the properties of uniqueness and immutability.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  relational_model__q2:
+    stem: During a production outage you notice many queries on the Customer table are timing out after
+      a recent schema change that added a foreign key to Orders. What could be happening, and how would
+      you diagnose and fix it?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:relational_model
+      weight: 0.7
+    - id: concept:indexing
+      weight: 0.15
+    - id: concept:joins
+      weight: 0.15
+    reference_answer: The foreign key adds a referential constraint, and if the referencing column in
+      Customer isn’t indexed, every join to Orders forces a full table scan or row-by-row lock, causing
+      timeouts. I would first look at the query’s execution plan to see if scans or lock waits appear,
+      then verify that an index exists on Customer.id (or the FK column). Adding the missing index usually
+      resolves the slowdown, and if lock contention persists, I’d check for cascading deletes or updates
+      that are holding locks and adjust the constraint or batch the operation.
+    key_points:
+    - id: kp_1
+      statement: Identifies that the new foreign key may have caused missing or inefficient indexes on
+        the referencing columns.
+      required: true
+    - id: kp_2
+      statement: Suggests checking the execution plan for full table scans or lock contention caused by
+        the FK constraint.
+      required: true
+    - id: kp_3
+      statement: Proposes adding an index on the foreign-key column or redesigning the query to avoid
+        costly joins.
+      required: false
+    hint_ladder:
+    - What does the database need to do when enforcing a foreign-key during a join?
+    - Which diagnostic tool shows how a query is being executed?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  sql_queries__q1:
+    stem: You have a table Employees(emp_id, name, dept_id, salary) and a table Departments(dept_id, dept_name).
+      The manager asks for the names of employees earning more than the average salary of their department;
+      how would you write the query?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:sql_queries
+      weight: 0.7
+    - id: concept:joins
+      weight: 0.15
+    reference_answer: 'One way is to use a correlated subquery: SELECT e.name FROM Employees e WHERE e.salary
+      > (SELECT AVG(salary) FROM Employees WHERE dept_id = e.dept_id); If you also need the department
+      name you can join Departments: SELECT e.name, d.dept_name FROM Employees e JOIN Departments d ON
+      e.dept_id = d.dept_id WHERE e.salary > (SELECT AVG(salary) FROM Employees WHERE dept_id = e.dept_id);
+      The inner query computes the average salary for the employee''s department, and the outer query
+      returns those whose salary exceeds that average.'
+    key_points:
+    - id: kp_1
+      statement: Computes average salary per department using GROUP BY.
+      required: true
+    - id: kp_2
+      statement: Selects employee name where salary > department average.
+      required: true
+    - id: kp_3
+      statement: Joins Employees with Departments to get department name (optional).
+      required: false
+    - id: kp_4
+      statement: Uses a correlated subquery or a CTE with window AVG().
+      required: false
+    hint_ladder:
+    - Think about grouping by department first.
+    - Use a subquery or window function to compare each employee's salary to the department average.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  sql_queries__q2:
+    stem: During a code review you notice a query that selects rows from Orders where order_date is within
+      the last 30 days, but the table has an index on order_date. Explain why the query might still be
+      slow and what you would change.
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:sql_queries
+      weight: 0.7
+    - id: concept:query_optimisation
+      weight: 0.15
+    - id: concept:indexing
+      weight: 0.15
+    reference_answer: 'The slowdown is likely because the query applies a function to order_date, like
+      WHERE DATE(order_date) >= CURDATE() - INTERVAL 30 DAY, which forces a full table scan as the index
+      can''t be used. To fix it, rewrite the predicate as a range: WHERE order_date >= CURDATE() - INTERVAL
+      30 DAY AND order_date < CURDATE(); This lets the optimizer perform an index range scan. After rewriting,
+      run EXPLAIN to verify the index is used, and if the query also selects other columns, consider a
+      covering index that includes those columns.'
+    key_points:
+    - id: kp_1
+      statement: Identifies that applying a function (e.g., DATE_SUB) to order_date prevents index use.
+      required: true
+    - id: kp_2
+      statement: Suggests rewriting the predicate as a range condition (order_date >= DATE_SUB(CURDATE(),
+        INTERVAL 30 DAY)).
+      required: true
+    - id: kp_3
+      statement: Mentions checking statistics or using EXPLAIN to confirm index usage.
+      required: false
+    - id: kp_4
+      statement: May propose adding a covering index if additional columns are selected.
+      required: false
+    hint_ladder:
+    - Consider the function applied to the indexed column.
+    - Think about how the optimizer can use a range scan.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  joins__q1:
+    stem: In a table of employees with a manager_id column referencing the same table, how would you retrieve
+      each employee with their manager's name, and what join type does this use?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:joins
+      weight: 0.7
+    - id: concept:sql_queries
+      weight: 0.15
+    reference_answer: 'You would alias the Employees table twice, say e for the employee and m for the
+      manager. Then write: SELECT e.name AS employee, m.name AS manager FROM Employees e LEFT JOIN Employees
+      m ON e.manager_id = m.emp_id; The self-join matches each row to its manager row in the same table.
+      Using LEFT JOIN ensures that employees with no manager (manager_id NULL) still appear with a NULL
+      manager name; an inner join would drop those rows. This pattern is a classic self-join used to model
+      hierarchical relationships.'
+    key_points:
+    - id: kp_1
+      statement: Uses a self-join where the employees table is aliased twice and joined on employees.manager_id
+        = manager.emp_id.
+      required: true
+    - id: kp_2
+      statement: Selects employee name and manager name, handling NULL manager_id to show employees without
+        a manager.
+      required: true
+    - id: kp_3
+      statement: Mentions that the join is an inner join by default, but can be changed to LEFT JOIN to
+        keep employees without managers.
+      required: false
+    hint_ladder:
+    - Think about the table referencing itself via a foreign key.
+    - Which join keeps rows that have no matching manager?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  aggregation_and_grouping__q1:
+    stem: You have a sales table with columns region, product, and amount. How would you find the top-earning
+      product per region in a single query, and why is the HAVING clause needed here?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:aggregation_and_grouping
+      weight: 0.7
+    - id: concept:sql_queries
+      weight: 0.15
+    reference_answer: 'To get the highest-earning product per region I would first aggregate sales: SELECT
+      region, product, SUM(amount) AS total FROM sales GROUP BY region, product. Then I’d wrap that as
+      a subquery or CTE and apply ROW_NUMBER() OVER (PARTITION BY region ORDER BY total DESC) as rn. Finally
+      I select rows where rn = 1. The HAVING clause can be used before the window step if we want to discard
+      products with negligible sales, e.g., HAVING SUM(amount) > 1000, so only meaningful totals participate
+      in the ranking. This approach returns exactly one product per region with the maximum revenue.'
+    key_points:
+    - id: kp_1
+      statement: Uses GROUP BY region, product and SUM(amount) to compute total sales per product per
+        region.
+      required: true
+    - id: kp_2
+      statement: Applies a window function (ROW_NUMBER or RANK) partitioned by region ordered by the summed
+        amount descending to pick the top product.
+      required: true
+    - id: kp_3
+      statement: Explains that HAVING filters aggregated rows before the window function, e.g., to exclude
+        products with total sales below a threshold.
+      required: false
+    - id: kp_4
+      statement: Mentions that the final SELECT picks rows where row_number = 1 to return one row per
+        region.
+      required: true
+    hint_ladder:
+    - Think about aggregating first, then ranking within each group.
+    - HAVING works on aggregated results, not on raw rows.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  aggregation_and_grouping__q2:
+    stem: During a nightly batch job you notice the query SELECT dept, COUNT(*) FROM employees GROUP BY
+      dept HAVING COUNT(*) > 10 runs much slower after a recent index addition. What could be causing
+      the slowdown?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:aggregation_and_grouping
+      weight: 0.7
+    - id: concept:indexing
+      weight: 0.15
+    - id: concept:query_optimisation
+      weight: 0.15
+    reference_answer: The slowdown is likely because the HAVING clause forces the engine to compute COUNT
+      for every department before it can apply the >10 filter, so it cannot stop early. Adding an index
+      on dept alone does not help COUNT(*) aggregation; the index isn’t covering, so the optimizer may
+      abandon index-only scans and fall back to a full table scan or a costly hash aggregation. In some
+      engines the new index even changes the plan to a less efficient one. To fix it you could create
+      a covering index (dept) with INCLUDE of all other columns, or rewrite the query as SELECT dept,
+      cnt FROM (SELECT dept, COUNT(*) AS cnt FROM employees GROUP BY dept) t WHERE cnt > 10, letting the
+      engine materialise counts first. Either way, the key is that the index isn’t aiding the aggregation
+      step.
+    key_points:
+    - id: kp_1
+      statement: Recognises that the HAVING clause forces the optimizer to compute the full COUNT for
+        each department before filtering.
+      required: true
+    - id: kp_2
+      statement: Explains that a newly created index on dept may be a non-covering index, causing extra
+        lookups or preventing index-only aggregation.
+      required: true
+    - id: kp_3
+      statement: Mentions that the optimizer might choose a full table scan or a less efficient hash aggregation
+        because the index does not help the COUNT aggregation.
+      required: false
+    - id: kp_4
+      statement: 'Suggests possible fixes: use a covering index (dept) with INCLUDE(*) or rewrite using
+        a derived table to pre-filter.'
+      required: true
+    hint_ladder:
+    - What does the HAVING clause operate on?
+    - Consider whether the index can satisfy the aggregate without touching the table.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  functional_dependencies__q1:
+    stem: You are given a relation R(A, B, C, D) with functional dependencies A→B, BC→D, and D→A. In two
+      minutes, explain how you would determine all candidate keys of R.
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: core
+    time_budget_s: 150
+    concepts:
+    - id: concept:functional_dependencies
+      weight: 0.7
+    - id: concept:normalisation
+      weight: 0.15
+    reference_answer: 'First, list attributes that never appear on the right side of any FD; here B and
+      C never appear on the right, so any key must contain them. Compute the closure of {A, C}: A gives
+      B, then BC gives D, and D gives A, so we get {A, B, C, D}. Hence {A, C} is a superkey. Test minimality:
+      removing A leaves only C, whose closure is just C, so not a key; removing C leaves A, whose closure
+      is {A, B} only, so not a key. Therefore {A, C} is minimal and is a candidate key. No other combination
+      of attributes can cover all attributes, so it is the sole candidate key.'
+    key_points:
+    - id: kp_1
+      statement: Identifies that A and D appear on the left side of some FD, while B and C appear only
+        on the right side of at least one FD.
+      required: true
+    - id: kp_2
+      statement: Computes closure of {A, C} and shows it yields all attributes, establishing {A, C} as
+        a superkey.
+      required: true
+    - id: kp_3
+      statement: Demonstrates that removing either A or C from {A, C} loses some attributes, proving {A,
+        C} is minimal and thus a candidate key.
+      required: true
+    - id: kp_4
+      statement: Mentions that no other minimal superkey exists, so {A, C} is the only candidate key.
+      required: false
+    hint_ladder:
+    - Start with attribute closure and think about attributes not appearing on the right side.
+    - Try removing attributes from a superset key to see if it remains a key.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  functional_dependencies__q2:
+    stem: During a data-migration project you notice that the source table violates the functional dependency
+      EmployeeID → Department, because two rows share the same EmployeeID but have different Department
+      values. What does this indicate about the current schema, and how would you resolve it?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:functional_dependencies
+      weight: 0.7
+    - id: concept:normalisation
+      weight: 0.15
+    reference_answer: 'The fact that two rows share the same EmployeeID with different Departments shows
+      EmployeeID does not uniquely determine Department, so the FD EmployeeID → Department is violated.
+      This indicates the table is not in at least 2NF, leading to update anomalies when a department changes.
+      To fix it, we split the relation: keep a primary Employee table with EmployeeID as the key, and
+      create a separate table (or a linking table) that records the Department for each EmployeeID, or
+      move Department to its own Department table with a foreign key. After decomposition, the FD holds
+      in the appropriate relation and the schema reaches 3NF.'
+    key_points:
+    - id: kp_1
+      statement: Recognises that EmployeeID is not a proper key for the table because the FD is violated.
+      required: true
+    - id: kp_2
+      statement: Explains that the violation means the relation is not in 2NF/3NF and suffers from update
+        anomalies.
+      required: true
+    - id: kp_3
+      statement: Proposes decomposing the table into Employee(EmployeeID, …) and Assignment(EmployeeID,
+        Department) or moving Department to a separate Department table linked by a foreign key.
+      required: true
+    - id: kp_4
+      statement: Mentions that after decomposition the FD EmployeeID → Department holds in the appropriate
+        relation.
+      required: false
+    hint_ladder:
+    - Think about the definition of a functional dependency and what it says about keys.
+    - Consider redesigning the relation to satisfy at least 3NF.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  normalisation__q1_normalisation_whydecompose:
+    stem: You have a table storing orders with columns OrderID, CustomerName, CustomerAddress, ProductID,
+      ProductName, ProductPrice. Why would you decompose this into multiple tables, and what normal forms
+      would you aim for?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:normalisation
+      weight: 0.7
+    - id: concept:functional_dependencies
+      weight: 0.15
+    reference_answer: In that table the primary key is OrderID, but CustomerName and CustomerAddress depend
+      only on CustomerID, not on the whole key, and ProductName and ProductPrice depend only on ProductID.
+      This violates 2NF because of partial dependencies. First we bring the table to 1NF by ensuring each
+      field holds a single atomic value. Then we split out a Customer table (CustomerID, Name, Address)
+      and a Product table (ProductID, Name, Price). The Order table then keeps OrderID, CustomerID, ProductID,
+      eliminating the partial dependencies and achieving 2NF. Finally, because ProductPrice depends on
+      ProductID, not on OrderID, we have no transitive dependencies, so the design is also in 3NF.
+    key_points:
+    - id: kp_1
+      statement: Identifies repeating groups and partial dependencies on a composite key.
+      required: true
+    - id: kp_2
+      statement: Explains moving to 1NF by ensuring atomic values.
+      required: true
+    - id: kp_3
+      statement: Shows conversion to 2NF by removing partial dependencies, creating separate Customer
+        and Product tables.
+      required: true
+    - id: kp_4
+      statement: Mentions achieving 3NF by eliminating transitive dependencies, e.g., storing only ProductID
+        in Order table.
+      required: false
+    hint_ladder:
+    - Look for attributes that depend on only part of the key.
+    - Think about where each piece of information logically belongs.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  normalisation__q2_normalisation_denormalisation_tradeof:
+    stem: In a high-traffic reporting system you notice many joins on a denormalised sales view that duplicates
+      product details. What are the trade-offs of keeping this denormalisation versus normalising it back,
+      especially regarding query performance and data integrity?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:normalisation
+      weight: 0.7
+    - id: concept:query_optimisation
+      weight: 0.15
+    - id: concept:aggregation_and_grouping
+      weight: 0.15
+    reference_answer: Keeping the denormalised view means the reporting queries avoid expensive joins,
+      so read latency is low, which is critical for a high-traffic dashboard. However, product details
+      are stored repeatedly; any price or description change must be applied to every row, risking stale
+      or inconsistent data. That also inflates storage and can slow bulk updates. If we normalise back
+      to separate Product and Sales tables, we regain data integrity and simplify maintenance, but each
+      report now needs a join, increasing CPU and I/O. To mitigate, we could add covering indexes or a
+      materialised view that refreshes periodically, balancing read speed with consistency. The decision
+      hinges on read-write ratio and acceptable anomaly risk.
+    key_points:
+    - id: kp_1
+      statement: States that denormalisation reduces join cost, speeding read-heavy queries.
+      required: true
+    - id: kp_2
+      statement: Notes that it introduces redundancy, leading to potential update anomalies.
+      required: true
+    - id: kp_3
+      statement: 'Mentions maintenance overhead: every product price change must propagate to many rows.'
+      required: false
+    - id: kp_4
+      statement: Discusses that normalising improves consistency and simplifies ETL, but may require indexing
+        or materialised views to retain performance.
+      required: true
+    hint_ladder:
+    - Consider the impact on read latency versus update complexity.
+    - Think about how you could keep performance while restoring consistency.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  indexing__q1:
+    stem: You notice a query that filters on two columns, (status, created_at), is running slowly on a
+      large table. Explain how you would use indexing to improve it, and what trade-offs you must consider.
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:indexing
+      weight: 0.7
+    - id: concept:query_optimisation
+      weight: 0.15
+    - id: concept:trees
+      weight: 0.15
+    reference_answer: 'I would create a composite B-tree index on (status, created_at). Because the WHERE
+      clause filters on both columns, the index can be used to seek directly to the matching rows, cutting
+      down the scan dramatically. The order matters: if status is more selective or is sometimes queried
+      alone, it should be first; otherwise created_at could lead. This index will speed up the query but
+      adds write overhead – every INSERT, UPDATE or DELETE now has to maintain the extra structure, and
+      it consumes extra disk space. If the query only needs columns that are in the index, making it a
+      covering index would also eliminate the bookmark lookup, giving an extra boost.'
+    key_points:
+    - id: kp_1
+      statement: Proposes a composite (multi-column) index on (status, created_at) in that order because
+        the query predicates use both columns.
+      required: true
+    - id: kp_2
+      statement: 'Explains that the column order matters: status first if it has higher selectivity or
+        is used alone in other queries.'
+      required: true
+    - id: kp_3
+      statement: Mentions the overhead of maintaining the index on inserts/updates and the extra storage
+        cost.
+      required: false
+    - id: kp_4
+      statement: Notes that a covering index could avoid look-ups if the query only selects columns covered
+        by the index.
+      required: false
+    hint_ladder:
+    - Think about how the optimizer uses multi-column indexes.
+    - What extra cost does an index introduce on data modification?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  indexing__q2:
+    stem: During a production incident you see the DB’s execution plan showing frequent ‘Index Scan’ on
+      a large table’s primary key, causing high CPU. What could be happening and how would you diagnose
+      or fix it?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:indexing
+      weight: 0.7
+    - id: concept:query_optimisation
+      weight: 0.15
+    - id: concept:trees
+      weight: 0.15
+    reference_answer: 'A full index scan on the primary key usually means the optimizer thinks it must
+      read most of the rows – either the predicate is not selective enough or the statistics are stale.
+      Since the PK is clustered, scanning it also pulls the whole row data, driving CPU. I would first
+      look at the query: is it missing a filter, or using a parameter that leads to a generic plan (parameter
+      sniffing)? Next, I’d verify that column statistics are up-to-date; outdated stats can mislead the
+      optimizer into a scan. If the predicate is truly selective, adding a non-clustered index on the
+      filtered column(s) or a covering index that includes needed columns can turn the scan into an index
+      seek. Finally, I’d consider query rewrites or forcing a better plan if necessary.'
+    key_points:
+    - id: kp_1
+      statement: Identifies that the primary key is likely a clustered index and the scan indicates the
+        query cannot use a narrow range – perhaps due to low selectivity or missing predicate.
+      required: true
+    - id: kp_2
+      statement: Suggests checking the query predicates, statistics, and possible parameter sniffing that
+        leads to a full index scan.
+      required: true
+    - id: kp_3
+      statement: Recommends actions such as adding a more selective non-clustered index, updating statistics,
+        or rewriting the query to use a range predicate.
+      required: false
+    - id: kp_4
+      statement: Mentions that a covering index could reduce the need to visit the clustered leaf pages.
+      required: false
+    hint_ladder:
+    - What does an index scan versus an index seek tell you about selectivity?
+    - What role do statistics play in the optimizer’s choice?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  query_optimisation__q1:
+    stem: You notice a query that joins three large tables runs in minutes, but adding an index on one
+      foreign key reduces it to seconds. Explain why the optimizer chose the original plan and how the
+      index changes the execution.
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:query_optimisation
+      weight: 0.7
+    - id: concept:indexing
+      weight: 0.15
+    - id: concept:joins
+      weight: 0.15
+    reference_answer: The planner first looks at table statistics. If it thinks the join column is not
+      selective, it may pick a hash join that reads both tables fully. Without an index on the foreign
+      key, the only way to locate matching rows is a sequential scan, so the cost estimate is high but
+      the optimizer assumes it’s still cheaper than many index lookups. When you create an index on that
+      key, the column becomes highly selective; the optimizer can now use an index-nested-loop or merge
+      join, fetching only matching rows via the index. Updated statistics show a lower cardinality, so
+      the estimated cost drops dramatically, and the plan switches to the index-driven path, cutting runtime
+      from minutes to seconds.
+    key_points:
+    - id: kp_1
+      statement: The original plan likely performed a hash join or nested-loop without an index, causing
+        a full scan of the large table.
+      required: true
+    - id: kp_2
+      statement: Adding an index on the foreign key enables the optimizer to use an index-nested-loop
+        or merge join, drastically reducing rows examined.
+      required: true
+    - id: kp_3
+      statement: The optimizer bases its choice on statistics; stale or missing stats can mislead it to
+        think the scan is cheaper.
+      required: false
+    - id: kp_4
+      statement: After creating the index, the optimizer re-estimates row counts and selects a cheaper
+        access path.
+      required: false
+    hint_ladder:
+    - Think about how the optimizer uses column selectivity and available access paths.
+    - Consider the role of statistics in cost estimation.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  query_optimisation__q2:
+    stem: During a production incident you run EXPLAIN ANALYZE on a slow report query and see a ‘Sort’
+      operation costing 70% of total time. What options does the optimizer have to avoid this sort, and
+      what trade-offs do they involve?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:query_optimisation
+      weight: 0.7
+    - id: concept:aggregation_and_grouping
+      weight: 0.15
+    - id: concept:indexing
+      weight: 0.15
+    reference_answer: When the plan shows a Sort taking most of the cost, the optimizer could have chosen
+      an index that matches the ORDER BY clause, turning the sort into an index-ordered scan, which saves
+      time but requires the index to exist and stay up-to-date. Alternatively, it could replace the sort-based
+      aggregation with a hash aggregate; this avoids ordering but needs enough work_mem and may produce
+      nondeterministic row order. Parallel sorting is another option – it speeds up the operation but
+      consumes extra CPU cores and may increase contention. Finally, redesigning the query to read from
+      a materialized view that stores pre-sorted or pre-aggregated results eliminates the sort altogether,
+      trading storage and data latency for query speed.
+    key_points:
+    - id: kp_1
+      statement: The optimizer can use an index that already provides the required order, eliminating
+        the explicit sort.
+      required: true
+    - id: kp_2
+      statement: It may rewrite the query to use a GROUP BY with a hash aggregate, which avoids sorting
+        but uses more memory.
+      required: true
+    - id: kp_3
+      statement: Enabling parallelism can speed up the sort but increases CPU usage and may affect other
+        workloads.
+      required: false
+    - id: kp_4
+      statement: Forcing a materialized view or pre-aggregated table removes the sort entirely at the
+        cost of storage and freshness.
+      required: false
+    hint_ladder:
+    - What physical operators can produce ordered output without an explicit sort?
+    - Consider memory-intensive alternatives to sorting.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  transactions_acid__q1:
+    stem: A client reports that after a power outage their banking application showed duplicate debit
+      entries for a single transaction; what could have gone wrong in the transaction processing?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:transactions_acid
+      weight: 0.7
+    - id: concept:isolation_levels
+      weight: 0.15
+    - id: concept:concurrency_control
+      weight: 0.15
+    reference_answer: The most likely culprit is a breach of atomicity during recovery. When the power
+      went out, the transaction may have been in the commit phase but not yet flushed to stable storage.
+      After restart, the recovery manager replayed the log entry, thinking the commit hadn't happened,
+      and then applied the transaction again, resulting in two debit rows. Proper durability ensures the
+      commit record is persisted before acknowledging success, and atomicity guarantees the whole transaction
+      is either fully applied or not at all. A robust redo/undo mechanism with idempotent writes prevents
+      such duplicate entries.
+    key_points:
+    - id: kp_1
+      statement: The loss of atomicity caused a partially completed transaction to be written twice.
+      required: true
+    - id: kp_2
+      statement: Durability guarantees that once a commit is recorded, the change survives crashes.
+      required: true
+    - id: kp_3
+      statement: If the system performed a redo without proper idempotence, it could replay the same commit,
+        leading to duplication.
+      required: false
+    - id: kp_4
+      statement: Isolation levels do not directly cause duplicate commits, but a mis-configured recovery
+        routine can bypass them.
+      required: false
+    hint_ladder:
+    - Think about what guarantees ACID provides when a failure occurs.
+    - Consider which ACID property ensures the system can recover to a consistent state.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  transactions_acid__q2:
+    stem: During a high-traffic sale you notice the total sales amount occasionally differs from the sum
+      of individual order totals; which ACID property is being violated and why?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:transactions_acid
+      weight: 0.7
+    - id: concept:isolation_levels
+      weight: 0.15
+    reference_answer: The discrepancy points to a breach of isolation. While each order transaction may
+      be atomic, concurrent sessions reading the orders table can see rows that are only partially committed
+      or miss rows that are about to be committed, leading to non-repeatable reads or phantom rows in
+      the aggregate query. As a result, the total sales figure can be out of sync with the sum of individual
+      orders. Raising the isolation level to serializable (or using explicit locking around the aggregation)
+      ensures that the total is calculated on a consistent snapshot, eliminating the mismatch.
+    key_points:
+    - id: kp_1
+      statement: The isolation property is being violated, allowing non-repeatable reads or phantom reads.
+      required: true
+    - id: kp_2
+      statement: Concurrent updates to the orders table can interleave, causing the aggregate query to
+        see a partially committed state.
+      required: false
+    - id: kp_3
+      statement: Ensuring a serializable isolation level would make the aggregate reflect a consistent
+        snapshot.
+      required: true
+    - id: kp_4
+      statement: Atomicity guarantees each individual order is fully recorded, but does not protect the
+        consistency of a derived total across transactions.
+      required: false
+    hint_ladder:
+    - Focus on how concurrent transactions interact with each other.
+    - Recall which ACID facet prevents intermediate states from being visible.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  concurrency_control__q1:
+    stem: In a high-traffic e-commerce site, you notice occasional deadlocks causing order failures. Explain
+      why deadlocks occur under Two-Phase Locking and how you would detect and resolve them without stopping
+      the system.
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:concurrency_control
+      weight: 0.7
+    - id: concept:isolation_levels
+      weight: 0.15
+    - id: concept:concurrency_synchronisation
+      weight: 0.15
+    reference_answer: Deadlocks arise when two or more transactions each hold a lock the other needs,
+      forming a cycle in the wait-for graph. With Strict Two-Phase Locking every transaction keeps its
+      exclusive locks until it commits, so if T1 locks row A and then requests row B while T2 already
+      holds B and asks for A, they wait forever. The lock manager can periodically build a wait-for graph
+      from the lock table; a cycle indicates a deadlock. The usual remedy is to pick a victim—often the
+      youngest or the one that has done the least work—abort it, roll back its changes, and release its
+      locks, letting the other transaction proceed. Some systems also use timeout-based detection as a
+      lightweight fallback.
+    key_points:
+    - id: kp_1
+      statement: Deadlocks happen when two transactions hold locks the other needs, creating a cyclic
+        wait.
+      required: true
+    - id: kp_2
+      statement: Under Strict 2PL each transaction holds exclusive locks until commit, which can form
+        cycles.
+      required: true
+    - id: kp_3
+      statement: Detection can be done via a wait-for graph built from lock manager data.
+      required: false
+    - id: kp_4
+      statement: Resolution typically aborts the youngest transaction (or the one with least work) and
+        releases its locks.
+      required: false
+    hint_ladder:
+    - Think about the lock acquisition order and what the lock manager can observe.
+    - What practical metric helps choose which transaction to abort?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  concurrency_control__q2:
+    stem: Your database uses MVCC for reads. A client reports that a long-running report sees stale data
+      even after a recent commit. What guarantees does MVCC give, why might the report be stale, and how
+      can you adjust isolation to avoid this?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:concurrency_control
+      weight: 0.7
+    - id: concept:isolation_levels
+      weight: 0.15
+    reference_answer: 'MVCC gives snapshot isolation, meaning a transaction works on a version of the
+      data that existed when it began. If a reporting query starts a few minutes before another transaction
+      commits new order rows, the report continues to read the older snapshot, so it appears stale even
+      though the data is now committed. To see the fresh data you either need to restart the report after
+      the commit or raise the isolation level: READ-COMMITTED will fetch the latest committed version
+      for each statement, while SERIALIZABLE or a true read-your-writes mode forces the transaction to
+      see all prior commits. Adjusting the client to begin a new transaction after the update or using
+      a newer snapshot resolves the issue.'
+    key_points:
+    - id: kp_1
+      statement: 'MVCC provides snapshot isolation: each transaction sees the database state as of its
+        start timestamp.'
+      required: true
+    - id: kp_2
+      statement: A long-running report started before the committing transaction will continue to see
+        the older snapshot, appearing stale.
+      required: true
+    - id: kp_3
+      statement: Switching to a stricter isolation level such as REPEATABLE READ with read-committed semantics,
+        or restarting the report after the commit, eliminates the staleness.
+      required: false
+    - id: kp_4
+      statement: Alternatively, using a ‘read-your-writes’ or SERIALIZABLE level forces the report to
+        see the latest committed version.
+      required: false
+    hint_ladder:
+    - Recall what MVCC’s snapshot is tied to – transaction start time.
+    - Which isolation level discards the snapshot on each statement?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  isolation_levels__q1:
+    stem: In a high-traffic e-commerce site, a user reports that after adding an item to the cart, the
+      same item sometimes disappears when they view the cart again. What isolation level issue could cause
+      this, and why?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:isolation_levels
+      weight: 0.7
+    - id: concept:concurrency_control
+      weight: 0.15
+    reference_answer: The symptom points to a non-repeatable read. Under READ COMMITTED each SELECT sees
+      only committed data, but it does not lock the rows for the duration of the transaction. So a second
+      SELECT on the cart can see a change made by another transaction that added or removed the item after
+      the first read, making the item appear to disappear. Using REPEATABLE READ would hold shared locks
+      on the rows read, guaranteeing that the same rows return the same values throughout the transaction,
+      eliminating this issue. If new rows could appear (phantoms), SNAPSHOT ISOLATION would be needed.
+    key_points:
+    - id: kp_1
+      statement: The problem is likely a non-repeatable read caused by using READ COMMITTED.
+      required: true
+    - id: kp_2
+      statement: Another concurrent transaction committed a change to the cart row after the first read,
+        so the second read sees a different value.
+      required: true
+    - id: kp_3
+      statement: Upgrading to REPEATABLE READ would prevent the item from disappearing in the same session.
+      required: false
+    - id: kp_4
+      statement: If phantom rows are involved (new rows inserted), SNAPSHOT ISOLATION would also help.
+      required: false
+    hint_ladder:
+    - Think about a transaction that reads a row and another that modifies it.
+    - Consider what guarantees the isolation level provides for repeat reads.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  isolation_levels__q2:
+    stem: During a nightly batch job you notice that some rows are being double-counted in a summary report,
+      even though the query uses SUM. Which isolation level behavior explains this, and what trade-off
+      does fixing it involve?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:isolation_levels
+      weight: 0.7
+    - id: concept:transactions_acid
+      weight: 0.15
+    - id: concept:aggregation_and_grouping
+      weight: 0.15
+    reference_answer: The issue is a phantom read. The batch job runs a SUM over a set of rows while another
+      transaction is inserting new rows into the same range. Under REPEATABLE READ or READ COMMITTED the
+      aggregator can read the range, then the insert becomes visible, and the aggregator may read the
+      range again or the optimizer may scan twice, causing the new rows to be added twice. SERIALIZABLE
+      isolation locks the whole range, preventing any inserts until the transaction completes, thus eliminating
+      the phantom. However, this stricter level reduces concurrency and can increase lock contention,
+      potentially extending the batch runtime.
+    key_points:
+    - id: kp_1
+      statement: The double-counting arises from a phantom read occurring under REPEATABLE READ or READ
+        COMMITTED.
+      required: true
+    - id: kp_2
+      statement: Another concurrent transaction inserts new detail rows that become visible to the aggregation
+        after it has already read a partial set, causing the same rows to be summed twice.
+      required: true
+    - id: kp_3
+      statement: Switching to SERIALIZABLE prevents phantoms by locking the range, ensuring the aggregation
+        sees a stable set.
+      required: false
+    - id: kp_4
+      statement: The trade-off is reduced concurrency and higher locking overhead, which may lengthen
+        the batch window.
+      required: true
+    hint_ladder:
+    - Think about a transaction that inserts rows while another transaction aggregates them.
+    - What does SERIALIZABLE guarantee versus REPEATABLE READ?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  nosql_vs_relational__q1:
+    stem: Your team is building a real-time analytics dashboard that must ingest millions of events per
+      second and serve low-latency queries; would you choose a document store or a relational DB, and
+      why?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:nosql_vs_relational
+      weight: 0.7
+    - id: concept:aggregation_and_grouping
+      weight: 0.15
+    - id: concept:indexing
+      weight: 0.15
+    reference_answer: For a high-throughput, low-latency analytics pipeline I would pick a document-oriented
+      NoSQL store such as MongoDB or Couchbase. These databases shard data horizontally, letting us scale
+      writes across many nodes and keep insertion latency sub-millisecond. They also support flexible
+      schemas, so each event can carry different fields without costly ALTER TABLE operations. Indexes
+      can be built on the most-queried attributes, and built-in aggregation pipelines let us compute rolling
+      counts or histograms without joining tables. A relational DB would struggle with the write volume
+      and schema evolution, unless we heavily partition and tune, which adds operational complexity. Hence
+      the document store better matches the CAP trade-off of high availability and partition tolerance
+      needed for continuous ingestion.
+    key_points:
+    - id: kp_1
+      statement: Highlights horizontal sharding and write scalability of document stores.
+      required: true
+    - id: kp_2
+      statement: Mentions flexible schema handling for evolving event payloads.
+      required: true
+    - id: kp_3
+      statement: Notes built-in aggregation pipelines and indexing for low-latency queries.
+      required: false
+    - id: kp_4
+      statement: Explains why a relational DB would need heavy partitioning and be operationally more
+        complex.
+      required: false
+    hint_ladder:
+    - Think about write volume, schema flexibility, and the CAP theorem.
+    - Consider built-in aggregation features versus SQL GROUP BY.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  nosql_vs_relational__q2:
+    stem: In a microservice that stores user sessions, you notice occasional stale reads after a node
+      failure; what consistency model is the key-value store providing, and how could you adjust it to
+      guarantee fresh reads?
+    modality: verbal
+    round_types:
+    - dbms_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:nosql_vs_relational
+      weight: 0.7
+    - id: concept:transactions_acid
+      weight: 0.15
+    - id: concept:isolation_levels
+      weight: 0.15
+    reference_answer: The stale reads indicate the key-value store is operating under eventual consistency
+      – after a partition or node failure, replicas diverge and reads may return older values until replication
+      catches up. To guarantee fresh reads you can switch to a strong consistency mode, such as read-your-writes
+      or linearizable reads, by directing reads to the primary replica or using quorum reads (R + W >
+      N). This may increase latency but ensures the session data is up-to-date. Alternatively, you could
+      enable write-through caching with version stamps and perform a read-repair on miss. The trade-off
+      is moving from high availability toward consistency in the CAP triangle.
+    key_points:
+    - id: kp_1
+      statement: Identifies eventual consistency as the default model causing stale reads.
+      required: true
+    - id: kp_2
+      statement: Proposes quorum reads or primary-only reads to achieve strong consistency.
+      required: true
+    - id: kp_3
+      statement: Mentions the CAP trade-off of sacrificing availability/latency for consistency.
+      required: false
+    - id: kp_4
+      statement: Suggests read-repair or version stamping as additional mechanisms.
+      required: false
+    hint_ladder:
+    - Recall the CAP theorem axes for a key-value store.
+    - What read/write quorum settings give you linearizability?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'

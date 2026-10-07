@@ -1,0 +1,812 @@
+# DRAFTED — oop_verbal. Written by jobs/draft_items.py with a model; NOT reviewed.
+# provenance: generated + scored_use_approved: false on every item: FR-5.6 needs a
+# person to approve an item before it counts toward a score. Practise only until then.
+
+items:
+  classes_and_objects__q1:
+    stem: Imagine you are designing a simple library system. How would you model a Book as a class, and
+      what responsibilities should its constructor have?
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: intro
+    time_budget_s: 150
+    concepts:
+    - id: concept:classes_and_objects
+      weight: 0.7
+    reference_answer: For a Book class I would declare private fields like title, author, ISBN and a boolean
+      flag indicating if it is currently borrowed. The constructor takes the title, author and ISBN as
+      parameters and assigns them to the fields, performing basic validation – for example ensuring the
+      ISBN matches the expected pattern and that none of the strings are empty. It also sets the availability
+      flag to true by default. Any actions such as borrowing or returning the book are left to separate
+      methods, keeping the constructor focused solely on creating a well-initialised object.
+    key_points:
+    - id: kp_1
+      statement: Identifies attributes such as title, author, ISBN, and availability status as instance
+        variables.
+      required: true
+    - id: kp_2
+      statement: Explains that the constructor should initialise these attributes, possibly with validation
+        (e.g., non-empty title, proper ISBN format).
+      required: true
+    - id: kp_3
+      statement: Mentions that behaviour like checking out or returning the book belongs to methods, not
+        the constructor.
+      required: false
+    hint_ladder:
+    - What data uniquely identifies a book?
+    - What should happen when you create a new Book instance?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  classes_and_objects__q2:
+    stem: During a code review you notice a class that mixes data storage and user-interface logic. From
+      an OOP perspective, what problem does this illustrate and how would you refactor it?
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:classes_and_objects
+      weight: 0.7
+    - id: concept:encapsulation
+      weight: 0.15
+    - id: concept:design_patterns
+      weight: 0.15
+    reference_answer: 'Mixing data storage with UI code breaks encapsulation and the single-responsibility
+      principle – the class now has two unrelated reasons to change: data structure changes and UI layout
+      changes. To fix it, I would extract the data fields into a plain model class that only holds state
+      and maybe simple validation. The UI logic would go into a separate view/controller class that interacts
+      with the model. This aligns with the MVC pattern: the model handles data, the view renders it, and
+      the controller mediates. The result is a cleaner, more maintainable design where each class has
+      a single, well-defined responsibility.'
+    key_points:
+    - id: kp_1
+      statement: Recognises the violation of encapsulation / single-responsibility principle, where a
+        class has more than one reason to change.
+      required: true
+    - id: kp_2
+      statement: Proposes separating the data model into its own class (e.g., a POJO) and moving UI handling
+        to a different class or layer.
+      required: true
+    - id: kp_3
+      statement: Mentions a design pattern such as MVC or MVP as a way to organise the separation.
+      required: false
+    hint_ladder:
+    - Which OOP principle says a class should have one reason to change?
+    - Think of a common architectural pattern that separates data from presentation.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  encapsulation__encapsulation_why:
+    stem: Why does encapsulation improve maintainability in a large Java codebase?
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:encapsulation
+      weight: 0.7
+    - id: concept:solid_principles
+      weight: 0.15
+    reference_answer: Encapsulation lets a class keep its data private and expose only controlled methods.
+      When the internal representation changes—say we replace an int array with a List—we only adjust
+      the getters/setters or internal helpers, and callers remain unchanged. This reduces ripple effects
+      across the codebase, making maintenance easier. Moreover, by defining a clear public API, we prevent
+      other classes from directly manipulating state, which cuts down bugs caused by unintended side-effects.
+      Together these aspects support the Single Responsibility Principle, keeping data handling separate
+      from other concerns, thus boosting overall maintainability.
+    key_points:
+    - id: kp_1
+      statement: Encapsulation hides internal representation, allowing changes without affecting client
+        code.
+      required: true
+    - id: kp_2
+      statement: It enforces a clear contract via public methods, reducing accidental misuse of fields.
+      required: true
+    - id: kp_3
+      statement: Encapsulation aligns with the Single Responsibility Principle by keeping data management
+        separate from business logic.
+      required: false
+    hint_ladder:
+    - Think about how private fields and public methods interact.
+    - Relate it to a software design principle that talks about responsibilities.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  encapsulation__encapsulation_debugging:
+    stem: In production you notice a NullPointerException coming from a getter method; what could encapsulation
+      misuse be causing this?
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:encapsulation
+      weight: 0.7
+    - id: concept:classes_and_objects
+      weight: 0.15
+    reference_answer: A common cause is that the getter is exposing an internal field that wasn’t properly
+      initialized or was later set to null by external code. Because encapsulation was broken—perhaps
+      the field was public earlier or the getter returned the raw reference—some other class could assign
+      null, leading to the NPE when the getter is called. The fix is to keep the field private, initialize
+      it in the constructor, and either return a defensive copy or ensure lazy initialization inside the
+      getter, so external code cannot corrupt the internal state.
+    key_points:
+    - id: kp_1
+      statement: The getter may be returning a reference to a mutable internal object that was never initialized.
+      required: true
+    - id: kp_2
+      statement: Direct external modification of the internal state could have set the field to null.
+      required: false
+    - id: kp_3
+      statement: A missing defensive copy or lazy initialization inside the getter can lead to NPEs.
+      required: true
+    hint_ladder:
+    - Consider what the getter is returning and how external code might affect it.
+    - Recall best practices for returning mutable objects.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  inheritance__q1:
+    stem: In a large codebase you notice two classes, `Employee` and `Manager`, where `Manager` repeats
+      many `Employee` methods but also adds its own. How would you refactor using inheritance, and what
+      pitfalls must you watch for?
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:inheritance
+      weight: 0.7
+    - id: concept:abstraction_and_interfaces
+      weight: 0.15
+    - id: concept:solid_principles
+      weight: 0.15
+    reference_answer: I would pull the shared fields and methods into a base `Employee` class and let
+      `Manager` extend it, adding only the extra responsibilities like team management. The subclass would
+      call `super()` in its constructor to initialise the common state and override methods such as `calculatePay`
+      only if the manager’s compensation logic differs. While doing this I’d ensure the Liskov Substitution
+      Principle holds – a `Manager` should be usable wherever an `Employee` is expected without breaking
+      behavior. I’d also be careful not to make `Employee` a God class; if many unrelated classes need
+      the same functionality, an interface or abstract class might be a cleaner abstraction.
+    key_points:
+    - id: kp_1
+      statement: Proposes making `Manager` extend `Employee` to reuse common behavior.
+      required: true
+    - id: kp_2
+      statement: Mentions overriding only when behavior truly differs, preserving Liskov Substitution
+        Principle.
+      required: true
+    - id: kp_3
+      statement: Warns about tight coupling and fragile base class problem if `Employee` changes frequently.
+      required: false
+    - id: kp_4
+      statement: Considers using an interface or abstract base if multiple classes share behavior beyond
+        `Employee`.
+      required: false
+    hint_ladder:
+    - Think about code reuse versus exposing implementation details.
+    - What principle ensures substitutability of the subclass?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  inheritance__q2:
+    stem: Your team is adding a new `HybridVehicle` class that should inherit from both `ElectricVehicle`
+      and `GasolineVehicle`. Explain why typical single-inheritance languages struggle here and what design
+      alternatives you could use.
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:inheritance
+      weight: 0.7
+    - id: concept:design_patterns
+      weight: 0.15
+    - id: concept:polymorphism
+      weight: 0.15
+    reference_answer: 'In languages that allow only single class inheritance, like Java or C#, you can’t
+      have `HybridVehicle` extend both `ElectricVehicle` and `GasolineVehicle` because the compiler can’t
+      resolve which implementation of shared members to use – that’s the classic diamond problem when
+      both classes inherit from a common `Vehicle` base. To work around this, you’d either make `HybridVehicle`
+      extend a single concrete class and implement interfaces for the extra capabilities, or you’d favor
+      composition: have separate `ElectricEngine` and `GasEngine` objects inside `HybridVehicle` and delegate
+      calls. The Strategy pattern is another clean way – you inject the appropriate driving-mode behavior
+      at runtime. These approaches avoid the ambiguity and keep the design flexible.'
+    key_points:
+    - id: kp_1
+      statement: Describes the diamond problem that arises when two base classes share a common ancestor.
+      required: true
+    - id: kp_2
+      statement: Notes that languages like Java forbid multiple class inheritance, allowing only interface
+        inheritance.
+      required: true
+    - id: kp_3
+      statement: Suggests composition or the Strategy pattern as alternatives to achieve combined behavior.
+      required: false
+    - id: kp_4
+      statement: Mentions using abstract interfaces for shared capabilities (e.g., `Chargeable`, `FuelInjectable`).
+      required: false
+    hint_ladder:
+    - Recall which languages support multiple class inheritance.
+    - What pattern lets you swap behavior without inheritance?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  polymorphism__q1:
+    stem: In a large codebase you notice two classes, Base and Derived, each implementing a method called
+      calculate(). At runtime, a Base* pointer sometimes points to a Derived object. What determines which
+      calculate() gets executed and why?
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:polymorphism
+      weight: 0.7
+    - id: concept:inheritance
+      weight: 0.15
+    reference_answer: When a Base* points to a Derived instance, the call to calculate() is resolved through
+      dynamic dispatch. The language looks up the actual object's type at runtime—Derived in this case—and
+      invokes the overridden calculate() because the base declaration is virtual. If calculate() were
+      not virtual, the compiler would bind the call to Base's version at compile time, ignoring the derived
+      object. Under the hood, the object's v-table contains a pointer to Derived's calculate, which is
+      what gets called.
+    key_points:
+    - id: kp_1
+      statement: Dynamic dispatch selects the method based on the actual object's runtime type, not the
+        pointer's static type.
+      required: true
+    - id: kp_2
+      statement: The method must be declared virtual (or overridden) in the base class for dynamic dispatch
+        to occur.
+      required: true
+    - id: kp_3
+      statement: If the method is not virtual, the call is resolved at compile time to Base's implementation.
+      required: false
+    - id: kp_4
+      statement: The v-table (or equivalent) stores pointers to the most derived implementation for each
+        virtual function.
+      required: false
+    hint_ladder:
+    - Think about what the keyword virtual (or its equivalent) does.
+    - Consider what information is available at compile time versus runtime.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  polymorphism__q2:
+    stem: Your team is refactoring a utility library that currently uses overloaded functions named parse(String)
+      and parse(File). Management wants a single parse method that works for any input type. How would
+      you redesign this using polymorphism, and what trade-offs does it introduce?
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: intro
+    time_budget_s: 240
+    concepts:
+    - id: concept:polymorphism
+      weight: 0.7
+    - id: concept:abstraction_and_interfaces
+      weight: 0.15
+    reference_answer: I would define an abstraction, say InputSource, with a method like getReader() or
+      getStream(). Then create concrete implementations – StringSource that wraps a string and FileSource
+      that wraps a java.io.File. The library would expose a single parse(InputSource src) method that
+      uses src.getReader() to read data. Because parse works against the interface, the actual source
+      type is selected at runtime via polymorphism. This removes the overloads, centralises the parsing
+      code and makes future extensions (e.g., network streams) easy. The downside is the extra interface
+      and the need to adapt existing calls, plus a tiny runtime cost for the indirection.
+    key_points:
+    - id: kp_1
+      statement: Introduce an interface or abstract class InputSource with a method getStream() that concrete
+        types StringSource and FileSource implement.
+      required: true
+    - id: kp_2
+      statement: Provide a single parse(InputSource) method that operates on the abstraction, letting
+        runtime dispatch call the appropriate getStream() implementation.
+      required: true
+    - id: kp_3
+      statement: The design reduces the number of overloads and centralises parsing logic, improving maintainability.
+      required: false
+    - id: kp_4
+      statement: It adds an extra type hierarchy and may incur slight overhead from indirection, and existing
+        callers must be updated to wrap their inputs.
+      required: false
+    hint_ladder:
+    - What can you abstract away so that the same method can operate on different concrete types?
+    - Think of the “program to an interface, not an implementation” principle.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  abstraction_and_interfaces__q1:
+    stem: In a large codebase you notice several classes that share the same method signatures but have
+      unrelated implementations. How would you use abstraction to improve the design, and what trade-offs
+      does this introduce?
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:abstraction_and_interfaces
+      weight: 0.7
+    - id: concept:inheritance
+      weight: 0.15
+    - id: concept:solid_principles
+      weight: 0.15
+    reference_answer: I would extract a common interface that declares the shared method signatures and
+      have each class implement that interface. This gives us a clear contract, so callers can program
+      to the abstraction and we can swap implementations or mock them in tests. It also lets us use polymorphism
+      to treat the different classes uniformly. The downside is an extra layer of indirection – we’re
+      adding an interface that may never be extended further, and we’ll need to refactor existing code
+      that directly instantiates the concrete classes. If the shared methods are few and the classes are
+      unlikely to grow, that extra abstraction could be over-engineering, but in a large codebase the
+      benefits of decoupling usually outweigh the cost.
+    key_points:
+    - id: kp_1
+      statement: Proposes defining an interface (or abstract class) that declares the common methods,
+        letting each class implement it.
+      required: true
+    - id: kp_2
+      statement: Explains that the interface creates a contract, enabling polymorphic use and easier testing/mock
+        substitution.
+      required: true
+    - id: kp_3
+      statement: Mentions the trade-off of added indirection and potential over-engineering if the hierarchy
+        is shallow.
+      required: false
+    - id: kp_4
+      statement: Notes that existing client code may need refactoring to depend on the abstraction rather
+        than concrete classes.
+      required: false
+    hint_ladder:
+    - Think about a contract that multiple unrelated classes can fulfil.
+    - What changes would callers need to make?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  abstraction_and_interfaces__q2:
+    stem: During a code review you see a class that implements an interface but also contains many public
+      fields and utility methods unrelated to the interface. What issues does this raise about abstraction,
+      and how would you refactor it?
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:abstraction_and_interfaces
+      weight: 0.7
+    - id: concept:encapsulation
+      weight: 0.15
+    - id: concept:design_patterns
+      weight: 0.15
+    reference_answer: The main problem is that the class is leaking its internal state by having public
+      fields, which defeats the purpose of an interface that should hide implementation details. Also,
+      packing unrelated utility methods inside the same class violates the Single Responsibility Principle
+      – the class is trying to be both a concrete implementation of the contract and a grab-bag of helpers.
+      I would make the fields private and expose only what the interface requires, perhaps via getters/setters
+      if they’re part of the contract. Then I’d move the utility methods to a separate utility class or
+      make them static helpers. This way the interface remains a clean contract, the class encapsulates
+      its state, and the codebase follows better design patterns.
+    key_points:
+    - id: kp_1
+      statement: Identifies that exposing public fields breaks encapsulation and leaks implementation
+        details beyond the interface contract.
+      required: true
+    - id: kp_2
+      statement: Points out that mixing unrelated utilities violates the Single Responsibility Principle
+        and dilutes the abstraction.
+      required: true
+    - id: kp_3
+      statement: Suggests extracting the utility methods into a separate helper class or static utility
+        and making fields private with getters/setters if needed.
+      required: true
+    - id: kp_4
+      statement: 'Mentions that the refactor restores a clean contract: the interface defines behaviour,
+        the class hides its state, and unrelated helpers live elsewhere.'
+      required: false
+    hint_ladder:
+    - What does an interface guarantee about the implementing class?
+    - Consider the SOLID principle that deals with responsibilities.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  solid_principles__q1:
+    stem: In a legacy codebase you notice a class that handles both parsing CSV files and writing them
+      to a database; what SOLID principle is being violated and how would you refactor it?
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:solid_principles
+      weight: 0.7
+    - id: concept:abstraction_and_interfaces
+      weight: 0.15
+    - id: concept:classes_and_objects
+      weight: 0.15
+    reference_answer: 'The class is breaking the Single Responsibility Principle because it does two unrelated
+      jobs – parsing CSV data and persisting it. Each of those concerns is a separate reason for the class
+      to change. To fix it, I would introduce two abstractions: an ICsvParser interface with a CsvParser
+      implementation, and an IDataRepository interface with a DatabaseRepository implementation. The original
+      class can be removed, and a coordinating service can depend on these two interfaces to read a file
+      and then store the records. This separation isolates changes to parsing or storage without affecting
+      the other, making the code easier to test and extend.'
+    key_points:
+    - id: kp_1
+      statement: Identifies the Single Responsibility Principle as the violated rule.
+      required: true
+    - id: kp_2
+      statement: 'Explains that the class has two reasons to change: CSV parsing logic and persistence
+        logic.'
+      required: true
+    - id: kp_3
+      statement: Proposes extracting an interface for CSV parsing and another for data persistence, creating
+        two concrete classes.
+      required: true
+    - id: kp_4
+      statement: Mentions that a higher-level component can compose the two new classes, reducing coupling.
+      required: false
+    hint_ladder:
+    - Think about the responsibility of a class.
+    - Consider extracting behaviours into separate abstractions.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  solid_principles__q2:
+    stem: Your team wants to add a new payment gateway to an e-commerce system without touching existing
+      order-processing code; which SOLID principle guides this, and what design pattern typically helps
+      achieve it?
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:solid_principles
+      weight: 0.7
+    - id: concept:design_patterns
+      weight: 0.15
+    - id: concept:abstraction_and_interfaces
+      weight: 0.15
+    reference_answer: The Open/Closed Principle tells us that we should be able to add new functionality
+      without altering existing modules. To add a new payment gateway, we would define a PaymentProcessor
+      interface that encapsulates the payment operation, and each gateway – PayPal, Stripe, the new one
+      – would implement this interface as a concrete strategy. The order-processing code depends only
+      on the abstraction, so we can inject the new implementation via dependency injection or a factory.
+      This use of the Strategy pattern keeps the core system closed for modification while allowing it
+      to be extended with new gateways.
+    key_points:
+    - id: kp_1
+      statement: Cites the Open/Closed Principle as the guiding rule.
+      required: true
+    - id: kp_2
+      statement: Describes that the system should be open for extension (new gateway) but closed for modification
+        (existing code unchanged).
+      required: true
+    - id: kp_3
+      statement: Mentions using the Strategy pattern (or a plug-in architecture) with a PaymentProcessor
+        interface and concrete gateway strategies.
+      required: true
+    - id: kp_4
+      statement: Notes that dependency injection can be used to supply the new strategy at runtime.
+      required: false
+    hint_ladder:
+    - Recall the principle about extending behavior without modifying code.
+    - Think of a pattern that lets you inject new implementations at runtime.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  design_patterns__q1:
+    stem: In a large Java codebase you notice many classes creating objects via new inside their methods;
+      what problems can this cause, and how would you refactor using a creational design pattern?
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:design_patterns
+      weight: 0.7
+    - id: concept:abstraction_and_interfaces
+      weight: 0.15
+    - id: concept:solid_principles
+      weight: 0.15
+    reference_answer: When classes instantiate dependencies directly with new, they become tightly coupled
+      to concrete implementations, which hurts testability and violates the Open/Closed and Dependency
+      Inversion principles. By introducing a creational pattern such as a Factory Method or Abstract Factory,
+      you move the creation logic into a separate hierarchy that returns an interface or abstract type.
+      Clients now depend on the abstraction, not the concrete class, so you can inject different implementations
+      (e.g., mocks in tests) without changing client code. This also centralises object-creation policies,
+      making it easier to manage lifecycles, configuration, and future extensions.
+    key_points:
+    - id: kp_1
+      statement: Points out tight coupling and difficulty in testing because concrete classes are hard-wired.
+      required: true
+    - id: kp_2
+      statement: Describes how the Factory Method or Abstract Factory abstracts object creation behind
+        an interface.
+      required: true
+    - id: kp_3
+      statement: Mentions that the refactor enables dependency injection and easier substitution of implementations.
+      required: false
+    - id: kp_4
+      statement: Notes the impact on the Open/Closed principle – new product families can be added without
+        modifying client code.
+      required: false
+    hint_ladder:
+    - Think about who is responsible for creating the object and how that affects testing.
+    - Which GOF pattern separates object creation from usage?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  design_patterns__q2:
+    stem: During runtime you observe that several UI components update themselves whenever a data model
+      changes, but occasionally the UI lags or shows stale data; what design pattern explains this behavior
+      and how would you debug the issue?
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: hard
+    time_budget_s: 240
+    concepts:
+    - id: concept:design_patterns
+      weight: 0.7
+    - id: concept:polymorphism
+      weight: 0.15
+    - id: concept:solid_principles
+      weight: 0.15
+    reference_answer: 'The situation is a classic Observer pattern: the data model (subject) maintains
+      a list of UI components (observers) and notifies them on change. If the UI sometimes lags or shows
+      stale data, it usually means some observers aren’t receiving the update – perhaps they failed to
+      register, were removed incorrectly, or an exception in one observer stopped the notification loop.
+      In multithreaded environments, race conditions can also cause ordering issues. To debug, I’d first
+      log the registration/deregistration flow, then add try-catch around observer callbacks to ensure
+      one failing observer doesn’t break the chain, and finally verify that notifications are dispatched
+      on the UI thread or properly synchronized.'
+    key_points:
+    - id: kp_1
+      statement: Identifies the Observer pattern as the mechanism linking subjects and observers.
+      required: true
+    - id: kp_2
+      statement: Explains that stale or lagging UI can result from missed notifications, ordering problems,
+        or observers not deregistering.
+      required: true
+    - id: kp_3
+      statement: 'Suggests debugging steps: verify registration, check for exceptions in observer callbacks,
+        and ensure thread-safety if notifications are asynchronous.'
+      required: false
+    - id: kp_4
+      statement: Mentions possible violation of the Single Responsibility principle if subjects manage
+        both business logic and notification logic.
+      required: false
+    hint_ladder:
+    - Which pattern decouples a subject from multiple listeners?
+    - What could prevent a listener from receiving a broadcast?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  exception_handling__q1:
+    stem: In a large Java service you notice that a NullPointerException is bubbling up and crashing the
+      thread. Explain how you would redesign the code to handle this exception more gracefully, and what
+      role a finally block could play.
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: core
+    time_budget_s: 180
+    concepts:
+    - id: concept:exception_handling
+      weight: 0.7
+    - id: concept:abstraction_and_interfaces
+      weight: 0.15
+    reference_answer: A NullPointerException means we accessed an object reference that was null. First,
+      we should guard against it by checking the reference or using Optional before dereferencing. In
+      the service method we can place the risky call inside a try block, catch NullPointerException (or
+      better, a more specific custom exception) to log the error and return a safe fallback or propagate
+      a controlled error response. A finally block is useful to close any resources—like streams, database
+      connections, or to release a lock—so they are always cleaned up regardless of success or exception.
+      Optionally, we could abstract the operation behind an interface and inject a mock that never returns
+      null, improving testability.
+    key_points:
+    - id: kp_1
+      statement: Identifies the cause of NullPointerException (e.g., dereferencing a null reference) and
+        suggests checking for null or using Optional.
+      required: true
+    - id: kp_2
+      statement: Proposes wrapping the risky call in a try-catch block that logs the error and possibly
+        recovers or returns a default value.
+      required: true
+    - id: kp_3
+      statement: Describes using a finally block to release resources such as closing streams or unlocking
+        locks, ensuring cleanup even when an exception occurs.
+      required: false
+    - id: kp_4
+      statement: Mentions defining a custom unchecked exception or using an interface to abstract the
+        operation for better testability.
+      required: false
+    hint_ladder:
+    - Think about where the null could originate and how to guard it.
+    - What must happen even if an exception is thrown?
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  exception_handling__q2:
+    stem: Compare checked and unchecked exceptions in Java. When would you choose to create a custom checked
+      exception versus an unchecked one, considering API design and client code impact?
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: intro
+    time_budget_s: 180
+    concepts:
+    - id: concept:exception_handling
+      weight: 0.7
+    - id: concept:design_patterns
+      weight: 0.15
+    reference_answer: Checked exceptions are subclasses of Exception (except RuntimeException) that the
+      compiler requires the caller to either catch or declare. Unchecked exceptions extend RuntimeException
+      and need not be declared or caught. Use checked exceptions for conditions that a reasonable caller
+      can recover from, like a FileNotFoundException when opening a file, because the API forces the caller
+      to consider the failure. Use unchecked exceptions for programming errors—invalid arguments, null
+      pointers—where recovery isn’t expected. If you have a domain-specific error that the client should
+      handle, such as a BusinessRuleViolation, you’d create a custom checked exception to make the contract
+      explicit. For errors that indicate bugs or unrecoverable states, a custom unchecked exception keeps
+      the API cleaner.
+    key_points:
+    - id: kp_1
+      statement: Defines checked exceptions as those the compiler forces callers to handle or declare,
+        and unchecked exceptions as RuntimeException subclasses not enforced.
+      required: true
+    - id: kp_2
+      statement: Explains that checked exceptions are suitable for recoverable conditions that callers
+        are expected to handle, such as I/O errors.
+      required: true
+    - id: kp_3
+      statement: States that unchecked exceptions are appropriate for programming errors like illegal
+        arguments or null dereference, where recovery is not realistic.
+      required: true
+    - id: kp_4
+      statement: Justifies creating a custom checked exception when you want to signal a domain-specific,
+        recoverable problem and force API users to handle it, otherwise prefers unchecked for simplicity.
+      required: false
+    hint_ladder:
+    - Recall the compiler’s role with each type.
+    - Consider the client’s responsibility to handle the error.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  memory_model_gc__item_1:
+    stem: In a long-running Java service you notice the heap usage keeps growing even though you never
+      allocate large objects manually. What could be happening with the garbage collector, and how would
+      you investigate and fix it?
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: hard
+    time_budget_s: 180
+    concepts:
+    - id: concept:memory_model_gc
+      weight: 0.7
+    - id: concept:memory_management
+      weight: 0.15
+    reference_answer: If the heap keeps growing, it usually means some objects are not being reclaimed.
+      In generational GC, objects that survive several young-generation collections are promoted to the
+      old generation. If those objects are unintentionally retained—perhaps via static collections, thread-local
+      caches, or listeners—they will accumulate and fill the old generation, causing long full GCs or
+      OOM. I would first enable GC logging or use jstat/VisualVM to see promotion rates and pause times.
+      If I see a high promotion count, I’d investigate the code paths that hold references, replace strong
+      references with WeakReference or clear caches, and possibly tune the old-gen size. After the fix,
+      heap usage should stabilise and pause times drop.
+    key_points:
+    - id: kp_1
+      statement: Explains that objects surviving many young-generation collections get promoted to the
+        old generation, which may fill up if they are unintentionally retained.
+      required: true
+    - id: kp_2
+      statement: Describes using JVM monitoring tools (e.g., jstat, VisualVM) or GC logs to see promotion
+        rates and pause times.
+      required: true
+    - id: kp_3
+      statement: Suggests fixing the leak by removing strong references (e.g., clearing caches, using
+        WeakReference) or tuning GC parameters.
+      required: true
+    - id: kp_4
+      statement: Mentions that a high allocation rate combined with insufficient old-gen size can cause
+        frequent full GCs and OOM.
+      required: false
+    hint_ladder:
+    - Think about generations and objects that survive many collections.
+    - Consider tools or JVM flags that reveal GC activity.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'
+  memory_model_gc__item_2:
+    stem: Compare reference counting with tracing garbage collection in terms of handling cyclic data
+      structures and runtime overhead. When would you prefer one over the other in a language design?
+    modality: verbal
+    round_types:
+    - oop_verbal
+    difficulty_band: core
+    time_budget_s: 150
+    concepts:
+    - id: concept:memory_model_gc
+      weight: 0.7
+    - id: concept:memory_management
+      weight: 0.15
+    reference_answer: Reference counting increments and decrements a counter on every pointer assignment,
+      so reclamation happens immediately when the count drops to zero. This gives deterministic cleanup
+      but fails on cyclic structures—each object in a cycle still has a non-zero count, so the memory
+      leaks. Tracing garbage collectors, on the other hand, start from root references and mark all reachable
+      objects; anything unmarked, including entire cycles, is reclaimed. The trade-off is that tracing
+      incurs periodic pause-times and extra CPU to walk the heap, whereas reference counting adds constant
+      overhead to every write. Designers might pick reference counting for real-time or embedded systems
+      where pause-free operation is critical, and augment it with a cycle-detector, while choosing tracing
+      for general-purpose languages where cycles are common and occasional pauses are acceptable.
+    key_points:
+    - id: kp_1
+      statement: States that reference counting cannot reclaim cycles because each object in the cycle
+        has a non-zero count.
+      required: true
+    - id: kp_2
+      statement: Notes that tracing GC can detect and collect cycles by traversing reachable objects from
+        roots.
+      required: true
+    - id: kp_3
+      statement: Mentions that reference counting incurs constant-time overhead on every pointer write,
+        while tracing incurs periodic stop-the-world pauses.
+      required: true
+    - id: kp_4
+      statement: Suggests using reference counting in low-latency or embedded environments where deterministic
+        reclamation is needed, and tracing when cycles are common or pause-time budgets are acceptable.
+      required: false
+    hint_ladder:
+    - Recall that reference counting updates counts on every pointer assignment.
+    - Think about what happens when objects reference each other.
+    provenance: generated
+    scored_use_approved: false
+    theta_eligible: false
+    drafted_by: openai/gpt-oss-120b
+    drafted_at: '2026-10-07'

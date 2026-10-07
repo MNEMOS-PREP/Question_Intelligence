@@ -290,6 +290,8 @@ def bank_tracks() -> dict:
                 or " ".join(w.upper() if len(w) <= 3 else w.capitalize() for w in words),
                 "group": group,
                 "blurb": info.get("blurb") or "",
+                # Which kind of interviewer runs it (M06 `panel.py`).
+                "kind": info.get("kind") or "technical",
                 "approved": entry["approved"],
                 "drafts": entry["drafts"],
                 "concepts": len(entry["concepts"]),
