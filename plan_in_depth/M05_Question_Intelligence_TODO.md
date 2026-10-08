@@ -60,6 +60,26 @@ Both are covered by `tests/test_session_seam.py`, and both mutations fail it.
 - ⬜ (standing) Per-round-type counts on `/bank/health`. M06's plan-time probe
   asks per round type, and a total hides a thin corner of the bank.
 
+### 2026-10-07/08 — tracks, drafted questions, and not the same question again
+
+- ✅ **Tracks** (`aecd45b`): `GET /v1/bank/tracks` names each round type the
+  bank can serve — its title, group, blurb, `kind` (technical or
+  behavioural) and counts of approved and drafted items. M06's setup page
+  offers exactly these.
+- ✅ **Drafted questions for every track** (`c438329`): 292 items written by
+  `jobs/draft_items.py` into `bank/*.drafted.yaml`, **unreviewed**. A caller
+  that sends `allow_drafts` may be served one when nothing approved fits; the
+  response says `scored_use: false`, and M06 asks it, never scores it, never
+  moves θ for it. Approving them is FR-5.6's queue — still not built, and the
+  approving is the team's decision, not code's.
+- ✅ **The ontology snapshot** (`67023fe`): M04's 156 concepts, the 36
+  machine-learning ones included (M04 `f710a2c`, the user's decision).
+- ✅ **Not the last question again** (`e62ddee`, `tests/test_variety.py`): a
+  selection request may carry `asked_this_session`; an item on the concept
+  just asked is weighed ×0.3, each repeat of a concept in the session halves
+  it again, and a stem whose content words overlap one already asked by a
+  quarter or more (Jaccard ≥ 0.25) is weighed ×0.2.
+
 ---
 
 ## 0. Ideas and scouting
