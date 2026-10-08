@@ -27,6 +27,7 @@ re-test; an unannounced one is the complaint this module is named for.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from uuid import UUID
 
@@ -53,8 +54,37 @@ STRETCH_WINDOW = (0.6, 0.85)
 
 #: §6.6 step 4. Weights for the constrained ranking.
 COVERAGE_GAIN = 0.8
+#: Per earlier question on the same primary concept in this interview.
 CONCEPT_REPEAT_PENALTY = 0.5
-RECENCY_PENALTY = 0.7
+#: Sharing a concept with the question just asked.
+RECENCY_PENALTY = 0.3
+#: Reading like a question already asked: content words shared above
+#: `ALIKE_AT` (Jaccard). Two concepts, one question, is still a repeat.
+ALIKE_PENALTY = 0.2
+ALIKE_AT = 0.25
+
+_WORD = re.compile(r"[a-z][a-z0-9]+")
+_FILLER = frozenset(
+    "the and for with that this what how why you your would could does when which into "
+    "from have has are was were will can its their there them then than about over under "
+    "what's explain describe tell given using use used each some any one two "
+    # The frames questions are asked in, not what they are about.
+    "time when where while during recall situation notice".split()
+)
+
+
+def content_words(text: str) -> frozenset[str]:
+    """A stem's words that say what it is about — crude, on purpose."""
+    words = (w for w in _WORD.findall(text.lower()) if w not in _FILLER and len(w) > 3)
+    return frozenset(w[:-1] if w.endswith("s") and len(w) > 4 else w for w in words)
+
+
+def alike(a: str, b: str) -> float:
+    """Jaccard overlap of two stems' content words."""
+    left, right = content_words(a), content_words(b)
+    if not left or not right:
+        return 0.0
+    return len(left & right) / len(left | right)
 
 #: §6.9.
 TARGET_SE = 0.30
@@ -184,13 +214,25 @@ def rank(
     req: SelectionRequest,
     *,
     last_concepts: set[str] | None = None,
+    asked: list[Question] | None = None,
 ) -> list[Candidate]:
-    """§6.6 step 4 — information, constrained."""
-    last_concepts = last_concepts or set()
+    """§6.6 step 4 — information, constrained.
+
+    `asked` is this interview's questions so far, in order. Until 2026-10-08
+    the variety terms read nothing: `last_concepts` was never passed by the
+    route, and the repeat count was taken over the POOL (with two drafts per
+    concept it penalised every item alike), so nothing stopped the same
+    topic coming twice running."""
+    asked = asked or []
+    last_concepts = set(last_concepts or set())
+    if asked:
+        last_concepts |= {c.concept_id for c in asked[-1].concepts}
     stretch = should_stretch(req)
     concept_counts: dict[str, int] = {}
-    for question in pool:
-        concept_counts.setdefault(question.primary_concept, 0)
+    for question in asked:
+        primary = question.primary_concept
+        concept_counts[primary] = concept_counts.get(primary, 0) + 1
+    asked_stems = [q.stem for q in asked]
 
     ranked: list[Candidate] = []
     for question in pool:
@@ -205,13 +247,16 @@ def rank(
         coverage = coverage_gain(question, req)
         item_concepts = {c.concept_id for c in question.concepts}
         recency = RECENCY_PENALTY if item_concepts & last_concepts else 1.0
-        repeat = (
-            CONCEPT_REPEAT_PENALTY
-            if concept_counts.get(question.primary_concept, 0) >= 2
+        repeat = CONCEPT_REPEAT_PENALTY ** concept_counts.get(question.primary_concept, 0)
+        twin = (
+            ALIKE_PENALTY
+            if any(alike(question.stem, stem) >= ALIKE_AT for stem in asked_stems)
             else 1.0
         )
 
-        score = information * (1.0 + COVERAGE_GAIN * coverage) * recency * repeat
+        score = (
+            information * (1.0 + COVERAGE_GAIN * coverage) * recency * repeat * twin
+        )
         if stretch:
             reason = SelectionReason.stretch
         elif req.is_first_of_round:
@@ -295,6 +340,8 @@ def select(
                 disclosure=DISCLOSURE_RETEST,
             )
 
+    by_id = {q.id: q for q in bank}
+    asked = [by_id[i] for i in req.asked_this_session if i in by_id]
     pool = eligible(bank, req)
     # An approved item, when one fits, before any draft: a draft's answer is
     # not scored, so it is what a thin track falls back on, never the first
@@ -302,14 +349,14 @@ def select(
     approved = [q for q in pool if q.scored_use_approved]
     pool = approved or pool
     if pool:
-        ranked = rank(pool, req, last_concepts=last_concepts)
+        ranked = rank(pool, req, last_concepts=last_concepts, asked=asked)
         return _result(ranked[0], req, alternatives=[c.question for c in ranked[1:3]])
 
     # §6.8 step 1 — relax freshness, and SAY SO. A silent repeat is the failure
     # §2.4 names; an announced one is a re-test the student can reason about.
     relaxed = eligible(bank, req, ignore_freshness=True)
     if relaxed:
-        ranked = rank(relaxed, req, last_concepts=last_concepts)
+        ranked = rank(relaxed, req, last_concepts=last_concepts, asked=asked)
         return _result(
             ranked[0],
             req,

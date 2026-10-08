@@ -446,6 +446,13 @@ class SelectionRequest(BaseModel):
     #: preferred when any fit; drafts are what keeps a thin track from asking
     #: the same handful again.
     allow_drafts: bool = False
+    #: 2026-10-08: what THIS interview has asked, in order — the caller's
+    #: record, since a draft's outcome is never reported here. What the next
+    #: question should not repeat: the topic just asked, a topic asked twice
+    #: already, or a question that reads like one already asked (a live run
+    #: asked "training loss falls, validation loss rises" twice running,
+    #: filed under two different concepts).
+    asked_this_session: list[UUID] = Field(default_factory=list)
 
     def theta_for(self, concept_id: str) -> float:
         return self.theta_provisional.get(concept_id, 0.0)
