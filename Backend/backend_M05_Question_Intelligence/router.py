@@ -295,6 +295,10 @@ def bank_tracks() -> dict:
                 "approved": entry["approved"],
                 "drafts": entry["drafts"],
                 "concepts": len(entry["concepts"]),
+                # Which concepts, not only how many (2026-10-13): M06 plans a
+                # mixed interview from the tracks a student's courses have
+                # taught, and needs the overlap to know which those are.
+                "concept_ids": sorted(entry["concepts"]),
             }
         )
     order = {g: i for i, g in enumerate(groups)}

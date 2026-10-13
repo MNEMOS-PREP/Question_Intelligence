@@ -81,5 +81,9 @@ def test_the_tracks_route_offers_only_what_the_bank_can_ask(client):
         assert track["title"] and track["group"] in body["groups"] + ["Other"]
     assert offered["dsa_verbal"]["approved"] >= 1
     assert offered["dsa_verbal"]["kind"] == "technical"
+    # The ids behind the count: what M06 matches a student's courses against.
+    for track in offered.values():
+        assert len(track["concept_ids"]) == track["concepts"]
+        assert all(c.startswith("concept:") for c in track["concept_ids"])
     if "behavioural" in offered:
         assert offered["behavioural"]["kind"] == "behavioural"
