@@ -393,11 +393,16 @@ def _review_item(question: Question, everything: list[Question]) -> dict:
 def review_queue(
     track: str | None = None,
     limit: int = 1,
+    offset: int = 0,
     principal: Principal | None = Depends(guard),
 ) -> dict:
     """The next drafted item(s) awaiting a human. Deterministic order, so two
     reviewers working different tracks never collide and a refresh does not
-    reshuffle the page under someone's cursor."""
+    reshuffle the page under someone's cursor.
+
+    `offset` skips that many: an item a reviewer is unsure about, or has just
+    edited (an edit keeps it in the queue), would otherwise come back first
+    every time and stand between them and the rest (2026-10-14 review)."""
     _reviewer(principal)
     loaded = bank_module.load()
     everything = list(loaded.questions)
@@ -406,9 +411,12 @@ def review_queue(
         pending = [q for q in pending if review_module.track_of(q) == track]
     pending.sort(key=lambda q: (review_module.track_of(q), q.primary_concept, str(q.id)))
     limit = max(1, min(limit, 20))
+    # Past the end wraps to the start: skipping the last item shows the first.
+    start = max(0, offset) % len(pending) if pending else 0
     return {
         "remaining": len(pending),
-        "items": [_review_item(q, everything) for q in pending[:limit]],
+        "offset": start,
+        "items": [_review_item(q, everything) for q in pending[start : start + limit]],
     }
 
 
@@ -428,7 +436,9 @@ def review_progress(principal: Principal | None = Depends(guard)) -> dict:
             row["rejected"] += 1
     return {
         "tracks": tracks,
-        "totals": {k: sum(r[k] for r in tracks.values()) for k in ("approved", "pending", "rejected")},
+        "totals": {
+            k: sum(r[k] for r in tracks.values()) for k in ("approved", "pending", "rejected")
+        },
         "decisions_logged": len(review_module.store().history()),
     }
 

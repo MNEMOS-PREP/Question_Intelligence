@@ -132,7 +132,11 @@ def test_decisions_survive_a_reload(client, draft):
 
 def test_an_already_decided_item_is_not_decided_twice(client, draft):
     client.post(f"/v1/review/{draft.id}/decision", headers=STAFF, json={"action": "approve"})
-    r = client.post(f"/v1/review/{draft.id}/decision", headers=STAFF, json={"action": "reject", "reason": "x"})
+    r = client.post(
+        f"/v1/review/{draft.id}/decision",
+        headers=STAFF,
+        json={"action": "reject", "reason": "x"},
+    )
     assert r.status_code == 409
 
 
@@ -169,3 +173,22 @@ def test_upstream_drafts_are_active_but_unapproved_and_still_queue(client, draft
     assert body["remaining"] == 1 and body["items"][0]["id"] == str(draft.id)
     client.post(f"/v1/review/{draft.id}/decision", headers=STAFF, json={"action": "approve"})
     assert client.get("/v1/review/queue", headers=STAFF).json()["remaining"] == 0
+
+
+def test_a_reviewer_can_skip_an_item_without_deciding_it(client, draft):
+    """2026-10-14: with a fixed order and no skip, an item a reviewer was
+    unsure about (or had just edited) came back first every time."""
+    second = make_question(
+        concept="concept:recursion",
+        provenance=Provenance.generated,
+        status=ItemStatus.draft,
+        scored_use_approved=False,
+    )
+    bank_module.load().questions.append(second)
+    first = client.get("/v1/review/queue", headers=REVIEWER).json()
+    skipped = client.get("/v1/review/queue", headers=REVIEWER, params={"offset": 1}).json()
+    assert first["remaining"] == skipped["remaining"] == 2
+    assert first["items"][0]["id"] != skipped["items"][0]["id"]
+    # Skipping past the last comes back round to the first.
+    wrapped = client.get("/v1/review/queue", headers=REVIEWER, params={"offset": 2}).json()
+    assert wrapped["items"][0]["id"] == first["items"][0]["id"]
