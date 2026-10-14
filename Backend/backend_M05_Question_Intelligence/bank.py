@@ -181,6 +181,14 @@ def load(*, refresh: bool = False) -> Bank:
             "bank means dead air in front of a student"
         )
 
+    # Human decisions are replayed over the freshly parsed YAML, so a boot
+    # never quietly un-approves (or un-rejects) what a reviewer decided.
+    from . import review
+
+    replayed = review.store().replay(questions)
+    if replayed:
+        log.info("bank: replayed %d review decisions", replayed)
+
     _cached = Bank(questions=questions, playlist=playlist, by_label=labels)
     return _cached
 

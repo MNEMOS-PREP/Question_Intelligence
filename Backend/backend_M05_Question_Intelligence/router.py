@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import logging
 import uuid
+from typing import Literal
 
 import yaml
 from ai_core import service
@@ -33,9 +34,11 @@ from pydantic import BaseModel, Field
 
 from . import bank as bank_module
 from . import ontology as ontology_module
+from . import review as review_module
 from . import selection as selection_module
 from . import session as session_module
 from .contracts import (
+    ItemStatus,
     ProvisionalOutcome,
     Question,
     QuestionPackage,
@@ -241,8 +244,11 @@ def bank_health() -> dict:
     loaded = bank_module.load()
     counts = loaded.concept_counts()
     gaps = ontology_module.granularity(counts)
+    awaiting = sum(1 for q in loaded.questions if review_module.in_queue(q))
     return {
         "active": len(loaded.questions),
+        "awaiting_review": awaiting,
+        "review_decisions_logged": len(review_module.store().history()),
         "playlist": len(loaded.playlist),
         "concepts_covered": len(counts),
         "concepts_total": len(ontology_module.load()),
@@ -345,6 +351,119 @@ def flag_question(
             "Thanks — I've pulled that question, and you won't see it again."
         ),
     }
+
+
+# ── review queue (FR-5.6) ────────────────────────────────────────────────
+
+
+class DecisionRequest(BaseModel):
+    action: Literal["approve", "edit", "reject"]
+    reason: str = ""
+    #: Only the fields in `review.EDITABLE`; anything else is a 422.
+    changes: dict = Field(default_factory=dict)
+
+
+def _reviewer(principal: Principal | None) -> Principal:
+    if principal is None:
+        raise HTTPException(status_code=401, detail="Sign in to review questions.")
+    if principal.role not in review_module.REVIEWER_ROLES:
+        raise HTTPException(status_code=403, detail="Question review is for staff.")
+    return principal
+
+
+def _review_item(question: Question, everything: list[Question]) -> dict:
+    return {
+        "id": str(question.id),
+        "track": review_module.track_of(question),
+        "stem": question.stem,
+        "reference_answer": question.reference_answer,
+        "key_points": [kp.model_dump(mode="json") for kp in question.key_points],
+        "difficulty_band": question.difficulty_band.value,
+        "time_budget_s": question.time_budget_s,
+        "concepts": [c.concept_id for c in question.concepts],
+        "provenance": question.provenance.value,
+        "status": question.status.value,
+        "checks": [c.as_dict() for c in review_module.automatic_checks(question, everything)],
+        # Said in the payload so the UI cannot imply otherwise.
+        "machine_verified_reference": False,
+    }
+
+
+@router.get("/review/queue")
+def review_queue(
+    track: str | None = None,
+    limit: int = 1,
+    principal: Principal | None = Depends(guard),
+) -> dict:
+    """The next drafted item(s) awaiting a human. Deterministic order, so two
+    reviewers working different tracks never collide and a refresh does not
+    reshuffle the page under someone's cursor."""
+    _reviewer(principal)
+    loaded = bank_module.load()
+    everything = list(loaded.questions)
+    pending = [q for q in everything if review_module.in_queue(q)]
+    if track:
+        pending = [q for q in pending if review_module.track_of(q) == track]
+    pending.sort(key=lambda q: (review_module.track_of(q), q.primary_concept, str(q.id)))
+    limit = max(1, min(limit, 20))
+    return {
+        "remaining": len(pending),
+        "items": [_review_item(q, everything) for q in pending[:limit]],
+    }
+
+
+@router.get("/review/progress")
+def review_progress(principal: Principal | None = Depends(guard)) -> dict:
+    _reviewer(principal)
+    tracks: dict[str, dict[str, int]] = {}
+    for q in bank_module.load().questions:
+        row = tracks.setdefault(
+            review_module.track_of(q), {"approved": 0, "pending": 0, "rejected": 0}
+        )
+        if review_module.in_queue(q):
+            row["pending"] += 1
+        elif q.scored_use_approved and q.status is ItemStatus.active:
+            row["approved"] += 1
+        elif q.status is ItemStatus.retired:
+            row["rejected"] += 1
+    return {
+        "tracks": tracks,
+        "totals": {k: sum(r[k] for r in tracks.values()) for k in ("approved", "pending", "rejected")},
+        "decisions_logged": len(review_module.store().history()),
+    }
+
+
+@router.get("/review/{question_id}/history")
+def review_history(
+    question_id: uuid.UUID, principal: Principal | None = Depends(guard)
+) -> dict:
+    _reviewer(principal)
+    return {"history": review_module.store().history(str(question_id))}
+
+
+@router.post("/review/{question_id}/decision")
+def review_decision(
+    question_id: uuid.UUID,
+    request: DecisionRequest,
+    principal: Principal | None = Depends(guard),
+) -> dict:
+    reviewer = _reviewer(principal)
+    question = bank_module.load().get(question_id)
+    if question is None:
+        raise HTTPException(status_code=404, detail="no such question")
+    if not review_module.in_queue(question):
+        raise HTTPException(status_code=409, detail="this item is not awaiting review")
+    try:
+        record = review_module.store().decide(
+            question,
+            action=request.action,
+            principal=reviewer,
+            reason=request.reason,
+            changes=request.changes,
+        )
+    except review_module.ReviewError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"decision": record, "counts_for_scoring": question.scored_use_approved}
 
 
 # ── selection ────────────────────────────────────────────────────────────
