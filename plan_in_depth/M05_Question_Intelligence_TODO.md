@@ -1,9 +1,9 @@
 # M05 — TODO · Question Intelligence
 
 
-> **Completion: 84%** — 21 of 28 functional requirements met, 5 partially. Two requirements have no implementation at all — FR-5.6 human review queue, a P0, and FR-5.28 exposure-bypass reporting. Five more are coded with no test behind them. §8.2's bank console (*"build it, you will live in it"*) does not exist.
+> **Completion: 88%** — 22 of 28 functional requirements met, 5 partially. One requirement has no implementation — FR-5.28 exposure-bypass reporting. FR-5.6, the human review queue (a P0), was built on 2026-10-14. Five more are coded with no test behind them. §8.2's bank console (*"build it, you will live in it"*) has its first screen, the review queue, and nothing else yet.
 >
-> _Method: `(met + ½ × partial) ÷ total`, audited against shipped code, 2026-08-28; re-checked 2026-10-04: unchanged. One measure applied the same way to all nineteen modules so they compare; it counts requirements, not screens or gates._
+> _Method: `(met + ½ × partial) ÷ total`, audited against shipped code, 2026-08-28; re-checked 2026-10-04: unchanged; re-checked 2026-10-17: FR-5.6 built (84% → 88%). One measure applied the same way to all nineteen modules so they compare; it counts requirements, not screens or gates._
 
 Running list for **M05 Question Intelligence**.
 Spec: [M05_Question_Intelligence.md](M05_Question_Intelligence.md)
@@ -70,8 +70,8 @@ Both are covered by `tests/test_session_seam.py`, and both mutations fail it.
   `jobs/draft_items.py` into `bank/*.drafted.yaml`, **unreviewed**. A caller
   that sends `allow_drafts` may be served one when nothing approved fits; the
   response says `scored_use: false`, and M06 asks it, never scores it, never
-  moves θ for it. Approving them is FR-5.6's queue — still not built, and the
-  approving is the team's decision, not code's.
+  moves θ for it. Approving them is FR-5.6's queue — built 2026-10-14 (below);
+  the approving is the team's decision, not code's.
 - ✅ **The ontology snapshot** (`67023fe`): M04's 156 concepts, the 36
   machine-learning ones included (M04 `f710a2c`, the user's decision).
 - ✅ **Not the last question again** (`e62ddee`, `tests/test_variety.py`): a
@@ -79,6 +79,32 @@ Both are covered by `tests/test_session_seam.py`, and both mutations fail it.
   just asked is weighed ×0.3, each repeat of a concept in the session halves
   it again, and a stem whose content words overlap one already asked by a
   quarter or more (Jaccard ≥ 0.25) is weighed ×0.2.
+
+### 2026-10-13/14 — the human review queue (FR-5.6), and tracks that name their concepts
+
+- ✅ **FR-5.6, the human review queue** (`f5b520e`, abhinav): `review.py`, with
+  `GET /v1/review/queue`, `/review/progress`, `/review/{id}/history` and
+  `POST /review/{id}/decision`. Approve; reject, which needs a reason (G3
+  failures are how a generation prompt gets fixed, EC-5.7); or edit, which
+  keeps the item in the queue and records the diff (uneditable fields are
+  refused). Decisions append to a JSONL log replayed over the bank at load,
+  so an approval survives a restart and is an auditable fact: who, when, what
+  changed, why. Approval is the only thing that moves a drafted item into
+  scored use, and `/bank/health` counts what awaits review. The dedicated
+  `reviewer` role or staff decide; a researcher cannot. `tests/test_review.py`,
+  15 tests.
+- ✅ **Platform_Core v0.38.0** (`da969e1`): the `reviewer` role the queue reads
+  was missing from the pinned v0.12.0, so M05 failed to start. The pin moved,
+  and the queue takes an `offset`, so a reviewer can skip an item without
+  deciding it.
+- ✅ **The queue has a screen**: Platform_Shell's Question review page
+  (`/questions/review`, shell `88852f8`) — each track's progress, for the
+  reviewer role and staff; a reviewer's Today leads with it.
+- ✅ **Tracks name their concepts** (`dfb002a`): `/v1/bank/tracks` carries each
+  track's `concept_ids`, so M06 can tell which tracks a student's courses
+  cover.
+- ⬜ **Whether to commit `Backend/data/review_log.jsonl`** — the decision log
+  is not ignored and holds real decisions. The user's call.
 
 ---
 
@@ -116,26 +142,28 @@ About fifteen lines. No dependency.
 
 | | |
 |---|---|
-| Status | **Built.** FR coverage was audited on 2026-08-28 (the header's counts) and re-checked on 2026-10-04. The per-requirement table was never written into this file, and the §13 acceptance gates have not been walked one by one |
-| Backend tests passing | **94** |
+| Status | **Built.** FR coverage was audited on 2026-08-28 (the header's counts) and re-checked on 2026-10-04 and 2026-10-17. The per-requirement table was never written into this file, and the §13 acceptance gates have not been walked one by one |
+| Backend tests passing | **121** |
 | Release gates (`-m gate`) | **11** |
-| Frontend | **none** — M05 is a service; M06 and M13 are its callers |
+| Frontend | **none of its own** — M05 is a service; M06 and M13 are its callers, and the review queue's screen is the shell's (`/questions/review`) |
 
-*Counted 2026-10-04 by running the suite, not by reading this file.*
+*Counted 2026-10-17 by running the suite, not by reading this file.*
 
-> **Re-checked 2026-10-04:** FR-5.6 (the human review queue, a P0) and
-> FR-5.28 (exposure-bypass reporting) still have no route.
+> **Re-checked 2026-10-17:** FR-5.6 (the human review queue, a P0) is built
+> (2026-10-14). FR-5.28 (exposure-bypass reporting) still has no route.
 
 ---
 
 ## 2. Next
 
-1. **FR-5.6, the human review queue** — a P0 with no implementation.
-   `POST /questions/{id}/flag` records a flag; there is no queue to review one in.
-2. **FR-5.28, exposure-bypass reporting.**
-3. **Tests for the five requirements coded without one** (the 2026-08-28
+1. **FR-5.28, exposure-bypass reporting** — the one requirement with no
+   implementation.
+2. **Tests for the five requirements coded without one** (the 2026-08-28
    audit's count) — name each here as it gets its test.
-4. §8.2's bank console, once there is a queue to put in it.
+3. **Review the drafted items in the queue** — the team's work, not code's;
+   each approval moves one item into scored use.
+4. §8.2's bank console: the review queue is its first screen; exposure and
+   calibration views are still to build.
 
 ---
 
