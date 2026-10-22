@@ -453,6 +453,32 @@ class SelectionRequest(BaseModel):
     #: asked "training loss falls, validation loss rises" twice running,
     #: filed under two different concepts).
     asked_this_session: list[UUID] = Field(default_factory=list)
+    #: 2026-10-22, M06's long-standing ask (`difficulty_offset`): where to
+    #: pitch the next question, in logits from the provisional θ, per concept
+    #: — M06's per-topic level, temporary and this interview's only — plus a
+    #: shift for every concept (the mode's: Practice a little easier, Final
+    #: Boss harder). It moves the TARGET, never the estimate: θ is still
+    #: updated only by observations, and nothing here is persisted.
+    difficulty_offset: dict[str, float] = Field(default_factory=dict)
+    difficulty_shift: float = Field(default=0.0, ge=-2.0, le=2.0)
+    #: 2026-10-23: the student chose these concepts ("Practise Hashing"), so
+    #: every item must measure one of them — a hard filter, unlike
+    #: `coverage_debt`, which only steers. Never relaxed: when none is left
+    #: the round ends (§6.8 step 5). A live focus on hashing heard a question
+    #: on hashing and then whatever DSA ranked highest, because the debt's
+    #: ×1.8 lost to the recency and repeat penalties on a second hashing item.
+    only_concepts: list[str] = Field(default_factory=list, max_length=8)
+
+    def on_concepts(self, question: Question) -> bool:
+        """Whether an item may be asked under `only_concepts` — any concept it
+        measures counts, as for `coverage_debt` (Rabin-Karp is hashing)."""
+        if not self.only_concepts:
+            return True
+        return bool(set(self.only_concepts) & {c.concept_id for c in question.concepts})
+
+    def offset_for(self, concept_id: str) -> float:
+        raw = self.difficulty_offset.get(concept_id, 0.0) + self.difficulty_shift
+        return max(-2.0, min(2.0, raw))
 
     def theta_for(self, concept_id: str) -> float:
         return self.theta_provisional.get(concept_id, 0.0)

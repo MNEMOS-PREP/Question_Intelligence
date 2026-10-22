@@ -145,6 +145,8 @@ def eligible(
             continue
         if question.quality.flagged_broken > 0:
             continue
+        if not req.on_concepts(question):
+            continue
         if question.time_budget_s > req.time_remaining_s:
             continue
         if question.id in req.seen_item_ids:
@@ -164,8 +166,10 @@ def eligible(
 
 
 def target_theta(req: SelectionRequest, question: Question) -> float:
-    """Where we want the next item to sit, on the concept it measures."""
-    return req.theta_for(question.primary_concept)
+    """Where we want the next item to sit, on the concept it measures — the
+    estimate, moved by the caller's offset for that concept (2026-10-22)."""
+    concept = question.primary_concept
+    return req.theta_for(concept) + req.offset_for(concept)
 
 
 def should_stretch(req: SelectionRequest) -> bool:
@@ -373,7 +377,7 @@ def select(
     # bank was asked the playlist's first item at the warm-up and again at
     # every round after it — the silent repeat §2.4 names.
     for question in fallback_playlist or []:
-        if question.id in req.seen_item_ids:
+        if question.id in req.seen_item_ids or not req.on_concepts(question):
             continue
         if question.usable_in(req.round_type) and visible_to(question, req.candidate_id):
             params = parameters_for(question, req.round_type)

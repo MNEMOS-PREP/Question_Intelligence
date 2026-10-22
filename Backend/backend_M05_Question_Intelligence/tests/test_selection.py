@@ -366,3 +366,97 @@ def test_a_round_stops_when_it_has_stopped_learning():
         )
         is StopReason.no_information
     )
+
+
+# ── 2026-10-22 · the caller's per-topic difficulty ───────────────────────
+
+
+def _hashing_only(bank):
+    return [q for q in bank if q.primary_concept == "concept:hashing"]
+
+
+def test_a_harder_offset_on_a_concept_picks_a_harder_item_on_it(bank, req):
+    """M06's per-topic level: a strong run on hashing pitches the next
+    hashing question higher. The target moves; the estimate does not."""
+    pool = _hashing_only(bank)
+    plain = sel.select(pool, req)
+    harder = sel.select(
+        pool, req.model_copy(update={"difficulty_offset": {"concept:hashing": 1.0}})
+    )
+    order = [
+        DifficultyBand.intro,
+        DifficultyBand.easy,
+        DifficultyBand.core,
+        DifficultyBand.hard,
+        DifficultyBand.stretch,
+    ]
+    by_id = {q.id: q for q in pool}
+    assert order.index(by_id[harder.question_id].difficulty_band) > order.index(
+        by_id[plain.question_id].difficulty_band
+    )
+    assert req.theta_for("concept:hashing") == 0.0
+
+
+def test_an_offset_on_one_concept_leaves_another_alone(bank, req):
+    """Expertise in one topic is never a harder question in another."""
+    pool = [q for q in bank if q.primary_concept == "concept:joins"]
+    plain = sel.select(pool, req)
+    offset = sel.select(
+        pool, req.model_copy(update={"difficulty_offset": {"concept:hashing": 2.0}})
+    )
+    assert plain.question_id == offset.question_id
+
+
+def test_the_shift_and_offset_are_bounded(req):
+    wild = req.model_copy(
+        update={"difficulty_offset": {"concept:hashing": 9.0}, "difficulty_shift": 2.0}
+    )
+    assert wild.offset_for("concept:hashing") == 2.0
+    assert wild.offset_for("concept:joins") == 2.0
+
+
+# ── 2026-10-23 · a focus the student chose is every question ─────────────
+
+
+def _a_session(bank, req, n):
+    """`n` selections in one interview, each asked before the next."""
+    asked: list[uuid.UUID] = []
+    for _ in range(n):
+        chosen = sel.select(
+            bank, req.model_copy(update={"asked_this_session": asked, "seen_item_ids": asked})
+        )
+        asked = [*asked, chosen.question_id]
+    return asked
+
+
+def test_a_focus_asks_only_its_concepts_and_then_ends_the_round(bank, req):
+    """The live run's defect: "Focus: Hashing" asked about hashing once, and
+    then the recency and repeat penalties handed the round to whatever ranked
+    highest — the debt's ×1.8 only steers."""
+    focus = req.model_copy(
+        update={"only_concepts": ["concept:hashing"], "coverage_debt": {"concept:hashing": 1.0}}
+    )
+    by_id = {q.id: q for q in bank}
+    hashing = [q for q in bank if q.primary_concept == "concept:hashing"]
+
+    asked = _a_session(bank, focus, len(hashing))
+
+    assert {by_id[i].primary_concept for i in asked} == {"concept:hashing"}
+    with pytest.raises(sel.NoItemAvailable):
+        sel.select(bank, focus.model_copy(update={"seen_item_ids": asked}))
+
+
+def test_an_item_that_uses_the_concept_is_on_it(req):
+    """Rabin-Karp is filed under string matching and is a hashing question."""
+    rabin_karp = make_question(concept="concept:string_matching", secondary=["concept:hashing"])
+    joins = make_question(concept="concept:joins")
+    focus = req.model_copy(update={"only_concepts": ["concept:hashing"]})
+    assert sel.eligible([rabin_karp, joins], focus) == [rabin_karp]
+
+
+def test_the_last_resort_playlist_keeps_the_focus_too(req):
+    joins = make_question(concept="concept:joins")
+    focus = req.model_copy(update={"only_concepts": ["concept:hashing"]})
+    with pytest.raises(sel.NoItemAvailable):
+        sel.select([], focus, fallback_playlist=[joins])
+    assert sel.select([], req, fallback_playlist=[joins]).question_id == joins.id
