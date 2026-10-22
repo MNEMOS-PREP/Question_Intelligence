@@ -106,6 +106,30 @@ Both are covered by `tests/test_session_seam.py`, and both mutations fail it.
 - ⬜ **Whether to commit `Backend/data/review_log.jsonl`** — the decision log
   is not ignored and holds real decisions. The user's call.
 
+### 2026-10-22 — what the bank carries today (an audit for the demo)
+
+Counted by loading the bank (`bank.load()`), not by reading this file.
+
+| | Items | Reference answer | Key points (avg) | `follow_ups` | `hint_ladder` |
+|---|---|---|---|---|---|
+| Reviewed (scored use) | 12 — 11 `dsa_verbal`, 1 `dsa_verbal` + `dbms_verbal` | 12 | 2.6 | **0** | **1** |
+| Drafted (unreviewed) | 292 — every track | 292 | 3.7 | **0** | 292 |
+
+- ⬜ **No item has follow-ups.** M06 reads `follow_ups: [{depth, template}]`
+  as the probe ladder's own rungs. With none, every rung on a bank question is
+  M06's generic one, and M06 allows each interviewer 0–2 generic rungs — so 33
+  of its 39 interviewers ask at most one follow-up on a bank question. Author
+  2–3 per item, the 12 reviewed first, and have the drafting prompt write them
+  for new drafts.
+- ⬜ **Only DSA has reviewed items.** M06 sends θ observations, and M13 scores,
+  only for reviewed items. On every other track nothing is scored and the next
+  question does not depend on how the last answer went. About ten reviewed per
+  track through the FR-5.6 queue makes that track scored and adaptive.
+- ⬜ **Hints on reviewed items: 1 of 12.** On the other eleven, the student's
+  Hint has nothing to give.
+- Difficulty is still the authors' band (cold start, `BAND_TABLE_VERSION`
+  1.0.0); nothing is calibrated from responses yet.
+
 ---
 
 ## 0. Ideas and scouting
@@ -161,8 +185,12 @@ About fifteen lines. No dependency.
 2. **Tests for the five requirements coded without one** (the 2026-08-28
    audit's count) — name each here as it gets its test.
 3. **Review the drafted items in the queue** — the team's work, not code's;
-   each approval moves one item into scored use.
-4. §8.2's bank console: the review queue is its first screen; exposure and
+   each approval moves one item into scored use. About ten per track first:
+   today only DSA has any (2026-10-22).
+4. **Write `follow_ups` and `hint_ladder`s** — no item has follow-ups, and 1 of
+   the 12 reviewed has hints (2026-10-22). The drafting prompt should write
+   follow-ups too.
+5. §8.2's bank console: the review queue is its first screen; exposure and
    calibration views are still to build.
 
 ---
