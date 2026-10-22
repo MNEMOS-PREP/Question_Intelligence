@@ -130,6 +130,23 @@ Counted by loading the bank (`bank.load()`), not by reading this file.
 - Difficulty is still the authors' band (cold start, `BAND_TABLE_VERSION`
   1.0.0); nothing is calibrated from responses yet.
 
+### 2026-10-22/23 — M06's asks: a pitch per topic, and a focus that holds (`bb4b3fe`)
+
+From M06's realism overhaul (`Mock_Interview_Engine/plan_in_depth/M06_OVERHAUL.md`).
+
+- ✅ **`difficulty_offset` and `difficulty_shift`** on `SelectionRequest`:
+  where to pitch the next item, in logits from the provisional θ, per concept
+  (M06's per-topic level in this interview) plus a shift for every concept
+  (the mode's). They move the TARGET (`target_theta`), never the estimate,
+  and are bounded at ±2. M06's long-standing ask, now taken.
+- ✅ **`only_concepts`**: a focus the student chose is a hard filter on any
+  concept an item measures (Rabin-Karp is hashing), applied in eligibility
+  and in the last-resort playlist, and never relaxed — when none is left the
+  round ends (§6.8 step 5). Found live: "Focus: Hashing" was asked about
+  hashing once, then whatever ranked highest, because `coverage_debt`'s ×1.8
+  lost to the recency and repeat penalties on a second hashing item.
+- Tests: 6 in `test_selection.py` — 127 in all, `ruff check` clean.
+
 ---
 
 ## 0. Ideas and scouting
@@ -167,11 +184,11 @@ About fifteen lines. No dependency.
 | | |
 |---|---|
 | Status | **Built.** FR coverage was audited on 2026-08-28 (the header's counts) and re-checked on 2026-10-04 and 2026-10-17. The per-requirement table was never written into this file, and the §13 acceptance gates have not been walked one by one |
-| Backend tests passing | **121** |
+| Backend tests passing | **127** |
 | Release gates (`-m gate`) | **11** |
 | Frontend | **none of its own** — M05 is a service; M06 and M13 are its callers, and the review queue's screen is the shell's (`/questions/review`) |
 
-*Counted 2026-10-17 by running the suite, not by reading this file.*
+*Counted 2026-10-23 by running the suite, not by reading this file.*
 
 > **Re-checked 2026-10-17:** FR-5.6 (the human review queue, a P0) is built
 > (2026-10-14). FR-5.28 (exposure-bypass reporting) still has no route.
