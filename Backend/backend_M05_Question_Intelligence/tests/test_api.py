@@ -5,12 +5,15 @@ from __future__ import annotations
 import uuid
 
 import pytest
+import yaml
 from ai_core import service
 from ai_core.guard import identity_headers
 from fastapi.testclient import TestClient
 
 from backend_M05_Question_Intelligence import bank as bank_module
 from backend_M05_Question_Intelligence.app import app
+from backend_M05_Question_Intelligence.jobs import refresh_ontology
+from backend_M05_Question_Intelligence.ontology import SNAPSHOT
 
 from .conftest import CANDIDATE
 
@@ -55,7 +58,29 @@ def test_the_module_runs_without_m04(client):
     module for weeks."""
     body = client.get("/v1/ontology").json()
     assert body["source"] == "snapshot"
-    assert body["n_concepts"] == 156  # 120 + 36 for ML (2026-10-07)
+    assert body["n_concepts"] == len(_concepts(SNAPSHOT.read_text(encoding="utf-8")))
+
+
+def _concepts(text: str) -> list[dict]:
+    return (yaml.safe_load(text) or {}).get("concepts") or []
+
+
+def test_the_snapshot_is_m04s_ontology_as_it_is_now():
+    """M04 owns the concepts; the snapshot only lets this module run alone. A
+    tag M04 renames leaves the bank tagging a concept M04 refuses, and every
+    observation batched with it is refused too (the outbox, 2026-08 → 10).
+    It was nine concepts behind on 2026-10-30. Read when M04's ontology is
+    checked out beside this repo; `jobs/refresh_ontology.py` brings it level."""
+    try:
+        source = refresh_ontology.sibling_ontology()
+    except SystemExit:
+        pytest.skip("M04's ontology is not checked out beside this repo")
+    snapshot = SNAPSHOT.read_text(encoding="utf-8")
+    body = snapshot[snapshot.index(refresh_ontology.HEADER_END) :]
+    assert _concepts(body) == _concepts(source.read_text(encoding="utf-8")), (
+        "the snapshot has drifted from M04: run "
+        "python -m backend_M05_Question_Intelligence.jobs.refresh_ontology"
+    )
 
 
 # ── the bank ─────────────────────────────────────────────────────────────
