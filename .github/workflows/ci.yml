@@ -28,6 +28,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: Question_Intelligence
+      # M04's ontology, beside this repo: the snapshot is checked against it,
+      # and that test skips (silently green) when it is absent.
+      - uses: actions/checkout@v4
+        with:
+          repository: MNEMOS-PREP/Memory
+          ref: main
+          path: Memory
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
