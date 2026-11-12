@@ -1,0 +1,424 @@
+# =============================================================================
+#  GOAL BANK — languages_verbal (2026-11-12, for M22 Follow Your Goal)
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: languages_verbal
+provenance: generated
+items:
+  py_mutable_default:
+    c: [python_language, functions_and_scope]
+    d: core
+    t: debugging
+    f: "data types and mutability"
+    q: "A Python function with a default argument of an empty list keeps returning items from earlier calls. Why?"
+    a: "Default values are evaluated once, when the function is defined, so every call that uses the default shares the same list object, and appending to it changes it for later calls. Use None as the default and create a new list inside the function when it is None. The same applies to dictionaries and other mutable defaults."
+    k: ["!Says defaults are evaluated once at definition time", "Explains all calls share and mutate the same list", "Fixes with a None default and a new list inside"]
+    h: ["When is the default list created?"]
+    fu: ["How do tuples and lists differ in mutability?"]
+    m: "Default arguments are recreated on every call."
+    s: ["Mechanism", "Idiomatic fix"]
+
+  py_generators:
+    c: [python_language, memory_management]
+    d: core
+    t: optimisation
+    f: "comprehensions and generators"
+    q: "When would you use a generator instead of a list comprehension in Python?"
+    a: "A list comprehension builds the whole list in memory at once; a generator produces items one at a time when asked, so memory stays constant. Use generators for large or infinite sequences, pipelines that stream data such as reading a big file line by line, or when you may stop early. Use a list when you need to index it, reuse it or know its length."
+    k: ["!Contrasts building the full list with producing items lazily", "Uses generators for large data or streaming", "Keeps lists for indexing, reuse or length"]
+    h: ["How much memory does each hold for a billion items?"]
+    fu: ["What happens if you iterate a generator twice?"]
+    m: "Generators are always faster than lists."
+    s: ["Memory model", "When each fits"]
+
+  py_decorators:
+    c: [python_language, functions_and_scope]
+    d: core
+    t: coding
+    f: "functions and decorators"
+    q: "Explain how you would write a decorator that times how long a function takes, and what functools.wraps is for."
+    a: "A decorator is a function that takes a function and returns a wrapper: the wrapper records the time, calls the original with the same arguments, records the time again, logs the difference and returns the result. Applying it with the at-sign replaces the function with the wrapper. functools.wraps copies the original's name and docstring onto the wrapper so debugging and introspection still work."
+    k: ["!Describes a wrapper that calls the original with its arguments", "Measures time around the call and returns the result", "Explains wraps preserves the original's metadata"]
+    h: ["What does the at-sign line do to the function name?"]
+    fu: ["How would you make the decorator take a parameter?"]
+    m: "Decorators change the function's code."
+    s: ["Clear mechanism", "Metadata detail"]
+
+  py_gil:
+    c: [python_language, concurrency_synchronisation]
+    d: hard
+    t: tradeoff
+    f: "the GIL and concurrency"
+    q: "Why do threads not speed up CPU-heavy Python code, and what would you use instead?"
+    a: "CPython's global interpreter lock lets only one thread execute Python bytecode at a time, so CPU-bound threads take turns rather than run in parallel. Threads still help for I/O-bound work, since the lock is released while waiting. For CPU-bound work use multiprocessing or a process pool, libraries like NumPy whose C code releases the lock, or asyncio for many concurrent I/O tasks."
+    k: ["!Explains the GIL allows one thread to run Python bytecode at a time", "Says threads still help I/O-bound work", "Proposes processes or native libraries for CPU-bound work"]
+    h: ["Is the work waiting on I/O or computing?"]
+    fu: ["What changes with free-threaded Python builds?"]
+    m: "Python cannot do anything in parallel."
+    s: ["CPU versus I/O", "Right tool"]
+
+  py_venv:
+    c: [python_language, ci_cd]
+    d: intro
+    t: practical
+    f: "packaging and virtual environments"
+    q: "A Python project works on your laptop and fails on a teammate's with import errors. How do you make environments reproducible?"
+    a: "Use a virtual environment per project so its packages are isolated from the system and other projects, and pin exact dependency versions in a lock file, using tools such as pip-tools, Poetry or uv. Record the Python version, install from the lock file in CI and on teammates' machines, and avoid installing packages globally."
+    k: ["!Uses a virtual environment per project", "Pins versions in a lock file", "Installs from the lock file everywhere and records the Python version"]
+    h: ["Which version of each package does your teammate have?"]
+    fu: ["Why separate direct dependencies from the lock file?"]
+    m: "pip install -r with unpinned versions is reproducible."
+    s: ["Isolation", "Pinning"]
+
+  java_equals_hashcode:
+    c: [java_language, hashing]
+    d: core
+    t: debugging
+    f: "equals and hashCode"
+    q: "You put objects in a HashSet, and contains returns false for an object equal to one already inside. What did the class get wrong?"
+    a: "It overrode equals but not hashCode, or computed them from different fields. A HashSet first finds the bucket by hashCode, so two equal objects with different hash codes land in different buckets and are never compared. The contract is that equal objects must have equal hash codes; generate both from the same immutable fields, or use a record."
+    k: ["!Identifies equals overridden without a matching hashCode", "Explains the set looks up the bucket by hash before equals", "States the contract and uses the same fields or a record"]
+    h: ["Which method does HashSet call first?"]
+    fu: ["Why are mutable fields in hashCode dangerous?"]
+    m: "Overriding equals is enough."
+    s: ["Contract", "Mechanism"]
+
+  java_jvm_memory:
+    c: [java_language, memory_model_gc]
+    d: core
+    t: conceptual
+    f: "the JVM and memory"
+    q: "Explain the difference between the stack and the heap in the JVM, and what causes a memory leak in a garbage-collected language."
+    a: "Each thread's stack holds method frames with local primitives and references; objects live on the shared heap, managed by the garbage collector, which frees objects no longer reachable. A leak in Java means objects stay reachable when you no longer need them, for example growing static collections, caches without eviction, or listeners never removed, so the collector cannot free them."
+    k: ["!Distinguishes per-thread stack frames from the shared heap", "Says the GC frees unreachable objects", "Explains leaks as unwanted but still-reachable references"]
+    h: ["Can the GC free an object still referenced by a static map?"]
+    fu: ["How would you find a leak with a heap dump?"]
+    m: "Garbage collection makes memory leaks impossible."
+    s: ["Reachability", "Concrete leak sources"]
+
+  java_collections:
+    c: [java_language, hashing]
+    d: intro
+    t: tradeoff
+    f: "collections"
+    q: "When would you choose an ArrayList, a LinkedList, a HashMap or a TreeMap in Java?"
+    a: "ArrayList is the default list: fast indexed access and appends with good cache behaviour. LinkedList rarely wins, mainly for frequent insertions at the ends used as a deque, where ArrayDeque is usually better. HashMap gives average constant-time lookup without ordering. TreeMap keeps keys sorted with logarithmic operations, useful for range queries or ordered iteration."
+    k: ["!Uses ArrayList as the default list", "Notes LinkedList rarely wins over ArrayList or ArrayDeque", "Contrasts HashMap's speed with TreeMap's ordering"]
+    h: ["Do you need the keys in sorted order?"]
+    fu: ["Why is LinkedList slow even for middle insertions in practice?"]
+    m: "LinkedList is faster for insertion in all cases."
+    s: ["Practical defaults", "Ordering trade-off"]
+
+  java_concurrency:
+    c: [java_language, concurrency_synchronisation]
+    d: hard
+    t: debugging
+    f: "concurrency in Java"
+    q: "Two threads increment a shared int counter a million times each, and the result is less than two million. Why, and what are the fixes?"
+    a: "count++ is a read, add and write, not atomic, so threads overwrite each other's updates — a race condition. Fix with an AtomicInteger, or a LongAdder under heavy contention, or by synchronising the increment. Better still, avoid shared mutable state by having each thread count locally and combining at the end. volatile alone does not help, since it guarantees visibility, not atomicity."
+    k: ["!Explains increment is not atomic, causing lost updates", "Fixes with atomic classes or synchronisation", "Notes volatile does not make it atomic"]
+    h: ["How many steps is count++?"]
+    fu: ["When would you use a ConcurrentHashMap?"]
+    m: "volatile makes increments thread-safe."
+    s: ["Race explained", "Several fixes"]
+
+  java_streams:
+    c: [java_language, functions_and_scope]
+    d: core
+    t: coding
+    f: "streams and lambdas"
+    q: "Describe how you would use Java streams to get the names of the top three customers by total order value."
+    a: "Stream the orders, group them by customer with Collectors.groupingBy and summingDouble on the order value, then stream the map's entries, sort by value in reverse, limit to three and map to the customer name. Streams are lazy and readable for such pipelines, but should not mutate shared state inside lambdas."
+    k: ["!Groups by customer summing order values", "Sorts entries by total descending and limits to three", "Mentions laziness or avoiding side effects in lambdas"]
+    h: ["Which collector sums values per key?"]
+    fu: ["When would a parallel stream help or hurt?"]
+    m: "Streams are always faster than loops."
+    s: ["Correct pipeline", "Side-effect caution"]
+
+  js_closures_this:
+    c: [javascript, functions_and_scope]
+    d: core
+    t: debugging
+    f: "scope closures and this"
+    q: "A callback inside a class method logs undefined for this.name. Why, and how do you fix it?"
+    a: "In JavaScript, this is set by how a function is called, not where it is written. Passing a method as a callback calls it without its object, so this is undefined in strict mode. Fix it with an arrow function, which takes this from the surrounding scope, or bind the method in the constructor, or call it as obj.method()."
+    k: ["!Explains this depends on how the function is called", "Says passing a method as a callback loses its object", "Fixes with an arrow function or bind"]
+    h: ["Who calls the callback?"]
+    fu: ["How does a closure differ from this?"]
+    m: "this always refers to the object where the function was defined."
+    s: ["Call-site rule", "Fixes"]
+
+  js_prototypes:
+    c: [javascript, inheritance]
+    d: hard
+    t: conceptual
+    f: "prototypes"
+    q: "How does inheritance work in JavaScript under the class syntax?"
+    a: "Objects link to a prototype object; when a property is not found on the object, the engine looks up the prototype chain. The class syntax is sugar over this: methods live on the constructor's prototype, shared by all instances, and extends sets the subclass prototype to link to the parent's. That is why adding a method to a prototype affects every existing instance."
+    k: ["!Explains property lookup along the prototype chain", "Says class syntax places methods on the shared prototype", "Explains extends links prototypes"]
+    h: ["Where does an instance find a method it does not own?"]
+    fu: ["What is the difference between __proto__ and prototype?"]
+    m: "JavaScript classes copy methods into each object like Java."
+    s: ["Chain lookup", "Sugar explained"]
+
+  js_async:
+    c: [javascript, browser_rendering]
+    d: core
+    t: optimisation
+    f: "promises and async-await"
+    q: "A function awaits three independent API calls one after another and takes three seconds. How would you make it faster, and how do you handle one failing?"
+    a: "Start all three calls first, then await them together with Promise.all, so they run concurrently and finish in about the time of the slowest. Promise.all rejects as soon as one fails; if partial results are useful, use Promise.allSettled and handle each outcome. Wrap the await in try-catch to handle errors."
+    k: ["!Runs independent calls concurrently with Promise.all", "Explains Promise.all rejects on the first failure", "Uses allSettled for partial results with error handling"]
+    h: ["Does call two need call one's result?"]
+    fu: ["How would you add a timeout to one call?"]
+    m: "async functions run in parallel automatically."
+    s: ["Concurrency", "Failure handling"]
+
+  js_equality:
+    c: [javascript, variables_and_types]
+    d: intro
+    t: conceptual
+    f: "equality and types"
+    q: "Why does 0 == \"\" evaluate to true in JavaScript, and why do teams use === instead?"
+    a: "The loose equality operator converts operands to a common type before comparing, so the empty string becomes 0 and they compare equal; these coercion rules are surprising, for example null == undefined is true but null == 0 is false. Strict equality compares without conversion, so types must match, which makes comparisons predictable."
+    k: ["!Explains == performs type coercion", "Gives a surprising coercion example", "Says === compares without coercion"]
+    h: ["What does the empty string become when converted to a number?"]
+    fu: ["How does Object.is differ from ===?"]
+    m: "== and === only differ for objects."
+    s: ["Coercion explained", "Predictability"]
+
+  js_modules:
+    c: [javascript, web_performance]
+    d: core
+    t: tradeoff
+    f: "modules"
+    q: "What is the difference between CommonJS and ES modules, and why does it matter for bundle size?"
+    a: "CommonJS uses require and module.exports, evaluated at runtime, so imports can be dynamic. ES modules use static import and export, which tools can analyse before running, enabling tree shaking to drop unused exports from bundles. ES modules are the standard in browsers and modern Node; mixing the two causes interoperability issues."
+    k: ["!Contrasts runtime require with static import and export", "Explains static imports enable tree shaking", "Mentions ESM as the standard or interop issues"]
+    h: ["Can a bundler know which exports you use from require?"]
+    fu: ["What does a dynamic import() give you?"]
+    m: "The two module systems are identical apart from syntax."
+    s: ["Static analysis", "Practical impact"]
+
+  ts_types_interfaces:
+    c: [typescript, abstraction_and_interfaces]
+    d: intro
+    t: tradeoff
+    f: "types versus interfaces"
+    q: "When would you use a type alias and when an interface in TypeScript?"
+    a: "Both describe object shapes. Interfaces can be extended and merged by declaring them again, which suits public object contracts and library types. Type aliases can express unions, intersections, tuples and mapped types, which interfaces cannot. Many teams use interfaces for object shapes and types for everything else, and consistency matters more than the choice."
+    k: ["!Says both describe object shapes", "Notes interfaces extend and merge", "Notes types handle unions, tuples and mapped types"]
+    h: ["Can an interface describe 'string or number'?"]
+    fu: ["When is declaration merging useful?"]
+    m: "Interfaces are always better than types."
+    s: ["Capabilities compared", "Pragmatic rule"]
+
+  ts_generics:
+    c: [typescript, abstraction_and_interfaces]
+    d: core
+    t: coding
+    f: "generics"
+    q: "Explain how you would type a function that returns the first element of any array, keeping the element type."
+    a: "Use a generic type parameter: function first of T taking an array of T and returning T or undefined. TypeScript infers T from the argument, so first of a number array returns number or undefined, preserving type information instead of falling back to any. Constraints such as T extends object restrict what T can be."
+    k: ["!Uses a type parameter T for the array element", "Returns T or undefined for an empty array", "Mentions inference or constraints"]
+    h: ["What would the return type be with any?"]
+    fu: ["How would you constrain T to objects with an id?"]
+    m: "Generics are only for classes."
+    s: ["Type preservation", "Edge case"]
+
+  ts_narrowing:
+    c: [typescript, exception_handling]
+    d: core
+    t: debugging
+    f: "narrowing"
+    q: "An API returns either a success object with data or an error object with a message. How do you type and handle it safely in TypeScript?"
+    a: "Model it as a discriminated union with a shared literal field, such as status success with data, or status error with message. Checking status narrows the type in each branch, so the compiler allows data only on success. A switch with a never check in the default makes the compiler flag any new variant that is not handled."
+    k: ["!Uses a discriminated union with a literal tag", "Narrows by checking the tag", "Uses an exhaustiveness check with never"]
+    h: ["How does the compiler know data exists?"]
+    fu: ["How would you validate the response at runtime too?"]
+    m: "Type assertions are a safe way to handle API responses."
+    s: ["Union modelling", "Exhaustiveness"]
+
+  ts_real_codebase:
+    c: [typescript, code_quality_and_review]
+    d: hard
+    t: practical
+    f: "typing a real codebase"
+    q: "How would you migrate a large JavaScript codebase to TypeScript without stopping feature work?"
+    a: "Migrate incrementally: add TypeScript with allowJs so JS and TS coexist, start with loose settings, convert leaf modules and shared utilities first, and add types at boundaries such as API responses. Tighten compiler options, especially strict mode, step by step, track remaining any usage, and require new files to be TypeScript. Runtime validation at boundaries keeps types honest."
+    k: ["!Migrates incrementally with JS and TS coexisting", "Starts loose and tightens strictness over time", "Types boundaries and limits any, with new code in TS"]
+    h: ["Can JS and TS files import each other during migration?"]
+    fu: ["Why validate API responses at runtime if you have types?"]
+    m: "A migration must convert everything at once."
+    s: ["Incremental plan", "Boundary types"]
+
+  c_pointers_arrays:
+    c: [c_language, pointers_and_references]
+    d: core
+    t: conceptual
+    f: "pointers and arrays"
+    q: "In C, how is an array related to a pointer, and why does sizeof give different answers inside a function?"
+    a: "In most expressions an array name decays to a pointer to its first element, and indexing a[i] is pointer arithmetic on that address. Passing an array to a function passes only that pointer, so inside the function sizeof gives the pointer's size, not the array's. That is why C functions take a separate length parameter."
+    k: ["!Explains arrays decay to a pointer to the first element", "Says a function receives only a pointer", "Explains why sizeof differs and lengths are passed separately"]
+    h: ["What does a function parameter declared as int a[] really receive?"]
+    fu: ["When does an array not decay?"]
+    m: "An array and a pointer are the same thing."
+    s: ["Decay rule", "Practical consequence"]
+
+  c_malloc:
+    c: [c_language, memory_management]
+    d: core
+    t: debugging
+    f: "memory allocation"
+    q: "Name three common bugs with malloc and free in C, and how you would catch them."
+    a: "Memory leaks, where allocated memory is never freed; use-after-free, where memory is accessed after free; and double free or freeing memory not from malloc. Also not checking malloc's return for NULL and writing past the allocated size. Tools like Valgrind and AddressSanitizer detect these, and clear ownership rules and setting pointers to NULL after free help prevent them."
+    k: ["!Names leaks, use-after-free and double free", "Mentions unchecked NULL or overflowing the allocation", "Uses Valgrind or AddressSanitizer and ownership rules"]
+    h: ["What happens if you read memory after freeing it?"]
+    fu: ["Who should free memory returned by a library function?"]
+    m: "The operating system frees everything, so leaks never matter."
+    s: ["Bug catalogue", "Tooling"]
+
+  c_ub:
+    c: [c_language, compilation_and_interpretation]
+    d: hard
+    t: conceptual
+    f: "undefined behaviour"
+    q: "What is undefined behaviour in C, and why can it make a program behave differently at higher optimisation levels?"
+    a: "Undefined behaviour is code the standard places no requirements on, such as signed integer overflow, out-of-bounds access or using uninitialised variables. Compilers assume it never happens and optimise on that assumption, for example removing an overflow check that relies on signed overflow wrapping. So code may work at -O0 and break at -O2. Sanitisers and warnings help find it."
+    k: ["!Defines undefined behaviour with examples", "Explains compilers optimise assuming it never happens", "Mentions sanitisers or warnings to catch it"]
+    h: ["What may the compiler assume about signed overflow?"]
+    fu: ["How do you safely check for overflow?"]
+    m: "Undefined behaviour just means a crash."
+    s: ["Optimiser reasoning", "Detection"]
+
+  cpp_raii:
+    c: [cpp_language, memory_management]
+    d: core
+    t: conceptual
+    f: "RAII and smart pointers"
+    q: "What is RAII in C++, and how do unique_ptr and shared_ptr use it?"
+    a: "RAII ties a resource's lifetime to an object: the constructor acquires it and the destructor releases it, so cleanup happens automatically when the object goes out of scope, even if an exception is thrown. unique_ptr owns memory exclusively and frees it when destroyed; it can be moved but not copied. shared_ptr counts owners and frees when the last one goes, at a reference-counting cost."
+    k: ["!Explains RAII ties resource release to object destruction", "Says unique_ptr is exclusive ownership, movable not copyable", "Says shared_ptr uses reference counting"]
+    h: ["What happens to a local object when an exception leaves the function?"]
+    fu: ["How can shared_ptr leak with cycles?"]
+    m: "Smart pointers are garbage collection."
+    s: ["Lifetime model", "Ownership semantics"]
+
+  cpp_move:
+    c: [cpp_language, memory_management]
+    d: hard
+    t: optimisation
+    f: "move semantics"
+    q: "What problem do move semantics solve in C++, and when is a move actually performed?"
+    a: "Copying large objects such as vectors or strings duplicates their buffers. A move transfers the internal resources from a temporary or an object explicitly cast with std::move, leaving the source valid but empty, so it is cheap. Moves happen for rvalues, such as returned temporaries, when the type has a move constructor, and returning a local by value is often elided entirely."
+    k: ["!Says moves transfer resources instead of copying them", "Explains moves apply to rvalues or std::move", "Mentions the moved-from state or copy elision"]
+    h: ["What is left in a vector after it is moved from?"]
+    fu: ["Why should move constructors be noexcept?"]
+    m: "std::move moves the object by itself."
+    s: ["Cost reasoning", "When it happens"]
+
+  cpp_virtual:
+    c: [cpp_language, polymorphism]
+    d: core
+    t: debugging
+    f: "virtual functions"
+    q: "Deleting a derived object through a base class pointer leaks the derived class's resources. Why?"
+    a: "The base class destructor is not virtual, so delete calls only the base destructor and never runs the derived one. Declaring the base destructor virtual makes delete dispatch through the vtable to the derived destructor first. Any class meant to be used polymorphically should have a virtual destructor."
+    k: ["!Identifies a non-virtual base destructor", "Explains virtual dispatch then runs the derived destructor", "States the rule for polymorphic base classes"]
+    h: ["Which destructor runs through a base pointer?"]
+    fu: ["What does a vtable contain?"]
+    m: "Destructors are always virtual by default."
+    s: ["Root cause", "General rule"]
+
+  go_goroutines:
+    c: [go_language, concurrency_synchronisation]
+    d: core
+    t: debugging
+    f: "goroutines and channels"
+    q: "A Go service's memory keeps growing, and profiling shows thousands of goroutines blocked on a channel send. What is likely wrong?"
+    a: "Goroutines are leaking: each sends to a channel nobody reads any more, for example after a caller timed out and stopped listening, so they block forever and hold memory. Use buffered channels sized for the result, select with a context's Done channel so senders give up when the request is cancelled, and make sure every goroutine has a way to exit."
+    k: ["!Identifies goroutine leaks blocked on sends", "Uses context cancellation with select", "Ensures every goroutine can exit, e.g. buffered channels"]
+    h: ["Who is supposed to read from that channel?"]
+    fu: ["How would you detect goroutine leaks in tests?"]
+    m: "Goroutines are free, so leaks do not matter."
+    s: ["Cause", "Cancellation pattern"]
+
+  go_interfaces:
+    c: [go_language, abstraction_and_interfaces]
+    d: intro
+    t: conceptual
+    f: "interfaces"
+    q: "How do interfaces work in Go, and why are they usually small?"
+    a: "A type satisfies an interface implicitly by having its methods, with no implements declaration, so consumers can define the interfaces they need. Small interfaces like io.Reader with one method are easy to implement and compose, and let many types plug in. The common advice is to accept interfaces and return concrete types."
+    k: ["!Explains implicit satisfaction by method set", "Explains small interfaces compose and are easy to implement", "Mentions accepting interfaces and returning structs"]
+    h: ["Does a type declare which interfaces it implements?"]
+    fu: ["What is a nil interface versus an interface holding a nil pointer?"]
+    m: "Go interfaces must be declared by the implementing type."
+    s: ["Implicit model", "Design advice"]
+
+  go_errors:
+    c: [go_language, exception_handling]
+    d: core
+    t: practical
+    f: "error handling"
+    q: "How are errors handled in Go, and how do you add context without losing the original error?"
+    a: "Functions return an error value alongside the result, and callers check it explicitly. Wrap errors with fmt.Errorf using the percent-w verb to add context such as which file failed, and later use errors.Is or errors.As to check for a specific underlying error through the chain. Panics are for unrecoverable programmer errors, not normal failures."
+    k: ["!Returns errors as values checked by the caller", "Wraps with %w to add context", "Uses errors.Is or errors.As, reserving panic for bugs"]
+    h: ["How would a caller know the error was 'not found'?"]
+    fu: ["When is panic appropriate?"]
+    m: "Go has exceptions like Java."
+    s: ["Explicit errors", "Wrapping"]
+
+  cs_linq:
+    c: [csharp_dotnet, sql_queries]
+    d: core
+    t: debugging
+    f: "LINQ"
+    q: "An Entity Framework query loads an entire table into memory before filtering. How could that happen with LINQ?"
+    a: "The query was materialised too early, for example with ToList or by treating it as IEnumerable, so the Where clause ran in memory instead of being translated into SQL. Keep the query as IQueryable until filtering, sorting and projection are applied so the database does the work, and select only needed columns. Logging the generated SQL confirms it."
+    k: ["!Explains early materialisation moves filtering into memory", "Keeps IQueryable so filters translate to SQL", "Checks the generated SQL or projects only needed columns"]
+    h: ["Where does the Where clause run?"]
+    fu: ["What is the N+1 problem in Entity Framework?"]
+    m: "LINQ always runs in the database."
+    s: ["IQueryable versus IEnumerable", "Verification"]
+
+  cs_async:
+    c: [csharp_dotnet, concurrency_synchronisation]
+    d: hard
+    t: debugging
+    f: "async and tasks"
+    q: "An ASP.NET request hangs when code calls .Result on an async method. Why?"
+    a: "Blocking on .Result or .Wait in an environment with a synchronisation context can deadlock: the thread waits for the task, while the task's continuation waits to resume on that same blocked thread. Even without a deadlock it wastes thread-pool threads. Use async all the way and await the task; in libraries ConfigureAwait(false) avoids capturing the context."
+    k: ["!Explains blocking on async code can deadlock or starve threads", "Recommends async and await all the way", "Mentions ConfigureAwait(false) in libraries"]
+    h: ["Which thread does the continuation need?"]
+    fu: ["What is thread-pool starvation?"]
+    m: ".Result is a safe way to call async code."
+    s: ["Deadlock mechanism", "Correct pattern"]
+
+  cs_clr_gc:
+    c: [csharp_dotnet, memory_model_gc]
+    d: core
+    t: conceptual
+    f: "the CLR and garbage collection"
+    q: "What is the difference between value types and reference types in C#, and how does the .NET garbage collector use generations?"
+    a: "Value types such as structs and ints hold their data directly and are copied on assignment; reference types such as classes live on the heap and variables hold references. The generational collector assumes most objects die young: it collects generation 0 often and cheaply, promotes survivors to generations 1 and 2, which are collected rarely, and large objects go to a separate heap."
+    k: ["!Distinguishes copied value types from heap-allocated reference types", "Explains generational collection with frequent gen 0 collections", "Mentions promotion or the large object heap"]
+    h: ["What happens when you assign one struct variable to another?"]
+    fu: ["When should you implement IDisposable?"]
+    m: "Structs are always faster than classes."
+    s: ["Semantics", "GC model"]
+
+  cs_aspnet:
+    c: [csharp_dotnet, api_design]
+    d: core
+    t: design
+    f: "ASP.NET Core services"
+    q: "How is an ASP.NET Core API structured, and how does dependency injection lifetimes affect it?"
+    a: "Program.cs configures services and the middleware pipeline; controllers or minimal API endpoints handle routes. Services are registered as singleton, scoped per request, or transient per use. A database context should be scoped; injecting a scoped service into a singleton captures it and breaks, so lifetimes must match. Middleware handles cross-cutting concerns like authentication and errors."
+    k: ["!Describes service registration, middleware pipeline and endpoints", "Explains singleton, scoped and transient lifetimes", "Notes the captive dependency problem"]
+    h: ["How long should a database context live?"]
+    fu: ["Where would you put global exception handling?"]
+    m: "All services should be singletons for speed."
+    s: ["Structure", "Lifetime pitfall"]

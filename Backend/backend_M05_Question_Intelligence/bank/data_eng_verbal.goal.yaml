@@ -1,0 +1,372 @@
+# =============================================================================
+#  GOAL BANK — data_eng_verbal (2026-11-12, for M22 Follow Your Goal)
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: data_eng_verbal
+provenance: generated
+items:
+  pipe_etl_elt:
+    c: [data_pipelines, data_warehousing]
+    d: intro
+    t: tradeoff
+    f: "extract transform load"
+    q: "What is the difference between ETL and ELT, and why have many teams moved to ELT?"
+    a: "ETL transforms data before loading it into the warehouse, often on a separate processing server. ELT loads raw data first and transforms it inside the warehouse with SQL. Cheap cloud storage and powerful warehouses made ELT attractive: raw data is kept for reprocessing, analysts can change transformations without re-extracting, and tools like dbt version the SQL. ETL still suits sensitive data that must be masked before it lands."
+    k: ["!Defines ETL as transform before load and ELT as load then transform", "Explains warehouses' compute and cheap storage favour ELT", "Mentions keeping raw data or masking needs for ETL"]
+    h: ["Where does the transformation run in each?"]
+    fu: ["What does dbt add to an ELT pipeline?"]
+    m: "ELT means no transformation happens."
+    s: ["Clear definitions", "Why the shift"]
+
+  pipe_idempotent:
+    c: [data_pipelines, airflow]
+    d: core
+    t: scenario
+    f: "idempotent and re-runnable loads"
+    q: "A daily load failed halfway and was re-run, and now some days have duplicate rows. How do you make the load safe to re-run?"
+    a: "Make each run idempotent for its time slice: load into a staging table, then replace the target partition for that date in one transaction, or merge on a natural key so a second run updates rather than inserts. Avoid appends that depend on the job running exactly once, and parameterise runs by date so any day can be reprocessed."
+    k: ["!Makes each run replace or merge its slice instead of appending", "Uses staging plus an atomic swap or a merge on a key", "Parameterises by date so any day can be rerun"]
+    h: ["What does the second run do with rows the first run already wrote?"]
+    fu: ["How would you backfill the last 90 days?"]
+    m: "Pipelines only run once, so idempotency is optional."
+    s: ["Partition overwrite or merge", "Backfill-ready"]
+
+  pipe_late_bad_data:
+    c: [data_pipelines, data_quality_and_governance]
+    d: hard
+    t: scenario
+    f: "handling late and bad data"
+    q: "Events sometimes arrive two days late, and some have malformed timestamps. How should the pipeline handle both?"
+    a: "For late data, partition by event date and reprocess a sliding window of recent days on each run, or use merges that update the right partition when late records arrive. For bad records, validate on ingest and route failures to a quarantine table with the reason, rather than failing the whole load or silently dropping them, and alert when the bad share crosses a threshold."
+    k: ["!Reprocesses a window or merges so late events land in the right partition", "Quarantines malformed records with a reason", "Alerts when bad data exceeds a threshold"]
+    h: ["Which date should a late event be counted under?"]
+    fu: ["How would you tell a dashboard user that recent numbers may still change?"]
+    m: "Late data should just be dropped."
+    s: ["Event-date thinking", "Quarantine not drop"]
+
+  dw_facts_dims:
+    c: [data_warehousing, data_modelling]
+    d: intro
+    t: design
+    f: "facts and dimensions"
+    q: "Design a star schema for analysing sales by product, store and day."
+    a: "The fact table holds one row per sale line with numeric measures such as quantity and amount and foreign keys to the dimensions. Dimension tables describe the context: product with category and brand, store with city and region, and a date dimension with day, month, quarter and holiday flags. Analysts filter and group by dimension attributes and sum the fact measures."
+    k: ["!Puts measures in a fact table at a stated grain", "Puts descriptive attributes in product, store and date dimensions", "Explains querying by grouping on dimensions and summing facts"]
+    h: ["What is one row of the fact table?"]
+    fu: ["Why have a date dimension instead of just a timestamp?"]
+    m: "A star schema should be fully normalised."
+    s: ["States the grain", "Clear dimensions"]
+
+  dw_scd:
+    c: [data_warehousing, data_modelling]
+    d: hard
+    t: tradeoff
+    f: "slowly changing dimensions"
+    q: "A customer moves from Chennai to Pune. How should the customer dimension handle it so last year's sales still show Chennai?"
+    a: "Use a Type 2 slowly changing dimension: instead of overwriting the city, close the current row with an end date and insert a new row with the new city, a new surrogate key and a current flag. Facts keep the surrogate key valid at the time of sale, so history is preserved. Type 1, overwriting, is simpler but rewrites history; choose per attribute."
+    k: ["!Describes Type 2: close the old row and insert a new version", "Says facts reference the version valid at sale time via surrogate keys", "Contrasts with Type 1 overwrite and chooses per attribute"]
+    h: ["Which city should a sale made last year be reported under?"]
+    fu: ["How do you join facts to the right version efficiently?"]
+    m: "Updating the row in place is always fine."
+    s: ["History preservation", "Per-attribute choice"]
+
+  dw_olap_columnar:
+    c: [data_warehousing, indexing]
+    d: core
+    t: conceptual
+    f: "columnar storage and partitioning"
+    q: "Why are analytical warehouses column-oriented while transactional databases are row-oriented?"
+    a: "Transactional workloads read and write whole rows for one record at a time, which row storage serves well. Analytical queries scan millions of rows but only a few columns, such as summing amount by month; columnar storage reads only those columns, compresses similar values very well and processes them in vectorised batches. Partitioning by date then lets queries skip whole chunks."
+    k: ["!Contrasts row access for single records with column scans for analytics", "Explains columnar storage reads fewer bytes and compresses well", "Mentions partition pruning"]
+    h: ["How many columns does a typical revenue report touch?"]
+    fu: ["Why are single-row updates slow in a columnar store?"]
+    m: "Columnar databases are faster for every workload."
+    s: ["Workload-driven", "Compression benefit"]
+
+  dw_lake_vs_warehouse:
+    c: [data_warehousing, data_quality_and_governance]
+    d: core
+    t: tradeoff
+    f: "lake versus warehouse"
+    q: "What is the difference between a data lake and a data warehouse, and what is a lakehouse trying to fix?"
+    a: "A data lake stores raw files of any format cheaply, which is flexible but can become a swamp without schemas, quality or transactions. A warehouse stores modelled, typed tables with fast SQL and governance, but is costlier and less flexible. A lakehouse adds table formats such as Delta or Iceberg on top of lake storage, giving transactions, schemas and time travel while keeping open, cheap storage."
+    k: ["!Describes the lake as cheap raw storage and the warehouse as modelled tables", "Names the lake's risk of becoming a swamp", "Explains lakehouse table formats add transactions and schema"]
+    h: ["What happens to a lake with no schemas or owners?"]
+    fu: ["What does time travel give you in Iceberg or Delta?"]
+    m: "A data lake replaces the need for modelling."
+    s: ["Trade-offs both ways", "Names table formats"]
+
+  ddp_partitions:
+    c: [distributed_data_processing, hashing]
+    d: intro
+    t: conceptual
+    f: "splitting work across machines"
+    q: "How does a distributed engine process a dataset too big for one machine?"
+    a: "The data is split into partitions spread across machines. Each worker runs the same operation on its partitions in parallel, near where the data is stored. Operations that need data from many partitions, such as a group by or join, shuffle records over the network so all records with the same key meet on one worker. A coordinator plans the work and retries failed tasks."
+    k: ["!Splits data into partitions processed in parallel", "Explains a shuffle moves records by key for grouping or joins", "Mentions coordination and retrying failed tasks"]
+    h: ["How does a group by find all records with the same key?"]
+    fu: ["Why is a shuffle expensive?"]
+    m: "Distributed processing is just running the same code on a bigger machine."
+    s: ["Partition and shuffle", "Fault tolerance"]
+
+  ddp_skew:
+    c: [distributed_data_processing, apache_spark]
+    d: hard
+    t: debugging
+    f: "skewed data"
+    q: "A Spark join finishes 199 of 200 tasks in a minute, and the last task runs for an hour. What is happening and how do you fix it?"
+    a: "The data is skewed: one key, such as a null or a very popular customer id, has far more rows than others, so after the shuffle one task gets most of the work. Fixes include filtering or handling nulls separately, salting the hot key by adding a random suffix to spread it and replicating the other side, broadcasting the smaller table to avoid the shuffle, or enabling adaptive skew-join handling."
+    k: ["!Identifies key skew sending most rows to one task", "Proposes salting the hot key or handling nulls separately", "Mentions broadcast joins or adaptive skew handling"]
+    h: ["How many rows does the slowest task's key have?"]
+    fu: ["How would you find the skewed key?"]
+    m: "Adding more executors fixes a skewed task."
+    s: ["Diagnoses skew", "Several remedies"]
+
+  ddp_narrow_wide:
+    c: [distributed_data_processing, apache_spark]
+    d: core
+    t: optimisation
+    f: "wide versus narrow transformations"
+    q: "What is the difference between narrow and wide transformations, and why does it matter for performance?"
+    a: "A narrow transformation, such as map or filter, computes each output partition from one input partition, so it runs without moving data and can be pipelined. A wide transformation, such as groupBy, join or distinct, needs data from many partitions, causing a shuffle across the network and a stage boundary. Reducing data before shuffles and avoiding unnecessary ones is the main performance lever."
+    k: ["!Defines narrow as partition-local and wide as needing a shuffle", "Says wide transformations create stage boundaries and network cost", "Advises filtering early and avoiding unnecessary shuffles"]
+    h: ["Does a filter need data from other partitions?"]
+    fu: ["Why does reduceByKey beat groupByKey?"]
+    m: "All transformations cost the same."
+    s: ["Shuffle awareness", "Actionable lever"]
+
+  stream_windows:
+    c: [stream_processing, kafka]
+    d: core
+    t: conceptual
+    f: "windows and watermarks"
+    q: "You count orders per minute from a stream, but some events arrive late. What are windows and watermarks, and how do they help?"
+    a: "A window groups events by time, such as tumbling one-minute windows by event time. A watermark is the engine's estimate that no events older than a certain time will still arrive; a window's result is emitted when the watermark passes its end. Allowing a lateness margin keeps windows open briefly for stragglers, and events later than that are dropped or sent to a side output."
+    k: ["!Defines windows as grouping events by event time", "Explains the watermark decides when a window can be finalised", "Mentions allowed lateness and handling very late events"]
+    h: ["How does the engine know a minute is complete?"]
+    fu: ["What do sliding and session windows add?"]
+    m: "Processing time is good enough for business metrics."
+    s: ["Event-time model", "Late-event policy"]
+
+  stream_state:
+    c: [stream_processing, fault_tolerance]
+    d: hard
+    t: conceptual
+    f: "state and checkpoints"
+    q: "A streaming job keeps running totals per user. What happens to that state if the job crashes, and how do engines recover?"
+    a: "The running totals live in the job's state store. Engines periodically checkpoint the state together with the input offsets to durable storage. After a crash they restore the last checkpoint and replay input from the saved offsets, so totals are rebuilt as if nothing happened. Combined with transactional or idempotent sinks this gives effectively exactly-once results."
+    k: ["!Says state is checkpointed with input offsets", "Explains recovery restores the checkpoint and replays from offsets", "Mentions transactional or idempotent sinks for exactly-once results"]
+    h: ["What two things must be saved together?"]
+    fu: ["How does checkpoint frequency affect recovery time?"]
+    m: "Streaming jobs keep state only in memory."
+    s: ["Checkpoint plus offsets", "End-to-end guarantee"]
+
+  stream_vs_batch:
+    c: [stream_processing, data_pipelines]
+    d: intro
+    t: tradeoff
+    f: "delivery guarantees"
+    q: "A team wants to move every nightly batch job to streaming. When is streaming worth it?"
+    a: "Streaming is worth it when value decays with time — fraud detection, live inventory, alerts — and someone acts on fresh results. It costs more to build and run: always-on infrastructure, state, late data and harder debugging. Daily reports that nobody reads before morning are cheaper and simpler as batch. Many teams use both: streaming for the urgent path and batch for complete, corrected numbers."
+    k: ["!Ties streaming to decisions that need fresh data", "Names streaming's operational costs", "Keeps batch for reports and corrections, often both"]
+    h: ["Who acts on the data, and how quickly?"]
+    fu: ["What is the lambda versus kappa architecture?"]
+    m: "Streaming is always better than batch."
+    s: ["Value-of-freshness reasoning", "Hybrid"]
+
+  dq_checks:
+    c: [data_quality_and_governance, data_pipelines]
+    d: core
+    t: practical
+    f: "checks that catch bad data"
+    q: "A dashboard showed revenue doubling overnight because of a duplicated load. Which data quality checks would have caught it?"
+    a: "Checks on the loaded table before publishing: uniqueness of the primary or natural key, row counts compared with the source and with the previous day within an expected band, sums of key measures reconciled with the source system, and freshness. Failed checks should block publishing to the dashboard and alert, rather than just logging. Tools such as dbt tests or Great Expectations make these routine."
+    k: ["!Names key uniqueness and row-count or volume checks", "Reconciles key totals with the source", "Blocks publishing and alerts on failure"]
+    h: ["What would a uniqueness test on order id have said?"]
+    fu: ["How do you choose the expected band for row counts?"]
+    m: "Data quality is the source system's problem."
+    s: ["Concrete checks", "Gate before publish"]
+
+  dq_lineage:
+    c: [data_quality_and_governance, data_warehousing]
+    d: core
+    t: scenario
+    f: "lineage"
+    q: "A source column is about to be renamed. How do you find every report and table that will break?"
+    a: "Use lineage: metadata that records which tables and columns each model reads and produces, from tools such as dbt's graph or a data catalogue that parses queries. Trace downstream from the column to find dependent models, dashboards and their owners, notify them, and coordinate the change with a deprecation period. Without lineage you learn by breaking things."
+    k: ["!Uses lineage to trace downstream dependencies", "Finds affected models, dashboards and owners", "Coordinates the change with notice or deprecation"]
+    h: ["What records which models read this column?"]
+    fu: ["How is column-level lineage built?"]
+    m: "Search the codebase for the column name and you will find everything."
+    s: ["Downstream impact", "Owner communication"]
+
+  dq_privacy:
+    c: [data_quality_and_governance, secure_coding]
+    d: hard
+    t: design
+    f: "privacy and retention"
+    q: "Your analytics warehouse holds customers' phone numbers and addresses. How would you protect them and handle a deletion request?"
+    a: "Classify columns as personal data, and give analysts masked or tokenised versions while only a few roles can see raw values, enforced with column-level access controls. Keep personal data out of wide tables and logs where possible, and set retention periods. For deletion, keep a registry of where each person's data lives, delete or anonymise across tables and backups within the legal deadline, and record that it was done."
+    k: ["!Classifies personal data and restricts raw access", "Uses masking or tokenisation for analysts", "Handles deletion across all copies and records it"]
+    h: ["Do analysts need the real phone number to count customers by city?"]
+    fu: ["How do you delete data from immutable backups?"]
+    m: "Internal warehouses do not need privacy controls."
+    s: ["Access minimisation", "Deletion process"]
+
+  spark_lazy:
+    c: [apache_spark, distributed_data_processing]
+    d: intro
+    t: conceptual
+    f: "lazy evaluation and the DAG"
+    q: "In Spark, why does a chain of transformations run instantly, and the job only starts when you call count or write?"
+    a: "Transformations are lazy: Spark records them in a logical plan instead of executing. An action such as count, collect or write triggers execution, and only then does Spark optimise the whole plan — pushing filters down, pruning columns and choosing join strategies — split it into stages at shuffles and run tasks. Calling actions repeatedly recomputes everything unless you cache."
+    k: ["!Says transformations build a plan and actions trigger execution", "Explains the whole plan is optimised before running", "Notes repeated actions recompute unless cached"]
+    h: ["What does Spark do when you call filter?"]
+    fu: ["When is caching a DataFrame worth it?"]
+    m: "Each transformation runs immediately."
+    s: ["Plan versus execution", "Recompute pitfall"]
+
+  spark_tuning:
+    c: [apache_spark, query_optimisation]
+    d: hard
+    t: optimisation
+    f: "tuning a slow job"
+    q: "A Spark job that joins a large fact table with a small lookup table is slow. What would you check in the Spark UI and change?"
+    a: "In the Spark UI, look at the stages for big shuffles, spilled memory and skewed tasks. Joining with a small table should not shuffle the large one: broadcast the small table so each executor joins locally. Also check the number of shuffle partitions against data size, filter and select columns before the join, and make sure the input is read in columnar format with partition pruning."
+    k: ["!Uses the Spark UI to find shuffles, spills or skew", "Broadcasts the small table to avoid shuffling the large one", "Tunes shuffle partitions or prunes data before the join"]
+    h: ["Does the big table need to move across the network?"]
+    fu: ["What is the risk of broadcasting a table that grows?"]
+    m: "More executors always speed up a job."
+    s: ["Evidence from the UI", "Right join strategy"]
+
+  spark_sql_df:
+    c: [apache_spark, sql_for_analytics]
+    d: core
+    t: tradeoff
+    f: "DataFrames and Spark SQL"
+    q: "Should a team write Spark jobs with RDDs, DataFrames or Spark SQL?"
+    a: "DataFrames and Spark SQL compile to the same optimised plan, so their performance is equal; the choice is readability and testability, and many teams mix them. Both beat raw RDDs for structured data because the Catalyst optimiser and Tungsten execution can optimise them, while RDD code is opaque to Spark. RDDs are for unstructured data or low-level control."
+    k: ["!Says DataFrames and Spark SQL share the same optimiser", "Says RDDs bypass the optimiser and are slower for structured data", "Keeps RDDs for low-level or unstructured cases"]
+    h: ["Can Spark optimise a Python lambda inside an RDD map?"]
+    fu: ["Why are Python UDFs slow, and what are the alternatives?"]
+    m: "Spark SQL is slower than the DataFrame API."
+    s: ["Optimiser awareness", "Practical choice"]
+
+  airflow_dags:
+    c: [airflow, data_pipelines]
+    d: intro
+    t: conceptual
+    f: "DAGs tasks and dependencies"
+    q: "What is a DAG in Airflow, and what should and should not happen inside the DAG file?"
+    a: "A DAG declares tasks and the dependencies between them, plus a schedule. The DAG file is parsed often by the scheduler, so it should only define structure: no heavy computation, database queries or API calls at the top level. The real work runs inside tasks, ideally by triggering external systems such as a warehouse or Spark, with Airflow orchestrating rather than processing data."
+    k: ["!Defines a DAG as tasks with dependencies and a schedule", "Keeps heavy work out of the top level of the DAG file", "Says Airflow orchestrates rather than processes large data"]
+    h: ["How often does the scheduler parse the file?"]
+    fu: ["How would you pass a small value from one task to another?"]
+    m: "Airflow is a data processing engine."
+    s: ["Orchestration role", "Parse-time pitfall"]
+
+  airflow_backfill:
+    c: [airflow, data_pipelines]
+    d: core
+    t: practical
+    f: "scheduling and backfills"
+    q: "You fixed a bug in a daily DAG and need to recompute the last thirty days. How do you do it safely?"
+    a: "Make sure each task uses the run's logical date, not the current time, and writes idempotently to that date's partition. Then run a backfill for the date range, limiting concurrent runs so the warehouse is not overwhelmed, and check data quality for the rebuilt days. Tasks that call datetime.now produce wrong results in a backfill."
+    k: ["!Uses the logical execution date inside tasks", "Writes idempotently per date so reruns replace data", "Runs the backfill with limited concurrency and checks results"]
+    h: ["Which date does a task think it is processing during a backfill?"]
+    fu: ["What does catchup do?"]
+    m: "Backfills just rerun today's logic many times."
+    s: ["Logical dates", "Controlled rerun"]
+
+  airflow_sensors:
+    c: [airflow, fault_tolerance]
+    d: hard
+    t: tradeoff
+    f: "sensors"
+    q: "A DAG waits for a partner's file to land using a sensor, and it ties up worker slots for hours. What are better options?"
+    a: "A classic sensor in poke mode holds a worker slot while it sleeps between checks. Use reschedule mode, which frees the slot between checks, or deferrable sensors that hand the waiting to the triggerer and use almost no resources. Set a sensible timeout, and if the partner can notify you, trigger the DAG on that event instead of polling."
+    k: ["!Explains poke mode holds a worker slot while waiting", "Uses reschedule mode or deferrable operators", "Adds timeouts or event-based triggering"]
+    h: ["What is the worker doing while the sensor sleeps?"]
+    fu: ["How do datasets let one DAG trigger another?"]
+    m: "Sensors cost nothing while waiting."
+    s: ["Resource awareness", "Event-driven alternative"]
+
+  kafka_partitions:
+    c: [kafka, message_queues]
+    d: intro
+    t: conceptual
+    f: "topics partitions and offsets"
+    q: "Explain topics, partitions and offsets in Kafka."
+    a: "A topic is a named stream of records, split into partitions that are ordered, append-only logs spread across brokers. Each record in a partition has an offset, its position in the log. Producers choose a partition, often by hashing a key, and consumers track the offset they have read up to, so they can resume or replay from any point because records stay until retention expires."
+    k: ["!Describes topics split into ordered append-only partitions", "Explains offsets as positions consumers track", "Notes records are retained, so consumers can replay"]
+    h: ["What does a consumer store to know where it is?"]
+    fu: ["How does the key decide the partition?"]
+    m: "Kafka deletes a message once it is read."
+    s: ["Log model", "Replay ability"]
+
+  kafka_consumer_groups:
+    c: [kafka, scalability]
+    d: core
+    t: scenario
+    f: "consumer groups"
+    q: "You have a topic with six partitions and run ten consumers in one group to go faster. What happens?"
+    a: "Within a consumer group, each partition is assigned to exactly one consumer, so at most six consumers get work and four sit idle. To scale beyond six you need more partitions. Different consumer groups each read the full stream independently, which is how several services consume the same topic. Rebalancing reassigns partitions when consumers join or leave."
+    k: ["!Says each partition goes to one consumer in a group", "So ten consumers on six partitions leaves four idle", "Notes separate groups each read all records"]
+    h: ["Can two consumers in one group read the same partition?"]
+    fu: ["What happens to processing during a rebalance?"]
+    m: "More consumers always mean more throughput."
+    s: ["Partition-bound parallelism", "Groups explained"]
+
+  kafka_semantics:
+    c: [kafka, stream_processing]
+    d: hard
+    t: tradeoff
+    f: "delivery semantics"
+    q: "How do you get exactly-once processing from a Kafka consumer that writes to a database?"
+    a: "Kafka alone gives at-least-once by default: if the consumer commits offsets after processing and crashes in between, records are reprocessed. Exactly-once effect comes from making the database write idempotent, such as an upsert keyed by a unique event id, or storing the offset in the same database transaction as the result and resuming from there. Kafka transactions give exactly-once only within Kafka."
+    k: ["!Explains default at-least-once and duplicates after a crash", "Uses idempotent writes or stores offsets with the result atomically", "Notes Kafka transactions cover Kafka-to-Kafka only"]
+    h: ["What if the consumer crashes after writing but before committing the offset?"]
+    fu: ["Where would you keep the offsets in this design?"]
+    m: "Enabling an exactly-once flag makes database writes exactly once."
+    s: ["End-to-end reasoning", "Knows Kafka's boundary"]
+
+  sap_hana_columnar:
+    c: [sap_platform, data_warehousing]
+    d: intro
+    t: conceptual
+    f: "HANA's column store"
+    q: "What makes SAP HANA different from a traditional row-based database for reporting?"
+    a: "HANA keeps data in memory in a column store, compressed by column, so aggregations over a few columns of large tables are very fast. It can run analytics directly on transactional data without copying it to a separate warehouse first, and pushes calculations down into the database instead of the application. The trade-offs are memory cost and modelling work to use it well."
+    k: ["!Mentions in-memory columnar storage with compression", "Explains fast aggregation and analytics on live transactional data", "Mentions pushing calculations into the database or memory cost"]
+    h: ["Where does HANA keep its data while querying?"]
+    fu: ["Why push logic down into HANA instead of the app server?"]
+    m: "HANA is just a faster row database."
+    s: ["Column store", "Code pushdown"]
+
+  sap_views:
+    c: [sap_platform, data_modelling]
+    d: core
+    t: design
+    f: "modelling views"
+    q: "How would you build a sales report on SAP HANA using calculation views?"
+    a: "Start from the source tables in a calculation view of type cube: join sales items with dimensions such as customer and material, define measures like revenue with their aggregation, and add calculated columns and filters. Expose it to reporting tools, applying analytic privileges for row-level security by region. Keep joins and filters in the view so HANA optimises them, rather than in the reporting tool."
+    k: ["!Builds a cube calculation view joining facts with dimensions", "Defines measures, calculated columns and filters", "Adds analytic privileges and pushes logic into the view"]
+    h: ["Where should the join happen: HANA or the reporting tool?"]
+    fu: ["How would you restrict each region's managers to their own data?"]
+    m: "Reports should query raw SAP tables directly."
+    s: ["Model in the database", "Row-level security"]
+
+  sap_extraction:
+    c: [sap_platform, data_pipelines]
+    d: hard
+    t: scenario
+    f: "extraction and BW"
+    q: "A company wants SAP sales data in its cloud warehouse every hour. What are the challenges and options?"
+    a: "SAP tables are complex and heavily customised, and reading them directly can load the production system. Options include standard extractors with delta mechanisms through SAP BW or Datasphere, change data capture with replication tools, or certified connectors from cloud integration services. Hourly loads need delta extraction rather than full reloads, with careful scheduling to protect the source, and business keys mapped consistently."
+    k: ["!Notes SAP's complex tables and the risk of loading production", "Names delta extractors, BW or Datasphere, CDC or certified connectors", "Uses incremental deltas instead of full reloads"]
+    h: ["What happens to SAP users if you copy whole tables every hour?"]
+    fu: ["How would you validate totals against SAP's own reports?"]
+    m: "SAP data can be copied like any other database."
+    s: ["Source protection", "Delta extraction"]

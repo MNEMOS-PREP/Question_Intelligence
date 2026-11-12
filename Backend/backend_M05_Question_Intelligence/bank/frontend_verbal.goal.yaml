@@ -1,0 +1,624 @@
+# =============================================================================
+#  GOAL BANK — frontend_verbal (2026-11-12, for M22 Follow Your Goal)
+#
+#  Drafted by Claude (Opus 5.5) while building M22, from the role catalogue's
+#  competencies. NOT reviewed: `provenance: generated`, so FR-5.6 holds — these
+#  are practised, never scored, until a reviewer approves each in the queue.
+#  Every item names the facet (M04's sub-competency) it is about, its type and
+#  difficulty, what a strong answer shows and the usual misconception.
+#  Compact format: see `bank.expand_compact`.
+# =============================================================================
+format: compact
+track: frontend_verbal
+provenance: generated
+items:
+  html_semantic_vs_div:
+    c: [html_semantics, web_accessibility]
+    d: intro
+    t: conceptual
+    f: "semantic elements"
+    q: "Why would you use nav, main and button elements instead of styled divs, if the page looks the same either way?"
+    a: "Semantic elements carry meaning the browser and assistive technology use. A screen reader announces a nav as navigation and lets users jump to main; a real button is focusable, works with Enter and Space and reports its role without extra code. Search engines and reader modes use the same structure. A styled div needs ARIA roles, tabindex and key handlers to fake all of that, and usually misses something."
+    k: ["!Says semantic elements carry meaning to browsers and assistive technology", "Notes a native button is focusable and keyboard-operable for free", "Mentions a div needs roles, tabindex and handlers to imitate it"]
+    h: ["What does a screen reader or the Tab key get from a button that it does not get from a div?"]
+    fu: ["How would you make a clickable card accessible without nesting buttons?"]
+    m: "Semantic HTML is only about SEO."
+    s: ["Ties the choice to keyboard and screen-reader users", "Knows what the div version has to re-implement"]
+
+  html_form_validation:
+    c: [html_semantics, web_application_security]
+    d: core
+    t: scenario
+    f: "forms and validation"
+    q: "A signup form uses required and type=\"email\" attributes, so the team skipped server checks. What is wrong with that, and what does built-in validation actually give you?"
+    a: "Built-in validation is a usability feature, not a security control. It gives instant feedback, correct mobile keyboards and accessible error messages, but anyone can bypass it with dev tools, a script or a direct HTTP request. The server must validate every field again, return clear errors, and the client should show those errors in the same place as its own."
+    k: ["!States client-side validation can be bypassed, so the server must validate", "Names what native validation does give: feedback, keyboards, accessibility", "Mentions surfacing server errors back in the form"]
+    h: ["Who controls the browser that sends the request?"]
+    fu: ["How would you show a server-side 'email already taken' error accessibly?"]
+    m: "HTML validation protects the backend."
+    s: ["Separates usability from security", "Plans for both layers agreeing"]
+
+  html_document_head:
+    c: [html_semantics, web_performance]
+    d: core
+    t: practical
+    f: "metadata and links"
+    q: "Walk me through what belongs in the head of a production page and why each part matters."
+    a: "The charset and viewport meta come first so text and mobile layout are right. Then the title and description for tabs and search results, canonical and social preview tags, the favicon, and links to critical CSS. Preconnect or preload hints help the browser fetch fonts and key assets early, while scripts are deferred so they do not block parsing. Each item affects either correctness, discoverability or loading speed."
+    k: ["!Names charset and viewport as essential for correct rendering", "Mentions title, description and social or canonical tags for discoverability", "Explains preload, preconnect or deferred scripts for loading speed"]
+    h: ["What happens on a phone with no viewport tag?"]
+    fu: ["When would preload actually hurt performance?"]
+    m: "The order of tags in the head does not matter."
+    s: ["Groups tags by purpose", "Connects resource hints to the critical path"]
+
+  css_box_model_overflow:
+    c: [css_layout]
+    d: intro
+    t: debugging
+    f: "box model"
+    q: "You set a div to width 100% with 20px padding and a border, and now the page scrolls sideways. What is happening and how do you fix it?"
+    a: "With the default content-box sizing, width applies only to the content, so padding and border are added on top and the box ends up wider than its parent. Setting box-sizing to border-box makes width include padding and border, which is why many resets apply it globally. Alternatives are calc() or dropping the explicit width for a block element that already fills its container."
+    k: ["!Explains content-box adds padding and border on top of the width", "Names box-sizing border-box as the fix", "Mentions a block element already fills its container without width 100%"]
+    h: ["What exactly does 'width' measure by default?"]
+    fu: ["Does margin count inside border-box sizing?"]
+    m: "Width always includes padding."
+    s: ["Explains the computed width", "Offers more than one fix"]
+
+  css_flex_vs_grid:
+    c: [css_layout, component_architecture]
+    d: core
+    t: tradeoff
+    f: "flexbox and grid"
+    q: "When would you lay something out with flexbox and when with grid? Give one real case for each."
+    a: "Flexbox is one-dimensional: it distributes items along a row or column and is ideal for toolbars, nav bars or aligning items inside a card, where content size drives the layout. Grid is two-dimensional: you define rows and columns and place items on them, which suits page layouts, dashboards and card galleries where alignment across both axes matters. They combine well, with grid for the page and flex inside components."
+    k: ["!Says flexbox is one-dimensional and grid is two-dimensional", "Gives a fitting example for each", "Notes they are often combined"]
+    h: ["Do you need items to line up in both rows and columns?"]
+    fu: ["How would you make a responsive card grid without media queries?"]
+    m: "Grid replaces flexbox entirely."
+    s: ["Content-driven versus layout-driven reasoning", "Concrete examples"]
+
+  css_specificity_war:
+    c: [css_layout, code_quality_and_review]
+    d: hard
+    t: debugging
+    f: "cascade and specificity"
+    q: "A style keeps getting overridden, and developers have started adding !important everywhere. How do you diagnose it and stop the spiral?"
+    a: "First inspect the element in dev tools to see which rule wins and why: specificity, source order, inline styles or an existing !important. Then fix the root cause by lowering specificity rather than raising it, using single class selectors, a naming convention such as BEM, CSS modules or cascade layers to order third-party and app styles. !important should be reserved for utilities that must always win, because each use forces the next override to escalate."
+    k: ["!Uses dev tools to see which rule wins and why", "Explains specificity and source order decide the winner", "Proposes structural fixes such as low-specificity classes, modules or cascade layers"]
+    h: ["What does dev tools show you about crossed-out rules?"]
+    fu: ["How do cascade layers change the order of precedence?"]
+    m: "More specific selectors are always better."
+    s: ["Diagnoses before fixing", "Fixes the system, not one rule"]
+
+  dom_event_delegation:
+    c: [dom_and_events, javascript]
+    d: core
+    t: optimisation
+    f: "event delegation"
+    q: "A table with ten thousand rows attaches a click listener to every row and feels slow. What would you change?"
+    a: "Use event delegation: attach one listener to the table body and use the event's target, with closest(), to find which row was clicked. Events bubble up from the row, so one handler serves every row, uses far less memory, and keeps working for rows added later without re-binding. Rendering ten thousand rows is itself costly, so virtualising the list helps too."
+    k: ["!Proposes one listener on a parent using event bubbling", "Explains finding the row via the event target", "Notes it works for rows added later and saves memory"]
+    h: ["Where does a click event travel after it fires on a row?"]
+    fu: ["Which events do not bubble, and what do you do then?"]
+    m: "Delegation works for every event type."
+    s: ["Explains bubbling", "Mentions dynamic content"]
+
+  dom_propagation_order:
+    c: [dom_and_events]
+    d: intro
+    t: conceptual
+    f: "event propagation"
+    q: "Explain capturing and bubbling. What does stopPropagation do, and when is it a bad idea?"
+    a: "An event travels down from the window to the target in the capture phase, fires at the target, then bubbles back up through the ancestors. Listeners run in the phase they registered for. stopPropagation halts the journey so ancestors never see the event. That is risky because other code, such as analytics, a dropdown that closes on outside clicks or a delegated handler, may depend on the event reaching it."
+    k: ["!Describes capture going down and bubbling going up", "Explains stopPropagation prevents ancestors from receiving the event", "Gives a reason it breaks other listeners"]
+    h: ["In which order do the target's ancestors see the click?"]
+    fu: ["How does preventDefault differ from stopPropagation?"]
+    m: "stopPropagation also prevents the default action."
+    s: ["Precise phase order", "Real side-effect example"]
+
+  dom_layout_thrashing:
+    c: [dom_and_events, browser_rendering]
+    d: hard
+    t: optimisation
+    f: "updating the page efficiently"
+    q: "A loop reads each element's offsetHeight and then sets its style height, and the page janks. Why, and how do you rewrite it?"
+    a: "Reading a layout property forces the browser to compute layout immediately if styles changed, and writing a style invalidates it again, so alternating reads and writes forces layout on every iteration — layout thrashing. Batch all the reads first, then all the writes, or schedule writes in requestAnimationFrame. Libraries such as fastdom do this batching."
+    k: ["!Explains that reading layout after a write forces synchronous layout", "Proposes batching reads before writes", "Mentions requestAnimationFrame or a batching library"]
+    h: ["What does the browser have to do before it can tell you offsetHeight?"]
+    fu: ["Which properties trigger layout and which only paint?"]
+    m: "DOM writes are slow, reads are free."
+    s: ["Names forced synchronous layout", "Restructures the loop"]
+
+  browser_critical_path:
+    c: [browser_rendering, html_semantics]
+    d: core
+    t: conceptual
+    f: "critical rendering path"
+    q: "What happens between a browser receiving HTML and the first pixels appearing? Where can it get blocked?"
+    a: "The browser parses HTML into the DOM and CSS into the CSSOM, combines them into a render tree, computes layout and then paints and composites. CSS is render-blocking because the browser will not paint without styles, and a classic script blocks HTML parsing while it downloads and runs. Inlining critical CSS, deferring scripts and keeping the head lean shortens this path."
+    k: ["!Describes DOM and CSSOM combining into a render tree, then layout and paint", "Says CSS is render-blocking and synchronous scripts block parsing", "Names a way to shorten the path, such as defer or critical CSS"]
+    h: ["Can the browser paint text before it knows the styles?"]
+    fu: ["What is the difference between async and defer?"]
+    m: "JavaScript never affects first paint."
+    s: ["Ordered pipeline", "Knows what blocks what"]
+
+  browser_event_loop:
+    c: [browser_rendering, javascript]
+    d: hard
+    t: debugging
+    f: "the event loop"
+    q: "A setTimeout of zero logs after a resolved promise's then callback, even though the timeout was scheduled first. Explain the order."
+    a: "The event loop runs one task at a time, then drains the microtask queue completely before the next task or render. Promise callbacks are microtasks and setTimeout callbacks are tasks, so after the current script finishes, every queued promise callback runs before the timer task. A long chain of microtasks can therefore delay timers and rendering."
+    k: ["!Distinguishes the task queue from the microtask queue", "Says microtasks are drained after each task, before the next task", "Notes microtasks can starve timers and rendering"]
+    h: ["Is a promise callback a task or a microtask?"]
+    fu: ["Where does rendering fit in each turn of the loop?"]
+    m: "setTimeout(0) runs immediately."
+    s: ["Correct queue model", "Mentions starvation risk"]
+
+  browser_script_loading:
+    c: [browser_rendering, web_performance]
+    d: core
+    t: tradeoff
+    f: "script loading"
+    q: "Compare a plain script tag, async and defer. Which would you choose for analytics, and which for your app bundle?"
+    a: "A plain script blocks parsing while it downloads and runs. Async downloads in parallel and runs as soon as it arrives, in no guaranteed order, which suits independent scripts like analytics. Defer downloads in parallel but runs in order after parsing finishes, which suits the app bundle that needs the DOM and depends on script order. Modules are deferred by default."
+    k: ["!States a plain script blocks parsing", "Explains async runs on arrival in any order", "Explains defer runs in order after parsing, fitting the app bundle"]
+    h: ["Does the app bundle care about order and the full DOM?"]
+    fu: ["What does type=module change?"]
+    m: "Async and defer are the same thing."
+    s: ["Right choice per script", "Mentions ordering"]
+
+  storage_cookie_flags:
+    c: [web_storage_and_cookies, web_application_security]
+    d: core
+    t: conceptual
+    f: "cookies and their flags"
+    q: "A session cookie should be safe from theft. Which cookie attributes do you set, and what does each defend against?"
+    a: "HttpOnly stops JavaScript from reading the cookie, which limits the damage of cross-site scripting. Secure sends it only over HTTPS so it cannot be sniffed. SameSite Lax or Strict stops the browser sending it on cross-site requests, which defends against CSRF. A short expiry and a narrow Path and Domain reduce exposure further."
+    k: ["!Explains HttpOnly blocks script access against XSS", "Explains Secure restricts it to HTTPS", "Explains SameSite limits cross-site sending against CSRF"]
+    h: ["Which attack reads cookies from script, and which one rides on them?"]
+    fu: ["Why might a payment redirect break with SameSite Strict?"]
+    m: "HttpOnly protects against CSRF."
+    s: ["Maps each flag to an attack", "Mentions expiry and scope"]
+
+  storage_local_vs_cookie:
+    c: [web_storage_and_cookies, authentication]
+    d: hard
+    t: tradeoff
+    f: "local and session storage"
+    q: "Should a single-page app keep its auth token in localStorage or in a cookie? Defend your answer."
+    a: "localStorage is readable by any script on the page, so a single XSS bug exposes the token, and it is not sent automatically. An HttpOnly, Secure, SameSite cookie cannot be read by script, so XSS cannot steal it, but because the browser sends it automatically you must handle CSRF, which SameSite and CSRF tokens address. Most teams prefer the cookie for that reason, with a short-lived access token and refresh rotation."
+    k: ["!Says localStorage is readable by any injected script", "Says an HttpOnly cookie resists XSS theft but needs CSRF protection", "Reaches a justified recommendation"]
+    h: ["What can an XSS payload read from each option?"]
+    fu: ["How does refresh-token rotation limit the damage of a stolen token?"]
+    m: "localStorage is safe because it is same-origin."
+    s: ["Weighs XSS against CSRF", "Commits to a choice"]
+
+  storage_cors_preflight:
+    c: [web_storage_and_cookies, http_and_rest]
+    d: core
+    t: debugging
+    f: "same-origin policy and CORS"
+    q: "Your frontend on app.example.com calls api.example.com, and the browser shows a CORS error, yet curl works. What is going on and how do you fix it properly?"
+    a: "The same-origin policy makes the browser, not the server, block reading a cross-origin response unless the server opts in with CORS headers. curl has no such policy, so it works. For non-simple requests the browser first sends an OPTIONS preflight; the API must answer it with Access-Control-Allow-Origin naming the app origin, the allowed methods and headers, and Allow-Credentials if cookies are sent. A wildcard origin cannot be used with credentials."
+    k: ["!Explains the browser enforces same-origin, so curl is unaffected", "Describes the OPTIONS preflight", "Says the API must return the right Allow-Origin, methods and headers, not a wildcard with credentials"]
+    h: ["Who enforces CORS: the server or the browser?"]
+    fu: ["Why is a proxy in development only a workaround?"]
+    m: "CORS is a server-side security feature that blocks requests."
+    s: ["Explains who enforces it", "Correct headers"]
+
+  a11y_keyboard_modal:
+    c: [web_accessibility, dom_and_events]
+    d: core
+    t: scenario
+    f: "keyboard access and focus"
+    q: "A modal dialog opens, but keyboard users can tab to the page behind it. What should a dialog do with focus?"
+    a: "When the dialog opens, focus should move into it, usually to the first control or the heading. Tab should cycle within the dialog, and the rest of the page should be inert so it cannot be reached. Escape should close it, and closing should return focus to the button that opened it. The native dialog element with showModal handles most of this."
+    k: ["!Moves focus into the dialog when it opens", "Keeps focus trapped inside and makes the page behind inert", "Returns focus to the opener on close, with Escape closing it"]
+    h: ["Where should focus be after the dialog closes?"]
+    fu: ["How would a screen reader know a dialog opened?"]
+    m: "Hiding the page visually is enough."
+    s: ["Full focus lifecycle", "Mentions native dialog"]
+
+  a11y_aria_misuse:
+    c: [web_accessibility]
+    d: hard
+    t: debugging
+    f: "ARIA"
+    q: "A teammate added role=\"button\" and aria-label to many divs to 'make them accessible', and an audit still fails. What did they miss?"
+    a: "ARIA only changes what assistive technology is told; it adds no behaviour. A div with role button still is not focusable and does not respond to Enter or Space unless you add tabindex and key handlers. The first rule of ARIA is to use the native element when one exists. Overusing aria-label can also hide visible text that sighted users and voice-control users rely on."
+    k: ["!Says ARIA changes semantics but adds no keyboard behaviour", "Notes the native element is the better fix", "Mentions mislabelled or hidden visible text as a further problem"]
+    h: ["Can you reach that div with the Tab key?"]
+    fu: ["When is ARIA genuinely needed?"]
+    m: "Adding ARIA always improves accessibility."
+    s: ["Knows the first rule of ARIA", "Thinks about voice control users"]
+
+  a11y_contrast_and_motion:
+    c: [web_accessibility, css_layout]
+    d: intro
+    t: practical
+    f: "colour and contrast"
+    q: "How do you check that a design is usable for people with low vision or colour blindness before it ships?"
+    a: "Check text contrast against WCAG ratios, at least 4.5 to 1 for normal text and 3 to 1 for large text and controls, with a contrast checker or browser tools. Never use colour alone to carry meaning; pair it with text, icons or patterns. Test zoom to 200 percent without breaking layout, and respect prefers-reduced-motion. Automated tools catch some issues, but manual checks are still needed."
+    k: ["!Names WCAG contrast ratios and checking them with a tool", "Says colour must not be the only signal", "Mentions zoom or reduced motion, and manual testing"]
+    h: ["How would a red-green colour-blind user read a status shown only by colour?"]
+    fu: ["What does an automated checker miss?"]
+    m: "Accessibility is only for screen-reader users."
+    s: ["Concrete thresholds", "Beyond colour"]
+
+  perf_lcp_slow:
+    c: [web_performance, browser_rendering]
+    d: core
+    t: debugging
+    f: "measuring with web vitals"
+    q: "Largest Contentful Paint on your landing page is five seconds on mobile. How do you find the cause and fix it?"
+    a: "Find the LCP element in Lighthouse or the performance panel, usually a hero image or heading. Then work back through its timeline: a slow server response, render-blocking CSS or scripts, or a late, heavy image. Fixes include compressing and sizing the image, serving modern formats, preloading it, removing render-blocking resources and caching or using a CDN for the HTML. Verify with real-user field data, not only the lab."
+    k: ["!Identifies the LCP element and what delays it", "Names concrete fixes such as image size, preload or removing blocking resources", "Mentions confirming with field data"]
+    h: ["Which element is the largest one painted?"]
+    fu: ["How does INP differ from LCP?"]
+    m: "Lighthouse score equals real user experience."
+    s: ["Measures first", "Lab versus field"]
+
+  perf_bundle_size:
+    c: [web_performance, react]
+    d: hard
+    t: optimisation
+    f: "loading less"
+    q: "Your JavaScript bundle is three megabytes. Walk me through cutting it down without breaking features."
+    a: "Start with a bundle analyser to see what is in it. Split code by route and lazy-load heavy components so the first page ships only what it needs. Replace or trim large dependencies, import only what you use so tree shaking works, and move rarely used features behind dynamic imports. Then set a performance budget in CI so it does not grow back, and check the effect on load time."
+    k: ["!Measures with a bundle analyser first", "Proposes route-level code splitting or lazy loading", "Addresses heavy dependencies and tree shaking", "Keeps it down with a budget in CI"]
+    h: ["Does the login page need the charting library?"]
+    fu: ["What can break when you lazy-load a component?"]
+    m: "Minification alone solves bundle size."
+    s: ["Data-driven", "Prevents regression"]
+
+  perf_client_caching:
+    c: [web_performance, caching_strategies]
+    d: core
+    t: practical
+    f: "caching on the client"
+    q: "How should a site set cache headers for its HTML, its hashed JavaScript files and its API responses?"
+    a: "Hashed static files can be cached for a year with immutable, because any change produces a new file name. HTML should be revalidated, with no-cache or a short max-age plus an ETag, so users get new deployments that point at the new hashes. API responses depend on the data: private user data should not be shared-cached, and frequently changing data needs short lifetimes or revalidation."
+    k: ["!Says hashed assets can be cached long-term because names change", "Says HTML must be revalidated so new deploys are picked up", "Treats API responses by how private and fresh they are"]
+    h: ["What happens if the HTML is cached for a year?"]
+    fu: ["How does a service worker change this picture?"]
+    m: "Caching everything for a long time is always faster."
+    s: ["Ties strategy to file type", "Understands cache busting"]
+
+  comp_split_screen:
+    c: [component_architecture, react]
+    d: intro
+    t: design
+    f: "splitting a screen into components"
+    q: "How would you break a product page with a gallery, price, reviews and an add-to-cart button into components?"
+    a: "Start from the visual hierarchy and responsibility: a ProductPage container that loads data, then a Gallery, a PriceBlock, an AddToCart that owns quantity and the call to the cart, and a Reviews list made of ReviewItem components. Each component should have one reason to change and get its data through props. Shared pieces such as a StarRating become reusable, while page-specific pieces stay local."
+    k: ["!Splits by responsibility, with one reason to change each", "Separates data loading from presentational pieces", "Identifies reusable pieces versus page-specific ones"]
+    h: ["Which piece changes when the review format changes?"]
+    fu: ["Where would the selected size live, and why?"]
+    m: "Smaller components are always better."
+    s: ["Names clear boundaries", "Thinks about data flow"]
+
+  comp_prop_drilling:
+    c: [component_architecture, state_management]
+    d: core
+    t: tradeoff
+    f: "props state and data flow"
+    q: "A value is passed through five layers of components that do not use it. What are your options, and when is each right?"
+    a: "Prop drilling is fine for two or three layers and keeps data flow explicit. For more, you can restructure with composition, passing the deep child as a prop or children so the middle layers never see the data. If many distant components need it, context or a store makes sense, at the cost of hidden dependencies and possible extra re-renders. Choose the lightest option that keeps the flow understandable."
+    k: ["!Says shallow drilling is acceptable and explicit", "Names composition as a way to skip layers", "Names context or a store, with its costs"]
+    h: ["Could the parent hand over the finished child instead of the data?"]
+    fu: ["Why can a context value cause extra renders?"]
+    m: "Context replaces props everywhere."
+    s: ["Ranks options", "States trade-offs"]
+
+  comp_reusable_api:
+    c: [component_architecture, typescript]
+    d: hard
+    t: design
+    f: "reusable versus one-off"
+    q: "Design the API of a reusable Button component used across five teams. What do you expose and what do you refuse to?"
+    a: "Expose a small, semantic surface — variant, size, disabled, loading and an icon slot — and pass through native button attributes so accessibility and events work. Refuse arbitrary style overrides and one-off flags, because each becomes a contract you must keep; use composition or a separate component for unusual cases. Type the props, document examples, and version it so changes do not silently break other teams."
+    k: ["!Keeps a small, semantic set of props", "Passes through native attributes for accessibility and events", "Avoids one-off flags and style escape hatches", "Mentions typing, docs or versioning"]
+    h: ["What happens when every team adds one flag?"]
+    fu: ["How would you add an icon-only variant accessibly?"]
+    m: "A reusable component should support every option."
+    s: ["Thinks about the contract", "Accessibility by default"]
+
+  state_server_vs_ui:
+    c: [state_management, http_and_rest]
+    d: core
+    t: tradeoff
+    f: "server state versus UI state"
+    q: "Why do many teams keep API data in a library like React Query instead of a global store like Redux?"
+    a: "Server state is a cache of data owned elsewhere: it goes stale, needs refetching, deduplication, retries and invalidation after mutations. Query libraries handle exactly that. UI state, such as an open modal or a form draft, is owned by the client and fits local state or a small store. Mixing them makes you rebuild caching logic by hand in reducers."
+    k: ["!Distinguishes server state as a cache of remote data from UI state", "Lists cache concerns: staleness, refetching, invalidation", "Says UI state stays local or in a small store"]
+    h: ["Who owns the truth for a list of orders?"]
+    fu: ["How would you update the cache after creating an order?"]
+    m: "All state belongs in one global store."
+    s: ["Clear ownership model", "Knows what query libraries do"]
+
+  state_reducer_design:
+    c: [state_management, javascript]
+    d: intro
+    t: conceptual
+    f: "stores and reducers"
+    q: "What is a reducer, and why must it not mutate the state it receives?"
+    a: "A reducer is a pure function that takes the current state and an action and returns the next state. It must return a new object rather than mutating the old one because frameworks detect changes by reference: a mutated object looks unchanged, so the UI may not update, and time-travel debugging and undo break. Purity also makes reducers easy to test."
+    k: ["!Defines a reducer as a pure function from state and action to new state", "Explains change detection by reference needs a new object", "Mentions testability or debugging benefits"]
+    h: ["How does the framework know the state changed?"]
+    fu: ["How do tools like Immer let you write mutating code safely?"]
+    m: "Mutating state is fine if you call setState afterwards."
+    s: ["Explains reference equality", "Mentions purity"]
+
+  state_rerender_storm:
+    c: [state_management, react]
+    d: hard
+    t: optimisation
+    f: "avoiding needless re-renders"
+    q: "Typing one character in a search box re-renders the whole dashboard. How do you find and fix it?"
+    a: "Use the React profiler to see which components render and why. The usual cause is state held too high, or a context value that changes on every keystroke, so everything under it re-renders. Move the search state down to the component that needs it, split contexts so unrelated consumers do not subscribe, use selectors with a store, and memoise expensive children. Debouncing the search request also helps."
+    k: ["!Profiles to find what re-renders and why", "Identifies state held too high or a changing context value", "Proposes moving state down, splitting context or selectors, and memoisation"]
+    h: ["Which component owns the search text right now?"]
+    fu: ["When does React.memo not help?"]
+    m: "Re-renders always mean the DOM changed."
+    s: ["Profiler first", "Fixes structure before memoising"]
+
+  render_csr_ssr:
+    c: [rendering_strategies, browser_rendering]
+    d: core
+    t: tradeoff
+    f: "client versus server rendering"
+    q: "When would you render a page on the server instead of the client? What does each cost?"
+    a: "Server rendering sends ready HTML, so content appears sooner and search engines see it, which suits public pages and slow devices. It costs server work per request and a hydration step before the page is interactive. Client rendering ships a shell and builds the page with JavaScript, which is cheap to host and good for app-like screens behind a login, but shows content later and needs care for SEO."
+    k: ["!Says SSR gives faster first content and better SEO", "Notes SSR costs server work and hydration", "Says CSR suits logged-in, app-like screens but shows content later"]
+    h: ["Does a search engine or a slow phone see your dashboard?"]
+    fu: ["What is time to interactive and why can SSR delay it?"]
+    m: "Server rendering is always faster."
+    s: ["Picks per page", "Knows hydration cost"]
+
+  render_hydration_mismatch:
+    c: [rendering_strategies, react]
+    d: hard
+    t: debugging
+    f: "hydration"
+    q: "Your server-rendered page logs a hydration mismatch warning and some text flickers. What causes it?"
+    a: "Hydration attaches client logic to HTML the server produced, and expects the first client render to produce the same markup. Mismatches come from values that differ between server and client: dates and time zones, random numbers, browser-only APIs like window or localStorage, or locale formatting. Fix by rendering the same value on both sides, moving client-only values into an effect after hydration, or marking that part client-only."
+    k: ["!Explains hydration expects identical first render on server and client", "Names typical causes: time, randomness, browser-only APIs", "Proposes rendering client-only values after hydration"]
+    h: ["What could be different on the server than in the browser?"]
+    fu: ["How does streaming SSR change hydration?"]
+    m: "Hydration mismatches are harmless warnings."
+    s: ["Precise cause list", "Correct fix"]
+
+  render_static_generation:
+    c: [rendering_strategies, caching_strategies]
+    d: core
+    t: scenario
+    f: "static generation"
+    q: "A blog has fifty thousand posts that change rarely. How would you render and deploy it?"
+    a: "Generate pages statically so they are served as plain files from a CDN, which is fast and cheap. Building fifty thousand pages on every deploy is slow, so build the popular ones ahead and generate the rest on first request, then cache them, with incremental regeneration or on-demand revalidation when a post is edited. Dynamic parts such as comments can load on the client."
+    k: ["!Chooses static generation served from a CDN", "Handles build time with on-demand or incremental generation", "Explains revalidating when a post changes"]
+    h: ["How long would building every page take on each deploy?"]
+    fu: ["How do you purge the CDN when a post changes?"]
+    m: "Static means it can never update."
+    s: ["Thinks about build time", "Plans invalidation"]
+
+  fetest_behaviour:
+    c: [frontend_testing, testing_and_debugging]
+    d: core
+    t: conceptual
+    f: "testing behaviour not implementation"
+    q: "What does it mean to test a component's behaviour rather than its implementation? Give an example of a brittle test."
+    a: "A behaviour test interacts like a user — finds a button by its accessible name, clicks it, and checks what appears — so it survives refactors. A brittle test asserts on internal state, private function calls or exact DOM structure; it breaks when you rename a state variable even though the user sees no change. Testing Library encourages the first style through queries by role and label."
+    k: ["!Says behaviour tests interact and assert like a user would", "Gives an example of an implementation-coupled test", "Notes behaviour tests survive refactors"]
+    h: ["Would the test fail if you rewrote the component with the same output?"]
+    fu: ["When is a snapshot test useful and when harmful?"]
+    m: "High coverage means good tests."
+    s: ["User-level queries", "Refactor safety"]
+
+  fetest_e2e_flaky:
+    c: [frontend_testing, test_automation]
+    d: hard
+    t: debugging
+    f: "end-to-end tests"
+    q: "Your end-to-end checkout test passes locally and fails in CI one run in five. How do you make it reliable?"
+    a: "Flakiness usually comes from timing, shared data or environment differences. Replace fixed sleeps with waits for a specific condition, give each run its own seeded data, and avoid depending on test order. Stub unstable third parties such as payment gateways, record traces and screenshots on failure to see what differed, and quarantine the test while fixing it rather than retrying it blindly."
+    k: ["!Names timing, shared state or environment as causes", "Replaces sleeps with condition-based waits", "Isolates data and stubs unstable third parties", "Uses traces or screenshots to diagnose"]
+    h: ["What is different between your laptop and the CI machine?"]
+    fu: ["Why is an automatic retry a dangerous fix?"]
+    m: "Adding retries fixes flaky tests."
+    s: ["Diagnoses before fixing", "Avoids blind retries"]
+
+  fetest_mock_network:
+    c: [frontend_testing, api_testing]
+    d: core
+    t: practical
+    f: "mocking the network"
+    q: "How would you test a component that loads a list from an API, including the error and empty states?"
+    a: "Mock at the network layer, for example with Mock Service Worker, so the component's real fetching code runs. Write one test per state: loading shows a skeleton, success renders the rows, an empty response shows the empty message, and a 500 shows the error with a retry. Asserting on what the user sees keeps the tests independent of the data library."
+    k: ["!Mocks the network layer rather than the component's internals", "Covers loading, success, empty and error states", "Asserts on what the user sees"]
+    h: ["What should the user see when the server returns an empty array?"]
+    fu: ["How would you test a retry button?"]
+    m: "Only the happy path needs a test."
+    s: ["All four states", "Mocks at the right layer"]
+
+  react_hooks_rules:
+    c: [react, javascript]
+    d: core
+    t: conceptual
+    f: "hooks"
+    q: "Why can hooks not be called inside conditions or loops?"
+    a: "React identifies each hook by the order in which it is called during render, not by name. If a condition skips a hook on one render, every later hook shifts position and receives another hook's state, causing wrong values or crashes. Keeping calls unconditional at the top level keeps the order stable; the condition goes inside the hook instead."
+    k: ["!Says React tracks hooks by call order", "Explains a skipped hook shifts later hooks onto the wrong state", "Says the condition belongs inside the hook"]
+    h: ["How does React know which useState call is which?"]
+    fu: ["How would you write a custom hook that only fetches when a flag is true?"]
+    m: "It is just a lint rule with no runtime effect."
+    s: ["Explains the mechanism", "Correct workaround"]
+
+  react_stale_closure:
+    c: [react, javascript]
+    d: hard
+    t: debugging
+    f: "hooks"
+    q: "A counter inside a setInterval in useEffect always shows 1, no matter how long it runs. Why, and how do you fix it?"
+    a: "The effect ran once with an empty dependency list, so the interval callback closed over the count from the first render, which is zero, and keeps setting zero plus one. Fix by using the functional update form, setCount of c plus one, so it never reads the stale value, or by listing count as a dependency and resetting the interval, or by keeping the latest value in a ref."
+    k: ["!Identifies a stale closure over the first render's value", "Proposes the functional state update", "Mentions dependencies or a ref as alternatives"]
+    h: ["Which render's count does the interval callback see?"]
+    fu: ["Why does adding count to the dependencies restart the interval?"]
+    m: "useEffect always sees the latest state."
+    s: ["Names stale closures", "Best fix first"]
+
+  react_keys_reconciliation:
+    c: [react, rendering_strategies]
+    d: core
+    t: debugging
+    f: "rendering and reconciliation"
+    q: "A list uses array indexes as keys, and when an item is deleted the wrong row keeps its input text. Explain."
+    a: "React matches elements between renders by key. With index keys, deleting the first item shifts every later item down an index, so React thinks the items kept their identity and reuses each component and its internal state for the wrong data. Using a stable unique id as the key lets React remove the right component and keep the others' state intact."
+    k: ["!Explains keys tell React which element is which across renders", "Says index keys shift identity when items are removed or reordered", "Proposes a stable unique id as the key"]
+    h: ["After the deletion, which item has index 0?"]
+    fu: ["When is an index key actually safe?"]
+    m: "Keys only silence a console warning."
+    s: ["Explains identity", "Knows when index is safe"]
+
+  react_memo_tradeoff:
+    c: [react, web_performance]
+    d: hard
+    t: tradeoff
+    f: "performance"
+    q: "A teammate wraps every component in React.memo and every function in useCallback. Is that a good idea?"
+    a: "No. Memoisation has a cost: extra comparisons and memory, plus harder-to-read code. It only helps when a component is expensive to render and receives props that are actually stable; if a parent passes a new object or inline function each time, memo compares and re-renders anyway. Profile first, then memoise the few hot spots and stabilise their props, or better, move state so fewer components re-render."
+    k: ["!Says memoisation has costs and is not free", "Explains it is useless when props change identity each render", "Recommends profiling and targeting hot spots or restructuring state"]
+    h: ["What does memo compare, and how often does that comparison succeed?"]
+    fu: ["How does the React compiler change this advice?"]
+    m: "Memoising everything always makes React faster."
+    s: ["Measured approach", "Understands identity"]
+
+  react_context_vs_props:
+    c: [react, state_management]
+    d: intro
+    t: conceptual
+    f: "state and context"
+    q: "What problem does React context solve, and what problem does it not solve?"
+    a: "Context passes a value to deeply nested components without threading props through every layer, which suits themes, the signed-in user or locale. It is not a state management system by itself: it does not cache server data, and every consumer re-renders when the value changes, so putting fast-changing state in one big context makes many components re-render."
+    k: ["!Says context avoids passing props through many layers", "Gives suitable uses like theme or current user", "Notes all consumers re-render when the value changes"]
+    h: ["What happens to every consumer when the context value changes?"]
+    fu: ["How would you split a context to reduce re-renders?"]
+    m: "Context is a replacement for a state library."
+    s: ["Right use cases", "Knows the re-render cost"]
+
+  angular_change_detection:
+    c: [angular, rendering_strategies]
+    d: hard
+    t: optimisation
+    f: "change detection"
+    q: "An Angular page with a large table becomes sluggish. How does change detection work, and how would OnPush help?"
+    a: "By default Angular runs change detection over the whole component tree after every async event, checking each binding. With OnPush, a component is only checked when an input reference changes, an event fires inside it or an observable bound with the async pipe emits. Using immutable inputs and OnPush on the table, plus trackBy for the rows, cuts most of the work. Signals make updates even more targeted."
+    k: ["!Explains default change detection checks the whole tree after async events", "Explains OnPush checks only on new input references or events", "Mentions immutable inputs, async pipe or trackBy"]
+    h: ["How often is every binding checked by default?"]
+    fu: ["What breaks if you mutate an input array under OnPush?"]
+    m: "OnPush stops a component from ever updating."
+    s: ["Knows the triggers", "Pairs with immutability"]
+
+  angular_di:
+    c: [angular, solid_principles]
+    d: core
+    t: conceptual
+    f: "dependency injection"
+    q: "How does dependency injection work in Angular, and what does providedIn root mean for a service?"
+    a: "Components and services declare what they need in their constructor or with inject(), and Angular's injector creates and supplies the instances, so code depends on abstractions and is easy to test with substitutes. providedIn root registers the service in the application root injector as a single shared instance that is tree-shakable if unused. Providing it in a component instead gives each component instance its own copy."
+    k: ["!Explains classes declare dependencies and the injector supplies them", "Says providedIn root gives one shared, tree-shakable instance", "Contrasts providing at component level for separate instances"]
+    h: ["Who creates the service instance?"]
+    fu: ["How would you replace a service with a fake in a test?"]
+    m: "Every injection creates a new instance."
+    s: ["Explains scopes", "Mentions testability"]
+
+  angular_rxjs_leak:
+    c: [angular, javascript]
+    d: core
+    t: debugging
+    f: "RxJS and observables"
+    q: "After navigating between two pages a few times, an Angular app makes duplicate API calls and slows down. What is the likely bug?"
+    a: "Subscriptions to long-lived observables, such as a route params stream or an interval, are not being unsubscribed when the component is destroyed, so each visit adds another live subscription. Use the async pipe, which unsubscribes automatically, or takeUntilDestroyed, and choose the right flattening operator, such as switchMap, so a new request cancels the previous one."
+    k: ["!Identifies subscriptions that are never unsubscribed", "Proposes the async pipe or takeUntilDestroyed", "Mentions switchMap to cancel stale requests"]
+    h: ["What happens to a subscription when the component is destroyed?"]
+    fu: ["When would you choose mergeMap over switchMap?"]
+    m: "HTTP observables must always be unsubscribed manually."
+    s: ["Finds the leak", "Correct operator"]
+
+  vue_reactivity:
+    c: [vue, javascript]
+    d: core
+    t: conceptual
+    f: "the reactivity system"
+    q: "How does Vue 3 know a component needs to re-render when data changes?"
+    a: "Vue wraps reactive state in Proxies. While a component renders, every property it reads is recorded as a dependency; when one of those properties is set, the proxy triggers the effects that depend on it, so only affected components re-render. ref wraps primitives the same way through its value property. Replacing a whole reactive object, or destructuring it, can lose that tracking."
+    k: ["!Explains Proxy-based tracking of reads during render", "Explains setting a tracked property triggers dependent effects", "Mentions a pitfall such as destructuring losing reactivity"]
+    h: ["What does Vue record while a component renders?"]
+    fu: ["Why does destructuring a reactive object break updates?"]
+    m: "Vue re-renders the whole app on every change."
+    s: ["Mechanism-level answer", "Knows a pitfall"]
+
+  vue_composition_api:
+    c: [vue, component_architecture]
+    d: core
+    t: tradeoff
+    f: "options and composition API"
+    q: "When would you choose the Composition API over the Options API in Vue?"
+    a: "The Options API groups code by option type — data, methods, computed — which is easy for small components. The Composition API groups code by feature inside setup, so related state and logic sit together and can be extracted into reusable composables, and it works better with TypeScript. For large components or logic shared across components, the Composition API is the better fit."
+    k: ["!Contrasts grouping by option type with grouping by feature", "Mentions reusable composables", "Notes better TypeScript support"]
+    h: ["How would you share search logic between two components?"]
+    fu: ["How does a composable differ from a mixin?"]
+    m: "The Options API is deprecated."
+    s: ["Feature-based reasoning", "Reuse argument"]
+
+  vue_pinia_state:
+    c: [vue, state_management]
+    d: intro
+    t: practical
+    f: "state with Pinia"
+    q: "When would you move state from a Vue component into a Pinia store, and what goes in the store?"
+    a: "Move state into a store when several distant components need it or it must survive navigation, such as the cart or the signed-in user. The store holds the state, getters that derive values from it, and actions that change it, including async calls. State used by only one component, such as whether a dropdown is open, stays local."
+    k: ["!Moves shared or long-lived state into the store", "Names state, getters and actions", "Keeps purely local state in the component"]
+    h: ["Does the cart need to survive a page change?"]
+    fu: ["How would you test an action that calls an API?"]
+    m: "Every piece of state belongs in the store."
+    s: ["Clear criteria", "Knows the store's parts"]
+
+  nextjs_server_components:
+    c: [nextjs, react]
+    d: core
+    t: conceptual
+    f: "server and client components"
+    q: "In the Next.js App Router, what is the difference between a server component and a client component?"
+    a: "Server components render only on the server, can read data directly and send no JavaScript for themselves, which keeps bundles small. Client components, marked with use client, run in the browser too and are needed for state, effects, event handlers and browser APIs. A good structure keeps most of the tree on the server and makes small interactive leaves into client components."
+    k: ["!Says server components render on the server and ship no JS for themselves", "Says client components are needed for state, effects and event handlers", "Recommends keeping interactivity at the leaves"]
+    h: ["Can a server component use useState?"]
+    fu: ["How do you pass data from a server component to a client one?"]
+    m: "use client means the component never renders on the server."
+    s: ["Clear boundary", "Bundle-size reasoning"]
+
+  nextjs_caching_bug:
+    c: [nextjs, caching_strategies]
+    d: hard
+    t: debugging
+    f: "data fetching and caching"
+    q: "After an admin updates a price, the Next.js product page keeps showing the old price for a long time. Why, and how do you fix it?"
+    a: "The page or its fetch is being cached — statically rendered, or fetched with a long revalidation time — so the server keeps returning the cached result. Fix it by revalidating on demand when the price changes, with revalidatePath or revalidateTag from the admin action, or by setting a shorter revalidate period, or by marking the data as dynamic if it must always be fresh."
+    k: ["!Identifies cached rendering or a cached fetch as the cause", "Proposes on-demand revalidation by path or tag", "Mentions shorter revalidate or dynamic rendering as alternatives"]
+    h: ["Was this page rendered at build time or per request?"]
+    fu: ["What is the cost of making the page fully dynamic?"]
+    m: "Refreshing the browser clears a server cache."
+    s: ["Finds the cache layer", "Event-driven invalidation"]
+
+  nextjs_static_vs_dynamic:
+    c: [nextjs, rendering_strategies]
+    d: core
+    t: tradeoff
+    f: "static versus dynamic pages"
+    q: "Your Next.js site has a marketing page, a product page and a personal dashboard. How would you render each?"
+    a: "The marketing page changes rarely, so render it statically and serve it from the CDN. The product page can be static with periodic or on-demand revalidation so prices stay fresh without per-request work. The dashboard depends on the signed-in user and cookies, so it renders dynamically per request, or as a static shell with client-side data loading."
+    k: ["!Renders the marketing page statically", "Uses revalidation for product pages", "Renders the personal dashboard dynamically per user"]
+    h: ["Does the page depend on who is asking?"]
+    fu: ["What makes Next.js switch a route to dynamic automatically?"]
+    m: "Every page should use the same rendering mode."
+    s: ["Per-page reasoning", "Knows freshness needs"]

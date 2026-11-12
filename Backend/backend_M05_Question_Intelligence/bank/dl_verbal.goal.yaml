@@ -1,0 +1,125 @@
+# =============================================================================
+#  GOAL BANK — dl_verbal, the frameworks (2026-11-12, for M22)
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: dl_verbal
+provenance: generated
+items:
+  torch_autograd:
+    c: [pytorch, backpropagation]
+    d: intro
+    t: conceptual
+    f: "tensors and autograd"
+    q: "How does PyTorch compute gradients for you, and why must you call zero_grad in a training loop?"
+    a: "When tensors with requires_grad take part in operations, autograd records a graph of those operations; calling backward on the loss walks the graph and computes gradients for each parameter. Gradients accumulate into .grad by default, so without zeroing them each step adds to the previous step's gradients and updates become wrong."
+    k: ["!Explains autograd records operations and backward computes gradients", "Says gradients accumulate in .grad", "Explains zero_grad prevents mixing steps"]
+    h: ["What happens to .grad if backward runs twice?"]
+    fu: ["When is gradient accumulation deliberately useful?"]
+    m: "PyTorch resets gradients automatically each step."
+    s: ["Graph model", "Accumulation pitfall"]
+
+  torch_loop:
+    c: [pytorch, training_deep_networks]
+    d: core
+    t: debugging
+    f: "writing a training loop"
+    q: "Your validation accuracy in PyTorch changes every time you evaluate the same model, and is lower than expected. What did you forget?"
+    a: "The model was not switched to evaluation mode. Calling model.eval() turns off dropout and makes batch normalisation use its running statistics instead of the batch's, which makes evaluation deterministic. Also wrap evaluation in torch.no_grad() to save memory, and switch back with model.train() before training resumes."
+    k: ["!Identifies missing model.eval()", "Explains dropout and batch norm behave differently in training", "Uses torch.no_grad and switches back to train()"]
+    h: ["Is dropout still active during evaluation?"]
+    fu: ["What goes wrong with batch norm and a batch size of one?"]
+    m: "eval() only disables gradient computation."
+    s: ["Correct cause", "Complete fix"]
+
+  torch_dataloader:
+    c: [pytorch, pandas_numpy]
+    d: core
+    t: optimisation
+    f: "datasets and data loaders"
+    q: "Your GPU sits at 30 percent utilisation while training an image model. Where would you look first?"
+    a: "The input pipeline is probably the bottleneck: images are decoded and augmented on the CPU too slowly to feed the GPU. Increase DataLoader workers, enable pin_memory, prefetch, cache or pre-resize images, and move augmentation to the GPU if possible. Profile one epoch to confirm whether time goes to loading or computing."
+    k: ["!Suspects the data loading pipeline starving the GPU", "Uses more workers, pinned memory or prefetching", "Profiles to confirm where time goes"]
+    h: ["Is the GPU waiting for batches?"]
+    fu: ["Why can too many workers hurt?"]
+    m: "Low GPU usage means the model is too small."
+    s: ["Pipeline thinking", "Measures"]
+
+  torch_device:
+    c: [pytorch, computer_architecture_basics]
+    d: intro
+    t: debugging
+    f: "moving to the GPU"
+    q: "Training crashes with \"expected all tensors to be on the same device\". What is going on?"
+    a: "Some tensors are on the GPU and others on the CPU: usually the model was moved with model.to(device) but the input batch or labels were not, or a tensor was created inside the forward pass on the CPU. Move every batch to the same device in the loop, create new tensors with device set or like an existing tensor, and keep one device variable."
+    k: ["!Explains mixing CPU and GPU tensors in one operation", "Moves inputs and labels to the model's device each batch", "Creates new tensors on the right device"]
+    h: ["Which device is the batch on?"]
+    fu: ["How would you train on several GPUs?"]
+    m: "model.to(device) moves the data too."
+    s: ["Precise cause", "Consistent device handling"]
+
+  torch_checkpoint:
+    c: [pytorch, ml_pipelines]
+    d: core
+    t: practical
+    f: "saving and loading"
+    q: "How should you save a PyTorch training run so you can resume it after a crash, not just use the model?"
+    a: "Save a checkpoint dictionary with the model's state_dict, the optimiser's state_dict, the learning-rate scheduler state, the epoch and step, and random number generator states. Loading only the model weights would resume with a fresh optimiser and wrong learning rate. Save periodically and keep the best and the latest checkpoints."
+    k: ["!Saves model and optimiser state dicts", "Includes scheduler, epoch or RNG state", "Saves periodically, keeping best and latest"]
+    h: ["What does Adam remember between steps?"]
+    fu: ["Why save state_dict rather than the whole model object?"]
+    m: "Saving the model weights is enough to resume training."
+    s: ["Complete state", "Practical policy"]
+
+  tf_keras:
+    c: [tensorflow, neural_network_basics]
+    d: intro
+    t: conceptual
+    f: "Keras models and layers"
+    q: "When would you use the Keras Sequential API, the functional API or subclassing?"
+    a: "Sequential suits a plain stack of layers with one input and one output. The functional API builds graphs of layers, supporting multiple inputs or outputs, branches and shared layers, while keeping models inspectable and serialisable. Subclassing a Model gives full Python control over the forward pass for research or unusual logic, at the cost of easier saving and inspection."
+    k: ["!Sequential for a simple layer stack", "Functional for multi-input, multi-output or branching graphs", "Subclassing for custom forward logic, with trade-offs"]
+    h: ["Does the model have two inputs?"]
+    fu: ["How would you share an embedding layer between two inputs?"]
+    m: "Subclassing is always the best choice."
+    s: ["Right tool per shape", "Trade-off noted"]
+
+  tf_graph_eager:
+    c: [tensorflow, compilation_and_interpretation]
+    d: hard
+    t: debugging
+    f: "graphs and eager mode"
+    q: "A function decorated with tf.function runs much slower than expected and logs retracing warnings. What causes it?"
+    a: "tf.function traces Python code into a graph once per new input signature. Passing Python numbers or changing tensor shapes creates new signatures, so it retraces repeatedly, paying tracing cost each call. Pass tensors instead of Python scalars, fix an input_signature or allow dynamic dimensions, and keep Python side effects out of the function since they only run during tracing."
+    k: ["!Explains tracing per new input signature", "Says Python scalars or changing shapes trigger retracing", "Uses tensors or an input signature to avoid it"]
+    h: ["What counts as a new signature?"]
+    fu: ["Why does a print inside tf.function appear only once?"]
+    m: "tf.function always makes code faster."
+    s: ["Tracing model", "Concrete fixes"]
+
+  tf_data:
+    c: [tensorflow, data_pipelines]
+    d: core
+    t: optimisation
+    f: "tf.data input pipelines"
+    q: "How would you build an efficient tf.data pipeline for training on millions of images?"
+    a: "Read files in parallel, for example from TFRecords, decode and augment with map using parallel calls, then shuffle with a sizable buffer, batch, and prefetch so the next batch is prepared while the GPU trains. Cache after expensive steps that do not change per epoch. Using AUTOTUNE lets TensorFlow choose parallelism."
+    k: ["!Parallel reading and mapping", "Shuffles, batches and prefetches", "Caches stable steps or uses AUTOTUNE"]
+    h: ["What is the GPU doing while the next batch is decoded?"]
+    fu: ["Where should random augmentation sit relative to cache?"]
+    m: "Loading images one by one in Python is fine at scale."
+    s: ["Ordered stages", "Overlap compute and IO"]
+
+  tf_export:
+    c: [tensorflow, model_optimisation]
+    d: core
+    t: practical
+    f: "exporting a model"
+    q: "How would you export a Keras model to run in an Android app?"
+    a: "Save the model, then convert it with the TensorFlow Lite converter, optionally with quantisation to shrink it and speed it up, using a representative dataset for integer quantisation. Check that all operations are supported, compare the converted model's outputs with the original, and measure latency and accuracy on a real device."
+    k: ["!Converts to TensorFlow Lite", "Applies quantisation with representative data if needed", "Validates outputs and measures on the device"]
+    h: ["Which runtime will run on the phone?"]
+    fu: ["What do you do if an op is unsupported?"]
+    m: "A Keras model runs on Android as-is."
+    s: ["Conversion path", "On-device validation"]

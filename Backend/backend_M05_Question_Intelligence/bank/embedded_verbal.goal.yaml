@@ -1,0 +1,359 @@
+# =============================================================================
+#  GOAL BANK — embedded_verbal (2026-11-12, for M22 Follow Your Goal)
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: embedded_verbal
+provenance: generated
+items:
+  dig_gates:
+    c: [digital_electronics]
+    d: intro
+    t: conceptual
+    f: "gates and boolean algebra"
+    q: "Why are NAND and NOR called universal gates? Show how you would build a NOT and an AND from NAND."
+    a: "Any boolean function can be built from NAND alone, or NOR alone, which simplifies manufacturing. Tying both NAND inputs together gives NOT, since NAND of A and A is NOT A. Feeding a NAND's output through that NOT gives AND, because inverting NAND undoes the inversion. OR follows by De Morgan's law, NANDing the inverted inputs."
+    k: ["!States any function can be built from NAND or NOR alone", "Builds NOT by tying NAND inputs together", "Builds AND as NAND followed by NOT, or uses De Morgan for OR"]
+    h: ["What is NAND of A with itself?"]
+    fu: ["How many NAND gates make an XOR?"]
+    m: "Only AND, OR and NOT can build every circuit."
+    s: ["Constructive answer", "De Morgan"]
+
+  dig_fsm:
+    c: [digital_electronics, fpga_and_hdl]
+    d: core
+    t: design
+    f: "flip-flops and state machines"
+    q: "Design a state machine that detects the bit pattern 101 in a serial input stream, allowing overlaps."
+    a: "Use states for how much of the pattern has been seen: S0 nothing, S1 seen 1, S2 seen 10. From S0 a 1 goes to S1; from S1 a 0 goes to S2 and a 1 stays in S1; from S2 a 1 signals detection and goes to S1, since that 1 can start the next match, while a 0 returns to S0. A Mealy machine outputs on that transition."
+    k: ["!Defines states by how much of the pattern has matched", "Gives correct transitions including the overlap back to S1", "Says where the detection output is produced"]
+    h: ["After detecting 101, how much of the next pattern have you already seen?"]
+    fu: ["How would a Moore version differ?"]
+    m: "Overlapping detection needs no extra handling."
+    s: ["Complete transitions", "Overlap handled"]
+
+  dig_timing:
+    c: [digital_electronics, computer_architecture_basics]
+    d: hard
+    t: conceptual
+    f: "timing"
+    q: "What are setup and hold time, and what happens when they are violated?"
+    a: "Setup time is how long the input must be stable before the clock edge, and hold time how long it must stay stable after it, for a flip-flop to capture it reliably. Violations can make the flip-flop go metastable, settling unpredictably and late, which can spread wrong values. Setup limits the maximum clock frequency through the longest logic path; hold depends on the shortest path."
+    k: ["!Defines setup as stability before and hold as stability after the clock edge", "Explains violations cause metastability or wrong capture", "Links setup to maximum frequency and hold to short paths"]
+    h: ["What limits how fast you can clock a circuit?"]
+    fu: ["How do synchronisers reduce metastability risk?"]
+    m: "Timing only matters at very high clock speeds."
+    s: ["Precise definitions", "Path reasoning"]
+
+  mcu_interrupts:
+    c: [microcontrollers, concurrency_synchronisation]
+    d: core
+    t: debugging
+    f: "interrupts"
+    q: "A counter incremented in an interrupt and read in the main loop sometimes shows wrong values. What could be wrong?"
+    a: "The variable may be cached by the compiler because it is not declared volatile, so the main loop never sees updates. If it is wider than the processor's word, reading it is not atomic and an interrupt can change half of it mid-read. Declare it volatile and read it atomically, by briefly disabling interrupts or using atomic operations."
+    k: ["!Mentions volatile so the compiler re-reads the variable", "Explains non-atomic access to multi-word variables", "Uses a critical section or atomic operation for the read"]
+    h: ["Can a 32-bit read on an 8-bit chip be interrupted halfway?"]
+    fu: ["Why keep interrupt handlers short?"]
+    m: "volatile makes access atomic."
+    s: ["Two separate causes", "Correct fix"]
+
+  mcu_pwm:
+    c: [microcontrollers, control_systems]
+    d: intro
+    t: practical
+    f: "timers and PWM"
+    q: "How would you control an LED's brightness or a motor's speed with a microcontroller timer?"
+    a: "Use pulse-width modulation: a timer generates a square wave at a fixed frequency, and the duty cycle — the fraction of each period the output is high — sets the average power delivered. A higher duty cycle gives a brighter LED or faster motor. Choose the frequency high enough to avoid visible flicker or audible noise, and drive motors through a transistor or driver."
+    k: ["!Explains PWM duty cycle sets average power", "Uses a hardware timer to generate the signal", "Mentions frequency choice or a driver for motors"]
+    h: ["What happens to the average voltage at 25 percent duty?"]
+    fu: ["Why not drive a motor directly from the pin?"]
+    m: "PWM changes the output voltage level."
+    s: ["Mechanism", "Practical details"]
+
+  mcu_adc:
+    c: [microcontrollers, signal_processing]
+    d: core
+    t: practical
+    f: "analogue to digital conversion"
+    q: "A temperature sensor reading through the ADC is noisy and jumps by several degrees. How would you improve it?"
+    a: "Check the hardware first: a stable reference voltage, short wiring, a decoupling capacitor and a low-pass filter before the ADC. Sample at a suitable rate and average or median-filter several readings in software, and avoid sampling while noisy peripherals switch. Also confirm the resolution: a 10-bit ADC over a wide range may simply be too coarse."
+    k: ["!Checks reference voltage and analogue wiring or filtering", "Averages or filters several samples in software", "Considers ADC resolution and sampling timing"]
+    h: ["What does the ADC compare the input against?"]
+    fu: ["How does oversampling increase effective resolution?"]
+    m: "More software averaging fixes any noise."
+    s: ["Hardware before software", "Resolution check"]
+
+  mcu_low_power:
+    c: [microcontrollers, rtos]
+    d: hard
+    t: optimisation
+    f: "low-power design"
+    q: "A battery-powered sensor node lasts two weeks but must last a year. How do you cut its power use?"
+    a: "Measure current in each state first. The processor should sleep in its deepest mode most of the time, waking on a timer or interrupt, doing its work quickly and sleeping again. Turn off unused peripherals and sensors, lower the clock, batch radio transmissions since the radio dominates, and avoid polling loops. Duty cycle is the main lever."
+    k: ["!Measures current per state", "Uses deep sleep with interrupt or timer wake-ups", "Powers down peripherals and batches radio use"]
+    h: ["What is the chip doing between readings?"]
+    fu: ["How would you estimate battery life from the duty cycle?"]
+    m: "A bigger battery is the only option."
+    s: ["Duty-cycle reasoning", "Measurement first"]
+
+  rtos_priority_inversion:
+    c: [rtos, concurrency_synchronisation]
+    d: hard
+    t: debugging
+    f: "priority inversion"
+    q: "A high-priority task sometimes misses its deadline while waiting for a mutex held by a low-priority task. What is happening?"
+    a: "Priority inversion: the low-priority task holds the mutex but is preempted by a medium-priority task, so the high-priority task waits on work that cannot run. Priority inheritance fixes it by temporarily raising the mutex holder to the waiting task's priority so it finishes and releases the lock quickly; priority ceiling is an alternative. Keep critical sections short."
+    k: ["!Names priority inversion with a medium task preempting the holder", "Proposes priority inheritance or ceiling", "Keeps critical sections short"]
+    h: ["Which task is actually running while the high one waits?"]
+    fu: ["Why did this famously affect the Mars Pathfinder?"]
+    m: "High priority tasks can never be blocked by lower ones."
+    s: ["Three-task scenario", "Correct remedy"]
+
+  rtos_isr:
+    c: [rtos, microcontrollers]
+    d: core
+    t: practical
+    f: "what an interrupt handler may do"
+    q: "What should and should not happen inside an interrupt handler in an RTOS application?"
+    a: "An interrupt handler should be short: acknowledge the hardware, capture data, and signal a task through an ISR-safe queue or semaphore, deferring processing to the task. It must not block, wait on a mutex, allocate memory, or call slow functions like printf, because it delays other interrupts and can crash the scheduler. Use the FromISR variants of RTOS calls."
+    k: ["!Keeps the handler short and defers work to a task", "Uses ISR-safe signalling like queues or semaphores", "Forbids blocking, mutexes or slow calls inside"]
+    h: ["Can an ISR wait for a mutex?"]
+    fu: ["How do you measure interrupt latency?"]
+    m: "It is fine to do all the processing in the ISR."
+    s: ["Deferred processing", "API discipline"]
+
+  rtos_scheduling:
+    c: [rtos, process_scheduling]
+    d: core
+    t: conceptual
+    f: "meeting a deadline"
+    q: "How does a preemptive priority scheduler in an RTOS help meet deadlines, and how would you assign priorities?"
+    a: "The highest-priority ready task always runs, preempting lower ones immediately, so urgent work starts with bounded delay. A common rule is rate-monotonic: tasks with shorter periods get higher priority. Check worst-case execution times and total utilisation to confirm all deadlines can be met, and avoid long non-preemptible sections that add latency."
+    k: ["!Explains the highest-priority ready task runs immediately", "Assigns priorities by period, such as rate-monotonic", "Checks worst-case execution time or utilisation"]
+    h: ["Which task should win: the 1 ms control loop or the 1 s logger?"]
+    fu: ["What is the utilisation bound for rate-monotonic scheduling?"]
+    m: "Real-time means fast."
+    s: ["Determinism", "Analysis"]
+
+  rtos_queues:
+    c: [rtos, inter_process_communication]
+    d: intro
+    t: conceptual
+    f: "queues and semaphores"
+    q: "When would you use a queue, a binary semaphore and a mutex between RTOS tasks?"
+    a: "A queue passes data between tasks, such as sensor readings from a producer to a consumer, with buffering. A binary semaphore signals that an event happened, such as an interrupt waking a task, without data. A mutex protects a shared resource such as an SPI bus so one task uses it at a time, and supports priority inheritance."
+    k: ["!Uses a queue to pass data", "Uses a binary semaphore for signalling events", "Uses a mutex for exclusive access to a shared resource"]
+    h: ["Does the receiver need data or just a signal?"]
+    fu: ["Why not use a binary semaphore as a mutex?"]
+    m: "Mutexes and binary semaphores are interchangeable."
+    s: ["Right tool per need", "Inheritance noted"]
+
+  proto_i2c_spi:
+    c: [embedded_protocols, digital_electronics]
+    d: core
+    t: tradeoff
+    f: "choosing between them"
+    q: "You need to connect a fast display and three slow sensors to a microcontroller. Which would you put on SPI and which on I2C?"
+    a: "SPI is full-duplex and fast, tens of megahertz, using a chip-select line per device, so it suits the display's large data. I2C uses only two wires shared by many devices with addresses, but is slower, so it suits several slow sensors. The pin count, speed and number of devices drive the choice."
+    k: ["!Puts the fast display on SPI", "Puts the slow sensors on shared I2C", "Explains speed, wiring and addressing differences"]
+    h: ["How many wires does each device add on SPI?"]
+    fu: ["What do pull-up resistors do on I2C?"]
+    m: "I2C is always better because it needs fewer wires."
+    s: ["Requirement-driven", "Correct trade-offs"]
+
+  proto_uart:
+    c: [embedded_protocols, microcontrollers]
+    d: intro
+    t: debugging
+    f: "UART"
+    q: "A device connected over UART prints garbled characters. What would you check?"
+    a: "Both ends must agree on baud rate, data bits, parity and stop bits; a mismatch, often the baud rate or a clock that is inaccurate, gives garbage. Check TX is wired to the other side's RX and that grounds are shared, and that voltage levels match, such as 3.3 V logic versus RS-232. A logic analyser shows the actual timing."
+    k: ["!Checks baud rate and frame settings on both sides", "Checks crossed TX and RX wiring and a common ground", "Checks voltage levels or uses a logic analyser"]
+    h: ["What do both sides need to agree on without a shared clock?"]
+    fu: ["Why does clock accuracy matter for UART?"]
+    m: "UART needs a shared clock line."
+    s: ["Systematic checks", "Tooling"]
+
+  proto_can:
+    c: [embedded_protocols, fault_tolerance]
+    d: hard
+    t: conceptual
+    f: "CAN"
+    q: "Why is CAN used in cars, and how does it decide which message wins when two nodes transmit at once?"
+    a: "CAN is a robust differential bus that tolerates electrical noise, connects many controllers on two wires and detects errors with CRCs, retransmitting and isolating faulty nodes. Arbitration is bitwise: nodes send their identifier, and a dominant bit overrides a recessive one, so the node with the lowest identifier wins without corrupting its message, giving priority by id."
+    k: ["!Explains robustness, multi-node bus and error handling", "Describes bitwise arbitration with dominant bits", "Says the lowest identifier wins without data loss"]
+    h: ["What happens on the wire when one node sends 0 and another 1?"]
+    fu: ["What does CAN FD add?"]
+    m: "CAN collisions destroy both messages."
+    s: ["Arbitration mechanism", "Why automotive"]
+
+  fpga_hdl_software:
+    c: [fpga_and_hdl, digital_electronics]
+    d: intro
+    t: conceptual
+    f: "describing hardware in an HDL"
+    q: "Why is writing Verilog different from writing software, even though it looks like code?"
+    a: "Verilog describes hardware that all exists and runs in parallel, not a sequence of instructions. Each always block becomes circuitry operating simultaneously, assignments become wires and registers, and a loop is unrolled into replicated hardware. You must think about clock edges, registers versus combinational logic, and what the synthesiser will build, not just what a simulation prints."
+    k: ["!Says HDL describes parallel hardware, not sequential instructions", "Explains blocks become circuits and loops unroll", "Mentions clocking, registers and synthesis"]
+    h: ["Do two always blocks run one after the other?"]
+    fu: ["What is the difference between blocking and non-blocking assignments?"]
+    m: "An HDL program executes line by line."
+    s: ["Hardware mindset", "Synthesis awareness"]
+
+  fpga_timing_closure:
+    c: [fpga_and_hdl, computer_architecture_basics]
+    d: hard
+    t: optimisation
+    f: "synthesis and timing"
+    q: "Your FPGA design fails timing at 200 MHz. What can you do?"
+    a: "Read the timing report to find the failing paths. Shorten the longest combinational paths by adding pipeline registers, at the cost of latency; restructure logic, such as replacing wide adders or deep multiplexers; use dedicated resources like DSP blocks; reduce fan-out; and apply placement constraints. If the design allows, lower the clock or use multicycle constraints where valid."
+    k: ["!Starts from the timing report's critical paths", "Adds pipelining or restructures long logic paths", "Uses dedicated resources, fan-out reduction or constraints"]
+    h: ["Which path has the most negative slack?"]
+    fu: ["What does pipelining cost you?"]
+    m: "A faster FPGA part is the only fix."
+    s: ["Report-driven", "Several levers"]
+
+  fpga_cdc:
+    c: [fpga_and_hdl, concurrency_synchronisation]
+    d: hard
+    t: debugging
+    f: "clock domains"
+    q: "A signal passed from a 100 MHz clock domain to a 33 MHz domain is occasionally misread. What is the issue and the fix?"
+    a: "Crossing between unrelated clocks can violate setup and hold, making the receiving flip-flop metastable. For a single-bit signal, use a two-flip-flop synchroniser in the receiving domain; a short pulse may also need stretching or a handshake. For multi-bit data, use an asynchronous FIFO or a handshake, since bits synchronised separately can arrive out of step."
+    k: ["!Identifies metastability at an asynchronous clock crossing", "Uses a two-flop synchroniser for single bits", "Uses an asynchronous FIFO or handshake for buses"]
+    h: ["Are the two clocks related?"]
+    fu: ["Why use Gray code for FIFO pointers?"]
+    m: "Adding one flip-flop synchroniser works for a whole bus."
+    s: ["Correct cause", "Bit versus bus"]
+
+  fpga_verification:
+    c: [fpga_and_hdl, test_design]
+    d: core
+    t: practical
+    f: "simulation and verification"
+    q: "How would you verify an FPGA module before putting it on hardware?"
+    a: "Write a testbench that drives inputs, including edge cases and random stimulus, and checks outputs automatically against a reference model rather than by inspecting waveforms by eye. Measure functional coverage, add assertions for protocol rules, and run timing simulation after synthesis. Then test on hardware with an integrated logic analyser to see real signals."
+    k: ["!Uses a self-checking testbench with a reference model", "Covers edge cases, random stimulus or coverage", "Adds assertions and on-hardware probing"]
+    h: ["Who checks the outputs: you or the testbench?"]
+    fu: ["What bugs only appear on real hardware?"]
+    m: "If it simulates, it will work on hardware."
+    s: ["Automated checking", "Coverage"]
+
+  dsp_aliasing:
+    c: [signal_processing, digital_electronics]
+    d: intro
+    t: conceptual
+    f: "sampling and aliasing"
+    q: "What is aliasing, and how does the sampling theorem guide how you sample an audio signal?"
+    a: "Aliasing happens when a signal contains frequencies above half the sampling rate; they fold back and appear as false lower frequencies that cannot be removed afterwards. The sampling theorem says to sample at more than twice the highest frequency present, so for audio up to 20 kHz you sample above 40 kHz, such as 44.1 kHz, with an analogue low-pass filter before the ADC."
+    k: ["!Explains frequencies above half the sample rate fold back", "States sampling above twice the highest frequency", "Mentions an anti-aliasing filter before sampling"]
+    h: ["What happens to a 30 kHz tone sampled at 40 kHz?"]
+    fu: ["Why is 44.1 kHz slightly above 40 kHz?"]
+    m: "Aliasing can be filtered out after sampling."
+    s: ["Mechanism", "Practical numbers"]
+
+  dsp_fft:
+    c: [signal_processing, linear_algebra_for_ml]
+    d: core
+    t: practical
+    f: "the Fourier transform"
+    q: "You record vibration from a machine and want to know which frequencies dominate. How would you use an FFT, and what pitfalls exist?"
+    a: "Take a window of samples, apply a window function such as Hann to reduce spectral leakage, compute the FFT and look at the magnitude of each frequency bin. The bin spacing is the sample rate divided by the number of points, so longer windows give finer resolution. Pitfalls include leakage without windowing, aliasing, and averaging over windows to reduce noise."
+    k: ["!Uses the FFT magnitude spectrum on a windowed segment", "Explains resolution depends on sample rate and window length", "Mentions leakage, windowing or averaging"]
+    h: ["What decides how close two frequencies can be told apart?"]
+    fu: ["Why use a spectrogram for a changing signal?"]
+    m: "The FFT needs no windowing."
+    s: ["Resolution reasoning", "Pitfalls"]
+
+  dsp_filters:
+    c: [signal_processing, control_systems]
+    d: hard
+    t: tradeoff
+    f: "FIR and IIR filters"
+    q: "When would you choose an FIR filter over an IIR filter?"
+    a: "FIR filters can have exactly linear phase, so they do not distort signal shape, and they are always stable, but need many taps and more computation for sharp cut-offs. IIR filters use feedback to get sharp responses with few coefficients, cheaper on small processors, but have nonlinear phase and can become unstable with coefficient rounding. Choose FIR for audio or data where phase matters, IIR for cheap sharp filtering."
+    k: ["!Says FIR offers linear phase and guaranteed stability", "Says IIR is cheaper for sharp responses but risks phase distortion and instability", "Chooses based on phase needs and compute"]
+    h: ["Does the filter use feedback?"]
+    fu: ["Why implement IIR filters as cascaded biquads?"]
+    m: "IIR filters are always better because they are cheaper."
+    s: ["Both trade-offs", "Use-case choice"]
+
+  ctrl_open_closed:
+    c: [control_systems]
+    d: intro
+    t: conceptual
+    f: "open and closed loop"
+    q: "What is the difference between open-loop and closed-loop control? Use a room heater as the example."
+    a: "Open-loop control acts without measuring the result, like a heater running at a fixed setting for an hour regardless of room temperature. Closed-loop control measures the output and corrects, like a thermostat that switches the heater on and off to hold a set temperature despite a window being opened. Closed-loop handles disturbances but needs a sensor and can oscillate if badly tuned."
+    k: ["!Defines open-loop as acting without feedback", "Defines closed-loop as measuring and correcting", "Notes closed-loop rejects disturbances but needs tuning"]
+    h: ["Does the heater know the room temperature?"]
+    fu: ["What causes a closed loop to oscillate?"]
+    m: "Closed-loop control is always stable."
+    s: ["Clear example", "Trade-off"]
+
+  ctrl_pid:
+    c: [control_systems, robotics_fundamentals]
+    d: core
+    t: practical
+    f: "PID tuning"
+    q: "Explain what the P, I and D terms of a PID controller each do, and how you would tune one for a motor's speed."
+    a: "P reacts in proportion to the current error, giving fast response but often a steady offset. I accumulates past error to remove that offset, but too much causes overshoot. D reacts to how fast the error changes, damping overshoot but amplifying noise. Tune by raising P until it responds quickly, adding I to remove offset, then D to damp, with anti-windup and filtering on D."
+    k: ["!Explains P, I and D roles and their side effects", "Describes a tuning order", "Mentions anti-windup or filtering the derivative"]
+    h: ["Which term removes the steady-state error?"]
+    fu: ["What is integral windup?"]
+    m: "More gain always makes a controller better."
+    s: ["Each term's effect", "Practical tuning"]
+
+  ctrl_stability:
+    c: [control_systems, signal_processing]
+    d: hard
+    t: conceptual
+    f: "stability"
+    q: "A drone's altitude controller oscillates more and more until it crashes. What does that tell you about the system, and how would you fix it?"
+    a: "Growing oscillation means the closed loop is unstable: the controller corrects too aggressively or too late, so each correction overshoots more. Causes include too much gain, delay from slow sensors or filtering, or insufficient damping. Reduce gains, add derivative damping, cut loop delay, and check stability margins such as gain and phase margin in the frequency domain or by testing."
+    k: ["!Identifies an unstable closed loop", "Names causes such as high gain or loop delay", "Fixes by reducing gain, adding damping or reducing delay, checking margins"]
+    h: ["What does delay do to a correction?"]
+    fu: ["What is phase margin?"]
+    m: "Oscillation means the sensor is faulty."
+    s: ["Diagnosis", "Margins"]
+
+  rob_transforms:
+    c: [robotics_fundamentals, linear_algebra_for_ml]
+    d: intro
+    t: conceptual
+    f: "frames and transforms"
+    q: "A camera on a robot arm sees an object. How do you find where the object is relative to the robot's base?"
+    a: "Express positions in coordinate frames and chain transforms: the object's pose in the camera frame, the camera's pose in the end-effector frame from calibration, and the end-effector's pose in the base frame from the arm's joint angles. Multiplying these homogeneous transformation matrices gives the object's pose in the base frame. Calibration errors propagate through the chain."
+    k: ["!Uses coordinate frames and chained transforms", "Combines camera, calibration and arm kinematics", "Mentions homogeneous matrices or error propagation"]
+    h: ["How do you go from camera coordinates to base coordinates?"]
+    fu: ["What is hand-eye calibration?"]
+    m: "Camera pixels can be used directly as robot coordinates."
+    s: ["Frame chain", "Calibration awareness"]
+
+  rob_ik:
+    c: [robotics_fundamentals, gradient_descent]
+    d: core
+    t: tradeoff
+    f: "forward and inverse kinematics"
+    q: "What is the difference between forward and inverse kinematics, and why is inverse harder?"
+    a: "Forward kinematics computes the end-effector's position from the joint angles, a direct calculation. Inverse kinematics finds joint angles that place the end-effector at a target pose, which may have several solutions, none, or infinitely many for redundant arms, and often has no closed form. It is solved analytically for simple arms or numerically with Jacobian methods, handling joint limits and singularities."
+    k: ["!Defines forward as angles to pose and inverse as pose to angles", "Explains multiple, none or infinite solutions", "Mentions analytic or numerical Jacobian solutions and singularities"]
+    h: ["How many ways can your arm reach the same point?"]
+    fu: ["What is a kinematic singularity?"]
+    m: "Inverse kinematics always has one answer."
+    s: ["Clear definitions", "Why it is hard"]
+
+  rob_ros:
+    c: [robotics_fundamentals, message_queues]
+    d: core
+    t: design
+    f: "ROS nodes and topics"
+    q: "How would you structure the software for a mobile robot that maps a room and avoids obstacles in ROS?"
+    a: "Split it into nodes with one job each: drivers publishing lidar scans and wheel odometry, a SLAM node building the map and estimating pose, a planner computing a path to a goal, and a controller sending velocity commands. Nodes communicate over topics for streams and services or actions for requests and long tasks, with transforms tracked by tf. Each node can be tested and replaced independently."
+    k: ["!Splits the system into single-purpose nodes", "Uses topics for streams and services or actions for requests", "Mentions SLAM, planning, control or tf transforms"]
+    h: ["Which node needs the lidar data?"]
+    fu: ["How would you record and replay sensor data for testing?"]
+    m: "A robot program should be one big loop."
+    s: ["Modular design", "Communication patterns"]

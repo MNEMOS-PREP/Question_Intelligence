@@ -10,7 +10,7 @@
 #  No `items:` key, so the bank loader reads nothing from it.
 # =============================================================================
 
-groups: [Core CS, AI and ML, HR]
+groups: [Core CS, Software engineering, Data, AI and ML, Infrastructure and security, Business and aptitude, HR]
 
 tracks:
   dsa_verbal:
@@ -51,3 +51,62 @@ tracks:
     # Who runs it: M06 seats an HR interviewer for a behavioural part.
     kind: behavioural
     blurb: Your own experiences, told with a situation, what you did, and the result.
+
+  # 2026-11-12: the tracks career goals need (M22, Follow Your Goal). Each is
+  # an area an interviewer would name; M22's role catalogue mixes them.
+  frontend_verbal:
+    title: Frontend engineering
+    group: Software engineering
+    blurb: The browser, JavaScript, a framework, state, performance and accessibility.
+  backend_verbal:
+    title: Backend engineering
+    group: Software engineering
+    blurb: APIs, authentication, caching, queues, services and the frameworks behind them.
+  system_design_verbal:
+    title: System design
+    group: Software engineering
+    blurb: Scale, replication and sharding, consistency, reliability, and designing a system end to end.
+  languages_verbal:
+    title: Programming languages
+    group: Software engineering
+    blurb: Python, Java, JavaScript, TypeScript, C, C++, Go and C# — the language itself, in depth.
+  mobile_verbal:
+    title: Mobile development
+    group: Software engineering
+    blurb: App lifecycle, Android, iOS and cross-platform apps that survive a bad network.
+  testing_verbal:
+    title: Testing and QA
+    group: Software engineering
+    blurb: Test design, automation, API and performance testing, and finding the bug first.
+  data_eng_verbal:
+    title: Data engineering
+    group: Data
+    blurb: Pipelines, warehouses, Spark, streaming, orchestration and data quality.
+  analytics_verbal:
+    title: Analytics and statistics
+    group: Data
+    blurb: Statistics, experiments, SQL for analysis, spreadsheets and dashboards.
+  ai_apps_verbal:
+    title: Applied AI and LLMs
+    group: AI and ML
+    blurb: RAG, prompting, agents, fine-tuning and evaluation, vision and NLP, and models in production.
+  devops_verbal:
+    title: DevOps and cloud
+    group: Infrastructure and security
+    blurb: Linux, containers, Kubernetes, CI/CD, observability and the cloud.
+  security_verbal:
+    title: Cybersecurity
+    group: Infrastructure and security
+    blurb: Cryptography, web security, secure code, incidents and offensive testing.
+  embedded_verbal:
+    title: Embedded and hardware
+    group: Infrastructure and security
+    blurb: Microcontrollers, RTOS, protocols, digital design, signals, control and robotics.
+  product_verbal:
+    title: Product, design and business
+    group: Business and aptitude
+    blurb: Product sense, metrics, UX, requirements, cases and talking to clients.
+  aptitude_verbal:
+    title: Aptitude and reasoning
+    group: Business and aptitude
+    blurb: Quantitative and logical reasoning and estimation, reasoned out loud.

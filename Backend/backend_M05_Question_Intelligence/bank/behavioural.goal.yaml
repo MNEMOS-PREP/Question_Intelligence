@@ -1,0 +1,427 @@
+# =============================================================================
+#  GOAL BANK — behavioural, by competency (2026-11-12, for M22)
+#  Each question asks about the student's OWN experience. The "reference
+#  answer" describes what a strong answer contains, not facts; key points are
+#  what the answer shows. Drafted by Claude (Opus 5.5) while building M22.
+#  NOT reviewed: provenance generated, practised and never scored until a
+#  reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: behavioural
+provenance: generated
+items:
+  own_end_to_end:
+    c: [ownership_and_accountability, project_storytelling]
+    d: core
+    t: behavioural
+    f: "owning an outcome end to end"
+    q: "Tell me about something you took responsibility for from start to finish, where nobody would have blamed you for stopping halfway."
+    a: "A strong answer names a specific situation, such as a team project or club event, and the student's own role. It shows them going past the obvious stopping point — testing, documenting, following up with users — explains why they cared, and ends with a concrete result, ideally measured, plus what they learned about finishing work."
+    k: ["!Describes a specific situation and the student's own role", "Shows actions beyond the minimum, done by them", "Ends with a concrete result and a reflection"]
+    h: ["What did you do after the main part was finished?"]
+    fu: ["What would have happened if you had stopped?"]
+    m: "Describing what the team did shows ownership."
+    s: ["First-person actions", "Measurable result"]
+
+  own_mistake:
+    c: [ownership_and_accountability, learning_from_failure]
+    d: core
+    t: behavioural
+    f: "admitting a mistake"
+    q: "Tell me about a time you made a mistake that affected other people. What did you do?"
+    a: "A strong answer admits a real mistake without blaming others, explains its impact on people, and focuses on what the student did next — telling the affected people quickly, fixing what they could — and on the change they made so it would not happen again. Candour and the follow-through matter more than the mistake itself."
+    k: ["!Admits a real mistake without blaming others", "Describes prompt communication and fixing the impact", "Describes a lasting change to prevent recurrence"]
+    h: ["Who did you tell, and when?"]
+    fu: ["How do you check now that it won't happen again?"]
+    m: "The best answer is a mistake that was actually a strength."
+    s: ["Accountability", "Prevention"]
+
+  own_beyond:
+    c: [ownership_and_accountability, leadership_and_initiative]
+    d: intro
+    t: behavioural
+    f: "going beyond the assignment"
+    q: "Describe a time you did more than what was asked of you. Why did you do it?"
+    a: "A strong answer gives a concrete example — fixing a recurring issue, automating a tedious task for the class, improving a project beyond the grade — explains the problem they noticed and why it mattered to others, describes what they did and how they made sure it did not hurt their main responsibilities, and states the benefit to others."
+    k: ["!Gives a concrete example of extra work", "Explains why it mattered to others", "States the benefit while keeping main duties covered"]
+    h: ["Who benefited from the extra work?"]
+    fu: ["How did you decide it was worth your time?"]
+    m: "Doing extra work always looks good regardless of reason."
+    s: ["Motivation explained", "Impact on others"]
+
+  team_role:
+    c: [teamwork_and_collaboration, project_storytelling]
+    d: intro
+    t: behavioural
+    f: "your role in a team"
+    q: "Tell me about a team project. What was your specific contribution, separate from the team's?"
+    a: "A strong answer briefly sets the project's goal and team size, then clearly separates what the student personally did — the module they built, the decisions they made, how they coordinated — from the team's work, using \"I\" for their part. It explains how their work fitted with others' and ends with the team's result and their share in it."
+    k: ["!Separates the student's own contribution from the team's", "Explains how their work fitted with others'", "States the outcome and their part in it"]
+    h: ["Which part would not exist without you?"]
+    fu: ["What would you do differently in that team?"]
+    m: "Saying \"we did everything together\" is the safest answer."
+    s: ["Clear personal contribution", "Integration"]
+
+  team_help:
+    c: [teamwork_and_collaboration, customer_focus]
+    d: core
+    t: behavioural
+    f: "helping a struggling teammate"
+    q: "Describe a time a teammate was struggling. What did you do?"
+    a: "A strong answer shows the student noticing the problem, approaching the teammate respectfully and privately to understand why, and helping in a way that built their ability — pairing, splitting work differently, sharing resources — rather than silently doing their work. It ends with how the teammate and project did, and what the student learned about supporting others."
+    k: ["!Shows noticing and understanding the cause respectfully", "Helps in a way that builds the teammate's ability", "States the outcome for teammate and project"]
+    h: ["Why was your teammate struggling?"]
+    fu: ["When would you escalate to a mentor instead?"]
+    m: "Doing the teammate's work for them is the best help."
+    s: ["Empathy", "Sustainable help"]
+
+  team_unlike:
+    c: [teamwork_and_collaboration, adaptability_and_learning]
+    d: hard
+    t: behavioural
+    f: "working with people unlike you"
+    q: "Tell me about working with someone whose working style was very different from yours."
+    a: "A strong answer describes the difference concretely — a planner working with someone who works last-minute, or different communication habits — without judging the other person. It shows the student understanding the other style's strengths, agreeing on ways to work together such as check-ins or splitting tasks to suit each, and the result they achieved together."
+    k: ["!Describes the difference concretely and without judgement", "Shows adapting and agreeing on a way to work together", "States the result and what they learned"]
+    h: ["What was good about their style?"]
+    fu: ["What do you now do differently with such people?"]
+    m: "The other person needed to change their style."
+    s: ["Non-judgemental", "Practical adaptation"]
+
+  conflict_decision:
+    c: [conflict_resolution, disagreeing_respectfully]
+    d: core
+    t: behavioural
+    f: "a disagreement over a decision"
+    q: "Tell me about a time you disagreed with a teammate or lead about a technical decision. How was it resolved?"
+    a: "A strong answer explains the disagreement and both positions fairly, shows the student making their case with evidence — data, a prototype, trade-offs — and listening to the other side, then reaching a decision together or committing to the chosen path even if it was not theirs. It ends with the outcome and what the student learned."
+    k: ["!States both positions fairly", "Shows using evidence and listening", "Shows reaching a decision and committing to it"]
+    h: ["What evidence did you bring?"]
+    fu: ["What if the decision went against you?"]
+    m: "Winning the argument is the point of the story."
+    s: ["Evidence-based", "Disagree and commit"]
+
+  conflict_difficult:
+    c: [conflict_resolution, stakeholder_communication]
+    d: hard
+    t: behavioural
+    f: "a difficult person"
+    q: "Describe a time you had to work with someone difficult. How did you handle it?"
+    a: "A strong answer describes the behaviour specifically rather than labelling the person, shows the student trying to understand what drove it, raising it directly and calmly, and finding a working arrangement. If escalation was needed, it shows doing so fairly. It ends with how the work went and what the student would do again."
+    k: ["!Describes specific behaviour rather than labelling the person", "Shows trying to understand and addressing it directly", "Shows a working outcome or fair escalation"]
+    h: ["What do you think was behind their behaviour?"]
+    fu: ["When is escalating the right call?"]
+    m: "Avoiding the person is a good resolution."
+    s: ["Specific and fair", "Direct conversation"]
+
+  conflict_workload:
+    c: [conflict_resolution, prioritisation_under_pressure]
+    d: core
+    t: behavioural
+    f: "conflict over workload"
+    q: "Tell me about a time work was split unfairly in a team. What did you do?"
+    a: "A strong answer shows the student raising the imbalance early with facts rather than complaints, proposing a fairer split based on skills and time, and agreeing it with the team, possibly with clearer task tracking. It shows protecting the deadline and the relationships, and ends with how the project and team dynamic improved."
+    k: ["!Raises the imbalance early with facts", "Proposes and agrees a fairer split", "Protects both the deadline and relationships"]
+    h: ["How did you bring it up?"]
+    fu: ["What would you do if one member still did nothing?"]
+    m: "Silently doing the extra work is the mature choice."
+    s: ["Constructive", "Process fix"]
+
+  conflict_after:
+    c: [conflict_resolution, receiving_feedback]
+    d: intro
+    t: behavioural
+    f: "what changed afterwards"
+    q: "After a conflict in a team, what did you change about how you work?"
+    a: "A strong answer briefly recalls a real conflict, then focuses on a concrete change the student made — agreeing roles at the start of projects, checking in earlier, asking questions before assuming — and shows evidence the change worked in a later project. It demonstrates learning rather than just surviving the conflict."
+    k: ["!Recalls a real conflict briefly", "Names a concrete change in their own behaviour", "Shows the change working later"]
+    h: ["What do you do now at the start of a project?"]
+    fu: ["Has that change ever not worked?"]
+    m: "Conflicts are best forgotten."
+    s: ["Learning shown", "Evidence of change"]
+
+  lead_no_title:
+    c: [leadership_and_initiative, teamwork_and_collaboration]
+    d: core
+    t: behavioural
+    f: "leading without a title"
+    q: "Tell me about a time you led a group without being the official leader."
+    a: "A strong answer describes a situation where the group lacked direction, and shows the student stepping in by clarifying the goal, proposing a plan, organising roles or unblocking others — influencing through ideas and help rather than authority. It credits others and ends with the result and how the group responded."
+    k: ["!Describes a gap in direction the student noticed", "Shows influencing through clarity and help, not authority", "Credits others and states the result"]
+    h: ["Why did people follow your plan?"]
+    fu: ["What would you do if someone resisted?"]
+    m: "Leadership requires a title."
+    s: ["Influence", "Credit to others"]
+
+  lead_initiative:
+    c: [leadership_and_initiative, product_sense]
+    d: intro
+    t: behavioural
+    f: "starting something nobody asked for"
+    q: "Describe something you started on your own because you saw a need."
+    a: "A strong answer names the need clearly and who had it, explains how the student checked it was real, what they built or organised, how they got others involved, and the measurable result — users, time saved, people helped — plus what they would improve. It shows initiative grounded in a real problem."
+    k: ["!Names a real need and who had it", "Describes what they started and how they involved others", "States a measurable result"]
+    h: ["How did you know people wanted it?"]
+    fu: ["What happened to it after you?"]
+    m: "Any side project shows initiative."
+    s: ["Need-driven", "Results"]
+
+  lead_uncertain:
+    c: [leadership_and_initiative, explaining_tradeoffs]
+    d: hard
+    t: behavioural
+    f: "making a call under uncertainty"
+    q: "Tell me about a decision you had to make without enough information."
+    a: "A strong answer explains the situation and why waiting was costly, shows the student gathering what information they could quickly, weighing the options and risks, choosing one with a fallback plan, and communicating it. It reflects honestly on how the decision turned out and what they would do differently."
+    k: ["!Explains why a decision was needed before all facts were in", "Shows weighing options and risks with a fallback", "Reflects honestly on the outcome"]
+    h: ["What would waiting have cost?"]
+    fu: ["How did you know whether it was the right call?"]
+    m: "Good leaders always wait for full information."
+    s: ["Risk-aware", "Honest reflection"]
+
+  fail_real:
+    c: [learning_from_failure, ownership_and_accountability]
+    d: core
+    t: behavioural
+    f: "a real failure and your part in it"
+    q: "Tell me about a real failure — something that did not work out — and your part in it."
+    a: "A strong answer picks a genuine failure with consequences, such as a project that missed its goal or a competition lost, owns the student's own contribution to it without blaming others, explains what they learned and shows how they applied that lesson later with a better result."
+    k: ["!Chooses a genuine failure with consequences", "Owns the student's own part in it", "Shows the lesson applied later"]
+    h: ["What would you do differently?"]
+    fu: ["When did you next face something similar?"]
+    m: "Saying you have never really failed is a strong answer."
+    s: ["Genuine", "Applied lesson"]
+
+  fail_changed:
+    c: [learning_from_failure, adaptability_and_learning]
+    d: intro
+    t: behavioural
+    f: "what you changed"
+    q: "What is the most useful feedback you have received, and what did you change because of it?"
+    a: "A strong answer quotes or paraphrases specific feedback, admits it was uncomfortable if it was, describes the concrete change the student made in response and gives evidence of improvement afterwards. It shows they seek and act on feedback rather than defend against it."
+    k: ["!Names specific feedback", "Describes a concrete change made in response", "Gives evidence of improvement"]
+    h: ["What did you do the next week?"]
+    fu: ["How do you ask for feedback now?"]
+    m: "Feedback is mostly about others' opinions."
+    s: ["Specific", "Action taken"]
+
+  fail_bounce:
+    c: [learning_from_failure, motivation_and_role_fit]
+    d: hard
+    t: behavioural
+    f: "bouncing back"
+    q: "Tell me about a setback — a rejection or a bad result — and how you got back on track."
+    a: "A strong answer describes the setback honestly and its effect, then shows a deliberate response: analysing what went wrong, seeking help or feedback, making a plan and persisting, ending with a later success or improvement. It shows resilience as action, not just staying positive."
+    k: ["!Describes a real setback honestly", "Shows analysis and a deliberate plan to recover", "Ends with a later improvement or success"]
+    h: ["What did you analyse after the rejection?"]
+    fu: ["What keeps you going in a long placement season?"]
+    m: "Resilience means not feeling bad."
+    s: ["Action-based resilience", "Outcome"]
+
+  adapt_fast:
+    c: [adaptability_and_learning, project_storytelling]
+    d: core
+    t: behavioural
+    f: "learning something fast"
+    q: "Tell me about a time you had to learn a new technology quickly for a project. How did you approach it?"
+    a: "A strong answer names the technology and the deadline, describes a deliberate learning approach — official docs, a small prototype, asking experienced people, focusing on what the project needed first — shows how they applied it in the project, and gives the result and what they would learn next. It shows learning that is fast and focused."
+    k: ["!Names the technology and time pressure", "Describes a deliberate, focused learning approach", "Shows applying it and the result"]
+    h: ["What did you build first to learn it?"]
+    fu: ["How do you decide what not to learn?"]
+    m: "Watching many tutorials is fast learning."
+    s: ["Method", "Applied result"]
+
+  adapt_change:
+    c: [adaptability_and_learning, prioritisation_under_pressure]
+    d: intro
+    t: behavioural
+    f: "a change of plan"
+    q: "Describe a time a plan changed suddenly — a requirement, a teammate, a deadline. How did you adapt?"
+    a: "A strong answer explains the change and its impact, shows the student re-planning quickly — re-prioritising, communicating with the team, adjusting scope — while staying calm, and states the outcome. It shows adapting without losing sight of the goal."
+    k: ["!Explains the change and its impact", "Shows quick re-planning and communication", "States the outcome"]
+    h: ["What did you drop to make room?"]
+    fu: ["How do you plan for changes now?"]
+    m: "Complaining about the change is part of adapting."
+    s: ["Calm re-planning", "Goal focus"]
+
+  adapt_ambiguity:
+    c: [adaptability_and_learning, clarifying_questions]
+    d: hard
+    t: behavioural
+    f: "working with ambiguity"
+    q: "Tell me about a task where the requirements were unclear. What did you do?"
+    a: "A strong answer shows the student clarifying what they could by asking the right people specific questions, stating assumptions explicitly, delivering a small first version to get feedback, and adjusting. It ends with the result and shows comfort with ambiguity combined with disciplined clarification."
+    k: ["!Asks specific clarifying questions", "States assumptions and delivers early for feedback", "Adjusts based on feedback and states the result"]
+    h: ["Who could have told you more?"]
+    fu: ["How do you document assumptions?"]
+    m: "Waiting for perfect requirements is the safe approach."
+    s: ["Clarifies", "Iterates"]
+
+  prio_competing:
+    c: [prioritisation_under_pressure, project_management_basics]
+    d: core
+    t: behavioural
+    f: "competing deadlines"
+    q: "Tell me about a week when you had more deadlines than time. How did you decide what to do first?"
+    a: "A strong answer lists the competing tasks, explains how the student judged importance and urgency — impact, who depended on it, consequences of lateness — shows them negotiating or communicating where something had to slip, and gives the outcome. It shows a deliberate prioritisation method, not just working late."
+    k: ["!Lists the competing tasks", "Explains a clear prioritisation method", "Shows communicating what would slip and the outcome"]
+    h: ["What did you tell the people whose task waited?"]
+    fu: ["What would you drop first now?"]
+    m: "Working all night is the best prioritisation."
+    s: ["Method", "Communication"]
+
+  prio_drop:
+    c: [prioritisation_under_pressure, explaining_tradeoffs]
+    d: hard
+    t: behavioural
+    f: "deciding what to drop"
+    q: "Describe a time you chose not to do something important. How did you decide, and who did you tell?"
+    a: "A strong answer explains the trade-off clearly, shows the reasoning — which option had more impact or less risk — and shows the student telling the affected people and agreeing the decision rather than silently dropping it. It ends with the consequence and whether they would choose the same again."
+    k: ["!Explains the trade-off and reasoning", "Shows agreeing the decision with affected people", "Reflects on the consequence"]
+    h: ["Who expected the task you dropped?"]
+    fu: ["Would you make the same call again?"]
+    m: "Good performers never drop anything."
+    s: ["Trade-off clarity", "Transparency"]
+
+  prio_quality:
+    c: [prioritisation_under_pressure, code_quality_and_review]
+    d: core
+    t: behavioural
+    f: "sustaining quality under pressure"
+    q: "Tell me about a time you were tempted to cut corners to meet a deadline. What did you do?"
+    a: "A strong answer describes the pressure, separates acceptable shortcuts — reducing scope, deferring polish — from unacceptable ones — skipping testing on something critical — and shows the student choosing consciously, communicating any reduced scope, and following up on deferred work. It shows judgement about quality under pressure."
+    k: ["!Distinguishes acceptable from unacceptable shortcuts", "Shows a conscious choice with communication", "Follows up on deferred work"]
+    h: ["Which corner would have hurt users?"]
+    fu: ["How did you make sure the deferred work happened?"]
+    m: "Quality always matters less than deadlines."
+    s: ["Judgement", "Follow-up"]
+
+  cust_need:
+    c: [customer_focus, requirements_elicitation]
+    d: core
+    t: behavioural
+    f: "understanding what the customer needed"
+    q: "Tell me about a time what someone asked for turned out to be different from what they needed."
+    a: "A strong answer describes the original request, how the student discovered the real need — asking why, watching how the person worked, showing an early version — and how they changed the solution, with the person's reaction and result. It shows curiosity about the user's goal, not just following instructions."
+    k: ["!Describes the request and how the real need emerged", "Shows asking why or observing the user", "Shows changing the solution and the result"]
+    h: ["What question revealed the real need?"]
+    fu: ["How do you check needs early now?"]
+    m: "Doing exactly what was asked is good customer service."
+    s: ["Curiosity", "Outcome"]
+
+  cust_unhappy:
+    c: [customer_focus, stakeholder_communication]
+    d: hard
+    t: behavioural
+    f: "an unhappy customer"
+    q: "Describe a time you dealt with someone who was unhappy with your work or service."
+    a: "A strong answer shows the student listening fully without getting defensive, acknowledging the person's frustration, finding the actual problem, fixing it or offering options, and following up afterwards. It ends with how the relationship turned out and what they changed to prevent similar complaints."
+    k: ["!Shows listening and acknowledging without defensiveness", "Finds and fixes the actual problem or offers options", "Follows up and prevents recurrence"]
+    h: ["What did the person actually need?"]
+    fu: ["What would you do if you could not fix it?"]
+    m: "Defending your work shows confidence."
+    s: ["Calm empathy", "Resolution"]
+
+  cust_tradeoff:
+    c: [customer_focus, product_sense]
+    d: intro
+    t: behavioural
+    f: "a trade-off made for the user"
+    q: "Tell me about a decision you made in a project because it was better for the users, even though it was harder for you."
+    a: "A strong answer explains the users and their need, the easier option and why it was worse for them, the extra effort the student chose to take, and the measurable or observed benefit to users. It shows putting the user first with clear reasoning."
+    k: ["!Explains the users and their need", "Contrasts the easier option with the user-friendly one", "Shows the benefit to users"]
+    h: ["Who would have suffered with the easier option?"]
+    fu: ["When is the easier option the right call?"]
+    m: "User focus means doing whatever users ask."
+    s: ["Reasoned choice", "User benefit"]
+
+  ethics_dilemma:
+    c: [integrity_and_ethics]
+    d: core
+    t: behavioural
+    f: "an ethical dilemma"
+    q: "Tell me about a time you faced a situation where the right thing to do was not the easiest."
+    a: "A strong answer describes a real dilemma — such as a teammate copying code, inflated results or pressure to bend a rule — explains the competing pressures, shows the student choosing the honest course and handling it respectfully, and states the consequence. It shows integrity under pressure without self-righteousness."
+    k: ["!Describes a real dilemma and the competing pressures", "Shows choosing the honest course", "Handles it respectfully and states the consequence"]
+    h: ["What made it difficult?"]
+    fu: ["What would you do if your manager asked you to bend the rule?"]
+    m: "Ethical dilemmas never come up for students."
+    s: ["Real stakes", "Respectful honesty"]
+
+  ethics_shortcut:
+    c: [integrity_and_ethics, secure_coding]
+    d: hard
+    t: behavioural
+    f: "saying no to a shortcut"
+    q: "Have you ever been asked to do something you thought was wrong, such as faking data or skipping a safety step? What did you do?"
+    a: "A strong answer describes the request, explains why the student believed it was wrong, shows them raising the concern clearly and proposing an honest alternative, escalating if needed, and the result. It shows the courage to say no with a constructive path forward."
+    k: ["!Describes the request and why it was wrong", "Shows raising the concern and proposing an alternative", "Shows escalation if needed and the result"]
+    h: ["What alternative did you suggest?"]
+    fu: ["How would you handle it if you were overruled?"]
+    m: "Following instructions removes your responsibility."
+    s: ["Courage", "Constructive alternative"]
+
+  ethics_data:
+    c: [integrity_and_ethics, data_quality_and_governance]
+    d: intro
+    t: behavioural
+    f: "protecting user data"
+    q: "Tell me about a time you handled other people's personal information. How did you protect it?"
+    a: "A strong answer describes the data — such as a club's member list or survey responses — and shows the student collecting only what was needed, restricting access, not sharing it beyond its purpose, and deleting it when done. It shows respect for privacy as a habit."
+    k: ["!Describes the personal data involved", "Shows collecting minimal data and restricting access", "Shows using it only for its purpose and deleting it"]
+    h: ["Who could see the data?"]
+    fu: ["What would you do if it leaked?"]
+    m: "Data shared with you is yours to use."
+    s: ["Privacy habits", "Purpose limitation"]
+
+  fit_tmay:
+    c: [motivation_and_role_fit, summarising_concisely]
+    d: intro
+    t: behavioural
+    f: "tell me about yourself"
+    q: "Tell me about yourself."
+    a: "A strong answer runs about a minute and connects past, present and future to this role: who the student is and what they study, two or three highlights that show relevant skills with a result each, and why they are excited about this kind of role now. It is a story with a direction, not a recital of the resume."
+    k: ["!Keeps it short and structured", "Highlights two or three relevant achievements with results", "Ends with why this role fits now"]
+    h: ["What should the interviewer remember about you?"]
+    fu: ["Which of those highlights are you proudest of?"]
+    m: "Reciting the resume line by line is a good answer."
+    s: ["Narrative", "Role connection"]
+
+  fit_why_role:
+    c: [motivation_and_role_fit, project_storytelling]
+    d: core
+    t: behavioural
+    f: "why this role"
+    q: "Why do you want this particular role rather than any software job?"
+    a: "A strong answer links the role's actual work to specific experiences the student enjoyed and did well — a project, internship or course — and to what they want to learn next. It shows they understand what the job involves day to day, rather than generic enthusiasm or salary."
+    k: ["!Shows understanding of what the role involves", "Links it to specific experiences they enjoyed", "Names what they want to learn in it"]
+    h: ["Which part of the job would you most enjoy?"]
+    fu: ["What part of the role do you expect to find hard?"]
+    m: "Any role is fine, so the answer does not matter."
+    s: ["Specific", "Evidence of interest"]
+
+  fit_why_company:
+    c: [motivation_and_role_fit, product_sense]
+    d: core
+    t: behavioural
+    f: "why this company"
+    q: "Why do you want to join our company?"
+    a: "A strong answer shows research beyond the website's front page — the company's products, customers, recent news or engineering approach — and connects specific points to the student's interests and goals. It is honest and specific, and avoids flattery or reasons that apply to every company."
+    k: ["!Shows specific research about the company", "Connects it to the student's own interests or goals", "Avoids generic reasons that fit any company"]
+    h: ["What do they build, and for whom?"]
+    fu: ["Which of our products would you improve, and how?"]
+    m: "Praising the company's reputation is enough."
+    s: ["Researched", "Personal connection"]
+
+  fit_heading:
+    c: [motivation_and_role_fit, adaptability_and_learning]
+    d: hard
+    t: behavioural
+    f: "where you are heading"
+    q: "Where do you see yourself in three to five years?"
+    a: "A strong answer shows realistic ambition tied to the role: deepening skills in an area, taking more responsibility such as owning features or mentoring, and growing within the kind of work this job offers. It shows the student has thought about their direction while staying open, and does not suggest they will leave immediately."
+    k: ["!Gives realistic goals connected to this role", "Mentions growing skills and responsibility", "Shows direction while staying open"]
+    h: ["What skill do you want to be known for?"]
+    fu: ["What would make you feel you had succeeded?"]
+    m: "Saying you want the interviewer's job shows ambition."
+    s: ["Grounded ambition", "Role-aligned"]
