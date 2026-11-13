@@ -1,0 +1,489 @@
+# =============================================================================
+#  GOAL BANK — devops_verbal (2026-11-12, for M22 Follow Your Goal)
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: devops_verbal
+provenance: generated
+items:
+  linux_permissions:
+    c: [linux_fundamentals, security_fundamentals]
+    d: intro
+    t: practical
+    f: "files and permissions"
+    q: "A web server cannot read a config file you just copied in. How do you check and fix the permissions on Linux?"
+    a: "Run ls -l to see the owner, group and the read, write and execute bits for owner, group and others, and check which user the server runs as. Then grant the minimum needed, for example chown the file to the service's user or group and chmod 640 so it can read but others cannot. Avoid chmod 777, which lets anyone modify it."
+    k: ["!Checks owner, group and permission bits with ls -l", "Checks which user the service runs as", "Grants minimal access with chown or chmod, avoiding 777"]
+    h: ["Which user is the web server process running as?"]
+    fu: ["What does the execute bit mean on a directory?"]
+    m: "chmod 777 is a safe quick fix."
+    s: ["Diagnoses before changing", "Least privilege"]
+
+  linux_process_debug:
+    c: [linux_fundamentals, troubleshooting]
+    d: core
+    t: debugging
+    f: "processes and services"
+    q: "A server is slow and the load average is high. Which Linux commands do you reach for, and what are you looking for?"
+    a: "Use top or htop to see which processes use CPU and memory, vmstat to tell CPU-bound from waiting on I/O, iostat for disk saturation, free for memory and swap, and df for full disks. High load with low CPU usually means processes waiting on disk or network. systemctl status and journalctl show whether a service is crash-looping."
+    k: ["!Uses top or htop to find the busy processes", "Distinguishes CPU-bound from I/O wait with vmstat or iostat", "Checks memory, swap or disk space, and service logs"]
+    h: ["Is the CPU actually busy, or are processes waiting?"]
+    fu: ["What does load average measure exactly?"]
+    m: "High load always means high CPU."
+    s: ["Systematic triage", "Knows I/O wait"]
+
+  linux_logs:
+    c: [linux_fundamentals, observability]
+    d: core
+    t: scenario
+    f: "logs and troubleshooting"
+    q: "A service fails to start after a reboot. How do you find out why?"
+    a: "Check systemctl status for the unit's state and last log lines, then journalctl -u for the full log since boot, looking for missing files, permission errors or a port already in use. Confirm whether it is enabled to start at boot, whether a dependency such as a mounted disk or network was ready, and test the start command by hand as the service user."
+    k: ["!Uses systemctl status and journalctl for the unit", "Looks for causes like missing files, permissions or busy ports", "Checks enablement, dependencies or runs it by hand"]
+    h: ["What does the service's log say on its last start?"]
+    fu: ["How would you make it wait for the network?"]
+    m: "Rebooting again usually fixes it."
+    s: ["Logs first", "Dependency awareness"]
+
+  linux_scripting:
+    c: [linux_fundamentals, git]
+    d: hard
+    t: practical
+    f: "shell scripting"
+    q: "You are writing a bash script that deploys an app by copying files and restarting a service. How do you make it safe to run?"
+    a: "Start with set -euo pipefail so it stops on the first failed command, unset variable or broken pipe. Quote every variable, check preconditions such as the target directory existing, and make each step idempotent so re-running after a failure is safe. Log what it does, use a lock to prevent two runs at once, and test it with shellcheck."
+    k: ["!Uses set -euo pipefail to stop on errors", "Quotes variables and checks preconditions", "Makes steps idempotent and prevents concurrent runs"]
+    h: ["What happens if the copy fails but the script carries on?"]
+    fu: ["When would you rewrite the script in Python?"]
+    m: "A script that worked once is safe to rerun."
+    s: ["Fails fast", "Idempotent steps"]
+
+  vm_vs_container:
+    c: [virtualisation_and_containers, process_vs_thread]
+    d: intro
+    t: tradeoff
+    f: "containers versus virtual machines"
+    q: "What is the difference between a virtual machine and a container, and when would you choose each?"
+    a: "A virtual machine runs a full guest operating system on a hypervisor, giving strong isolation and any OS, but it is heavy and slow to start. A container shares the host's kernel and isolates processes, so it starts in seconds and packs densely, but isolation is weaker and it must match the host kernel. Containers suit microservices; VMs suit different OSes or untrusted workloads."
+    k: ["!Says a VM runs its own guest OS on a hypervisor", "Says a container shares the host kernel and is lighter", "Matches each to a use case, including isolation strength"]
+    h: ["Does a container have its own kernel?"]
+    fu: ["How do sandboxes like gVisor or Firecracker sit between the two?"]
+    m: "Containers are just lightweight virtual machines."
+    s: ["Kernel distinction", "Isolation trade-off"]
+
+  container_isolation:
+    c: [virtualisation_and_containers, process_vs_thread]
+    d: core
+    t: conceptual
+    f: "how a container isolates"
+    q: "What Linux features make a container feel like its own machine?"
+    a: "Namespaces give a container its own view of process ids, network interfaces, mount points, hostname and users, so it sees only its own processes and files. Control groups limit how much CPU, memory and I/O it may use. A layered filesystem provides its root filesystem, and capabilities or seccomp restrict what system calls it can make."
+    k: ["!Names namespaces for isolated views of processes, network and filesystem", "Names cgroups for resource limits", "Mentions layered filesystems or capabilities and seccomp"]
+    h: ["What limits how much memory a container can use?"]
+    fu: ["Why is running as root in a container risky?"]
+    m: "Containers are isolated by a hypervisor."
+    s: ["Mechanism-level", "Security awareness"]
+
+  vm_hypervisor:
+    c: [virtualisation_and_containers, computer_architecture_basics]
+    d: hard
+    t: conceptual
+    f: "virtual machines and hypervisors"
+    q: "What is the difference between a type 1 and a type 2 hypervisor, and why do clouds use type 1?"
+    a: "A type 1 hypervisor runs directly on the hardware and schedules guest operating systems, as in cloud hosts, while a type 2 runs as an application on a normal operating system, like VirtualBox on a laptop. Type 1 has less overhead and a smaller attack surface, and with hardware virtualisation support it gives near-native performance, which clouds need for density and isolation."
+    k: ["!Says type 1 runs on bare metal and type 2 on a host OS", "Says type 1 has less overhead and better isolation", "Mentions hardware virtualisation support"]
+    h: ["What sits between the hardware and the guests in each case?"]
+    fu: ["What is a noisy neighbour?"]
+    m: "Type 2 hypervisors are used by cloud providers."
+    s: ["Clear layering", "Why clouds choose it"]
+
+  cicd_pipeline:
+    c: [ci_cd, testing_and_debugging]
+    d: intro
+    t: design
+    f: "what a pipeline does on each commit"
+    q: "Describe a CI pipeline you would set up for a team's web service. What runs on every commit?"
+    a: "On every push, install dependencies from a lockfile, then run linting and type checks, unit tests and a build, ideally in parallel to stay fast. On merge to main, also build a versioned artefact such as a container image, run integration tests against it, scan dependencies for vulnerabilities, and deploy to staging. A red pipeline blocks the merge."
+    k: ["!Runs lint, tests and a build on every commit", "Builds a versioned artefact on main and deploys to staging", "Blocks merging when the pipeline fails"]
+    h: ["What should stop a broken change from reaching main?"]
+    fu: ["How would you keep the pipeline under ten minutes?"]
+    m: "CI just means running tests sometimes."
+    s: ["Ordered stages", "Gate on failure"]
+
+  cicd_artefacts:
+    c: [ci_cd, docker]
+    d: core
+    t: conceptual
+    f: "artefacts and environments"
+    q: "Why should you build an artefact once and promote the same artefact through staging and production?"
+    a: "Rebuilding for each environment can produce a different binary — new dependency versions, different build flags — so what you tested in staging is not what reaches production. Building once, tagging the artefact with the commit, and promoting that exact image, with configuration injected per environment, guarantees the tested thing is the deployed thing and makes rollback a matter of redeploying an older tag."
+    k: ["!Says rebuilding per environment can change what is deployed", "Promotes one tagged artefact through environments", "Injects config per environment and eases rollback"]
+    h: ["Would a rebuild pick up a newly released dependency?"]
+    fu: ["How do you keep secrets out of the image?"]
+    m: "Each environment should build its own image."
+    s: ["Reproducibility", "Config separation"]
+
+  cicd_fast:
+    c: [ci_cd, test_automation]
+    d: hard
+    t: optimisation
+    f: "keeping the pipeline fast"
+    q: "Your CI takes forty minutes and developers stopped waiting for it. How would you bring it down?"
+    a: "Measure which stages take longest first. Cache dependencies and build layers, run test shards in parallel, run only tests affected by the change on pull requests and the full suite on main, and move slow end-to-end tests to a later stage. Remove flaky tests from the blocking path until fixed. Fast feedback is what keeps the pipeline trusted."
+    k: ["!Measures stage durations first", "Uses caching and parallel test shards", "Runs affected tests on PRs and defers slow suites"]
+    h: ["Which stage takes most of the forty minutes?"]
+    fu: ["How do you know a test is safe to skip?"]
+    m: "Faster CI means fewer tests."
+    s: ["Data-driven", "Keeps coverage"]
+
+  deploy_canary:
+    c: [deployment_strategies, observability]
+    d: core
+    t: tradeoff
+    f: "rolling blue-green and canary"
+    q: "Compare rolling, blue-green and canary deployments. Which would you use for a payments API?"
+    a: "Rolling replaces instances gradually, which is cheap but mixes versions during the rollout. Blue-green runs the new version alongside the old and switches all traffic at once, making rollback instant, at double the capacity. Canary sends a small share of traffic to the new version and watches error rates before widening. For payments, a canary with automated rollback on error metrics limits the blast radius."
+    k: ["!Describes rolling, blue-green and canary correctly", "Notes blue-green gives instant rollback at extra cost", "Chooses canary with metric-based rollback for payments"]
+    h: ["How many customers see a bad release in each strategy?"]
+    fu: ["Which metrics would gate the canary?"]
+    m: "Blue-green always beats canary."
+    s: ["Blast-radius reasoning", "Metric gates"]
+
+  deploy_rollback:
+    c: [deployment_strategies, data_modelling]
+    d: hard
+    t: scenario
+    f: "rolling back"
+    q: "A release that included a database migration is failing, and you want to roll back. Why is that harder than rolling back code?"
+    a: "Code can be swapped back, but the database may already have new columns, transformed data or dropped columns the old code needs. Design migrations to be backward compatible with the previous release — add before you remove, never drop in the same release — so the old code still runs on the new schema. Then rollback means redeploying old code, and destructive steps happen only after the release is stable."
+    k: ["!Explains the schema change persists after code rollback", "Requires migrations compatible with the previous release", "Defers destructive steps until the release is stable"]
+    h: ["Will the old code work with the new schema?"]
+    fu: ["How would you roll back a data transformation?"]
+    m: "Rolling back the database is as easy as rolling back code."
+    s: ["Compatibility discipline", "Expand-contract"]
+
+  deploy_feature_flags:
+    c: [deployment_strategies, ci_cd]
+    d: core
+    t: practical
+    f: "feature flags"
+    q: "How do feature flags change how a team releases features, and what can go wrong with them?"
+    a: "Flags separate deploying code from releasing a feature: unfinished work ships dark, a feature can be enabled for a few users or a percentage, and it can be turned off instantly without a deploy. The risks are flag debt — old flags never removed, combinations nobody tested — and logic scattered across code. Give each flag an owner and expiry, test both states and remove it once fully rolled out."
+    k: ["!Separates deploying from releasing", "Enables gradual rollout and instant kill switches", "Names flag debt and untested combinations, with cleanup"]
+    h: ["Can you turn a feature off without redeploying?"]
+    fu: ["How would you test code behind a flag?"]
+    m: "Feature flags have no maintenance cost."
+    s: ["Release control", "Lifecycle discipline"]
+
+  obs_three_pillars:
+    c: [observability, troubleshooting]
+    d: intro
+    t: conceptual
+    f: "metrics logs and traces"
+    q: "What are metrics, logs and traces each good for when something goes wrong in production?"
+    a: "Metrics are cheap numeric time series, such as request rate, error rate and latency, good for dashboards and alerting that something is wrong. Logs are detailed records of individual events that tell you what happened and why for a specific request. Traces follow one request across services with timings for each hop, showing where the time went. You usually alert on metrics, then use traces and logs to diagnose."
+    k: ["!Says metrics show that something is wrong, cheaply, over time", "Says logs give event detail for diagnosis", "Says traces show a request's path and timing across services"]
+    h: ["Which one tells you which service added the latency?"]
+    fu: ["How do you link a log line to its trace?"]
+    m: "Logs alone are enough to observe a system."
+    s: ["Purpose of each", "Workflow from alert to cause"]
+
+  obs_alerting:
+    c: [observability, availability_and_reliability]
+    d: core
+    t: tradeoff
+    f: "what to alert on"
+    q: "Your on-call engineer gets two hundred alerts a week and ignores most. How would you redesign alerting?"
+    a: "Alert on symptoms users feel, such as error rate and latency against the SLO, rather than on every cause like CPU at 80 percent. Each page should be actionable and urgent; everything else goes to a dashboard or ticket. Use burn-rate alerts on the error budget, deduplicate and group related alerts, and review alert noise regularly, deleting alerts nobody acts on."
+    k: ["!Alerts on user-facing symptoms rather than every cause", "Makes pages actionable and routes the rest to tickets or dashboards", "Mentions SLO burn rates or regular pruning"]
+    h: ["Would a user notice CPU at 80 percent?"]
+    fu: ["What is a burn-rate alert?"]
+    m: "More alerts mean better coverage."
+    s: ["Symptom-based", "Fatigue awareness"]
+
+  obs_percentiles:
+    c: [observability, descriptive_statistics]
+    d: hard
+    t: conceptual
+    f: "latency percentiles"
+    q: "Your dashboard shows average latency of 120 milliseconds and everything looks fine, but users complain of slowness. What is the dashboard hiding?"
+    a: "An average hides the tail: if most requests take 80 milliseconds and a few take five seconds, the mean looks fine while those users suffer, and a page making many calls hits the slow tail often. Track percentiles such as p95 and p99, compute them from histograms rather than averaging per-server percentiles, and set objectives on them."
+    k: ["!Explains averages hide slow tail requests", "Uses p95 or p99 percentiles", "Notes percentiles must be computed from histograms, not averaged"]
+    h: ["What does an average say about the slowest one percent?"]
+    fu: ["Why can't you average p99 across servers?"]
+    m: "Average latency describes user experience."
+    s: ["Tail thinking", "Aggregation pitfall"]
+
+  cloud_models:
+    c: [cloud_fundamentals, virtualisation_and_containers]
+    d: intro
+    t: conceptual
+    f: "service models"
+    q: "Explain IaaS, PaaS and SaaS with an example of each, and what you manage in each."
+    a: "With IaaS, such as virtual machines on EC2, you manage the operating system, runtime and app while the provider runs the hardware. With PaaS, such as a managed app platform or database, you deploy code or data and the provider handles servers and patching. With SaaS, such as Gmail, you just use the software. Moving up the stack trades control for less operational work."
+    k: ["!Defines IaaS, PaaS and SaaS with examples", "States what the customer manages in each", "Notes the trade of control for less operations"]
+    h: ["Who patches the operating system in each model?"]
+    fu: ["Where does a serverless function fit?"]
+    m: "Cloud means someone else does all the work."
+    s: ["Responsibility split", "Concrete examples"]
+
+  cloud_regions:
+    c: [cloud_fundamentals, availability_and_reliability]
+    d: core
+    t: design
+    f: "regions and zones"
+    q: "Your app runs in one availability zone. How would you make it survive the loss of a zone, and what about a whole region?"
+    a: "Spread instances across at least two zones behind a load balancer, and use a database with a synchronous standby in another zone, so a zone outage fails over quickly with no data loss. Surviving a region needs replicated data in a second region, usually asynchronous, infrastructure as code to stand it up, and DNS failover, accepting some data loss and higher cost."
+    k: ["!Spreads across multiple zones with a cross-zone database standby", "Explains regional resilience needs a second region with replicated data", "Notes the cost and possible data loss of multi-region"]
+    h: ["What is the latency between zones versus between regions?"]
+    fu: ["Active-active or active-passive across regions?"]
+    m: "One zone in the cloud is highly available."
+    s: ["Zone versus region", "Cost honesty"]
+
+  cloud_serverless:
+    c: [cloud_fundamentals, scalability]
+    d: hard
+    t: tradeoff
+    f: "serverless"
+    q: "When is a serverless function a good fit, and when is it a bad one?"
+    a: "Serverless suits spiky or low, event-driven workloads — image resizing on upload, webhooks, scheduled jobs — because it scales to zero and you pay per invocation with no servers to manage. It fits poorly for steady high traffic, which costs more than reserved servers, long-running jobs beyond time limits, latency-sensitive paths hurt by cold starts, and workloads holding many connections to a database."
+    k: ["!Names spiky, event-driven work as a good fit", "Names steady load, long jobs or cold starts as poor fits", "Mentions pay-per-use and scaling to zero"]
+    h: ["What happens to cost when traffic is constant and high?"]
+    fu: ["How would you protect a database from thousands of concurrent functions?"]
+    m: "Serverless is always cheaper."
+    s: ["Workload-shaped answer", "Cost and latency"]
+
+  iac_drift:
+    c: [infrastructure_as_code, ci_cd]
+    d: core
+    t: scenario
+    f: "state and drift"
+    q: "Someone changed a security group by hand in the console, and the next Terraform apply wants to undo it. What is going on, and how should the team work?"
+    a: "Terraform compares its state and the code with what exists; the manual change is drift, so apply tries to restore what the code declares. The fix is process: all changes go through code and review, plan output is checked in the pull request, drift detection runs on a schedule, and console access for changes is restricted. If the manual change was right, put it in the code."
+    k: ["!Explains drift between real resources and declared state", "Requires all changes through code and review", "Mentions scheduled drift detection or importing the change into code"]
+    h: ["What does Terraform believe the security group should look like?"]
+    fu: ["Where should the state file live and why?"]
+    m: "Manual fixes in the console are fine in an emergency and can be left."
+    s: ["Single source of truth", "Process fix"]
+
+  iac_modules:
+    c: [infrastructure_as_code, cloud_fundamentals]
+    d: hard
+    t: design
+    f: "modules and environments"
+    q: "How would you structure Terraform code for dev, staging and production without copying everything three times?"
+    a: "Write reusable modules for building blocks such as a network or a service, then a thin root configuration per environment that calls the modules with different inputs, like instance sizes or counts. Keep a separate state per environment so a mistake in dev cannot touch production, pin module versions, and promote changes through environments in order."
+    k: ["!Uses reusable modules called by thin per-environment configs", "Keeps separate state per environment", "Pins versions and promotes changes in order"]
+    h: ["What should a mistake in dev never be able to change?"]
+    fu: ["Workspaces or separate directories — which do you prefer?"]
+    m: "One state file for all environments is simpler and safe."
+    s: ["DRY with isolation", "Promotion path"]
+
+  iac_review:
+    c: [infrastructure_as_code, code_quality_and_review]
+    d: intro
+    t: practical
+    f: "reviewing an infrastructure change"
+    q: "What do you look for when reviewing a Terraform pull request?"
+    a: "Read the plan, not just the code: which resources are created, changed or destroyed, and especially any replace that would delete a database or recreate a load balancer. Check security settings such as open ingress, public buckets and broad IAM policies, that secrets are not hard-coded, and that the change is applied to the right environment. Policy checks can automate part of this."
+    k: ["!Reviews the plan for destroys and replacements", "Checks security risks like open ports, public storage or broad IAM", "Checks secrets and target environment"]
+    h: ["Which line in the plan should make you stop?"]
+    fu: ["How could policy-as-code block dangerous changes?"]
+    m: "If it applies cleanly, it is safe."
+    s: ["Plan-driven review", "Security lens"]
+
+  docker_layers:
+    c: [docker, ci_cd]
+    d: core
+    t: optimisation
+    f: "images and layers"
+    q: "Every code change rebuilds your Docker image from scratch, reinstalling all dependencies. How do you fix the Dockerfile?"
+    a: "Each instruction is a cached layer, and a change invalidates its layer and all after it. Copy the dependency manifest first and install dependencies, then copy the source code, so code changes reuse the cached dependency layer. Add a .dockerignore to keep files like node_modules and .git out of the build context, and use BuildKit cache mounts in CI."
+    k: ["!Explains layer caching and invalidation order", "Copies the manifest and installs before copying source", "Adds a .dockerignore or cache mounts"]
+    h: ["Which instruction changes when you edit one source file?"]
+    fu: ["How would you share the build cache across CI runners?"]
+    m: "Docker caching does not depend on instruction order."
+    s: ["Layer model", "Correct ordering"]
+
+  docker_small_secure:
+    c: [docker, secure_coding]
+    d: hard
+    t: practical
+    f: "small and secure images"
+    q: "Your production image is two gigabytes and runs as root. How would you make it small and safer?"
+    a: "Use a multi-stage build: compile in a full builder image, then copy only the built artefacts into a slim or distroless runtime image, which drops compilers and tools. Run as a non-root user, pin base image versions, scan the image for vulnerabilities in CI, and keep secrets out of layers by passing them at runtime. Smaller images also pull and start faster."
+    k: ["!Uses a multi-stage build with a slim runtime image", "Runs as a non-root user", "Scans images, pins versions and keeps secrets out of layers"]
+    h: ["Does the running app need the compiler?"]
+    fu: ["Why is a secret deleted in a later layer still exposed?"]
+    m: "Image size only affects disk space."
+    s: ["Multi-stage", "Security hygiene"]
+
+  docker_compose_volumes:
+    c: [docker, linux_fundamentals]
+    d: intro
+    t: practical
+    f: "volumes and networks"
+    q: "Your database container loses all its data when you recreate it. Why, and how do you keep it?"
+    a: "A container's writable layer is deleted with the container. Store the database files in a named volume, or a bind mount, mounted at the data directory, so the data lives outside the container's lifecycle. In Docker Compose, declare the volume and attach it to the service; also back it up, because a volume is still on one host."
+    k: ["!Explains the container's writable layer is lost on removal", "Uses a named volume or bind mount for data", "Mentions backups or that the volume is host-local"]
+    h: ["Where are the database files written right now?"]
+    fu: ["How do containers in one Compose project find each other?"]
+    m: "Containers keep their data when recreated."
+    s: ["Lifecycle model", "Backup awareness"]
+
+  k8s_objects:
+    c: [kubernetes, docker]
+    d: intro
+    t: conceptual
+    f: "pods deployments and services"
+    q: "Explain how a Pod, a Deployment and a Service relate in Kubernetes."
+    a: "A Pod is the smallest unit: one or more containers sharing a network and storage, and it is disposable. A Deployment declares how many replicas of a Pod template should run and manages rolling updates, recreating Pods that die. A Service gives those changing Pods a stable name and IP and load-balances across them, found by matching labels."
+    k: ["!Describes Pods as disposable units of containers", "Says a Deployment keeps the desired replica count and rolls updates", "Says a Service gives a stable address selecting Pods by labels"]
+    h: ["What keeps three copies running if a node dies?"]
+    fu: ["When would you use a StatefulSet instead?"]
+    m: "You should create Pods directly in production."
+    s: ["Layered roles", "Labels as glue"]
+
+  k8s_probes:
+    c: [kubernetes, availability_and_reliability]
+    d: core
+    t: debugging
+    f: "scaling and probes"
+    q: "After a deploy, Pods keep restarting in a loop although the app works when started by hand. What would you check?"
+    a: "Check the liveness probe: if it fires before the app has finished starting, or hits a slow endpoint, Kubernetes kills a healthy app. Use a startup probe or a longer initial delay for slow starters, make liveness cheap and readiness reflect whether the Pod can serve. Also check memory limits causing OOMKilled restarts and the container logs from the previous run."
+    k: ["!Suspects a liveness probe killing a slow-starting app", "Uses a startup probe or delay, and separates readiness from liveness", "Checks OOMKilled and previous container logs"]
+    h: ["What does kubectl describe say about the restart reason?"]
+    fu: ["What happens if readiness fails but liveness passes?"]
+    m: "Probes can only help availability."
+    s: ["Probe semantics", "Evidence from describe and logs"]
+
+  k8s_resources:
+    c: [kubernetes, memory_management]
+    d: hard
+    t: tradeoff
+    f: "scheduling and resources"
+    q: "What are resource requests and limits in Kubernetes, and what happens when you set them badly?"
+    a: "Requests are what the scheduler reserves to place a Pod on a node; limits cap what it may use. Requests set too low overpack nodes so Pods contend; too high wastes capacity. A memory limit too low gets the container OOMKilled; a CPU limit throttles it, adding latency. Base them on measured usage, and use autoscaling on real metrics."
+    k: ["!Explains requests guide scheduling and limits cap usage", "Says low memory limits cause OOM kills and CPU limits cause throttling", "Bases values on measured usage"]
+    h: ["What does the scheduler look at when placing a Pod?"]
+    fu: ["How does the horizontal pod autoscaler decide to scale?"]
+    m: "Limits only matter when the node is full."
+    s: ["Two distinct roles", "Failure modes"]
+
+  aws_compute:
+    c: [aws, cloud_fundamentals]
+    d: core
+    t: tradeoff
+    f: "compute choices"
+    q: "On AWS, when would you run a service on EC2, on ECS or EKS containers, or on Lambda?"
+    a: "EC2 gives full control of the machine for special needs or legacy apps but you manage the OS. ECS or EKS run containers, with Fargate removing node management, suiting long-running services and microservices. Lambda runs short event-driven functions with no servers, best for spiky workloads. The choice trades control against operational effort and cost profile."
+    k: ["!Places EC2 as full control with OS management", "Places ECS or EKS for containers, Fargate for no nodes", "Places Lambda for short event-driven work"]
+    h: ["Who patches the OS in each option?"]
+    fu: ["Why might EKS be overkill for a small team?"]
+    m: "Lambda is always the cheapest choice."
+    s: ["Control versus effort", "Fit per workload"]
+
+  aws_vpc:
+    c: [aws, ip_addressing]
+    d: hard
+    t: design
+    f: "networking in a VPC"
+    q: "Design the network for a web app on AWS so the database is never reachable from the internet."
+    a: "Create a VPC across two availability zones with public subnets holding the load balancer and NAT gateways, and private subnets holding the app servers and the database. Route tables send public subnets to an internet gateway and private ones out through NAT only. Security groups allow the load balancer to reach the app and only the app's security group to reach the database port."
+    k: ["!Separates public subnets for the load balancer from private ones for app and database", "Uses route tables with an internet gateway and NAT", "Uses security groups so only the app reaches the database"]
+    h: ["Which subnet has a route to the internet gateway?"]
+    fu: ["How would an engineer reach the database for maintenance?"]
+    m: "Security groups alone make public subnets safe for databases."
+    s: ["Layered network", "Least-privilege rules"]
+
+  aws_iam:
+    c: [aws, identity_and_access_management]
+    d: core
+    t: practical
+    f: "IAM"
+    q: "Your application on EC2 reads from an S3 bucket using access keys stored in a config file. What is wrong, and what should it do instead?"
+    a: "Long-lived keys in a file can leak through the repository, backups or logs and are hard to rotate. Attach an IAM role to the instance, or to the task or pod, so the application gets short-lived credentials automatically from the metadata service. The role's policy should grant only the needed actions on that one bucket."
+    k: ["!Says static keys in files can leak and are hard to rotate", "Uses an IAM role with automatic temporary credentials", "Scopes the policy to the specific bucket and actions"]
+    h: ["How would you rotate those keys today?"]
+    fu: ["How do you give a Kubernetes pod an IAM role?"]
+    m: "Keys are fine if the repository is private."
+    s: ["Temporary credentials", "Least privilege"]
+
+  azure_identity:
+    c: [azure, identity_and_access_management]
+    d: core
+    t: practical
+    f: "identity with Entra ID"
+    q: "How would an Azure app read a secret from Key Vault without storing any credentials in its code?"
+    a: "Enable a managed identity on the App Service, function or VM, which Entra ID manages automatically. Grant that identity read access to the Key Vault's secrets through role-based access control, and have the app use the Azure SDK's default credential to fetch secrets at runtime. No passwords or keys appear in code or configuration, and access can be revoked centrally."
+    k: ["!Uses a managed identity instead of stored credentials", "Grants the identity least-privilege access to Key Vault", "Fetches secrets at runtime with the SDK"]
+    h: ["What identity does the app present to Key Vault?"]
+    fu: ["System-assigned or user-assigned managed identity — when each?"]
+    m: "Storing the vault key in app settings is secure."
+    s: ["No secrets in code", "RBAC scoping"]
+
+  azure_compute:
+    c: [azure, cloud_fundamentals]
+    d: intro
+    t: tradeoff
+    f: "compute choices"
+    q: "For a small company's .NET web API on Azure, would you use App Service, Azure Container Apps or AKS?"
+    a: "App Service is the simplest: deploy the code or a container and get scaling, TLS and slots for zero-downtime swaps with little operations work. Container Apps suits several containerised services with scale-to-zero and event-driven scaling, without managing Kubernetes. AKS gives full Kubernetes control and is worth it only with many services and a team able to run it."
+    k: ["!Recommends App Service for simplicity with a single web API", "Places Container Apps for several containers without managing Kubernetes", "Says AKS needs scale and team skills to justify it"]
+    h: ["How many services and how many engineers?"]
+    fu: ["How do deployment slots help releases?"]
+    m: "Kubernetes is the default choice for every app."
+    s: ["Right-sized choice", "Operational cost"]
+
+  azure_data:
+    c: [azure, data_pipelines]
+    d: core
+    t: design
+    f: "storage and data services"
+    q: "A company wants to copy data nightly from on-premises SQL Server into Azure for reporting. Which Azure services would you use?"
+    a: "Use Azure Data Factory with a self-hosted integration runtime to reach the on-premises database securely and copy data on a schedule, incrementally by a watermark column. Land it in Azure Data Lake Storage, transform it with Data Factory data flows or Synapse or Databricks, and load a warehouse such as Synapse or Fabric that Power BI reports read."
+    k: ["!Uses Data Factory with a self-hosted runtime to reach on-premises data", "Copies incrementally and lands in a data lake", "Transforms and serves to a warehouse for reporting"]
+    h: ["How does a cloud service reach a database inside the office network?"]
+    fu: ["How would you avoid copying the whole table every night?"]
+    m: "Exporting CSVs by hand is a pipeline."
+    s: ["End-to-end flow", "Incremental loads"]
+
+  gcp_bigquery:
+    c: [gcp, data_warehousing]
+    d: core
+    t: optimisation
+    f: "BigQuery and data services"
+    q: "A BigQuery query that scans a two-terabyte events table costs a lot each time it runs. How do you reduce the cost?"
+    a: "BigQuery charges by bytes scanned. Partition the table by event date and filter on it, so queries scan only the needed days; cluster by commonly filtered columns such as user or event type; and select only the columns you need instead of SELECT star, since storage is columnar. Materialised views or summary tables help for repeated dashboards."
+    k: ["!Says cost depends on bytes scanned", "Partitions by date and clusters by filter columns", "Avoids SELECT star and uses summary tables"]
+    h: ["What does BigQuery bill you for?"]
+    fu: ["How would you stop an analyst running an unbounded query?"]
+    m: "Adding LIMIT makes a BigQuery query cheap."
+    s: ["Billing model", "Partition and cluster"]
+
+  gcp_projects:
+    c: [gcp, identity_and_access_management]
+    d: intro
+    t: conceptual
+    f: "identity and projects"
+    q: "How are resources and permissions organised in Google Cloud, and how would you separate dev and production?"
+    a: "Resources live in projects, projects sit in folders under an organisation, and IAM roles granted at a level are inherited below it. Put dev and production in separate projects, often in separate folders, so permissions, billing and quotas are isolated, and grant engineers broad roles in dev but narrow ones in production. Service accounts give workloads their own identities."
+    k: ["!Explains organisation, folders and projects with inherited IAM", "Separates environments into different projects", "Mentions service accounts for workloads"]
+    h: ["Where would a permission granted on a folder apply?"]
+    fu: ["Why avoid primitive roles like Editor?"]
+    m: "One project for everything is simplest and safe."
+    s: ["Hierarchy model", "Environment isolation"]
+
+  gcp_cloud_run:
+    c: [gcp, cloud_fundamentals]
+    d: core
+    t: tradeoff
+    f: "compute choices"
+    q: "When would you deploy a service on Cloud Run instead of GKE?"
+    a: "Cloud Run runs a container per request with automatic scaling, including to zero, and no cluster to manage, which suits stateless HTTP services and APIs with variable traffic. GKE suits many services needing custom networking, sidecars, long-running background workers, stateful workloads or fine control. Teams often start on Cloud Run and move only what needs Kubernetes."
+    k: ["!Places Cloud Run for stateless HTTP services with variable traffic", "Places GKE for complex, stateful or custom workloads", "Mentions scale to zero or no cluster management"]
+    h: ["Does the service hold state or run background work?"]
+    fu: ["How do cold starts affect Cloud Run, and how do you reduce them?"]
+    m: "Cloud Run cannot run production workloads."
+    s: ["Workload fit", "Operational trade-off"]

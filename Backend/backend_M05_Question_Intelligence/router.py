@@ -134,7 +134,14 @@ def read_ontology() -> dict:
 #: The fields that answer the question. A module asking for an item gets them —
 #: M06 probes against the key points, M13 scores against the reference — and a
 #: browser does not.
-ANSWER_KEY = ("reference_answer", "key_points", "follow_ups", "hint_ladder")
+ANSWER_KEY = (
+    "reference_answer",
+    "key_points",
+    "follow_ups",
+    "hint_ladder",
+    "misconceptions",
+    "strong_answer",
+)
 
 
 #: Each answer field at its own empty default, read from the model rather than
@@ -261,6 +268,37 @@ def bank_health() -> dict:
             "cannot pass yet. Authoring is the long pole and it has no code dependency."
         ),
     }
+
+
+@router.get("/bank/coverage")
+def bank_coverage() -> dict:
+    """Questions per concept: how many, at which difficulties, of which types,
+    approved or drafted, in which tracks (2026-11-12). What M22 shows beside a
+    goal's competencies, and what its gap list (`/v1/goals/question-gaps`) is
+    computed from — the bank's own count, never a copy of it."""
+    loaded = bank_module.load()
+    concepts: dict[str, dict] = {}
+    for question in loaded.questions:
+        if question.status.value != "active":
+            continue
+        entry = concepts.setdefault(
+            question.primary_concept,
+            {"total": 0, "approved": 0, "drafts": 0, "by_difficulty": {}, "by_type": {},
+             "tracks": set(), "facets": set()},
+        )
+        entry["total"] += 1
+        entry["approved" if question.scored_use_approved else "drafts"] += 1
+        band = question.difficulty_band.value
+        entry["by_difficulty"][band] = entry["by_difficulty"].get(band, 0) + 1
+        kind = question.question_type.value
+        entry["by_type"][kind] = entry["by_type"].get(kind, 0) + 1
+        entry["tracks"].update(question.round_types)
+        if question.facet:
+            entry["facets"].add(question.facet)
+    for entry in concepts.values():
+        entry["tracks"] = sorted(entry["tracks"])
+        entry["facets"] = sorted(entry["facets"])
+    return {"questions": sum(e["total"] for e in concepts.values()), "concepts": concepts}
 
 
 @router.get("/bank/tracks")

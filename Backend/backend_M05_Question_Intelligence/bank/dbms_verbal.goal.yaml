@@ -1,0 +1,281 @@
+# =============================================================================
+#  GOAL BANK — dbms_verbal, the technologies (2026-11-12, for M22)
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: dbms_verbal
+provenance: generated
+items:
+  dm_entities:
+    c: [data_modelling, relational_model]
+    d: intro
+    t: design
+    f: "entities and relationships"
+    q: "Model the data for a college course-registration system with students, courses, sections and enrolments."
+    a: "Students and courses are entities; a course has many sections, each with a term, instructor and capacity. Enrolment is a many-to-many between students and sections, modelled as its own table with student id, section id, status and grade, and a unique constraint on the pair. Foreign keys enforce that enrolments reference real students and sections."
+    k: ["!Identifies students, courses, sections and enrolments", "Models enrolment as a junction table for many-to-many", "Uses foreign keys and a unique constraint on the pair"]
+    h: ["Can a student enrol in many sections and a section hold many students?"]
+    fu: ["How would you enforce the section's capacity?"]
+    m: "Many-to-many can be stored as a comma-separated column."
+    s: ["Junction table", "Constraints"]
+
+  dm_read_patterns:
+    c: [data_modelling, indexing]
+    d: core
+    t: tradeoff
+    f: "modelling for how data is read"
+    q: "A dashboard shows each customer's total spend and order count, and computing it on every load is slow. Would you denormalise?"
+    a: "Yes, if reads far outnumber writes. Store running totals on the customer row or in a summary table, updated in the same transaction as each order or asynchronously from events, so the dashboard reads one row. The cost is keeping the copy correct: double counting on retries and drift if an update path is missed, so add a periodic reconciliation job."
+    k: ["!Proposes stored aggregates or a summary table for read speed", "Updates them transactionally or from events", "Names the consistency cost and reconciliation"]
+    h: ["How often is the total read compared with written?"]
+    fu: ["When would a materialised view be the better tool?"]
+    m: "Normalised designs are always faster."
+    s: ["Read-driven design", "Plans for drift"]
+
+  dm_relational_vs_document:
+    c: [data_modelling, nosql_vs_relational]
+    d: core
+    t: tradeoff
+    f: "relational versus document models"
+    q: "Would you store a blog's posts with their comments as documents or as relational tables?"
+    a: "As documents, a post with its comments embedded loads in one read, which suits showing a post page. But comments can grow without bound, may need to be queried across posts for moderation, and edited independently. A relational model, or documents with comments as a separate collection, handles that better. The access patterns decide: embed what is read together and bounded, reference what grows or is queried alone."
+    k: ["!Weighs embedding for single-read pages", "Notes unbounded growth and cross-post queries favour separating comments", "States the rule: embed bounded data read together"]
+    h: ["What happens to a document with 100,000 comments?"]
+    fu: ["How would moderators find all flagged comments?"]
+    m: "Document databases do not need modelling."
+    s: ["Access-pattern rule", "Growth awareness"]
+
+  dm_schema_evolution:
+    c: [data_modelling, deployment_strategies]
+    d: hard
+    t: practical
+    f: "evolving a schema"
+    q: "You need to split a full_name column into first and last name on a large live table. How do you do it without downtime?"
+    a: "Use expand and contract. Add the new nullable columns, deploy code that writes both old and new columns, backfill existing rows in small batches, then switch reads to the new columns, and only after everything uses them drop the old column. Each step is backward compatible, so old and new app versions run side by side during deploys."
+    k: ["!Adds new columns without removing the old one first", "Dual-writes and backfills in batches", "Switches reads, then drops the old column later"]
+    h: ["What do the running old app servers expect during the deploy?"]
+    fu: ["Why backfill in small batches?"]
+    m: "An ALTER TABLE during a deploy is always safe."
+    s: ["Expand-contract", "Batch backfill"]
+
+  pg_mvcc_vacuum:
+    c: [postgresql, concurrency_control]
+    d: hard
+    t: debugging
+    f: "MVCC and vacuum"
+    q: "A PostgreSQL table that is updated constantly keeps growing in size and queries slow down, though the row count is stable. Why?"
+    a: "PostgreSQL's MVCC writes a new row version on every update and leaves the old one as a dead tuple until vacuum reclaims it. If autovacuum cannot keep up, or a long-running transaction holds an old snapshot so dead rows cannot be removed, the table and indexes bloat. Tune autovacuum for that table, find and end long transactions, and use HOT updates by avoiding indexed-column changes."
+    k: ["!Explains updates create new row versions and dead tuples", "Says vacuum reclaims them and long transactions block it", "Proposes tuning autovacuum or ending long transactions"]
+    h: ["What happens to the old version of an updated row?"]
+    fu: ["What is transaction ID wraparound?"]
+    m: "Deleting rows immediately frees space."
+    s: ["MVCC mechanism", "Root cause of bloat"]
+
+  pg_explain:
+    c: [postgresql, query_optimisation]
+    d: core
+    t: practical
+    f: "reading EXPLAIN"
+    q: "How do you use EXPLAIN ANALYZE to find out why a PostgreSQL query is slow?"
+    a: "EXPLAIN ANALYZE runs the query and shows the plan tree with actual time and rows per node. Look for the most expensive nodes, sequential scans on large tables where an index was expected, and big gaps between estimated and actual rows, which mean stale statistics and a bad plan. Then add the right index, rewrite the query or run ANALYZE, and compare the plan again."
+    k: ["!Reads the plan for the costliest nodes and unexpected sequential scans", "Compares estimated with actual rows to spot bad statistics", "Changes one thing and re-checks the plan"]
+    h: ["What does a big difference between estimated and actual rows suggest?"]
+    fu: ["Why might the planner ignore an index that exists?"]
+    m: "EXPLAIN shows real execution times."
+    s: ["Systematic reading", "Verifies the fix"]
+
+  pg_index_types:
+    c: [postgresql, indexing]
+    d: core
+    t: tradeoff
+    f: "index types"
+    q: "When would you use a B-tree, a GIN and a BRIN index in PostgreSQL?"
+    a: "B-tree is the default for equality and range queries on ordinary columns. GIN indexes values inside composite data — words for full-text search, keys in JSONB, elements of arrays — so containment queries are fast, at the cost of slower writes. BRIN stores summaries per block range and suits huge, naturally ordered tables such as time-series logs, being tiny but coarse."
+    k: ["!B-tree for equality and range on ordinary columns", "GIN for full-text, JSONB or arrays", "BRIN for very large naturally ordered data"]
+    h: ["Which index looks inside a JSON document?"]
+    fu: ["What is a partial index good for?"]
+    m: "One index type fits every query."
+    s: ["Right index per data shape", "Write cost noted"]
+
+  pg_jsonb:
+    c: [postgresql, nosql_vs_relational]
+    d: intro
+    t: tradeoff
+    f: "JSONB"
+    q: "A teammate wants to put every product attribute into a JSONB column. When is JSONB a good idea in PostgreSQL, and when not?"
+    a: "JSONB suits attributes that vary between rows and are read mostly together, such as product specifications that differ by category, and can be indexed with GIN for containment queries. Fields that every row has, that you filter, join or constrain on, such as price or category, belong in real columns with types and constraints. A hybrid of columns plus a JSONB bag is common."
+    k: ["!Uses JSONB for varying, schema-less attributes", "Keeps core, queried or constrained fields as typed columns", "Mentions GIN indexing or the hybrid approach"]
+    h: ["Can you put a foreign key on a value inside JSONB?"]
+    fu: ["How would you query products with a specific attribute fast?"]
+    m: "JSONB makes PostgreSQL a document database with no trade-offs."
+    s: ["Hybrid model", "Constraint awareness"]
+
+  mysql_clustered:
+    c: [mysql, indexing]
+    d: core
+    t: conceptual
+    f: "InnoDB and clustered indexes"
+    q: "In MySQL's InnoDB, why does the choice of primary key affect the size and speed of every secondary index?"
+    a: "InnoDB stores rows inside the primary key's B-tree, the clustered index, and every secondary index entry stores the primary key to find the row. A long primary key, such as a string UUID, makes every secondary index larger, and random keys cause page splits and fragmented inserts. A short, increasing key keeps indexes compact and inserts sequential."
+    k: ["!Explains rows are stored in the primary key's clustered index", "Says secondary indexes store the primary key", "Says long or random keys bloat indexes and fragment inserts"]
+    h: ["What does a secondary index entry point to?"]
+    fu: ["How do ordered UUIDs help?"]
+    m: "The primary key choice only affects uniqueness."
+    s: ["Storage mechanism", "Practical key advice"]
+
+  mysql_slow_query:
+    c: [mysql, query_optimisation]
+    d: core
+    t: debugging
+    f: "tuning a slow query"
+    q: "A MySQL query filtering by status and created date, ordered by created date, is slow on a table with 50 million rows. How do you tune it?"
+    a: "Check EXPLAIN for a full scan or filesort. A composite index on status then created date lets MySQL find matching rows and return them already ordered, avoiding the sort, and selecting only needed columns can make it covering. Confirm with the slow query log and EXPLAIN that the index is used, and avoid functions on the indexed column in the where clause."
+    k: ["!Uses EXPLAIN to find a full scan or filesort", "Proposes a composite index on status then created date", "Mentions covering indexes or avoiding functions on indexed columns"]
+    h: ["Which column order serves both the filter and the sort?"]
+    fu: ["Why would wrapping created_at in DATE() break the index?"]
+    m: "Indexing each column separately is just as good."
+    s: ["Column order reasoning", "Verifies with EXPLAIN"]
+
+  mysql_isolation:
+    c: [mysql, isolation_levels]
+    d: hard
+    t: conceptual
+    f: "isolation in MySQL"
+    q: "MySQL's default isolation level is REPEATABLE READ. What does it prevent, and how do gap locks come into it?"
+    a: "REPEATABLE READ gives each transaction a consistent snapshot for plain reads, so re-reading returns the same rows. For locking reads and updates, InnoDB uses next-key locks, locking index records and the gaps between them, so other transactions cannot insert rows into a scanned range, which prevents phantoms. The cost is more locking and deadlock risk, which is why some systems choose READ COMMITTED."
+    k: ["!Says repeatable read gives a consistent snapshot for reads", "Explains gap or next-key locks block inserts into scanned ranges", "Notes the locking and deadlock cost"]
+    h: ["What stops a new row appearing in a range you just locked?"]
+    fu: ["Why might a team switch to READ COMMITTED?"]
+    m: "Repeatable read in MySQL allows phantom rows for every query."
+    s: ["Snapshot plus locks", "Trade-off"]
+
+  mysql_replication:
+    c: [mysql, database_replication]
+    d: core
+    t: practical
+    f: "replication"
+    q: "How does MySQL replication work, and what would you check if a replica falls hours behind?"
+    a: "The primary writes changes to its binary log; each replica pulls the log into a relay log and applies it. If a replica lags, check whether it is applying a huge transaction, whether its applier is single-threaded while the primary writes in parallel, whether it is short of disk or CPU, or whether long queries on the replica block the applier. Parallel replication and smaller transactions help."
+    k: ["!Describes the binary log shipped to replicas and applied", "Lists causes of lag such as big transactions or a single-threaded applier", "Proposes fixes like parallel replication or smaller transactions"]
+    h: ["How fast can one thread apply what many wrote in parallel?"]
+    fu: ["What is GTID-based replication?"]
+    m: "Replicas always keep up automatically."
+    s: ["Mechanism", "Diagnostic list"]
+
+  ora_procedures:
+    c: [oracle_plsql, sql_queries]
+    d: intro
+    t: conceptual
+    f: "stored procedures and functions"
+    q: "What is the difference between a stored procedure and a function in PL/SQL, and when would you move logic into the database?"
+    a: "A function returns a value and can be used inside SQL statements, while a procedure performs actions and returns results through out parameters. Moving logic into the database reduces round trips for data-heavy operations and centralises rules shared by several applications. The costs are harder testing, version control and scaling, and vendor lock-in, so keep complex business logic in the application unless performance demands otherwise."
+    k: ["!Distinguishes functions returning values usable in SQL from procedures", "Names fewer round trips and shared rules as benefits", "Names testing, versioning or lock-in as costs"]
+    h: ["Can you call a procedure inside a SELECT?"]
+    fu: ["How would you version-control PL/SQL code?"]
+    m: "Putting all logic in procedures is always faster."
+    s: ["Clear distinction", "Balanced trade-off"]
+
+  ora_cursors_bulk:
+    c: [oracle_plsql, query_optimisation]
+    d: core
+    t: optimisation
+    f: "performance in PL/SQL"
+    q: "A PL/SQL loop processes a million rows one at a time with a cursor and an UPDATE per row, and takes hours. How would you speed it up?"
+    a: "Row-by-row processing pays a context switch between the PL/SQL and SQL engines for every row. Replace it with a single set-based UPDATE or MERGE if possible; otherwise use BULK COLLECT with a LIMIT to fetch batches into collections and FORALL to apply changes in bulk, committing at sensible intervals. Set-based SQL is usually fastest."
+    k: ["!Identifies row-by-row context switching as the cost", "Prefers a single set-based statement", "Uses BULK COLLECT and FORALL in batches otherwise"]
+    h: ["How many times does control pass between PL/SQL and SQL?"]
+    fu: ["Why add a LIMIT to BULK COLLECT?"]
+    m: "Commit after every row for speed."
+    s: ["Set-based first", "Bulk fallback"]
+
+  ora_triggers:
+    c: [oracle_plsql, transactions_acid]
+    d: hard
+    t: tradeoff
+    f: "triggers"
+    q: "A team uses triggers to update audit tables and recalculate totals on every insert. What are the risks?"
+    a: "Triggers run invisibly inside every statement's transaction, so they slow every write, surprise developers who do not know they exist, and can cascade into other triggers. Business logic in triggers is hard to test and version. They are reasonable for narrow, always-required jobs like auditing; recalculations are usually better done explicitly in application code or scheduled jobs."
+    k: ["!Notes triggers add hidden work to every write", "Mentions surprise, cascades and difficult testing", "Keeps triggers for narrow tasks like auditing"]
+    h: ["Would a new developer know the trigger exists?"]
+    fu: ["How would you audit changes without triggers?"]
+    m: "Triggers are free because they run in the database."
+    s: ["Hidden-cost reasoning", "Right use case"]
+
+  mongo_embed_reference:
+    c: [mongodb, data_modelling]
+    d: core
+    t: design
+    f: "embedding versus referencing"
+    q: "In MongoDB, would you embed a user's addresses in the user document and their orders too? Why or why not?"
+    a: "Embed addresses: they are few, read with the user and rarely queried alone. Do not embed orders: they grow without limit, can push the document past the 16 megabyte limit, are queried and updated on their own, and would make every user read heavy. Keep orders in their own collection referencing the user id, with an index on it."
+    k: ["!Embeds small, bounded data read together such as addresses", "References unbounded data like orders in a separate collection", "Mentions the document size limit or independent queries"]
+    h: ["How many orders could a user have after five years?"]
+    fu: ["How would you show a user's last three orders on their profile?"]
+    m: "In MongoDB you should embed everything."
+    s: ["Bounded versus unbounded", "Access patterns"]
+
+  mongo_aggregation:
+    c: [mongodb, aggregation_and_grouping]
+    d: core
+    t: practical
+    f: "the aggregation pipeline"
+    q: "Explain how you would compute monthly revenue per product category with MongoDB's aggregation pipeline."
+    a: "Start with $match to keep only completed orders in the date range, so later stages process less data and indexes can be used. $unwind the line items, $group by category and month, summing price times quantity, then $sort and optionally $project to shape the output. Putting $match first and indexing its fields keeps the pipeline fast."
+    k: ["!Uses $match early to filter", "Unwinds items and groups by category and month with $sum", "Mentions ordering stages or indexes for speed"]
+    h: ["Which stage should run first to reduce work?"]
+    fu: ["When would you precompute this instead?"]
+    m: "Aggregation always scans the whole collection."
+    s: ["Correct stages", "Performance order"]
+
+  mongo_replica_set:
+    c: [mongodb, database_replication]
+    d: hard
+    t: tradeoff
+    f: "replica sets"
+    q: "What do write concern majority and read preference secondary mean in MongoDB, and what can go wrong with them?"
+    a: "Write concern majority acknowledges a write only after most replica set members have it, so it survives a primary failure, at higher latency. Read preference secondary reads from secondaries, spreading load but possibly returning stale data because of replication lag. Reading your own writes needs primary reads, causal consistency sessions, or majority read concern."
+    k: ["!Explains majority write concern survives primary failure but is slower", "Says secondary reads may be stale", "Mentions primary reads or causal consistency for read-your-writes"]
+    h: ["What happens to a write acknowledged by only the primary if it crashes?"]
+    fu: ["How do arbiters affect majority?"]
+    m: "Reading from secondaries is always consistent."
+    s: ["Durability trade-off", "Staleness trade-off"]
+
+  cass_modelling:
+    c: [cassandra, data_modelling]
+    d: core
+    t: design
+    f: "modelling by query"
+    q: "How would you model chat messages in Cassandra so that loading a conversation's latest messages is fast?"
+    a: "Model by the query: a table with conversation id as the partition key and message time as a descending clustering key, so one partition holds a conversation's messages in order and the latest page is a single sequential read. To keep partitions from growing forever, add a time bucket such as month to the partition key. Each other query, such as messages by user, gets its own table."
+    k: ["!Partitions by conversation and clusters by time descending", "Buckets partitions by time to bound their size", "Creates a separate table per query pattern"]
+    h: ["What does a Cassandra query need in its where clause?"]
+    fu: ["How would you find all conversations a user is in?"]
+    m: "You can join tables in Cassandra when needed."
+    s: ["Query-first modelling", "Partition size"]
+
+  cass_consistency:
+    c: [cassandra, consistency_models]
+    d: hard
+    t: tradeoff
+    f: "tunable consistency"
+    q: "Cassandra lets you choose a consistency level per query. How would you choose for writes and reads of user balances?"
+    a: "With replication factor three, writing and reading at QUORUM means two replicas each, so reads overlap writes and see the latest value; ONE is faster but may read stale data. For balances you need QUORUM or LOCAL_QUORUM on both sides, and lightweight transactions for compare-and-set updates, because Cassandra resolves conflicting writes by last-write-wins timestamps."
+    k: ["!Explains quorum reads and writes overlap for fresh reads", "Notes lower levels are faster but may be stale", "Mentions last-write-wins and lightweight transactions for balances"]
+    h: ["How many replicas must agree at QUORUM with three copies?"]
+    fu: ["Is Cassandra a good fit for balances at all?"]
+    m: "Cassandra is always eventually consistent with no choice."
+    s: ["Quorum arithmetic", "Conflict resolution awareness"]
+
+  cass_compaction:
+    c: [cassandra, distributed_data_processing]
+    d: hard
+    t: debugging
+    f: "compaction"
+    q: "Reads on a Cassandra table get slower over the day and deleted data seems to come back. What would you look at?"
+    a: "Writes go to immutable SSTables, so reads may have to merge many of them until compaction combines them; a wrong compaction strategy or a backlog slows reads. Deletes are tombstones that must reach all replicas before being purged after gc_grace_seconds; if a replica missed a delete and repair did not run in time, the old data can resurrect. Run repairs regularly and pick a strategy that fits the workload."
+    k: ["!Explains reads merge SSTables and compaction reduces them", "Explains tombstones and gc_grace for deletes", "Says missed repairs can resurrect deleted data"]
+    h: ["How is a delete stored in an append-only system?"]
+    fu: ["When would you choose time-window compaction?"]
+    m: "Deletes in Cassandra remove data immediately."
+    s: ["Storage engine model", "Repair discipline"]

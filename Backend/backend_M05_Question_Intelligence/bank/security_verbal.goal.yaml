@@ -1,0 +1,386 @@
+# =============================================================================
+#  GOAL BANK — security_verbal (2026-11-12, for M22 Follow Your Goal)
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+#  Defensive and interview-level only: how attacks work and how to stop them.
+# =============================================================================
+format: compact
+track: security_verbal
+provenance: generated
+items:
+  sec_cia:
+    c: [security_fundamentals]
+    d: intro
+    t: conceptual
+    f: "confidentiality integrity availability"
+    q: "Explain the CIA triad with one example of an attack on each property."
+    a: "Confidentiality means only authorised people can read data; a leaked database dump breaks it. Integrity means data is not altered without authorisation; tampering with a transaction amount breaks it. Availability means systems are usable when needed; a denial-of-service attack breaks it. Controls map to each: encryption and access control, hashes and signatures, redundancy and rate limiting."
+    k: ["!Defines confidentiality, integrity and availability", "Gives a fitting attack for each", "Maps controls to each property"]
+    h: ["Which property does ransomware attack?"]
+    fu: ["Which property matters most for a hospital's records system?"]
+    m: "Security is only about keeping data secret."
+    s: ["Clear examples", "Controls mapped"]
+
+  sec_attack_surface:
+    c: [security_fundamentals, web_application_security]
+    d: core
+    t: practical
+    f: "threats and attack surface"
+    q: "How would you threat-model a new file-upload feature before it is built?"
+    a: "Draw the data flow — browser, API, storage, processing workers — and list what can go wrong at each boundary, for example with STRIDE: spoofed uploaders, malicious files that exploit parsers, oversized files exhausting storage, public buckets leaking files. For each threat choose a mitigation, such as authentication, type and size checks, scanning, private storage with signed URLs, and processing in a sandbox."
+    k: ["!Maps the data flow and trust boundaries", "Enumerates threats systematically, for example with STRIDE", "Assigns a mitigation to each threat"]
+    h: ["Where does untrusted data cross into your system?"]
+    fu: ["Which threat would you fix first and why?"]
+    m: "Threat modelling is only for large companies."
+    s: ["Systematic method", "Concrete mitigations"]
+
+  sec_defence_depth:
+    c: [security_fundamentals, network_security_basics]
+    d: hard
+    t: design
+    f: "defence in depth"
+    q: "Your company relies on a firewall and VPN to protect internal apps. Why is that not enough, and what would defence in depth look like?"
+    a: "One perimeter means a single stolen VPN credential or phished laptop exposes everything inside. Defence in depth layers controls so one failure is not total: strong authentication with MFA on every app, least-privilege access, network segmentation, encrypted traffic inside the network, endpoint protection, monitoring and logging, and tested backups. Zero-trust goes further by verifying every request regardless of network location."
+    k: ["!Explains a single perimeter fails completely when breached", "Lists layered controls such as MFA, segmentation and monitoring", "Mentions zero trust or verifying every request"]
+    h: ["What can an attacker reach after stealing one VPN password?"]
+    fu: ["Which layer would you add first?"]
+    m: "A strong firewall makes internal apps safe."
+    s: ["Layers named", "Breach assumption"]
+
+  crypto_hash_encrypt:
+    c: [applied_cryptography, hashing]
+    d: intro
+    t: conceptual
+    f: "hashing versus encryption"
+    q: "What is the difference between hashing and encryption, and which would you use for passwords and for credit card numbers?"
+    a: "Hashing is one-way: you cannot recover the input, only compare hashes, so it fits passwords, using a slow salted algorithm. Encryption is two-way with a key, so the data can be recovered by authorised systems, which fits card numbers that must be charged later, with strict key management. Hashing a card number would make it unusable; encrypting a password lets anyone with the key read it."
+    k: ["!Says hashing is one-way and encryption is reversible with a key", "Uses salted slow hashing for passwords", "Uses encryption with key management for data that must be recovered"]
+    h: ["Will you ever need the original card number again?"]
+    fu: ["What is tokenisation and why do payment systems use it?"]
+    m: "Hashing is a weak form of encryption."
+    s: ["Reversibility distinction", "Right choice per data"]
+
+  crypto_asym:
+    c: [applied_cryptography, https_and_tls]
+    d: core
+    t: conceptual
+    f: "symmetric and asymmetric keys"
+    q: "TLS uses both asymmetric and symmetric cryptography. Why not just one?"
+    a: "Asymmetric cryptography lets two parties who share no secret authenticate the server with its certificate and agree on a key, but it is slow. Symmetric ciphers such as AES are fast but need a shared key. So the handshake uses asymmetric methods, now usually ephemeral Diffie-Hellman, to establish a session key, and the bulk data is encrypted symmetrically with it."
+    k: ["!Explains asymmetric crypto solves key exchange and authentication but is slow", "Explains symmetric crypto is fast but needs a shared key", "Describes using the handshake to agree a symmetric session key"]
+    h: ["How do two strangers agree on a secret key?"]
+    fu: ["What does forward secrecy add?"]
+    m: "TLS encrypts all data with the server's public key."
+    s: ["Speed versus key exchange", "Correct flow"]
+
+  crypto_signatures:
+    c: [applied_cryptography, authentication]
+    d: hard
+    t: scenario
+    f: "signatures and certificates"
+    q: "How can a phone app verify that a software update really came from your company and was not modified?"
+    a: "Sign the update: compute its hash and sign it with the company's private key, which only the release system holds. The app ships with the public key and verifies the signature before installing; any change to the file or a different signer fails verification. Protect the private key in a hardware module, and plan key rotation and revocation in case it leaks."
+    k: ["!Signs the update with a private key and verifies with the embedded public key", "Explains modification or a wrong signer fails verification", "Protects the private key and plans rotation"]
+    h: ["Which key must never leave the release system?"]
+    fu: ["What happens if the signing key is stolen?"]
+    m: "HTTPS download alone proves the update is genuine."
+    s: ["Signature mechanism", "Key protection"]
+
+  web_sqli:
+    c: [web_application_security, sql_queries]
+    d: core
+    t: debugging
+    f: "injection"
+    q: "A login query is built by concatenating the username into SQL. Explain the risk and the correct fix."
+    a: "An attacker can enter input containing SQL syntax that changes the query's meaning, for example bypassing the password check or reading other tables. The fix is parameterised queries or prepared statements, where the input is always sent as data, never as SQL code; ORMs do this by default. Escaping by hand is error-prone, and the database account should have least privilege."
+    k: ["!Explains input becomes part of the SQL code", "Fixes with parameterised queries or prepared statements", "Mentions least-privilege database accounts or avoiding manual escaping"]
+    h: ["Is the username treated as data or as code?"]
+    fu: ["Can an ORM still be vulnerable?"]
+    m: "Escaping quotes fully prevents SQL injection."
+    s: ["Mechanism", "Correct fix"]
+
+  web_xss:
+    c: [web_application_security, html_semantics]
+    d: core
+    t: scenario
+    f: "cross-site scripting"
+    q: "A comment section displays user comments, and someone posts a script that steals other users' sessions. How do you prevent this?"
+    a: "This is stored cross-site scripting. Encode output for the context it is placed in, which modern frameworks do by default — avoid bypasses like innerHTML or dangerouslySetInnerHTML with user content, or sanitise with a trusted library if HTML is needed. Add a Content Security Policy to block inline scripts, and HttpOnly cookies so stolen script access cannot read sessions."
+    k: ["!Names stored XSS and context-aware output encoding", "Avoids raw HTML insertion or sanitises it", "Adds a Content Security Policy and HttpOnly cookies"]
+    h: ["Where is the comment inserted into the page?"]
+    fu: ["How does a nonce-based CSP work?"]
+    m: "Validating input on the client prevents XSS."
+    s: ["Encoding first", "Layered defence"]
+
+  web_csrf:
+    c: [web_application_security, web_storage_and_cookies]
+    d: hard
+    t: conceptual
+    f: "cross-site request forgery"
+    q: "How does a CSRF attack work, and why do SameSite cookies largely prevent it?"
+    a: "A malicious site makes the victim's browser send a request to a site where they are logged in, such as a hidden form posting a transfer; the browser attaches the session cookie automatically, so the request looks legitimate. SameSite Lax or Strict cookies are not sent on cross-site requests like that form post, breaking the attack. CSRF tokens and checking the Origin header are additional defences."
+    k: ["!Explains the browser attaches cookies to forged cross-site requests", "Says SameSite stops cookies on cross-site requests", "Mentions CSRF tokens or Origin checks as further defence"]
+    h: ["Who sends the forged request?"]
+    fu: ["Why are pure bearer-token APIs not vulnerable?"]
+    m: "HTTPS prevents CSRF."
+    s: ["Mechanism", "Defences explained"]
+
+  web_access_control:
+    c: [web_application_security, authorization]
+    d: core
+    t: practical
+    f: "broken access control"
+    q: "How would you test an application for broken access control before release?"
+    a: "Create accounts with different roles and two users at the same role, then try every endpoint as the wrong user: other users' records by id, admin functions as a normal user, and changing ownership fields in requests. Automate these checks in integration tests per endpoint, deny by default in the code, and log authorisation failures to spot probing in production."
+    k: ["!Tests each endpoint as other users and lower roles", "Automates authorisation tests per endpoint", "Denies by default and logs failures"]
+    h: ["What happens if user B requests user A's order?"]
+    fu: ["How do you make sure new endpoints get tested?"]
+    m: "Hiding admin links from the UI protects admin functions."
+    s: ["Systematic testing", "Deny by default"]
+
+  web_input_validation:
+    c: [web_application_security, api_design]
+    d: intro
+    t: conceptual
+    f: "validating input"
+    q: "What is the difference between input validation and output encoding, and why do you need both?"
+    a: "Validation checks that input matches what is expected — type, length, format, allowed values — at the server, rejecting bad data early. Encoding makes data safe for the place it is used, such as HTML, SQL parameters or shell arguments. Validation cannot know every later use, and encoding cannot reject nonsense, so each covers the other's gaps."
+    k: ["!Defines validation as checking input against expectations on the server", "Defines encoding as making data safe for its output context", "Explains why each alone is insufficient"]
+    h: ["Is a valid name safe to insert into HTML unencoded?"]
+    fu: ["Allow-list or deny-list validation — which and why?"]
+    m: "Validating input makes all output safe."
+    s: ["Both layers", "Context awareness"]
+
+  sc_secrets:
+    c: [secure_coding, ci_cd]
+    d: core
+    t: scenario
+    f: "handling secrets"
+    q: "An API key was committed to a public GitHub repository an hour ago. What do you do?"
+    a: "Revoke and rotate the key immediately, because it may already be harvested by bots; deleting the commit is not enough. Check the provider's logs for misuse, then remove the secret from history if needed and move secrets to a secret manager or environment injection. Add secret scanning in pre-commit hooks and CI to stop it happening again."
+    k: ["!Rotates or revokes the key first", "Checks logs for misuse", "Adds a secret manager and secret scanning to prevent recurrence"]
+    h: ["Does deleting the commit make the key safe?"]
+    fu: ["How would you inject secrets into a container?"]
+    m: "Removing the file from the repository solves it."
+    s: ["Right order", "Prevention"]
+
+  sc_dependencies:
+    c: [secure_coding, testing_and_debugging]
+    d: core
+    t: practical
+    f: "vulnerable dependencies"
+    q: "A scanner reports 140 vulnerabilities in your project's dependencies. How do you deal with it sensibly?"
+    a: "Prioritise rather than panic: focus on critical and high findings that are reachable in your code and exposed, especially with known exploits. Update direct dependencies, and override or upgrade transitive ones, testing for breakage. Remove unused packages, pin versions with a lockfile, and run the scan in CI with automated update pull requests so the backlog does not grow again."
+    k: ["!Prioritises by severity, reachability and exploitability", "Updates direct and transitive dependencies with testing", "Automates scanning and updates in CI"]
+    h: ["Is the vulnerable function actually called by your code?"]
+    fu: ["What is a software bill of materials?"]
+    m: "Every reported vulnerability must be fixed immediately."
+    s: ["Risk-based triage", "Ongoing process"]
+
+  sc_review:
+    c: [secure_coding, code_quality_and_review]
+    d: hard
+    t: design
+    f: "security in review and CI"
+    q: "How would you build security into a team's development process without slowing everyone down?"
+    a: "Automate the cheap checks in CI: static analysis, dependency and secret scanning, and container scans, failing only on high-confidence issues to avoid noise. Add a short security checklist to reviews of risky changes such as authentication or file handling, threat-model new features, train developers on common bugs, and run periodic penetration tests. Track findings to closure like other bugs."
+    k: ["!Automates SAST, dependency and secret scanning in CI", "Focuses human review and threat modelling on risky changes", "Mentions training, penetration tests or tracking findings"]
+    h: ["Which checks can a machine do on every commit?"]
+    fu: ["How do you stop scanners producing ignored noise?"]
+    m: "Security is a final step before release."
+    s: ["Shift left", "Noise control"]
+
+  va_scope:
+    c: [vulnerability_assessment, integrity_and_ethics]
+    d: intro
+    t: conceptual
+    f: "staying in scope"
+    q: "Before starting a penetration test, what must be agreed with the client, and why?"
+    a: "Written authorisation, the exact scope — domains, IP ranges, applications — what is out of scope, the testing window, permitted techniques such as whether denial-of-service or social engineering is allowed, and emergency contacts. Testing anything outside written scope is illegal access and can disrupt systems that were not prepared, so the rules of engagement protect both sides."
+    k: ["!Requires written authorisation", "Defines scope, exclusions and testing windows", "Agrees allowed techniques and contacts"]
+    h: ["What makes a test legal?"]
+    fu: ["What do you do if you find a third-party system in scope by accident?"]
+    m: "If a system is reachable, it is fair to test."
+    s: ["Legal footing", "Rules of engagement"]
+
+  va_severity:
+    c: [vulnerability_assessment, security_fundamentals]
+    d: core
+    t: tradeoff
+    f: "rating severity"
+    q: "You find two issues: an SQL injection on an internal admin page behind login, and a public page leaking software version numbers. How do you rate them?"
+    a: "Rate by impact and likelihood, for example with CVSS adjusted for context. The SQL injection is high or critical: it can expose or change the database, though needing a login lowers likelihood slightly. Version disclosure is low or informational: it only helps an attacker find other issues. The report should explain the business impact so the client fixes the injection first."
+    k: ["!Rates by impact and likelihood or CVSS", "Rates the injection high and version disclosure low", "Explains business impact to guide prioritisation"]
+    h: ["What could an attacker do with each?"]
+    fu: ["How would chaining issues change the rating?"]
+    m: "Every finding is equally urgent."
+    s: ["Risk reasoning", "Prioritised communication"]
+
+  va_report:
+    c: [vulnerability_assessment, writing_for_an_audience]
+    d: core
+    t: practical
+    f: "writing the report"
+    q: "What makes a penetration test report useful to both executives and developers?"
+    a: "An executive summary with overall risk and the top issues in business terms, then for each finding the severity, affected assets, clear reproduction steps, evidence such as requests and responses, the impact, and a specific remediation. Developers need enough detail to reproduce and fix; executives need priorities. Offer a retest to confirm fixes."
+    k: ["!Includes an executive summary in business terms", "Gives reproducible steps, evidence and remediation per finding", "Prioritises by severity and offers a retest"]
+    h: ["Could a developer reproduce the issue from your report?"]
+    fu: ["What would you leave out of the executive summary?"]
+    m: "A list of scanner output is a good report."
+    s: ["Two audiences", "Actionable"]
+
+  mem_overflow:
+    c: [memory_corruption_and_exploitation, c_language]
+    d: core
+    t: conceptual
+    f: "stack and heap overflows"
+    q: "What is a buffer overflow, and why is C code especially prone to it?"
+    a: "A buffer overflow writes past the end of a fixed-size buffer into adjacent memory, corrupting other data or control information. C does not check array bounds, and functions like strcpy and gets copy until a terminator without knowing the destination size. Use bounded functions such as snprintf, track lengths explicitly, and compile with warnings and sanitisers to catch them."
+    k: ["!Defines writing past a buffer's end into adjacent memory", "Explains C has no bounds checks and unsafe functions", "Proposes bounded functions, explicit lengths or sanitisers"]
+    h: ["What does strcpy know about the destination's size?"]
+    fu: ["How does AddressSanitizer find overflows?"]
+    m: "Overflows only crash programs."
+    s: ["Mechanism", "Prevention"]
+
+  mem_control:
+    c: [memory_corruption_and_exploitation, memory_management]
+    d: hard
+    t: conceptual
+    f: "how an overflow becomes control"
+    q: "Conceptually, how can a stack buffer overflow let an attacker change what a program does?"
+    a: "On the stack, a function's local buffers sit near saved control data such as the return address. Overwriting past the buffer can replace that return address, so when the function returns, execution jumps where the attacker chose. That is why mitigations target this step: stack canaries detect the overwrite, and other protections make the jump target hard to use."
+    k: ["!Explains local buffers sit near the saved return address", "Says overwriting it redirects execution on return", "Links mitigations such as canaries to this step"]
+    h: ["What does a function read from the stack when it returns?"]
+    fu: ["Why do memory-safe languages avoid this class of bug?"]
+    m: "Only the overflowed variable is affected."
+    s: ["Conceptual mechanism", "Mitigation link"]
+
+  mem_mitigations:
+    c: [memory_corruption_and_exploitation, compilation_and_interpretation]
+    d: hard
+    t: tradeoff
+    f: "mitigations"
+    q: "Name the main mitigations against memory corruption exploits and what each one stops."
+    a: "Stack canaries detect overwritten return addresses before returning. Non-executable memory (NX or DEP) stops running injected code from the stack or heap. Address space layout randomisation makes addresses unpredictable, so jumps are hard to aim. Control-flow integrity restricts indirect jumps to valid targets. None is complete alone, so they are combined, and memory-safe languages remove the bug class."
+    k: ["!Names canaries, NX or DEP, and ASLR with what each stops", "Mentions control-flow integrity or similar", "Notes they are layered and memory-safe languages remove the class"]
+    h: ["Which mitigation makes addresses hard to guess?"]
+    fu: ["How does an information leak weaken ASLR?"]
+    m: "One mitigation such as ASLR makes overflows harmless."
+    s: ["Mapped to attack steps", "Layered view"]
+
+  ir_lifecycle:
+    c: [incident_response, troubleshooting]
+    d: core
+    t: scenario
+    f: "detect triage contain recover"
+    q: "An alert shows a server sending large amounts of data to an unknown IP at 3 a.m. Walk me through your response."
+    a: "Triage: confirm the alert is real and gauge scope — which host, what data, since when. Contain: isolate the host from the network while preserving evidence such as memory and logs, and block the destination. Eradicate the cause, recover from clean backups, and monitor for recurrence. Keep a timeline throughout, escalate by the incident plan, and hold a review afterwards."
+    k: ["!Triages to confirm and scope the incident", "Contains by isolating the host while preserving evidence", "Eradicates, recovers and reviews afterwards with a timeline"]
+    h: ["What evidence disappears if you reboot the server?"]
+    fu: ["When would you notify customers or regulators?"]
+    m: "Shutting down the server immediately is always right."
+    s: ["Ordered phases", "Evidence preservation"]
+
+  ir_logs:
+    c: [incident_response, observability]
+    d: core
+    t: practical
+    f: "reading security logs"
+    q: "Which logs would you want to investigate a suspected account takeover, and what patterns would you look for?"
+    a: "Authentication logs for logins and failures, with source IPs, devices and locations; MFA events and password resets; application audit logs for sensitive actions such as changing the email or payout details; and API access logs. Look for impossible travel, new devices, bursts of failed logins followed by success, and changes to recovery settings right after a login."
+    k: ["!Names authentication, MFA, reset and audit logs", "Looks for anomalies like impossible travel or new devices", "Watches for recovery-setting changes after login"]
+    h: ["What does an attacker usually change first after taking over?"]
+    fu: ["How long should these logs be kept?"]
+    m: "Application error logs are enough for security investigations."
+    s: ["Right sources", "Concrete patterns"]
+
+  ir_review:
+    c: [incident_response, learning_from_failure]
+    d: intro
+    t: practical
+    f: "the post-incident review"
+    q: "What makes a post-incident review useful rather than a blame session?"
+    a: "Focus on how the system and process allowed the incident, not on who made the mistake, so people share honestly. Build a timeline, find the contributing causes and why detection took as long as it did, and agree concrete, owned actions with deadlines — better alerts, guardrails, runbooks. Share the lessons widely and check the actions get done."
+    k: ["!Keeps the review blameless and system-focused", "Builds a timeline and finds contributing causes", "Agrees owned actions and follows up"]
+    h: ["Would people be honest if they expected blame?"]
+    fu: ["How do you make sure action items get done?"]
+    m: "The goal is to find who caused the incident."
+    s: ["Blameless", "Follow-through"]
+
+  iam_sso:
+    c: [identity_and_access_management, authentication]
+    d: core
+    t: conceptual
+    f: "single sign-on and federation"
+    q: "How does single sign-on work for a company's many internal apps, and what is the security benefit?"
+    a: "Apps trust a central identity provider. When a user opens an app, it redirects them to the provider, which authenticates them once, with MFA, and sends back a signed assertion via SAML or OpenID Connect that the app verifies. Security improves because there is one place to enforce strong authentication and to disable access when someone leaves, and fewer passwords to steal."
+    k: ["!Describes apps redirecting to a central identity provider", "Mentions signed assertions via SAML or OpenID Connect", "Names central MFA and one-place deprovisioning as benefits"]
+    h: ["Where does the user actually type their password?"]
+    fu: ["What is the risk if the identity provider is compromised?"]
+    m: "SSO means one shared password stored in every app."
+    s: ["Flow", "Benefits and risk"]
+
+  iam_offboarding:
+    c: [identity_and_access_management, security_fundamentals]
+    d: core
+    t: scenario
+    f: "provisioning and deprovisioning"
+    q: "An employee leaves, and three months later their account is used to download customer data. What process failed, and how would you fix it?"
+    a: "Deprovisioning: access was not removed when they left. Tie access to the HR system so leaving triggers disabling the central identity and, through SSO and automated provisioning, every connected app; revoke API keys and sessions; and run periodic access reviews to catch accounts outside SSO. Logging would also have flagged a dormant account becoming active."
+    k: ["!Identifies missing deprovisioning on departure", "Automates removal from HR events through central identity", "Adds access reviews and alerts on dormant accounts"]
+    h: ["Who was supposed to remove the access, and when?"]
+    fu: ["How do you handle shared or service accounts?"]
+    m: "Changing the employee's password is enough."
+    s: ["Process root cause", "Automation"]
+
+  iam_mfa:
+    c: [identity_and_access_management, applied_cryptography]
+    d: hard
+    t: tradeoff
+    f: "multi-factor authentication"
+    q: "Compare SMS codes, authenticator apps and hardware security keys as second factors."
+    a: "SMS codes are easy to deploy but vulnerable to SIM swapping and interception, and users can be tricked into reading them out. Authenticator app codes avoid SIM swap but can still be phished in real time. Hardware keys or passkeys using FIDO2 are bound to the website's origin, so a fake login page cannot use them, making them phishing-resistant, at the cost of devices and recovery planning."
+    k: ["!Notes SMS is vulnerable to SIM swap and phishing", "Notes app codes are better but still phishable", "Explains FIDO2 keys or passkeys are phishing-resistant via origin binding"]
+    h: ["Can a fake login page relay each factor?"]
+    fu: ["How would you handle a user who loses their key?"]
+    m: "Any second factor stops phishing."
+    s: ["Ranked by attack", "Recovery noted"]
+
+  cloud_shared:
+    c: [cloud_security, cloud_fundamentals]
+    d: intro
+    t: conceptual
+    f: "the shared responsibility model"
+    q: "What does the shared responsibility model mean, and what is the customer still responsible for on a managed database?"
+    a: "The provider secures the cloud itself — data centres, hardware, the hypervisor and the managed service's software. The customer secures what they put in it: who can access the database, network exposure, encryption settings, credentials, backups configuration and the data itself. Most cloud breaches come from customer-side misconfiguration, such as a database left publicly reachable."
+    k: ["!Splits provider security of the platform from customer security of their use", "Lists customer duties like access, exposure and configuration", "Notes misconfiguration is the common cause of breaches"]
+    h: ["Who decides whether the database is public?"]
+    fu: ["How does responsibility shift for a virtual machine?"]
+    m: "Managed services are secured entirely by the provider."
+    s: ["Clear split", "Real-world cause"]
+
+  cloud_bucket:
+    c: [cloud_security, identity_and_access_management]
+    d: core
+    t: debugging
+    f: "identities and policies"
+    q: "A storage bucket with customer documents was found publicly readable. How do you fix it and prevent it across the company?"
+    a: "Block public access on the bucket and at the account level, review its policy and access logs to see what was accessed, and rotate anything exposed. To prevent recurrence, enforce organisation-wide guardrails that deny public buckets, define buckets through reviewed infrastructure as code, run continuous configuration scanning, and serve files through signed, expiring URLs instead of public access."
+    k: ["!Blocks public access and checks logs for exposure", "Adds organisation-wide guardrails or policies denying public buckets", "Uses infrastructure as code, scanning or signed URLs"]
+    h: ["Who downloaded the files while they were public?"]
+    fu: ["How do signed URLs work?"]
+    m: "An obscure bucket name keeps it safe."
+    s: ["Immediate and systemic", "Evidence check"]
+
+  cloud_encryption:
+    c: [cloud_security, applied_cryptography]
+    d: hard
+    t: design
+    f: "encrypting data at rest and in transit"
+    q: "How would you design encryption for a cloud application handling medical records?"
+    a: "In transit, use TLS everywhere, including between internal services. At rest, enable encryption on databases, storage and backups using a key management service, with customer-managed keys so access to keys is controlled and logged separately from data access. Limit who can use the keys, rotate them, consider application-level encryption for the most sensitive fields, and audit key usage."
+    k: ["!Uses TLS for all traffic, including internal", "Encrypts data at rest with managed keys and controlled access", "Mentions rotation, field-level encryption or auditing key use"]
+    h: ["Who can decrypt the data if they get the disk?"]
+    fu: ["What does envelope encryption mean?"]
+    m: "Encryption at rest protects against application-level breaches."
+    s: ["Both states", "Key governance"]

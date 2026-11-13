@@ -1,0 +1,177 @@
+# =============================================================================
+#  GOAL BANK — ml_verbal, applied ML and its tools (2026-11-12, for M22)
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: ml_verbal
+provenance: generated
+items:
+  ts_leakage:
+    c: [time_series_forecasting, data_leakage]
+    d: core
+    t: debugging
+    f: "validating without leakage"
+    q: "Your sales forecast scored brilliantly in cross-validation and badly in production. You used random k-fold splits. What went wrong?"
+    a: "Random folds put future data in training and past data in validation, so the model learned from information it would not have at forecast time — leakage — and neighbouring days make validation easy. Use time-based validation: train on earlier periods and test on the next, rolling the window forward, and make sure features use only data available before each forecast date."
+    k: ["!Explains random splits leak future information", "Uses time-ordered, rolling validation", "Checks features only use data available at forecast time"]
+    h: ["What did the model know about next month during training?"]
+    fu: ["How would lag features cause leakage if built carelessly?"]
+    m: "k-fold cross-validation works for any data."
+    s: ["Names leakage", "Correct scheme"]
+
+  ts_seasonality:
+    c: [time_series_forecasting, linear_regression]
+    d: intro
+    t: conceptual
+    f: "trend and seasonality"
+    q: "What are trend and seasonality in a time series, and how would you account for Diwali in a retail forecast?"
+    a: "Trend is the long-run direction, such as steady growth; seasonality is a repeating pattern by week or year. Diwali moves on the calendar each year, so a fixed yearly seasonal term misplaces it. Add holiday features marking the days before and after the festival, and model weekly seasonality separately, so the forecast captures the spike wherever it falls."
+    k: ["!Defines trend and repeating seasonality", "Notes festivals with moving dates break fixed yearly seasonality", "Adds holiday features around the event"]
+    h: ["Is Diwali on the same date every year?"]
+    fu: ["How would you model a promotion running alongside the festival?"]
+    m: "Seasonality alone captures festivals."
+    s: ["Clear definitions", "Moving-holiday handling"]
+
+  ts_classical_ml:
+    c: [time_series_forecasting, ensemble_methods]
+    d: hard
+    t: tradeoff
+    f: "classical versus ML forecasting"
+    q: "You need forecasts for 50,000 product-store combinations. Would you fit ARIMA per series or one gradient-boosted model?"
+    a: "Fitting ARIMA per series is hard to maintain at that scale and struggles with short, sparse or new series. A single global gradient-boosted model on lag, calendar, price and product features learns shared patterns across series, handles new products through their attributes and is easier to retrain. Classical models remain strong baselines for long, stable series, so compare both on time-based validation."
+    k: ["!Notes per-series models are hard to scale and weak on sparse series", "Explains a global model shares patterns through features", "Compares against classical baselines on time-based validation"]
+    h: ["How many sales points does a new product have?"]
+    fu: ["How would you produce prediction intervals?"]
+    m: "Deep learning always beats ARIMA."
+    s: ["Scale reasoning", "Baseline comparison"]
+
+  ts_error:
+    c: [time_series_forecasting, regression_metrics]
+    d: core
+    t: tradeoff
+    f: "forecast error"
+    q: "Which error metric would you report for a demand forecast where many products sell zero units most days?"
+    a: "MAPE breaks down because dividing by zero or tiny actual values explodes the error. Use scale-free alternatives such as weighted MAPE over total volume or MASE, which compares to a naive forecast, and consider the business cost: over-forecasting wastes stock, under-forecasting loses sales, so a quantile or asymmetric loss may fit better."
+    k: ["!Says MAPE fails with zero or tiny actuals", "Proposes weighted MAPE, MASE or similar", "Connects the metric to asymmetric business costs"]
+    h: ["What is the percentage error when actual sales are zero?"]
+    fu: ["When would you forecast a quantile instead of the mean?"]
+    m: "MAPE suits every forecast."
+    s: ["Metric failure mode", "Business alignment"]
+
+  rec_cold_start:
+    c: [recommender_systems, embeddings]
+    d: core
+    t: scenario
+    f: "cold start"
+    q: "Collaborative filtering recommends well for regular users but has nothing for new users and new items. How do you handle cold start?"
+    a: "For new users, start with popular or trending items, ask a few preferences at sign-up, and use context such as location or device, switching to personalised results as interactions arrive. For new items, use content-based features — category, text, images — to place them near similar items, and reserve some exposure for new items so they collect interactions."
+    k: ["!Explains cold start lacks interaction history", "Uses popularity, onboarding questions or context for new users", "Uses content features and exploration for new items"]
+    h: ["What does collaborative filtering need about a user?"]
+    fu: ["How much exposure would you give new items?"]
+    m: "Cold start only affects new users."
+    s: ["Both sides covered", "Exploration"]
+
+  rec_metrics:
+    c: [recommender_systems, classification_metrics]
+    d: hard
+    t: conceptual
+    f: "ranking metrics"
+    q: "How would you evaluate a recommender offline, and why can offline gains fail online?"
+    a: "Offline, hold out later interactions and measure ranking metrics such as recall at k, precision at k or NDCG, which rewards relevant items ranked higher. Offline data only reflects what the old system showed, so it is biased towards past recommendations, and it cannot capture novelty, diversity or long-term satisfaction. A/B tests on engagement and retention are the final judge."
+    k: ["!Uses time-based holdout with ranking metrics like recall at k or NDCG", "Explains exposure bias from the previous system", "Validates with online A/B tests"]
+    h: ["Could users click items the old system never showed them?"]
+    fu: ["How would you measure diversity?"]
+    m: "Higher offline accuracy guarantees better engagement."
+    s: ["Ranking metrics", "Bias awareness"]
+
+  rec_feedback_loop:
+    c: [recommender_systems, ab_testing]
+    d: hard
+    t: scenario
+    f: "feedback loops"
+    q: "Your video recommender keeps showing the same narrow kind of content and users say the feed got boring. What happened?"
+    a: "A feedback loop: the model recommends what users clicked, users can only click what is shown, and the model retrains on those clicks, narrowing the feed each cycle and amplifying popular items. Break it with exploration, such as showing some diverse or new items, diversity constraints in ranking, debiasing training for exposure, and optimising for longer-term satisfaction rather than immediate clicks."
+    k: ["!Identifies the feedback loop narrowing what is shown", "Adds exploration or diversity constraints", "Optimises for long-term satisfaction or debiases exposure"]
+    h: ["Can a user click something they were never shown?"]
+    fu: ["How would you measure whether exploration hurts short-term engagement?"]
+    m: "Recommending what people clicked is always best."
+    s: ["Systemic diagnosis", "Long-term objective"]
+
+  pd_vectorise:
+    c: [pandas_numpy, python_language]
+    d: intro
+    t: optimisation
+    f: "vectorised operations"
+    q: "A pandas script loops over a million rows with iterrows to compute a price with tax, and takes minutes. How do you speed it up?"
+    a: "Python loops pay interpreter overhead per row. Use a vectorised expression on whole columns, such as df[\"total\"] = df[\"price\"] * 1.18, which runs in optimised C over the array in milliseconds. For conditions use np.where or select, and for lookups use map or a merge, avoiding apply with Python functions where possible."
+    k: ["!Explains per-row Python loops are slow", "Uses vectorised column operations", "Mentions np.where, map or merge instead of apply"]
+    h: ["Where does the arithmetic run in a vectorised expression?"]
+    fu: ["When is apply still acceptable?"]
+    m: "iterrows is the normal way to process data."
+    s: ["Mechanism", "Alternatives for conditions"]
+
+  pd_groupby_join:
+    c: [pandas_numpy, joins]
+    d: core
+    t: debugging
+    f: "groupby and joins"
+    q: "After merging orders with customers in pandas, total revenue doubled. What happened?"
+    a: "The customer table had duplicate keys, so the merge became one-to-many and each order row was repeated for every duplicate customer row. Check key uniqueness before merging, use validate=\"many_to_one\" so pandas raises on duplicates, and compare row counts before and after. Then deduplicate the customer table properly."
+    k: ["!Identifies duplicate keys turning the merge one-to-many", "Uses validate or checks key uniqueness", "Compares row counts before and after the merge"]
+    h: ["How many rows does each customer id have?"]
+    fu: ["How would you choose which duplicate to keep?"]
+    m: "Merges never change the number of rows."
+    s: ["Root cause", "Guardrail"]
+
+  pd_memory:
+    c: [pandas_numpy, memory_management]
+    d: hard
+    t: optimisation
+    f: "memory and performance"
+    q: "A 5 GB CSV crashes your laptop when loaded with pandas. What can you do?"
+    a: "Load only needed columns with usecols, set compact dtypes — categories for repeated strings, smaller integer and float types — and parse in chunks to aggregate as you go. Store intermediate data in Parquet, which is columnar and typed. If it still does not fit, use a tool built for larger data such as Polars, DuckDB or Spark."
+    k: ["!Loads only needed columns with compact dtypes", "Processes in chunks or uses Parquet", "Switches to Polars, DuckDB or Spark when needed"]
+    h: ["How much memory does a column of repeated city names take as strings?"]
+    fu: ["Why is Parquet faster to load than CSV?"]
+    m: "More RAM is the only fix."
+    s: ["Several levers", "Right tool for size"]
+
+  skl_pipeline:
+    c: [scikit_learn, data_leakage]
+    d: core
+    t: debugging
+    f: "preprocessing without leakage"
+    q: "You scaled the whole dataset with StandardScaler before splitting into train and test. Why is that a problem, and how does a Pipeline fix it?"
+    a: "The scaler learned the mean and spread from the test data too, so information from the test set leaked into training and scores are optimistic. A Pipeline bundles preprocessing with the model, so fit learns scaling only from training data — and within cross-validation, only from each fold's training part — and applies it unchanged to test data."
+    k: ["!Explains fitting the scaler on all data leaks test information", "Uses a Pipeline so preprocessing is fitted on training data only", "Notes it also keeps cross-validation honest"]
+    h: ["Which data did the scaler see when it computed the mean?"]
+    fu: ["How would you add one-hot encoding to the same pipeline?"]
+    m: "Scaling before splitting is harmless."
+    s: ["Names leakage", "Pipeline mechanism"]
+
+  skl_model_selection:
+    c: [scikit_learn, hyperparameter_tuning]
+    d: core
+    t: practical
+    f: "model selection"
+    q: "How would you tune a random forest's hyperparameters with scikit-learn without fooling yourself about its performance?"
+    a: "Hold out a final test set. On the training data, run GridSearchCV or RandomizedSearchCV with cross-validation over sensible ranges, choosing the scoring metric that matches the problem. Pick the best settings by cross-validated score, refit on all training data, and report performance once on the untouched test set. Nested cross-validation gives an unbiased estimate when data is small."
+    k: ["!Keeps a test set untouched until the end", "Uses cross-validated search on training data with the right metric", "Reports the final score once on the test set"]
+    h: ["What happens if you tune on the test set?"]
+    fu: ["Why might randomized search beat grid search?"]
+    m: "The best cross-validation score is the expected real-world score."
+    s: ["No peeking", "Right metric"]
+
+  skl_persist:
+    c: [scikit_learn, ml_deployment_and_monitoring]
+    d: intro
+    t: practical
+    f: "persisting a model"
+    q: "How would you save a trained scikit-learn pipeline and load it in a production service safely?"
+    a: "Save the whole pipeline, including preprocessing, with joblib, and record the scikit-learn and Python versions, since loading under different versions can fail or change behaviour. Load it once at service start, validate input shapes and types before predicting, and never load model files from untrusted sources, because pickle can execute code. ONNX or a model registry are alternatives."
+    k: ["!Saves the full pipeline, not just the estimator", "Pins library versions for loading", "Warns pickle files from untrusted sources can execute code"]
+    h: ["What else must be applied to raw inputs besides the model?"]
+    fu: ["How would you version models in production?"]
+    m: "A pickle file works with any library version."
+    s: ["Whole pipeline", "Security note"]

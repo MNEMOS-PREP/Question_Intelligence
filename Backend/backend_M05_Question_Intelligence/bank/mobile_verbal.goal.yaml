@@ -1,0 +1,177 @@
+# =============================================================================
+#  GOAL BANK — mobile_verbal (2026-11-12, for M22 Follow Your Goal)
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: mobile_verbal
+provenance: generated
+items:
+  mob_offline:
+    c: [mobile_app_architecture, data_modelling]
+    d: core
+    t: design
+    f: "working offline"
+    q: "Design a note-taking app that works offline and syncs when the network returns. What are the hard parts?"
+    a: "Store notes in a local database and treat it as the source the UI reads, queueing changes as operations with ids and timestamps. When online, sync the queue to the server and pull remote changes. The hard part is conflicts when the same note was edited on two devices: use per-field merging, last-writer-wins with clear rules, or keep both versions and let the user choose."
+    k: ["!Uses a local database as the UI's source with a change queue", "Syncs queued changes and pulls remote changes when online", "Addresses conflict resolution explicitly"]
+    h: ["What happens if a note is edited on two phones offline?"]
+    fu: ["How would you sync efficiently without downloading everything?"]
+    m: "Caching API responses makes an app work offline."
+    s: ["Local-first design", "Conflict strategy"]
+
+  mob_lifecycle:
+    c: [mobile_app_architecture]
+    d: intro
+    t: conceptual
+    f: "the app lifecycle"
+    q: "A user is filling a long form, switches apps to copy a code, and comes back to an empty form. Why, and how do you prevent it?"
+    a: "In the background the operating system can pause and later kill the app's process to reclaim memory; when the user returns, the app restarts and the unsaved form state is gone. Save in-progress state as the app moves to the background, such as with saved instance state or a view model persisted to storage, and restore it on start."
+    k: ["!Explains the OS can kill backgrounded apps", "Saves state when going to the background", "Restores state when the app returns"]
+    h: ["What can the OS do to an app it cannot see?"]
+    fu: ["How do you test process death?"]
+    m: "Apps in the background keep running forever."
+    s: ["Lifecycle model", "Persistence fix"]
+
+  mob_network_battery:
+    c: [mobile_app_architecture, web_performance]
+    d: hard
+    t: optimisation
+    f: "battery and network limits"
+    q: "Users on slow networks complain your app is sluggish and drains their battery. What would you change?"
+    a: "Reduce and batch network requests, compress and paginate responses, cache data with sensible expiry, and use image sizes suited to the screen. Avoid frequent polling; use push notifications or longer intervals, and schedule background work with the platform's job scheduler so it runs when charging or on Wi-Fi. Show cached content immediately and refresh in the background."
+    k: ["!Batches and reduces requests, with compression and caching", "Replaces polling with push or scheduled background work", "Shows cached data first for perceived speed"]
+    h: ["How often does the app wake the radio?"]
+    fu: ["How would you measure battery impact?"]
+    m: "Network speed is outside the app's control, so nothing can be done."
+    s: ["Radio awareness", "Perceived performance"]
+
+  mob_release:
+    c: [mobile_app_architecture, deployment_strategies]
+    d: core
+    t: practical
+    f: "releasing an app"
+    q: "How is releasing a mobile app different from releasing a website, and how do you reduce the risk of a bad release?"
+    a: "Mobile releases go through store review, users update slowly, and you cannot roll back an installed version, so old versions stay in use for months. Reduce risk with staged rollouts to a percentage of users, crash and analytics monitoring, feature flags to disable features remotely, backward-compatible APIs, and a forced-update mechanism for critical issues."
+    k: ["!Notes store review, slow updates and no rollback", "Uses staged rollouts and monitoring", "Uses feature flags, compatible APIs or forced updates"]
+    h: ["Can you take back a version already installed?"]
+    fu: ["How long must the API support old app versions?"]
+    m: "A mobile release can be rolled back like a website."
+    s: ["Constraints", "Mitigations"]
+
+  and_lifecycle:
+    c: [kotlin_android, mobile_app_architecture]
+    d: core
+    t: debugging
+    f: "activity and fragment lifecycle"
+    q: "An Android screen reloads its data and loses scroll position every time the phone is rotated. Why, and how do you fix it?"
+    a: "Rotation is a configuration change that destroys and recreates the activity, so data loaded inside it is fetched again. Keep the data in a ViewModel, which survives configuration changes, expose it through StateFlow or LiveData, and save small UI state with saved state handles. Then rotation simply re-renders existing data."
+    k: ["!Explains rotation recreates the activity", "Keeps data in a ViewModel that survives configuration changes", "Saves small UI state with a saved state handle"]
+    h: ["What happens to the activity object on rotation?"]
+    fu: ["Does a ViewModel survive process death?"]
+    m: "Locking the screen orientation is the right fix."
+    s: ["Lifecycle cause", "Architectural fix"]
+
+  and_coroutines:
+    c: [kotlin_android, concurrency_synchronisation]
+    d: core
+    t: practical
+    f: "Kotlin null safety and coroutines"
+    q: "How would you load data from the network in an Android app using Kotlin coroutines without leaking work when the screen closes?"
+    a: "Launch the coroutine in the ViewModel's viewModelScope, which is cancelled automatically when the ViewModel is cleared, so work stops when the screen is gone. Do network calls in a suspend function on the IO dispatcher and update UI state on the main thread. Structured concurrency means child coroutines are cancelled with their scope."
+    k: ["!Uses viewModelScope so work is cancelled with the screen", "Runs network calls on an IO dispatcher via suspend functions", "Mentions structured concurrency"]
+    h: ["What cancels the request when the user leaves?"]
+    fu: ["Why avoid GlobalScope?"]
+    m: "Coroutines run on new threads, so they cannot leak."
+    s: ["Scoped work", "Dispatchers"]
+
+  and_compose:
+    c: [kotlin_android, component_architecture]
+    d: hard
+    t: optimisation
+    f: "Jetpack Compose"
+    q: "A Jetpack Compose list stutters when scrolling. What would you check?"
+    a: "Check that the list uses LazyColumn with stable keys so items are reused, that item composables do not recompose unnecessarily because of unstable parameters or new lambdas each time, and that expensive work is not done during composition — move it into remember or the ViewModel. The layout inspector's recomposition counts show which items recompose too often."
+    k: ["!Uses lazy lists with stable keys", "Avoids unnecessary recomposition from unstable parameters", "Moves expensive work out of composition, using tools to verify"]
+    h: ["How many times does each item recompose while scrolling?"]
+    fu: ["What makes a class stable for Compose?"]
+    m: "Compose is always slower than views."
+    s: ["Recomposition model", "Tooling"]
+
+  ios_optionals:
+    c: [swift_ios, exception_handling]
+    d: intro
+    t: conceptual
+    f: "optionals and value types"
+    q: "What problem do optionals solve in Swift, and why is force-unwrapping risky?"
+    a: "Optionals make the possibility of no value explicit in the type, so the compiler forces you to handle nil before use, preventing null-pointer crashes common in other languages. Force-unwrapping with an exclamation mark tells the compiler to trust you, and crashes the app if the value is nil. Prefer if let, guard let or default values."
+    k: ["!Says optionals make missing values explicit and compiler-checked", "Explains force unwrapping crashes on nil", "Uses if let, guard let or defaults"]
+    h: ["What happens when you force-unwrap nil?"]
+    fu: ["When is force unwrapping acceptable?"]
+    m: "Optionals are just nullable pointers with new syntax."
+    s: ["Safety model", "Idiomatic handling"]
+
+  ios_arc:
+    c: [swift_ios, memory_management]
+    d: hard
+    t: debugging
+    f: "memory and ARC"
+    q: "A view controller is never deallocated after it is dismissed, and memory keeps growing. What is a likely cause in Swift?"
+    a: "Automatic reference counting frees an object when no strong references remain. A retain cycle, such as a closure stored on the controller that captures self strongly, or a delegate held strongly, keeps both alive forever. Capture self weakly in the closure with a capture list, make delegates weak, and use the memory graph debugger to find the cycle."
+    k: ["!Explains ARC frees objects with no strong references", "Identifies a retain cycle, such as a closure capturing self", "Uses weak captures or weak delegates and the memory graph debugger"]
+    h: ["What references the controller after it is dismissed?"]
+    fu: ["When would you use unowned instead of weak?"]
+    m: "ARC is garbage collection, so cycles are cleaned up."
+    s: ["Cycle diagnosis", "Correct fix"]
+
+  ios_swiftui:
+    c: [swift_ios, state_management]
+    d: core
+    t: tradeoff
+    f: "SwiftUI and UIKit"
+    q: "When would you build a new iOS screen in SwiftUI and when in UIKit?"
+    a: "SwiftUI is declarative and quick for building standard screens, with live previews and state-driven updates, and is the direction Apple is investing in. UIKit is mature and gives fine control for complex custom layouts, advanced collection views or features SwiftUI lacks on older OS versions. Many apps mix them, hosting SwiftUI views in UIKit or the reverse."
+    k: ["!Credits SwiftUI's declarative speed for standard screens", "Credits UIKit's control for complex or legacy needs", "Mentions mixing the two"]
+    h: ["Which iOS versions must the app support?"]
+    fu: ["How do you embed a SwiftUI view in UIKit?"]
+    m: "SwiftUI fully replaces UIKit today."
+    s: ["Fit for purpose", "Interoperability"]
+
+  xp_rendering:
+    c: [react_native_and_flutter, browser_rendering]
+    d: core
+    t: conceptual
+    f: "how cross-platform rendering works"
+    q: "How do Flutter and React Native draw their UI differently?"
+    a: "Flutter renders every pixel itself with its own engine onto a canvas, so the UI looks identical across platforms and does not depend on native widgets. React Native maps components to real native views, coordinated from JavaScript, so it looks native per platform but crosses a bridge or interface layer for communication. Each trades consistency against native look and integration cost."
+    k: ["!Says Flutter draws its own widgets with its engine", "Says React Native uses native views driven from JavaScript", "States the consistency versus native-feel trade-off"]
+    h: ["Does a Flutter button use the platform's native button?"]
+    fu: ["What changed with React Native's new architecture?"]
+    m: "Both just wrap a web view."
+    s: ["Rendering models", "Trade-off"]
+
+  xp_native_modules:
+    c: [react_native_and_flutter, api_design]
+    d: hard
+    t: design
+    f: "platform channels and native modules"
+    q: "Your Flutter app needs a Bluetooth feature no package supports. How would you add it?"
+    a: "Write platform-specific code in Kotlin for Android and Swift for iOS using each OS's Bluetooth APIs, and expose it to Dart through a platform channel with a small, typed message interface — methods for commands and an event channel for streams like scan results. Handle permissions per platform, errors and threading, and wrap it in a Dart API so the rest of the app stays platform-neutral."
+    k: ["!Writes native code per platform", "Bridges it with method and event channels", "Handles permissions, errors and wraps it in a clean Dart API"]
+    h: ["Which side talks to the Bluetooth hardware?"]
+    fu: ["How would you test the platform channel?"]
+    m: "Cross-platform means you never write native code."
+    s: ["Clean boundary", "Platform differences"]
+
+  xp_performance:
+    c: [react_native_and_flutter, web_performance]
+    d: core
+    t: optimisation
+    f: "performance on a phone"
+    q: "Your cross-platform app runs smoothly on flagship phones but janks on budget phones. What would you do?"
+    a: "Profile on a real low-end device, not an emulator. Look for expensive rebuilds or re-renders, large images decoded at full size, heavy work on the UI thread and long lists without virtualisation. Move heavy computation off the main thread or isolate, resize images, memoise or use const widgets, and reduce overdraw and animation cost. Set budget-phone performance as a release criterion."
+    k: ["!Profiles on real low-end devices", "Finds rebuilds, large images or main-thread work", "Moves work off the UI thread and optimises lists and images"]
+    h: ["Which phone do most of your users actually have?"]
+    fu: ["What is jank measured in?"]
+    m: "Budget phones are too slow to optimise for."
+    s: ["Measure on target devices", "Concrete fixes"]

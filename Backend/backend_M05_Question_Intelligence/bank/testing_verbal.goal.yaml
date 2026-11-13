@@ -1,0 +1,268 @@
+# =============================================================================
+#  GOAL BANK — testing_verbal (2026-11-12, for M22 Follow Your Goal)
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: testing_verbal
+provenance: generated
+items:
+  td_boundaries:
+    c: [test_design]
+    d: intro
+    t: practical
+    f: "equivalence classes and boundaries"
+    q: "A field accepts ages from 18 to 60. Which test values would you choose, and why those?"
+    a: "Split inputs into equivalence classes — below 18, 18 to 60, above 60, plus non-numbers and empty — and test one value from each, since values in a class behave alike. Then test the boundaries where bugs cluster: 17, 18, 19, 59, 60 and 61. Off-by-one errors like using greater-than instead of greater-or-equal show up exactly there."
+    k: ["!Splits inputs into valid and invalid equivalence classes", "Tests values at and around each boundary", "Includes invalid types or empty input"]
+    h: ["Where do off-by-one errors hide?"]
+    fu: ["How would you test a date-of-birth field instead?"]
+    m: "Testing many random values is better than boundaries."
+    s: ["Classes and boundaries", "Invalid inputs"]
+
+  td_bug_report:
+    c: [test_design, writing_for_an_audience]
+    d: intro
+    t: practical
+    f: "writing a bug report"
+    q: "What makes a bug report that a developer can act on immediately?"
+    a: "A clear title naming what fails and where, exact steps to reproduce from a known starting state, the expected and actual results, environment details such as build, browser and account, and evidence like screenshots, logs or a request id. Add severity and impact, and keep one bug per report. A developer should be able to reproduce it without asking you anything."
+    k: ["!Gives exact reproduction steps", "States expected versus actual results", "Includes environment, evidence and severity"]
+    h: ["Could someone else reproduce it from your report alone?"]
+    fu: ["How do you decide severity versus priority?"]
+    m: "Saying it doesn't work, with a screenshot, is enough."
+    s: ["Reproducible", "Complete context"]
+
+  td_regression:
+    c: [test_design, test_automation]
+    d: core
+    t: tradeoff
+    f: "regression testing"
+    q: "A release is tomorrow and the full regression suite takes three days manually. What do you test?"
+    a: "Prioritise by risk: test what changed and the features it touches, then the business-critical paths such as login, checkout and payments, then areas with a history of bugs. Use change information from developers to pick impacted areas. Over time, automate the stable, high-value regression cases so the full suite runs in hours, and document what was not covered."
+    k: ["!Prioritises by risk: changed areas and critical paths", "Uses change impact to select tests", "Plans automation and documents gaps"]
+    h: ["What would hurt most if it broke?"]
+    fu: ["Which cases would you automate first?"]
+    m: "Every test must run before every release."
+    s: ["Risk-based", "Transparency about gaps"]
+
+  td_levels:
+    c: [test_design, testing_and_debugging]
+    d: core
+    t: conceptual
+    f: "levels of testing"
+    q: "Explain unit, integration, system and acceptance testing, and what kind of bug each is best at catching."
+    a: "Unit tests check one function or class in isolation and catch logic errors quickly. Integration tests check components working together, such as code with a real database, catching wrong assumptions between them. System tests check the whole application end to end against requirements. Acceptance tests confirm it meets the user's or business's needs, catching misunderstood requirements."
+    k: ["!Defines each level by scope", "Matches each to the bugs it catches best", "Mentions speed or cost differences"]
+    h: ["Which level would catch a wrong SQL column name?"]
+    fu: ["Who writes acceptance tests?"]
+    m: "Unit tests alone prove the system works."
+    s: ["Clear scopes", "Bug types"]
+
+  td_exploratory:
+    c: [test_design, troubleshooting]
+    d: hard
+    t: scenario
+    f: "exploratory testing"
+    q: "You are given a new feature with no written requirements and two hours. How do you test it?"
+    a: "Run time-boxed exploratory sessions with a charter, such as exploring the upload flow with unusual files. Learn the feature while testing, try realistic user journeys, then edge cases, error paths, interruptions and concurrency, noting questions and bugs as you go. Afterwards, summarise what was covered, what risks remain and questions for the product owner."
+    k: ["!Uses time-boxed sessions with a clear charter", "Covers journeys, edge cases and error paths", "Reports coverage, risks and open questions"]
+    h: ["What is the most important thing a user does with it?"]
+    fu: ["How would you turn findings into automated tests?"]
+    m: "Exploratory testing is random clicking."
+    s: ["Structured exploration", "Honest summary"]
+
+  ta_pyramid:
+    c: [test_automation, frontend_testing]
+    d: intro
+    t: conceptual
+    f: "the test pyramid"
+    q: "What is the test pyramid, and what goes wrong when a team inverts it?"
+    a: "The pyramid suggests many fast unit tests at the base, fewer integration tests in the middle and a small number of end-to-end tests at the top. An inverted pyramid, mostly UI tests, is slow, flaky and expensive to maintain, and failures are hard to pinpoint, so feedback takes hours and people stop trusting the suite."
+    k: ["!Describes many unit, fewer integration and few end-to-end tests", "Explains why that balance is fast and reliable", "Describes the slow, flaky inverted pyramid"]
+    h: ["Which tests are slowest and flakiest?"]
+    fu: ["Where do contract tests fit?"]
+    m: "End-to-end tests are the best kind because they test everything."
+    s: ["Shape and rationale", "Consequences"]
+
+  ta_mocks:
+    c: [test_automation, abstraction_and_interfaces]
+    d: core
+    t: tradeoff
+    f: "mocks stubs and fakes"
+    q: "What is the difference between a stub, a mock and a fake, and when can over-mocking hurt?"
+    a: "A stub returns canned answers, a mock also verifies how it was called, and a fake is a working lightweight implementation, such as an in-memory repository. Over-mocking ties tests to implementation details, so refactors break tests without changing behaviour, and tests can pass while the real integration is wrong. Prefer fakes and real collaborators where cheap, and mock at system boundaries."
+    k: ["!Distinguishes stubs, mocks and fakes", "Explains over-mocking couples tests to implementation", "Recommends mocking at boundaries and using fakes"]
+    h: ["Would the test break if you refactored without changing behaviour?"]
+    fu: ["Why might a mock pass when production fails?"]
+    m: "More mocks always make tests better."
+    s: ["Precise terms", "Trade-off"]
+
+  ta_flaky:
+    c: [test_automation, concurrency_synchronisation]
+    d: hard
+    t: debugging
+    f: "flaky tests"
+    q: "An automated test fails one run in ten with no code change. How do you track down the cause?"
+    a: "Rerun it in a loop to reproduce, and collect logs, timing and screenshots on failure. Common causes are timing assumptions and sleeps, shared state between tests, test order dependence, random data, time zones and unstable external services. Isolate by running it alone and in different orders, fix the root cause, and quarantine it meanwhile rather than retrying it silently."
+    k: ["!Reproduces by repeated runs and gathers failure evidence", "Lists causes like timing, shared state, order or external services", "Fixes the root cause and quarantines meanwhile"]
+    h: ["Does it fail when run alone?"]
+    fu: ["How would you track flakiness across the whole suite?"]
+    m: "Adding a retry fixes flaky tests."
+    s: ["Systematic", "No blind retries"]
+
+  ta_pipeline:
+    c: [test_automation, ci_cd]
+    d: core
+    t: design
+    f: "tests in a pipeline"
+    q: "How would you organise automated tests in a CI pipeline so feedback is fast but releases are safe?"
+    a: "Run linting and unit tests on every commit within minutes, integration tests on pull requests, and the slower end-to-end and performance suites on merge or before release. Parallelise and shard long suites, fail fast on the cheap stages, and make failing tests block merges. Publish reports so failures are easy to diagnose."
+    k: ["!Stages tests by speed: unit on commit, slower suites later", "Parallelises or shards long suites", "Blocks merges on failure and publishes reports"]
+    h: ["What should a developer hear about within five minutes?"]
+    fu: ["When should end-to-end tests block a merge?"]
+    m: "All tests should run on every commit regardless of time."
+    s: ["Staged feedback", "Gating"]
+
+  ta_page_objects:
+    c: [test_automation, selenium]
+    d: core
+    t: design
+    f: "page objects and maintainability"
+    q: "A UI change broke 200 automated tests that all used the same login form selectors. How would you structure tests to avoid this?"
+    a: "Use the page object pattern: each page or component gets a class that owns its selectors and exposes actions like login(user, password). Tests call those actions instead of touching selectors, so a UI change is fixed in one place. Prefer stable test ids over fragile CSS paths, and keep assertions in tests rather than page objects."
+    k: ["!Introduces page objects that own selectors and actions", "Tests call actions, so changes are made once", "Uses stable test ids instead of brittle selectors"]
+    h: ["How many places know the login button's selector?"]
+    fu: ["Where should assertions live?"]
+    m: "Copying selectors into each test keeps tests simple."
+    s: ["Single point of change", "Stable selectors"]
+
+  api_assert:
+    c: [api_testing, http_and_rest]
+    d: intro
+    t: practical
+    f: "what to assert on a response"
+    q: "When testing a create-user endpoint, what would you assert beyond a 201 status?"
+    a: "Check the response body has the right fields, types and values, with no sensitive data like password hashes, and a Location header or id for the new resource. Verify the side effect by reading the user back, that duplicates return 409, and that response time is acceptable. Validate the body against the API schema so contract drift is caught."
+    k: ["!Asserts body fields, types and absence of sensitive data", "Verifies the side effect by reading the resource", "Checks error cases like duplicates and schema validation"]
+    h: ["Is the user actually saved?"]
+    fu: ["How would you clean up test data?"]
+    m: "A 2xx status means the API works."
+    s: ["Beyond status codes", "Side effects"]
+
+  api_negative:
+    c: [api_testing, web_application_security]
+    d: core
+    t: practical
+    f: "negative and boundary cases"
+    q: "List negative tests you would run against a money-transfer API."
+    a: "Missing or malformed fields, negative, zero and enormous amounts, too many decimal places, transferring to oneself or a non-existent account, insufficient balance, wrong currency, an expired or missing token, another user's account id, and repeating the same request to check idempotency. Each should return a clear error and leave balances unchanged."
+    k: ["!Covers invalid amounts and malformed input", "Covers authorisation and ownership errors", "Checks idempotency and that balances stay unchanged"]
+    h: ["What happens with a transfer of minus 100?"]
+    fu: ["How would you test two transfers racing on one account?"]
+    m: "Negative tests are less important than happy paths."
+    s: ["Thorough cases", "State verification"]
+
+  api_contract:
+    c: [api_testing, microservices]
+    d: hard
+    t: tradeoff
+    f: "contract testing"
+    q: "Two teams own a frontend and an API, and the API keeps breaking the frontend in production. How would contract testing help?"
+    a: "With consumer-driven contract tests, the frontend records the requests it makes and the response shapes it relies on as a contract. The API's pipeline verifies every change against all consumers' contracts, so a breaking change fails before deploy, without needing a full end-to-end environment. It complements, not replaces, a few end-to-end tests."
+    k: ["!Consumers define the interactions and fields they rely on", "The provider verifies changes against those contracts in CI", "Avoids heavy end-to-end environments while catching breaking changes"]
+    h: ["Who knows which fields the frontend actually uses?"]
+    fu: ["What is a contract broker?"]
+    m: "An OpenAPI file alone prevents breaking changes."
+    s: ["Consumer-driven", "Shift-left"]
+
+  api_auth_tests:
+    c: [api_testing, authentication]
+    d: core
+    t: practical
+    f: "authentication in tests"
+    q: "How would you handle authentication when writing automated API tests?"
+    a: "Create dedicated test users per role through setup or a seed script, obtain tokens programmatically at the start and reuse them, and never hard-code real credentials, keeping secrets in the CI secret store. Test each endpoint with no token, an expired token and the wrong role, as well as the right one, so authorisation is tested too."
+    k: ["!Uses dedicated test users and obtains tokens programmatically", "Keeps credentials out of code, in a secret store", "Tests missing, expired and wrong-role tokens"]
+    h: ["Where do the test passwords live?"]
+    fu: ["How would you test token expiry without waiting an hour?"]
+    m: "Disabling authentication in test environments is fine."
+    s: ["Secure setup", "Auth as a test target"]
+
+  perf_types:
+    c: [performance_testing, scalability]
+    d: intro
+    t: conceptual
+    f: "load stress and soak tests"
+    q: "What is the difference between load, stress and soak testing?"
+    a: "A load test checks behaviour at expected traffic, such as peak hour, against response-time targets. A stress test pushes beyond capacity to find the breaking point and how the system fails and recovers. A soak test runs normal load for many hours to expose slow problems like memory leaks, connection pool exhaustion or growing queues."
+    k: ["!Defines load testing at expected traffic", "Defines stress testing beyond capacity", "Defines soak testing over a long duration for leaks"]
+    h: ["Which test would find a slow memory leak?"]
+    fu: ["What is a spike test?"]
+    m: "One load test covers all performance risks."
+    s: ["Three purposes", "Failure modes"]
+
+  perf_measure:
+    c: [performance_testing, observability]
+    d: core
+    t: practical
+    f: "reading latency percentiles"
+    q: "Your load test reports an average response time of 200 milliseconds and the team calls it a pass. What else do you look at?"
+    a: "Look at percentiles, especially p95 and p99, since averages hide slow requests; error rates and timeouts, since failed fast requests can flatter averages; throughput achieved versus target; and resource use on servers and databases. Make sure the test client was not the bottleneck and that test data and caching resemble production."
+    k: ["!Checks p95 and p99 rather than the average", "Checks errors, throughput and resource usage", "Validates the test setup, such as the client and data"]
+    h: ["How slow were the slowest one percent?"]
+    fu: ["How would cold caches change the results?"]
+    m: "A good average means a good user experience."
+    s: ["Tail latency", "Test validity"]
+
+  perf_bottleneck:
+    c: [performance_testing, troubleshooting]
+    d: hard
+    t: scenario
+    f: "finding the bottleneck"
+    q: "Throughput stops rising at 500 requests per second while CPU on the app servers is only 40 percent. Where would you look?"
+    a: "Something else saturates first. Check the database's CPU, connections and slow queries; connection pool and thread pool limits in the app; locks and contention; downstream services and their rate limits; network or load balancer limits; and the load generator itself. Tracing a slow request and watching pool wait times usually reveals the queue where requests pile up."
+    k: ["!Looks beyond app CPU to pools, database and downstream services", "Checks contention or locks", "Uses tracing or pool wait metrics to find the queue"]
+    h: ["Where are requests waiting?"]
+    fu: ["How would you prove the fix worked?"]
+    m: "Low CPU means the system can take more load."
+    s: ["Queue-finding", "Systematic list"]
+
+  sel_waits:
+    c: [selenium, test_automation]
+    d: core
+    t: debugging
+    f: "locators and waits"
+    q: "A Selenium test sometimes fails with element not found, though the element appears on screen. How do you fix it?"
+    a: "The script looks for the element before the page finishes rendering it. Replace fixed sleeps with explicit waits for a condition, such as the element being visible or clickable, and avoid relying on implicit waits mixed with explicit ones. Use stable locators such as data-test ids rather than long XPath, and wait for loading indicators to disappear."
+    k: ["!Identifies a timing race with page rendering", "Uses explicit condition-based waits instead of sleeps", "Uses stable locators like test ids"]
+    h: ["Is the element present at the moment the script looks?"]
+    fu: ["Why not mix implicit and explicit waits?"]
+    m: "A longer sleep fixes timing issues."
+    s: ["Condition waits", "Robust locators"]
+
+  sel_grid:
+    c: [selenium, ci_cd]
+    d: hard
+    t: design
+    f: "running in a grid"
+    q: "Your UI suite takes two hours in one browser. How would you run it faster across several browsers?"
+    a: "Make tests independent so they can run in parallel, each creating its own data. Run them on a Selenium Grid or a cloud browser service across many nodes and browsers, sharding the suite. Use headless browsers where acceptable, keep the most valuable flows on every browser and the rest on one, and collect videos and logs for failures."
+    k: ["!Makes tests independent for parallel runs", "Runs on a grid or cloud service with sharding", "Chooses which flows run on which browsers and collects artefacts"]
+    h: ["Can two tests run at once without interfering?"]
+    fu: ["What breaks when tests share one test account?"]
+    m: "Parallel runs work without changing tests."
+    s: ["Independence first", "Coverage strategy"]
+
+  sel_pom:
+    c: [selenium, code_quality_and_review]
+    d: intro
+    t: practical
+    f: "the page object model"
+    q: "How would you write a Selenium test for logging in that stays readable as the suite grows?"
+    a: "Create a LoginPage class that holds the locators and a login method that fills the fields and submits, returning the next page object. The test then reads like a story: open the login page, log in as a test user, assert the dashboard greeting. Locators change in one place, and tests describe behaviour rather than clicks."
+    k: ["!Wraps the page in a class with locators and actions", "Keeps tests as readable user steps", "Puts assertions in tests, locators in one place"]
+    h: ["What should the test know about the password field's selector?"]
+    fu: ["How would you handle a page with many components?"]
+    m: "Page objects make tests slower."
+    s: ["Readable tests", "Maintainability"]

@@ -29,11 +29,13 @@ from .contracts import (
     ConceptRole,
     ConceptWeight,
     DifficultyBand,
+    FollowUpTemplate,
     ItemStatus,
     KeyPoint,
     Modality,
     Provenance,
     Question,
+    QuestionType,
 )
 
 log = logging.getLogger(__name__)
@@ -130,6 +132,15 @@ def _parse(entry: dict, *, label: str, known: set[str]) -> Question:
         rubric_round_type=entry.get("rubric_round_type", round_types[0]),
         time_budget_s=entry.get("time_budget_s", 240),
         hint_ladder=entry.get("hint_ladder", []),
+        follow_ups=[
+            FollowUpTemplate(depth=min(5, i + 1), template=str(text))
+            for i, text in enumerate(entry.get("follow_ups") or [])
+            if isinstance(text, str)
+        ],
+        question_type=QuestionType(entry.get("question_type", "conceptual")),
+        facet=entry.get("facet"),
+        misconceptions=list(entry.get("misconceptions") or []),
+        strong_answer=list(entry.get("strong_answer") or []),
         status=ItemStatus(entry.get("status", "active")),
         # Seed items are hand-written by the team, which IS the human review
         # FR-5.6 requires. A `generated` item arriving through this path with
@@ -141,8 +152,77 @@ def _parse(entry: dict, *, label: str, known: set[str]) -> Question:
     )
 
 
+#: Seconds to answer, by difficulty, for a compact item that does not say.
+COMPACT_TIME = {"intro": 150, "easy": 180, "core": 240, "hard": 300, "stretch": 360}
+#: A design or project question is spoken longer, whatever its difficulty.
+COMPACT_TIME_BY_TYPE = {"design": 420, "project": 300, "coding": 300}
+
+
+def expand_compact(raw: dict) -> dict:
+    """A compact authoring file (`format: compact`) as the bank's own format.
+
+    Written so a reviewer reads one item in a few lines:
+
+        c: [react, javascript]     concepts, primary first ("concept:" implied)
+        d: core                    difficulty band
+        t: debugging               question type
+        f: hooks                   the facet (sub-competency) it is about
+        q: ...                     the stem, as spoken
+        a: ...                     a good reference answer
+        k: ["!...", "..."]         key points; a leading "!" marks a required one
+        h, fu, m, s                hints, follow-ups, misconceptions, strong-answer traits
+        r: [other_track]           more round types it may be asked under
+
+    Everything else (weights, ids, provenance) comes from the file's header, so
+    a file of drafted items cannot have one item claim to be curated.
+    """
+    track = raw["track"]
+    provenance = raw.get("provenance", "generated")
+    approved = bool(raw.get("scored_use_approved", False)) and provenance != "generated"
+    items: dict[str, dict] = {}
+    for label, item in (raw.get("items") or {}).items():
+        concepts = [c if c.startswith("concept:") else f"concept:{c}" for c in item["c"]]
+        kind = item.get("t", "conceptual")
+        band = item.get("d", "core")
+        items[label] = {
+            "stem": item["q"],
+            "modality": "verbal",
+            "round_types": [track, *item.get("r", [])],
+            "difficulty_band": band,
+            "time_budget_s": item.get(
+                "time", COMPACT_TIME_BY_TYPE.get(kind, COMPACT_TIME.get(band, 240))
+            ),
+            "concepts": [
+                {"id": c, "weight": 0.7 if i == 0 else 0.15} for i, c in enumerate(concepts[:3])
+            ],
+            "reference_answer": item["a"],
+            "key_points": [
+                {
+                    "id": f"kp_{n + 1}",
+                    "statement": kp.lstrip("!").strip(),
+                    "required": kp.startswith("!"),
+                }
+                for n, kp in enumerate(item.get("k") or [])
+            ],
+            "hint_ladder": list(item.get("h") or []),
+            "follow_ups": list(item.get("fu") or []),
+            "question_type": kind,
+            "facet": item.get("f"),
+            "misconceptions": (
+                [item["m"]] if isinstance(item.get("m"), str) else list(item.get("m") or [])
+            ),
+            "strong_answer": list(item.get("s") or []),
+            "provenance": provenance,
+            "scored_use_approved": approved,
+            "theta_eligible": approved,
+        }
+    return {"items": items}
+
+
 def load_file(path: Path, *, known: set[str]) -> list[Question]:
     raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    if raw.get("format") == "compact":
+        raw = expand_compact(raw)
     out = []
     for label, entry in (raw.get("items") or {}).items():
         question = _parse(entry, label=label, known=known)

@@ -1,0 +1,47 @@
+# =============================================================================
+#  GOAL BANK — cn_verbal, switching (2026-11-12, for M22 Follow Your Goal)
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: cn_verbal
+provenance: generated
+items:
+  sw_learning:
+    c: [switching_and_vlans, osi_and_tcp_ip_model]
+    d: intro
+    t: conceptual
+    f: "how a switch learns"
+    q: "How does a switch decide which port to send a frame out of?"
+    a: "A switch learns by reading the source MAC address of each incoming frame and recording which port it came from in its MAC address table. For each frame it looks up the destination MAC; if known, it forwards only out of that port, and if unknown or a broadcast, it floods the frame to all other ports in the VLAN. Entries age out over time."
+    k: ["!Learns source MAC addresses per port", "Forwards to the known port for a destination", "Floods unknown or broadcast frames within the VLAN"]
+    h: ["What does the switch learn from each frame's source address?"]
+    fu: ["What is MAC flooding as an attack?"]
+    m: "Switches route by IP address."
+    s: ["Learning and forwarding", "Flooding"]
+
+  sw_vlans:
+    c: [switching_and_vlans, network_security_basics]
+    d: core
+    t: design
+    f: "VLANs and trunks"
+    q: "An office wants guest Wi-Fi, staff laptops and IP cameras separated on the same switches. How would you do it?"
+    a: "Create a VLAN for each group, so each is its own broadcast domain, and assign access ports or SSIDs to the right VLAN. Links between switches and to the router become trunks carrying all VLANs with 802.1Q tags. Route between VLANs only where needed, with firewall rules — guests reach only the internet, cameras only the recorder."
+    k: ["!Uses a separate VLAN per group", "Uses 802.1Q trunks between switches and the router", "Controls inter-VLAN routing with firewall rules"]
+    h: ["Should a guest be able to reach a camera?"]
+    fu: ["What is VLAN hopping and how is it prevented?"]
+    m: "VLANs alone block all traffic between groups."
+    s: ["Segmentation", "Policy between VLANs"]
+
+  sw_stp_arp:
+    c: [switching_and_vlans, troubleshooting]
+    d: hard
+    t: debugging
+    f: "spanning tree"
+    q: "Someone connected a cable between two ports of the same switch network and the whole office network slowed to a halt. What happened?"
+    a: "The cable created a loop. Ethernet frames have no hop limit, so broadcasts circulate endlessly, multiplying into a broadcast storm that saturates links and corrupts MAC tables. Spanning Tree Protocol detects loops and blocks redundant ports; if it was disabled or misconfigured, the loop was not broken. Enable STP, with features like BPDU guard on access ports."
+    k: ["!Identifies a switching loop causing a broadcast storm", "Explains frames have no TTL so they circulate forever", "Uses spanning tree with protections such as BPDU guard"]
+    h: ["What stops a frame from looping forever?"]
+    fu: ["How does ARP depend on broadcasts?"]
+    m: "Loops only slow the two connected ports."
+    s: ["Mechanism", "Prevention"]

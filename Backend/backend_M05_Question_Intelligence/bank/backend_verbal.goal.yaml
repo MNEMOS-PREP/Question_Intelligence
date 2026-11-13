@@ -1,0 +1,745 @@
+# =============================================================================
+#  GOAL BANK — backend_verbal (2026-11-12, for M22 Follow Your Goal)
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: backend_verbal
+provenance: generated
+items:
+  api_resource_modelling:
+    c: [api_design, http_and_rest]
+    d: intro
+    t: design
+    f: "modelling resources"
+    q: "Design the REST endpoints for a library that lends books to members. What are the resources and which methods do you use?"
+    a: "The resources are books, members and loans. GET /books lists and filters, GET /books/{id} reads one, POST /books creates. A loan is its own resource, created with POST /loans and closed with PATCH /loans/{id} setting a return date, rather than a verb in the URL like /borrowBook. Nouns in paths, HTTP methods as the verbs, and plural collections keep the API predictable."
+    k: ["!Identifies books, members and loans as resources", "Uses HTTP methods as verbs instead of verbs in URLs", "Models the loan as its own resource"]
+    h: ["Is borrowing a thing you can list and look up?"]
+    fu: ["How would a member see their overdue loans?"]
+    m: "Every action needs its own endpoint verb."
+    s: ["Noun-based design", "Loan as a resource"]
+
+  api_status_codes:
+    c: [api_design, http_and_rest]
+    d: core
+    t: conceptual
+    f: "status codes and error contracts"
+    q: "Your API returns 200 with an error message in the body when validation fails. Why is that a problem, and what should it return?"
+    a: "Clients, proxies and monitoring rely on status codes; a 200 makes failures look like success, breaks retries and hides errors in dashboards. Validation failures should return 400 or 422 with a consistent error body naming the field and reason, 401 for missing authentication, 403 for not allowed, 404 for missing resources, 409 for conflicts and 5xx only for server faults."
+    k: ["!Says a 200 for an error misleads clients, caches and monitoring", "Gives the right codes for validation, auth, not found and conflict", "Proposes a consistent error body naming the field and reason"]
+    h: ["How does a monitoring dashboard count errors?"]
+    fu: ["When is 409 more accurate than 400?"]
+    m: "Status codes are only for browsers."
+    s: ["Precise code choices", "Error contract"]
+
+  api_pagination:
+    c: [api_design, indexing]
+    d: core
+    t: tradeoff
+    f: "pagination and filtering"
+    q: "Compare offset pagination with cursor pagination for an activity feed with millions of rows."
+    a: "Offset pagination, with page and limit, is simple and allows jumping to page 50, but the database still scans and skips every earlier row, so deep pages get slow, and inserts shift items so users see duplicates or gaps. Cursor pagination returns items after a stable key, such as created time plus id, using an index seek, so every page is fast and consistent while new items arrive. Feeds usually want cursors."
+    k: ["!Explains offset scans and skips rows, so deep pages are slow", "Notes offsets shift when items are inserted", "Explains cursors seek from a stable indexed key"]
+    h: ["What does the database do to reach offset 1,000,000?"]
+    fu: ["How do you build a cursor when two rows share a timestamp?"]
+    m: "Pagination is only about response size."
+    s: ["Performance and consistency", "Picks per use case"]
+
+  api_idempotency:
+    c: [api_design, distributed_systems_fundamentals]
+    d: hard
+    t: scenario
+    f: "idempotency"
+    q: "A mobile client retries a payment request after a timeout, and the customer is charged twice. How do you design the API so retries are safe?"
+    a: "Make the operation idempotent with an idempotency key. The client generates a unique key per payment attempt and sends it in a header; the server stores the key with the result in the same transaction as the charge, and a repeated request with the same key returns the stored result instead of charging again. Keys expire after a window, and conflicting bodies under one key are rejected."
+    k: ["!Proposes a client-generated idempotency key", "Stores the key and result atomically with the operation", "Returns the stored result on a retry instead of repeating it"]
+    h: ["How can the server tell a retry from a new payment?"]
+    fu: ["Which HTTP methods are idempotent by definition?"]
+    m: "Retries are safe if the client waits long enough."
+    s: ["Atomic storage of the key", "Handles mismatched bodies"]
+
+  api_versioning:
+    c: [api_design, microservices]
+    d: core
+    t: tradeoff
+    f: "versioning"
+    q: "You need to rename a field that old mobile app versions still read. How do you change the API without breaking them?"
+    a: "Make changes additive first: add the new field alongside the old one, have new clients read it, and keep returning both. Only remove the old field after usage metrics show old versions are gone, with a deprecation notice. For truly breaking changes, version the API by URL or header and run both versions for a while. Mobile clients cannot be updated instantly, so the deprecation window must be long."
+    k: ["!Adds the new field alongside the old one before removing anything", "Uses metrics and deprecation before removal", "Mentions URL or header versioning for breaking changes"]
+    h: ["Can you force every user to update the app today?"]
+    fu: ["What are the costs of URL versioning?"]
+    m: "Bumping the version number solves compatibility."
+    s: ["Expand then contract", "Data-driven removal"]
+
+  auth_session_vs_token:
+    c: [authentication, web_storage_and_cookies]
+    d: intro
+    t: tradeoff
+    f: "sessions versus tokens"
+    q: "Compare server-side sessions with stateless tokens for logging users in."
+    a: "With sessions, the server stores session data and gives the browser an opaque id in a cookie; revoking is easy because you delete the record, but every request needs a lookup in a shared store. Stateless tokens such as JWTs carry signed claims, so any server can verify them without a lookup, but they cannot be revoked before they expire unless you add a denylist, so they should be short-lived."
+    k: ["!Explains sessions store state on the server behind an opaque id", "Explains tokens carry signed claims verified without a lookup", "Names revocation as the key trade-off"]
+    h: ["How do you log someone out everywhere in each design?"]
+    fu: ["Why pair short-lived access tokens with refresh tokens?"]
+    m: "JWTs are more secure than sessions."
+    s: ["Revocation trade-off", "Scaling trade-off"]
+
+  auth_jwt_validation:
+    c: [authentication, applied_cryptography]
+    d: core
+    t: debugging
+    f: "JWT"
+    q: "A service decodes the JWT and trusts the role claim inside it. What checks are missing?"
+    a: "Decoding is not verifying. The service must verify the signature with the expected key and pin the algorithm so an attacker cannot switch to none or a symmetric key; check the expiry and not-before times; and check the issuer and audience so a token minted for another service is rejected. Only then may it read claims like the role."
+    k: ["!Says the signature must be verified, not just decoded", "Pins the algorithm against none or key-confusion attacks", "Checks expiry, issuer and audience"]
+    h: ["What stops someone editing the payload and re-encoding it?"]
+    fu: ["How do you rotate signing keys without logging everyone out?"]
+    m: "A JWT is encrypted, so its contents are secret."
+    s: ["Lists each check", "Knows the alg attack"]
+
+  auth_oauth_flow:
+    c: [authentication, https_and_tls]
+    d: hard
+    t: design
+    f: "OAuth 2.0 and OpenID Connect"
+    q: "Explain how 'Sign in with Google' works for a web app, and why the authorization code flow uses PKCE."
+    a: "The app redirects the user to Google with its client id, the scopes and a state value. After the user consents, Google redirects back with a short-lived authorization code; the app exchanges the code at the token endpoint for an ID token, which proves who the user is, and an access token. PKCE adds a secret verifier whose hash was sent at the start, so a stolen code cannot be exchanged by anyone else. The state value prevents CSRF on the callback."
+    k: ["!Describes redirect, consent, code, then exchanging the code for tokens", "Distinguishes the ID token from the access token", "Explains PKCE protects a stolen code and state protects against CSRF"]
+    h: ["What could an attacker do with an intercepted authorization code?"]
+    fu: ["Why not just return tokens in the redirect URL?"]
+    m: "OAuth is an authentication protocol on its own."
+    s: ["Ordered flow", "Explains both protections"]
+
+  auth_password_storage:
+    c: [authentication, applied_cryptography]
+    d: core
+    t: practical
+    f: "storing credentials"
+    q: "How should you store user passwords, and what is wrong with SHA-256 of the password?"
+    a: "Use a slow, salted password hashing function such as Argon2id or bcrypt with a per-user salt and tuned work factor. SHA-256 is designed to be fast, so an attacker with a leaked table can try billions of guesses per second on GPUs, and without a salt identical passwords share a hash and precomputed tables work. Also rate-limit login attempts and allow upgrading the hash parameters over time."
+    k: ["!Recommends a slow salted hash such as Argon2id or bcrypt", "Explains fast hashes allow huge guessing rates", "Explains salts defeat shared hashes and precomputed tables"]
+    h: ["How many guesses per second can a GPU make against SHA-256?"]
+    fu: ["How would you migrate existing SHA-256 hashes?"]
+    m: "Encrypting passwords is better than hashing them."
+    s: ["Names the right algorithm", "Explains speed as the weakness"]
+
+  auth_refresh_rotation:
+    c: [authentication, secure_coding]
+    d: hard
+    t: scenario
+    f: "refresh and revocation"
+    q: "A refresh token is stolen from a user's device. How does refresh-token rotation limit the damage?"
+    a: "With rotation, each refresh issues a new refresh token and invalidates the old one, and tokens in the same chain are tracked as a family. If the stolen token is used after the real user has already rotated it, or vice versa, the server sees an old token reused, treats it as theft and revokes the whole family, forcing a fresh login. Short lifetimes and binding tokens to the device reduce the window further."
+    k: ["!Explains each refresh replaces the token and invalidates the previous one", "Explains reuse of an old token signals theft and revokes the family", "Mentions short lifetimes or device binding"]
+    h: ["What happens when two parties hold the same refresh token?"]
+    fu: ["How do you revoke all sessions after a password change?"]
+    m: "Refresh tokens never need to change."
+    s: ["Reuse detection", "Family revocation"]
+
+  authz_rbac:
+    c: [authorization]
+    d: intro
+    t: design
+    f: "roles and permissions"
+    q: "Design access control for a hospital app where doctors, nurses and admins see different things."
+    a: "Define permissions as actions on resources, such as read patient record or prescribe medicine, then group them into roles: doctors can read and prescribe for their patients, nurses can read and record vitals, admins manage accounts but not clinical data. Users get roles; code checks permissions, not role names, so roles can change without code changes. Patient-specific rules, such as only your own patients, need checks on the record too."
+    k: ["!Separates permissions from roles that group them", "Checks permissions rather than hard-coded role names", "Adds record-level rules such as own patients only"]
+    h: ["Should code ask 'is a doctor' or 'may prescribe'?"]
+    fu: ["How would you handle an on-call doctor's temporary access?"]
+    m: "Roles alone handle every access rule."
+    s: ["Permission model", "Record-level checks"]
+
+  authz_idor:
+    c: [authorization, web_application_security]
+    d: core
+    t: debugging
+    f: "checking access on every request"
+    q: "Users can see other users' invoices by changing the id in /invoices/123. What went wrong, and how do you prevent it everywhere?"
+    a: "This is an insecure direct object reference: the endpoint checks that the user is logged in but not that the invoice belongs to them. Every request that loads a resource by id must check ownership or permission against the caller, ideally in one place such as a policy layer or a query scoped to the user, so a new endpoint cannot forget it. Unguessable ids help but are not access control."
+    k: ["!Names the missing ownership check (IDOR)", "Says every resource load must check the caller's access", "Centralises the check, noting random ids are not a fix"]
+    h: ["Does the code check who owns invoice 123?"]
+    fu: ["How would you test every endpoint for this?"]
+    m: "Using UUIDs instead of numbers fixes it."
+    s: ["Names the class of bug", "Systemic fix"]
+
+  authz_least_privilege:
+    c: [authorization, security_fundamentals]
+    d: hard
+    t: scenario
+    f: "least privilege in practice"
+    q: "A reporting service uses the same database account as the main app, with full write access. Why is that risky, and what would you change?"
+    a: "If the reporting service is compromised or buggy, it can modify or delete production data, because it holds far more access than it needs. Give it its own account with read-only access to only the tables or views it reports on, ideally against a replica, and separate credentials per service so access can be audited and revoked individually. The principle is least privilege: grant the minimum needed."
+    k: ["!Explains the blast radius of a compromised over-privileged service", "Proposes a separate read-only account limited to needed data", "Mentions per-service credentials for audit and revocation"]
+    h: ["What could a SQL injection in reporting do with write access?"]
+    fu: ["How would you manage these credentials safely?"]
+    m: "Internal services can be trusted with full access."
+    s: ["Blast-radius thinking", "Concrete scoping"]
+
+  cache_aside_stale:
+    c: [caching_strategies, redis]
+    d: core
+    t: debugging
+    f: "keeping a cache correct"
+    r: [system_design_verbal]
+    q: "After a user updates their profile, other pages keep showing the old name for minutes. The app uses cache-aside with Redis. What is happening?"
+    a: "With cache-aside, reads fill the cache from the database and the entry lives until its TTL expires. The update wrote to the database but did not invalidate or update the cached profile, so readers keep getting the old copy. Delete the cache key on write after the database commit, keep TTLs as a safety net, and be aware of the race where a slow read refills the cache with stale data right after the delete."
+    k: ["!Identifies the cache entry not being invalidated on update", "Proposes deleting or updating the key after the database write", "Mentions the TTL as a safety net or the read-refill race"]
+    h: ["What touches the cache when the profile is written?"]
+    fu: ["How does a delayed double delete address the race?"]
+    m: "A short TTL makes caches always correct."
+    s: ["Explains cache-aside", "Knows the race"]
+
+  cache_what_and_where:
+    c: [caching_strategies, http_and_rest]
+    d: intro
+    t: design
+    f: "what to cache and where"
+    r: [system_design_verbal]
+    q: "A news site is slow under load. Where in the stack could you add caching, and what would you cache at each layer?"
+    a: "At the browser, cache static assets with long-lived headers. At the CDN, cache article pages and images close to readers. In the application, cache expensive computed results such as the home page's top stories in Redis. In the database, rely on its buffer cache and add indexes. Each layer cuts load further back, and article pages that rarely change are ideal for edge caching."
+    k: ["!Names several layers: browser, CDN, application cache, database", "Matches content to each layer", "Notes rarely changing pages suit edge caching"]
+    h: ["Which content is the same for every reader?"]
+    fu: ["How would you cache a page that shows the reader's name?"]
+    m: "Caching only happens in Redis."
+    s: ["Layered view", "Content-aware"]
+
+  cache_stampede:
+    c: [caching_strategies, scalability]
+    d: hard
+    t: scenario
+    f: "expiry and eviction"
+    r: [system_design_verbal]
+    q: "A popular cache key expires and thousands of requests hit the database at once, which then falls over. How do you prevent this?"
+    a: "This is a cache stampede. Let only one request rebuild the value, using a lock or single-flight, while others wait or serve the stale value. Refresh hot keys before they expire, add random jitter to TTLs so keys do not expire together, and use stale-while-revalidate so readers get the old value during the rebuild. Load shedding protects the database if all else fails."
+    k: ["!Names the stampede and lets only one request rebuild", "Uses early refresh or TTL jitter", "Serves stale data while revalidating"]
+    h: ["How many requests need to recompute the same value?"]
+    fu: ["How would you do single-flight across many servers?"]
+    m: "A bigger database fixes stampedes."
+    s: ["Several layered defences", "Stale-while-revalidate"]
+
+  mq_delivery_guarantees:
+    c: [message_queues, distributed_systems_fundamentals]
+    d: core
+    t: conceptual
+    f: "delivery guarantees"
+    q: "Your queue promises at-least-once delivery. What does that mean for the consumer you write?"
+    a: "The broker will redeliver a message if it is not acknowledged, for example after a consumer crash or timeout, so the same message can arrive more than once. The consumer must therefore be idempotent: record processed message ids, use upserts or conditional updates, and acknowledge only after the work is committed. Exactly-once end to end needs this idempotency, not just a broker setting."
+    k: ["!Says the same message can be delivered more than once", "Requires an idempotent consumer, such as tracking processed ids", "Acknowledges only after the work is committed"]
+    h: ["What happens if the consumer crashes after doing the work but before acking?"]
+    fu: ["When would you accept at-most-once instead?"]
+    m: "At-least-once means no duplicates."
+    s: ["Consumer idempotency", "Ack ordering"]
+
+  mq_dead_letter:
+    c: [message_queues, observability]
+    d: core
+    t: scenario
+    f: "retries and dead letters"
+    q: "One malformed message keeps failing and blocks the queue behind it. How should retries and failures be handled?"
+    a: "Retry transient failures a limited number of times with exponential backoff, then move the message to a dead-letter queue instead of retrying forever, so the rest of the queue keeps flowing. Alert on the dead-letter queue, keep the error with the message, and provide a way to inspect, fix and replay messages. Validation failures that can never succeed should go straight to the dead-letter queue."
+    k: ["!Limits retries with backoff", "Moves poison messages to a dead-letter queue", "Monitors and allows replay after fixing"]
+    h: ["Will retrying a malformed message ever succeed?"]
+    fu: ["How would you replay dead-lettered messages safely?"]
+    m: "Infinite retries guarantee processing."
+    s: ["Separates transient from permanent", "Operational follow-up"]
+
+  mq_ordering:
+    c: [message_queues, kafka]
+    d: hard
+    t: tradeoff
+    f: "ordering"
+    q: "Order events for the same order id must be processed in sequence, but you need many consumers for throughput. How do you get both?"
+    a: "Partition by order id so all events for one order go to the same partition, which is processed by one consumer at a time and keeps its order, while different orders spread across partitions and consumers in parallel. Global ordering is given up, which is fine because only per-order order matters. Retries must not reorder messages within a partition, and hot keys can limit throughput."
+    k: ["!Partitions by order id so each key's events stay in one ordered stream", "Gets parallelism across partitions", "Notes global order is sacrificed and hot keys or retries can hurt"]
+    h: ["Does order matter across different orders?"]
+    fu: ["What happens to ordering when you add partitions?"]
+    m: "More consumers on one queue keeps ordering."
+    s: ["Ordering scope", "Knows the costs"]
+
+  ms_boundaries:
+    c: [microservices, data_modelling]
+    d: core
+    t: design
+    f: "drawing a service boundary"
+    q: "How would you decide where to split a growing e-commerce monolith into services?"
+    a: "Split along business capabilities with their own data and language, such as catalogue, ordering, payments and shipping, so each service can change and deploy without coordinating with others. Look for parts with different scaling needs, owners or release cadence, and keep chatty, tightly coupled parts together. Splitting by technical layer, such as a separate database service, creates a distributed monolith."
+    k: ["!Splits by business capability owning its data", "Uses signals like team ownership, scaling or release cadence", "Warns against layer-based splits creating a distributed monolith"]
+    h: ["Which parts change together for the same reason?"]
+    fu: ["How do you split the database without downtime?"]
+    m: "Smaller services are always better."
+    s: ["Domain-driven boundaries", "Names the anti-pattern"]
+
+  ms_monolith_first:
+    c: [microservices, high_level_design]
+    d: hard
+    t: tradeoff
+    f: "when a monolith is the better answer"
+    q: "A three-person startup wants to start with twelve microservices. What would you tell them?"
+    a: "Microservices trade code complexity for operational complexity: network calls, distributed failures, separate deployments, monitoring and data consistency. A small team with an unclear domain pays all of that without the benefit of independent teams. A well-structured modular monolith is faster to build and change, and its modules can become services later once boundaries and scaling needs are proven."
+    k: ["!Names the operational costs of microservices", "Argues a small team gains little independence from them", "Recommends a modular monolith that can be split later"]
+    h: ["What problem do microservices solve for large organisations?"]
+    fu: ["What signals would tell them it is time to split?"]
+    m: "Microservices are the modern default."
+    s: ["Cost-benefit reasoning", "Evolutionary path"]
+
+  ms_data_ownership:
+    c: [microservices, transactions_acid]
+    d: hard
+    t: scenario
+    f: "who owns which data"
+    q: "The orders service reads the inventory service's database directly to check stock. Why is that a problem?"
+    a: "Sharing a database couples the services: inventory cannot change its schema without breaking orders, the two cannot be scaled or deployed independently, and data rules can be bypassed. Each service should own its data and expose it through an API or events. Orders can call the inventory API, or keep a local read model updated from inventory events, accepting eventual consistency and reserving stock through a saga."
+    k: ["!Explains shared databases couple schema, deployment and rules", "Says each service owns its data behind an API or events", "Mentions a read model or saga with eventual consistency"]
+    h: ["What happens when inventory renames a column?"]
+    fu: ["How would you reserve stock across services without a distributed transaction?"]
+    m: "Reading another service's database is fine if it is read-only."
+    s: ["Ownership principle", "Concrete alternative"]
+
+  ms_communication:
+    c: [microservices, message_queues]
+    d: core
+    t: tradeoff
+    f: "how services talk"
+    q: "When should one service call another synchronously, and when should it publish an event?"
+    a: "Call synchronously when the caller needs an answer right now to continue, such as checking a payment authorisation. Publish an event when other services only need to react to something that happened, such as an order placed, so the publisher does not depend on them being up and new consumers can subscribe later. Long synchronous chains multiply latency and failure, so prefer events for fan-out."
+    k: ["!Uses synchronous calls when an immediate answer is needed", "Uses events for reactions that need not block the caller", "Notes synchronous chains multiply latency and failure"]
+    h: ["Does checkout need to wait for the email service?"]
+    fu: ["How do you handle a failed synchronous call?"]
+    m: "Events are always better than calls."
+    s: ["Dependency reasoning", "Failure awareness"]
+
+  ms_api_gateway:
+    c: [microservices, api_design]
+    d: intro
+    t: conceptual
+    f: "the API gateway"
+    q: "What does an API gateway do in a microservice system, and what should it not do?"
+    a: "The gateway is the single entry point for clients: it routes requests to services, terminates TLS, authenticates, rate-limits and can aggregate responses for a client. It should not hold business logic, because then every change needs a gateway release and it becomes a shared bottleneck owned by no team. Keep it thin and push domain rules into the services."
+    k: ["!Describes routing, authentication and rate limiting at one entry point", "Mentions aggregation or TLS termination", "Warns against putting business logic in it"]
+    h: ["What happens when every team needs to change the gateway?"]
+    fu: ["When is a backend-for-frontend useful?"]
+    m: "The gateway replaces service-level security."
+    s: ["Clear responsibilities", "Knows the anti-pattern"]
+
+  eda_events_vs_commands:
+    c: [event_driven_architecture, message_queues]
+    d: core
+    t: conceptual
+    f: "events versus commands"
+    r: [system_design_verbal]
+    q: "What is the difference between an event and a command in an event-driven system?"
+    a: "A command asks a specific service to do something, such as ReserveStock, and may be rejected; it has one intended handler. An event announces a fact that already happened, such as OrderPlaced, in the past tense, and any number of services may react without the publisher knowing who they are. Mixing them up couples publishers to consumers."
+    k: ["!Says a command asks one handler to act and can be refused", "Says an event states a past fact for any number of subscribers", "Notes the coupling difference"]
+    h: ["Can an event be rejected?"]
+    fu: ["How would you name each for a refund flow?"]
+    m: "Events and commands are just different names for messages."
+    s: ["Intent versus fact", "Coupling"]
+
+  eda_outbox:
+    c: [event_driven_architecture, transactions_acid]
+    d: hard
+    t: design
+    f: "the outbox pattern"
+    r: [system_design_verbal]
+    q: "A service saves an order and then publishes OrderPlaced, but sometimes the publish fails and other services never hear about it. How do you fix this?"
+    a: "Saving to the database and publishing to the broker are two systems, so one can succeed without the other. With the outbox pattern, the service writes the order and an outbox row describing the event in the same database transaction; a separate relay reads unsent outbox rows and publishes them, marking them sent. Publishing becomes at-least-once, so consumers must be idempotent."
+    k: ["!Explains the dual-write problem between database and broker", "Writes the event to an outbox table in the same transaction", "A relay publishes later, requiring idempotent consumers"]
+    h: ["What if the process crashes between the commit and the publish?"]
+    fu: ["How does change data capture compare with polling the outbox?"]
+    m: "Publishing before committing solves it."
+    s: ["Names the dual write", "Delivery semantics"]
+
+  eda_eventual_consistency:
+    c: [event_driven_architecture, consistency_models]
+    d: core
+    t: scenario
+    f: "eventual consistency between services"
+    r: [system_design_verbal]
+    q: "After placing an order, a user immediately opens order history and does not see it, because history is built from events. How do you handle this?"
+    a: "The history view is eventually consistent: it updates when the event is processed, usually within moments. The UI can show the new order optimistically from the response it already has, or read its own writes from the source service briefly, and indicate that some data may take a moment. Measure and alert on the lag so it stays small."
+    k: ["!Names eventual consistency in a read model", "Proposes optimistic UI or read-your-writes", "Monitors the lag"]
+    h: ["What does the client already know right after placing the order?"]
+    fu: ["When is eventual consistency unacceptable?"]
+    m: "Eventual consistency means data can be lost."
+    s: ["User-facing fix", "Operational fix"]
+
+  eda_event_sourcing:
+    c: [event_driven_architecture, data_modelling]
+    d: hard
+    t: tradeoff
+    f: "event sourcing"
+    r: [system_design_verbal]
+    q: "What is event sourcing, and when is it worth its complexity?"
+    a: "Instead of storing current state, you store every change as an immutable event and rebuild state by replaying them, often with snapshots. You gain a full audit trail, the ability to rebuild new read models and to answer how something got here, which suits banking ledgers or compliance-heavy domains. The cost is complexity: schema evolution of old events, replay times, and harder ad-hoc queries, so most systems do not need it."
+    k: ["!Stores changes as immutable events and rebuilds state by replay", "Names benefits like audit trail and new read models", "Names costs such as event versioning and query difficulty"]
+    h: ["What does a bank statement have in common with this?"]
+    fu: ["How do you change the shape of an event already stored?"]
+    m: "Event sourcing is required for event-driven systems."
+    s: ["Balanced trade-off", "Knows when not to"]
+
+  rl_algorithms:
+    c: [rate_limiting, hashing]
+    d: core
+    t: conceptual
+    f: "token bucket and sliding window"
+    r: [system_design_verbal]
+    q: "Explain the token bucket algorithm for rate limiting and why it allows short bursts."
+    a: "Each client has a bucket that holds up to N tokens and refills at a steady rate. Each request takes a token; if the bucket is empty, the request is rejected or delayed. Because a full bucket holds several tokens, a client can briefly send a burst up to the bucket size, while the long-run rate is capped by the refill rate. Sliding windows count requests in a moving time window instead and allow fewer bursts."
+    k: ["!Describes tokens refilling at a fixed rate up to a capacity", "Explains bursts come from a full bucket", "Contrasts with a sliding window counter"]
+    h: ["What is in the bucket after a quiet minute?"]
+    fu: ["How would you return the time until the next allowed request?"]
+    m: "Rate limiting means rejecting every request above the average rate instantly."
+    s: ["Two parameters explained", "Compares algorithms"]
+
+  rl_distributed:
+    c: [rate_limiting, redis]
+    d: hard
+    t: design
+    f: "limiting across many servers"
+    r: [system_design_verbal]
+    q: "Your API runs on twenty servers behind a load balancer. How do you enforce a limit of 100 requests per minute per user across all of them?"
+    a: "Per-server counters would allow up to two thousand, so the counter must be shared. Keep it in Redis, using an atomic increment with an expiry or a Lua script implementing a sliding window or token bucket, keyed by user. Handle Redis being slow or down by failing open or falling back to local limits, and return 429 with Retry-After. For very high volume, local buckets synced periodically trade accuracy for speed."
+    k: ["!Says per-server counters do not add up to a global limit", "Uses a shared atomic counter, such as Redis with a script", "Decides how to behave when the store fails and returns 429"]
+    h: ["What does each server know about the others' counts?"]
+    fu: ["Fail open or fail closed — which would you choose for login?"]
+    m: "The load balancer spreads requests, so local limits are enough."
+    s: ["Atomicity", "Failure mode decision"]
+
+  rl_where:
+    c: [rate_limiting, microservices]
+    d: intro
+    t: tradeoff
+    f: "where to enforce a limit"
+    q: "Where should rate limiting live — at the gateway, in each service, or both?"
+    a: "The gateway is the cheapest place to reject abusive traffic early, by IP, API key or user, before it costs anything downstream. Services still need their own limits on expensive operations or downstream dependencies, because internal callers bypass the gateway and some limits depend on business data, such as one OTP per minute per phone. Usually both, each for a different purpose."
+    k: ["!Uses the gateway for early, coarse limits", "Keeps service-level limits for expensive or business-specific operations", "Notes internal traffic bypasses the gateway"]
+    h: ["Does internal traffic pass through the gateway?"]
+    fu: ["How would you rate-limit OTP requests?"]
+    m: "One rate limit at the edge is enough."
+    s: ["Layered limits", "Business-aware"]
+
+  gql_n_plus_one:
+    c: [graphql, query_optimisation]
+    d: core
+    t: debugging
+    f: "the N+1 problem"
+    q: "A GraphQL query for fifty posts with their authors makes fifty-one database queries. Why, and how do you fix it?"
+    a: "Each field has its own resolver, so the author resolver runs once per post and queries the database each time: one query for the posts plus one per author. A DataLoader batches all author ids requested in the same tick into one query and caches them per request, turning fifty-one queries into two. Join-aware resolvers or query planning are alternatives."
+    k: ["!Explains per-field resolvers run once per item", "Proposes batching with a DataLoader", "Mentions per-request caching"]
+    h: ["How many times does the author resolver run?"]
+    fu: ["Why must the DataLoader cache be per request?"]
+    m: "GraphQL removes the N+1 problem automatically."
+    s: ["Names the cause", "Correct tool"]
+
+  gql_vs_rest:
+    c: [graphql, api_design]
+    d: intro
+    t: tradeoff
+    f: "GraphQL versus REST"
+    q: "When would you choose GraphQL over REST for a new API?"
+    a: "GraphQL suits clients with varied data needs, such as several mobile and web screens, because each asks for exactly the fields it needs in one request and the schema is strongly typed. REST is simpler to cache with HTTP, easier to rate-limit by endpoint and has less tooling overhead, which suits public APIs and simple CRUD. GraphQL moves complexity to the server: query cost limits, N+1 and caching need work."
+    k: ["!Says GraphQL fits many clients with differing data needs", "Says REST is simpler to cache and operate", "Names GraphQL's server-side costs"]
+    h: ["How many different screens consume this API?"]
+    fu: ["How would you stop a malicious deeply nested query?"]
+    m: "GraphQL is always faster than REST."
+    s: ["Client-driven reasoning", "Costs named"]
+
+  gql_caching:
+    c: [graphql, caching_strategies]
+    d: hard
+    t: practical
+    f: "caching GraphQL"
+    q: "HTTP caching barely works for your GraphQL API because everything is a POST to one URL. How do you cache it?"
+    a: "Use persisted queries sent as GET with a query hash so CDNs can cache public results by URL. Cache inside the server at the resolver or data-loader level for expensive lookups. On the client, normalised caches such as Apollo's store entities by type and id so one fetched user updates every view. Responses that depend on the user must not be shared-cached."
+    k: ["!Proposes persisted queries over GET for CDN caching", "Caches at the resolver or data layer on the server", "Uses a normalised client cache, respecting per-user data"]
+    h: ["What does a CDN key its cache on?"]
+    fu: ["How would you invalidate a cached entity after a mutation?"]
+    m: "GraphQL cannot be cached."
+    s: ["Several layers", "Privacy-aware"]
+
+  node_event_loop_block:
+    c: [nodejs_express, javascript]
+    d: core
+    t: debugging
+    f: "the Node event loop"
+    q: "A Node API becomes unresponsive for all users whenever one user uploads a large CSV that you parse and process. Why?"
+    a: "Node runs JavaScript on a single thread. Parsing and processing the whole CSV synchronously blocks the event loop, so no other request's callbacks can run until it finishes. Stream the file and process it in chunks, move CPU-heavy work to worker threads or a background job queue, and avoid synchronous APIs like readFileSync in request handlers."
+    k: ["!Explains one blocked JavaScript thread stalls every request", "Proposes streaming or chunked processing", "Moves CPU work to worker threads or a background queue"]
+    h: ["How many JavaScript threads serve requests?"]
+    fu: ["How would you detect event-loop lag in production?"]
+    m: "Node is asynchronous, so it can never block."
+    s: ["Single-thread model", "Right offloading"]
+
+  node_middleware_order:
+    c: [nodejs_express, authentication]
+    d: intro
+    t: debugging
+    f: "middleware"
+    q: "An Express app logs requests, checks authentication and parses JSON bodies, but req.body is undefined in the auth check. What is wrong?"
+    a: "Express runs middleware in the order it is registered. The auth middleware runs before express.json(), so the body has not been parsed yet when auth reads it. Register the JSON parser before middleware that needs the body, and remember each middleware must call next() or send a response, otherwise the request hangs."
+    k: ["!Says middleware runs in registration order", "Moves the body parser before the auth check", "Notes middleware must call next or respond"]
+    h: ["Which middleware fills in req.body?"]
+    fu: ["How do you apply middleware to only some routes?"]
+    m: "Middleware order does not matter in Express."
+    s: ["Order model", "Mentions next()"]
+
+  node_async_errors:
+    c: [nodejs_express, exception_handling]
+    d: core
+    t: practical
+    f: "async error handling"
+    q: "An async Express route throws inside an awaited call and the request hangs, then the process logs an unhandled rejection. How should errors be handled?"
+    a: "Express 4 does not catch rejected promises from async handlers, so the error never reaches the error middleware and no response is sent. Wrap async handlers to pass errors to next, use Express 5 which forwards rejections, or try-catch and call next(err). Then a single error-handling middleware with four arguments turns errors into consistent responses and logs them, without leaking stack traces."
+    k: ["!Explains rejected promises bypass Express 4 error handling", "Proposes wrapping handlers, Express 5 or calling next(err)", "Centralises responses in error middleware without leaking details"]
+    h: ["Who catches a rejected promise in an Express 4 route?"]
+    fu: ["Should the process exit on an unhandled rejection?"]
+    m: "A global try-catch around app.listen catches route errors."
+    s: ["Knows the Express 4 gap", "Central handler"]
+
+  node_streams:
+    c: [nodejs_express, memory_management]
+    d: hard
+    t: optimisation
+    f: "streams"
+    q: "An endpoint that exports a two-gigabyte report crashes the Node process with out-of-memory. How would you rewrite it?"
+    a: "Building the whole report in memory, then sending it, holds two gigabytes at once. Instead stream it: read rows from the database with a cursor, transform them into CSV lines with a transform stream, and pipe into the response. Pipeline handles backpressure, pausing the source when the client reads slowly, and propagates errors. Memory stays flat regardless of report size."
+    k: ["!Identifies holding the whole report in memory", "Streams from a database cursor through a transform into the response", "Mentions backpressure or pipeline error handling"]
+    h: ["How much of the report do you need in memory at once?"]
+    fu: ["What happens if the client disconnects halfway?"]
+    m: "Raising the heap limit solves it."
+    s: ["End-to-end streaming", "Backpressure"]
+
+  node_structure:
+    c: [nodejs_express, code_quality_and_review]
+    d: core
+    t: design
+    f: "structuring an Express service"
+    q: "Your Express app is one 3000-line file. How would you structure it as it grows?"
+    a: "Separate routes, which only parse input and shape responses, from services holding business logic and repositories handling data access. Group by feature, such as orders and users, rather than by file type. Validate input at the edge with a schema, configure through environment variables, and keep the app factory separate from server start-up so tests can create the app without listening on a port."
+    k: ["!Separates routing, business logic and data access", "Organises by feature", "Mentions validation, config or a testable app factory"]
+    h: ["What would you need to mock to test the order rules?"]
+    fu: ["Where would transactions spanning two repositories live?"]
+    m: "Structure only matters for large teams."
+    s: ["Layered design", "Testability"]
+
+  nest_di:
+    c: [nestjs, typescript]
+    d: core
+    t: conceptual
+    f: "dependency injection"
+    q: "How does dependency injection work in NestJS, and how does it help testing?"
+    a: "Classes are marked as providers and registered in a module; Nest's container reads constructor parameter types and creates and injects instances, singletons by default. Code depends on injected collaborators rather than creating them, so in a test you build a testing module and override a provider with a fake, such as an in-memory repository, without touching the class under test."
+    k: ["!Explains providers registered in modules and injected by constructor type", "Says instances are singletons by default", "Shows overriding a provider with a fake in tests"]
+    h: ["Who creates the repository your service needs?"]
+    fu: ["When would you use a request-scoped provider?"]
+    m: "Dependency injection is just a design pattern name for imports."
+    s: ["Container mechanics", "Testing benefit"]
+
+  nest_guards_pipes:
+    c: [nestjs, authorization]
+    d: core
+    t: practical
+    f: "guards pipes and interceptors"
+    q: "In NestJS, where would you put authentication, input validation and response logging, and why there?"
+    a: "Guards decide whether a request may proceed, so authentication and role checks belong there, before the handler. Pipes transform and validate input, so a ValidationPipe with DTO classes rejects bad bodies with a 400. Interceptors wrap the handler before and after, which fits logging, timing and response mapping. Each runs at a defined point, so concerns stay out of controllers."
+    k: ["!Puts authentication and authorization in guards", "Puts validation and transformation in pipes", "Puts logging or mapping in interceptors"]
+    h: ["Which piece runs before the handler and can say no?"]
+    fu: ["In what order do guards, interceptors and pipes run?"]
+    m: "Everything belongs in the controller."
+    s: ["Correct placement", "Knows the request lifecycle"]
+
+  nest_modules:
+    c: [nestjs, microservices]
+    d: hard
+    t: design
+    f: "modules providers and controllers"
+    q: "Two NestJS modules each import the other and the app fails to start with a circular dependency. How do you resolve it properly?"
+    a: "A circular import signals that the boundary is wrong: the modules depend on each other's internals. Extract the shared part into a third module both import, or invert the dependency so one module publishes events the other listens to. forwardRef works around it but leaves the coupling in place, so treat it as a last resort."
+    k: ["!Treats the cycle as a boundary problem", "Extracts the shared logic into a third module or uses events", "Calls forwardRef a workaround, not a fix"]
+    h: ["What does each module need from the other?"]
+    fu: ["How would you decide what a module exports?"]
+    m: "forwardRef is the correct fix."
+    s: ["Root-cause fix", "Knows the escape hatch"]
+
+  spring_beans:
+    c: [spring_boot, java_language]
+    d: intro
+    t: conceptual
+    f: "dependency injection and beans"
+    q: "What is a Spring bean, and why is constructor injection preferred over field injection?"
+    a: "A bean is an object whose lifecycle Spring's container manages: it is created, wired with its dependencies and usually a singleton. Constructor injection makes dependencies explicit and required, allows final fields, and lets you create the class in a plain unit test with fakes. Field injection hides dependencies, needs reflection and makes the class unusable without the container."
+    k: ["!Defines a bean as a container-managed object", "Says constructor injection makes dependencies explicit and testable", "Notes field injection hides dependencies and needs the container"]
+    h: ["How would you create the class in a test without Spring?"]
+    fu: ["What problem arises with singleton beans holding state?"]
+    m: "Every bean is created per request."
+    s: ["Lifecycle", "Testability"]
+
+  spring_transactional:
+    c: [spring_boot, transactions_acid]
+    d: hard
+    t: debugging
+    f: "transactions"
+    q: "A method annotated @Transactional is called from another method in the same class, and its changes are not rolled back on error. Why?"
+    a: "Spring applies @Transactional through a proxy around the bean. A call from another method of the same class is a self-invocation that goes straight to the object, bypassing the proxy, so no transaction is started. Also, by default only unchecked exceptions trigger rollback. Fix by moving the method to another bean, calling through the proxy, or using programmatic transactions, and set rollbackFor if checked exceptions should roll back."
+    k: ["!Explains @Transactional works through a proxy", "Says self-invocation bypasses the proxy", "Mentions rollback defaults for checked exceptions"]
+    h: ["Does a call to this.method go through the Spring proxy?"]
+    fu: ["What does propagation REQUIRES_NEW do?"]
+    m: "The annotation works on any method call."
+    s: ["Proxy mechanism", "Rollback rules"]
+
+  spring_jpa_n_plus_one:
+    c: [spring_boot, query_optimisation]
+    d: core
+    t: optimisation
+    f: "Spring Data and JPA"
+    q: "Listing 100 orders with their customers runs 101 SQL queries in a Spring Data JPA app. Why, and how do you fix it?"
+    a: "The customer relation is loaded lazily, so accessing it for each order triggers a separate select — the N+1 problem. Fetch the association in the same query with a JOIN FETCH or an entity graph, or use a DTO projection that selects exactly the needed columns. Turn on SQL logging to confirm, and beware of fetching collections with pagination."
+    k: ["!Identifies lazy loading causing one query per order", "Proposes JOIN FETCH, an entity graph or a projection", "Confirms with SQL logging"]
+    h: ["When does Hibernate load the customer?"]
+    fu: ["Why is JOIN FETCH with pagination of a collection risky?"]
+    m: "Switching everything to eager loading fixes it."
+    s: ["Diagnoses", "Targeted fetch"]
+
+  spring_controller_validation:
+    c: [spring_boot, api_design]
+    d: core
+    t: practical
+    f: "REST controllers"
+    q: "How would you build a Spring Boot endpoint that creates a user, validates the input and returns clean errors?"
+    a: "A @RestController with a @PostMapping that accepts a request DTO marked @Valid, with Bean Validation annotations such as @NotBlank and @Email on its fields. The service does the work and the controller returns 201 with the created resource. A @RestControllerAdvice maps validation exceptions to a 400 response listing each field error, and maps domain exceptions such as duplicate email to 409."
+    k: ["!Uses a request DTO with @Valid and validation annotations", "Returns 201 with the created resource", "Uses @RestControllerAdvice to map errors to clean responses"]
+    h: ["Where would you turn exceptions into JSON errors once?"]
+    fu: ["Why not accept the JPA entity directly as the request body?"]
+    m: "Validation belongs in the database only."
+    s: ["DTO boundary", "Central error mapping"]
+
+  spring_security_basics:
+    c: [spring_boot, authorization]
+    d: hard
+    t: design
+    f: "Spring Security"
+    q: "How would you secure a Spring Boot REST API with JWTs and role-based endpoints?"
+    a: "Configure a SecurityFilterChain as an OAuth2 resource server that validates JWT signatures, expiry and issuer, makes the API stateless with no session, and maps a roles claim to granted authorities. Then authorise with requestMatchers rules or method security such as @PreAuthorize(\"hasRole('ADMIN')\"). Keep CSRF disabled only for a stateless token API, and add ownership checks in services for record-level access."
+    k: ["!Configures a filter chain that validates JWTs statelessly", "Maps claims to authorities and authorises by role", "Adds record-level checks beyond roles"]
+    h: ["Where in the request does Spring check the token?"]
+    fu: ["Why is CSRF protection unnecessary for a pure bearer-token API?"]
+    m: "Annotating controllers is enough without configuring the filter chain."
+    s: ["End-to-end config", "Beyond roles"]
+
+  django_orm_queries:
+    c: [django, query_optimisation]
+    d: core
+    t: optimisation
+    f: "models and the ORM"
+    q: "A Django view listing books with their authors and genres is slow and runs hundreds of queries. What do you do?"
+    a: "Each access to a related object triggers a query. Use select_related for foreign keys, which joins them in one query, and prefetch_related for many-to-many relations, which runs one extra query per relation and joins in Python. Use only or values when you need few fields, and confirm with the debug toolbar or query logging."
+    k: ["!Names select_related for foreign keys", "Names prefetch_related for many-to-many", "Confirms with query logging or the debug toolbar"]
+    h: ["How many queries does accessing book.author run?"]
+    fu: ["When is prefetch_related better than select_related?"]
+    m: "The Django ORM always writes optimal SQL."
+    s: ["Right tool per relation", "Measures"]
+
+  django_request_cycle:
+    c: [django, http_and_rest]
+    d: intro
+    t: conceptual
+    f: "the request cycle and middleware"
+    q: "Walk me through what happens when a request hits a Django application."
+    a: "The WSGI or ASGI server passes the request to Django, which runs it through middleware in order — sessions, authentication, CSRF and so on. The URL resolver matches the path to a view, the view uses models and returns a response, often by rendering a template or serialising data, and the response passes back through the middleware in reverse order before going to the client."
+    k: ["!Mentions the WSGI or ASGI entry point", "Describes middleware wrapping the request and response", "Describes URL routing to a view that returns a response"]
+    h: ["Which component decides which view handles the path?"]
+    fu: ["Where would you add request timing?"]
+    m: "Middleware only runs on the way in."
+    s: ["Ordered flow", "Reverse response path"]
+
+  django_drf_design:
+    c: [django, api_design]
+    d: core
+    t: design
+    f: "Django REST framework"
+    q: "How would you expose an Order model through Django REST Framework so users only see their own orders?"
+    a: "Write an OrderSerializer for the fields, and a ModelViewSet whose get_queryset filters orders by request.user, so list and detail can never return someone else's order. Add IsAuthenticated permission, and an object-level permission for extra rules. Register it with a router, add pagination and filtering, and set the user automatically in perform_create rather than accepting it from the request."
+    k: ["!Filters the queryset by the requesting user", "Uses serializers and a viewset with permissions", "Sets the owner on create instead of trusting input"]
+    h: ["Where can you guarantee a user never sees another's order?"]
+    fu: ["How would you add an admin view of all orders?"]
+    m: "Hiding the id field is enough to protect orders."
+    s: ["Scoped queryset", "Server-set owner"]
+
+  fastapi_pydantic:
+    c: [fastapi, python_language]
+    d: intro
+    t: conceptual
+    f: "path operations and Pydantic models"
+    q: "How does FastAPI use type hints and Pydantic models, and what do you get for free from them?"
+    a: "FastAPI reads the type hints of a path operation's parameters: path and query parameters are converted and validated, and a Pydantic model parameter becomes a validated JSON body. Invalid input returns a 422 with field-level errors automatically, the response model filters output, and the same types generate the OpenAPI schema and interactive docs."
+    k: ["!Explains type hints drive parsing and validation", "Says invalid input gets an automatic 422 with field errors", "Mentions response models and generated OpenAPI docs"]
+    h: ["What happens if a client sends a string where an int is expected?"]
+    fu: ["How would you stop a password hash leaking in responses?"]
+    m: "Type hints in Python are never checked at runtime."
+    s: ["Validation and docs", "Response filtering"]
+
+  fastapi_async_block:
+    c: [fastapi, concurrency_synchronisation]
+    d: hard
+    t: debugging
+    f: "async endpoints"
+    q: "An async def FastAPI endpoint calls a slow synchronous database driver, and the whole server stalls under load. Why?"
+    a: "async def endpoints run on the event loop, so a blocking call inside one freezes the loop and every other request waits. Either declare the endpoint with plain def, which FastAPI runs in a thread pool, use an async driver and await it, or offload the blocking call with run_in_threadpool. CPU-heavy work should go to a worker process or a task queue."
+    k: ["!Explains blocking calls inside async def block the event loop", "Proposes plain def, an async driver or a thread pool", "Moves CPU-heavy work to workers"]
+    h: ["Which thread runs an async def endpoint?"]
+    fu: ["Why can plain def endpoints be safer for beginners?"]
+    m: "async def always makes endpoints faster."
+    s: ["Event-loop model", "Correct fixes"]
+
+  fastapi_depends:
+    c: [fastapi, authentication]
+    d: core
+    t: practical
+    f: "dependency injection"
+    q: "How would you use FastAPI's Depends to provide a database session and the current user to many endpoints?"
+    a: "Write a get_db dependency that yields a session and closes it after the request, and a get_current_user dependency that itself depends on get_db and on the bearer token, verifies it and returns the user or raises 401. Endpoints declare them as parameters with Depends, so the logic lives in one place, can be overridden in tests with app.dependency_overrides, and appears in the OpenAPI security docs."
+    k: ["!Uses yield dependencies for setup and cleanup such as a session", "Chains a current-user dependency on the token and session", "Overrides dependencies in tests"]
+    h: ["Where does the session get closed?"]
+    fu: ["How do you apply a dependency to a whole router?"]
+    m: "Dependencies run once at startup."
+    s: ["Composition of dependencies", "Testability"]
+
+  redis_structures:
+    c: [redis, caching_strategies]
+    d: core
+    t: design
+    f: "data structures"
+    q: "Which Redis data structures would you use for a leaderboard, a session store and a rate limiter, and why?"
+    a: "A sorted set fits the leaderboard because it keeps members ordered by score with fast rank and range queries. A hash per session stores fields like user id and expiry compactly, with a TTL on the key. A rate limiter can use INCR with an expiry for a fixed window, or a sorted set of timestamps for a sliding window, ideally inside a Lua script for atomicity."
+    k: ["!Uses a sorted set for the leaderboard", "Uses a hash with TTL for sessions", "Uses INCR with expiry or a sorted set for rate limiting"]
+    h: ["Which structure keeps items ordered by a number?"]
+    fu: ["How would you get a player's rank and neighbours?"]
+    m: "Redis only stores strings."
+    s: ["Right structure per job", "Atomicity"]
+
+  redis_persistence:
+    c: [redis, availability_and_reliability]
+    d: hard
+    t: tradeoff
+    f: "persistence"
+    q: "Your team wants to use Redis as the main store for orders. What happens to the data on a crash, and what would you advise?"
+    a: "Redis keeps data in memory. RDB snapshots save periodically, so you can lose minutes of writes; AOF logs every write and with fsync every second loses about a second, at a performance cost. Replication can still lose acknowledged writes on failover. For orders, which must not be lost, keep a durable database as the source of truth and use Redis as a cache or for transient data."
+    k: ["!Explains RDB snapshots and AOF and how much each can lose", "Notes failover can lose acknowledged writes", "Advises a durable database as the source of truth for orders"]
+    h: ["What survives if the machine loses power?"]
+    fu: ["What is maxmemory policy and why does it matter for a cache?"]
+    m: "Redis replication guarantees no data loss."
+    s: ["Durability trade-offs", "Right role for Redis"]
+
+  redis_lock:
+    c: [redis, concurrency_synchronisation]
+    d: hard
+    t: scenario
+    f: "Redis as a cache lock and queue"
+    q: "You use Redis SET NX with an expiry as a lock so only one worker runs a nightly job. What can still go wrong?"
+    a: "If the job runs longer than the expiry, the lock expires and a second worker starts while the first is still running. A worker might also delete a lock it no longer owns unless it checks a unique token before releasing. Pauses such as garbage collection make timing unreliable, so for correctness-critical work add fencing tokens checked by the resource, or make the job itself idempotent."
+    k: ["!Notes the lock can expire while the job still runs", "Releases only with an ownership token check", "Mentions fencing tokens or idempotent jobs for safety"]
+    h: ["What happens at minute eleven of a ten-minute lock?"]
+    fu: ["What is a fencing token?"]
+    m: "SET NX makes a perfectly safe distributed lock."
+    s: ["Timing failure modes", "Defence in depth"]

@@ -1,0 +1,320 @@
+# =============================================================================
+#  GOAL BANK — analytics_verbal (2026-11-12, for M22 Follow Your Goal)
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: analytics_verbal
+provenance: generated
+items:
+  stats_mean_median:
+    c: [descriptive_statistics]
+    d: intro
+    t: conceptual
+    f: "centre and spread"
+    q: "The average salary in a team is far above what most people earn. Which statistic would you report instead, and why?"
+    a: "A few very high salaries pull the mean up, because the mean uses every value's size, while the median is the middle value and ignores how extreme the top values are. For skewed data such as salaries, report the median, and add a spread measure such as the interquartile range. Reporting both mean and median shows the skew."
+    k: ["!Says outliers or skew pull the mean up", "Recommends the median for skewed data", "Adds a spread measure or reports both"]
+    h: ["What happens to the mean if the CEO joins the team?"]
+    fu: ["When is the mean the better summary?"]
+    m: "The mean is always the best average."
+    s: ["Explains sensitivity", "Adds spread"]
+
+  stats_correlation:
+    c: [descriptive_statistics, hypothesis_testing]
+    d: core
+    t: scenario
+    f: "correlation versus causation"
+    q: "Users who use the app's dark mode spend more money. Should the company push everyone to dark mode?"
+    a: "Not on this evidence. The correlation may come from a confounder: heavy, long-time users may both discover dark mode and spend more. Causation needs an experiment — randomly assign users a dark-mode prompt and compare spending — or at least controlling for tenure and engagement. Pushing dark mode based on correlation could change nothing."
+    k: ["!Says correlation does not show causation", "Names a plausible confounder such as engagement", "Proposes a randomised experiment or controls"]
+    h: ["Which kind of user discovers dark mode?"]
+    fu: ["How would you design that experiment?"]
+    m: "A strong correlation proves the cause."
+    s: ["Confounder named", "Experiment proposed"]
+
+  stats_percentiles_outliers:
+    c: [descriptive_statistics, exploratory_data_analysis]
+    d: core
+    t: practical
+    f: "outliers"
+    q: "Your delivery-time data has a few values of 900 hours. How do you decide whether to remove them?"
+    a: "First investigate: are they errors, such as a missing completion timestamp defaulting to a far date, or real events like lost parcels? Use the distribution, percentiles or the IQR rule to flag them, check the raw records, and fix errors at the source. Real extremes should stay, perhaps reported separately; removing them silently would hide the problem customers feel."
+    k: ["!Investigates whether outliers are errors or real", "Uses percentiles or IQR to flag them", "Keeps real extremes and reports them rather than deleting silently"]
+    h: ["What could make a delivery take 900 hours?"]
+    fu: ["How would outliers distort the average delivery time?"]
+    m: "Outliers should always be deleted."
+    s: ["Investigates first", "Honest reporting"]
+
+  hyp_p_value:
+    c: [hypothesis_testing, probability_for_ml]
+    d: core
+    t: conceptual
+    f: "p-values and what they are not"
+    q: "A test gives a p-value of 0.03. What does that mean, and what does it not mean?"
+    a: "Assuming the null hypothesis is true, there is a 3 percent chance of seeing a result at least this extreme. It does not mean there is a 3 percent chance the null is true, nor a 97 percent chance the effect is real, and it says nothing about how large or important the effect is. Report the effect size with a confidence interval alongside it."
+    k: ["!States the probability of data this extreme given the null", "Rejects the 'probability the null is true' reading", "Says it does not measure effect size and adds an interval"]
+    h: ["Is the p-value computed assuming the null is true or false?"]
+    fu: ["Why do many tests on one dataset inflate false positives?"]
+    m: "p = 0.03 means a 97 percent chance the result is real."
+    s: ["Correct definition", "Effect size added"]
+
+  hyp_errors:
+    c: [hypothesis_testing]
+    d: intro
+    t: conceptual
+    f: "type I and type II errors"
+    q: "Explain type I and type II errors using a medical screening test as the example."
+    a: "A type I error is a false positive: the test says a healthy person has the disease. A type II error is a false negative: it misses someone who has it. Lowering the threshold to catch more cases reduces type II errors but increases type I errors. Which matters more depends on costs: missing a serious disease is usually worse than a follow-up test."
+    k: ["!Defines type I as a false positive and type II as a false negative", "Explains the threshold trades one for the other", "Weighs the costs of each in context"]
+    h: ["What is a false alarm called?"]
+    fu: ["How does sample size affect type II errors?"]
+    m: "You can minimise both errors at once with the same data."
+    s: ["Concrete example", "Cost-based choice"]
+
+  hyp_choose_test:
+    c: [hypothesis_testing, descriptive_statistics]
+    d: hard
+    t: scenario
+    f: "choosing a test"
+    q: "You want to know whether two app versions differ in average session length and in the share of users who convert. Which tests would you use?"
+    a: "Session length is continuous and usually skewed, so a two-sample t-test works with large samples, or a Mann-Whitney test or bootstrap if heavily skewed. Conversion is a proportion, so a two-proportion z-test or chi-square test fits. Check independence of users, and correct for testing two metrics, or declare one primary in advance."
+    k: ["!Uses a t-test or non-parametric alternative for continuous data", "Uses a proportion test or chi-square for conversion", "Mentions assumptions or multiple-testing correction"]
+    h: ["Is the outcome a number or a yes-no?"]
+    fu: ["When would you use a bootstrap instead?"]
+    m: "A t-test works for every metric."
+    s: ["Matches test to data type", "Multiple testing"]
+
+  ab_sample_size:
+    c: [ab_testing, hypothesis_testing]
+    d: core
+    t: practical
+    f: "sample size and power"
+    q: "Before launching an A/B test of a new checkout button, how do you decide how many users you need?"
+    a: "Pick the minimum effect worth detecting, such as a one-point lift from a 10 percent conversion, the significance level and the power, usually 80 percent. A power calculation then gives the sample size per group; smaller effects need many more users. Divide by daily traffic to get the test length, and run for full weeks to cover weekday patterns."
+    k: ["!Chooses a minimum detectable effect, significance and power", "Computes sample size and converts it into duration", "Runs over full weekly cycles"]
+    h: ["How small a change would be worth shipping?"]
+    fu: ["What happens if you stop the test early?"]
+    m: "Run the test until it becomes significant."
+    s: ["Planned in advance", "Duration reasoning"]
+
+  ab_peeking:
+    c: [ab_testing, hypothesis_testing]
+    d: hard
+    t: debugging
+    f: "novelty and peeking"
+    q: "A product manager checks the A/B dashboard daily and stops the test the first day it shows significance. What is wrong with that?"
+    a: "Checking repeatedly and stopping at the first significant result inflates the false positive rate well beyond five percent, because random fluctuations cross the threshold at some point. Fix the sample size and duration in advance, or use sequential testing methods designed for continuous monitoring. Early lifts also often include novelty effects that fade, another reason to run full weeks."
+    k: ["!Explains repeated peeking inflates false positives", "Fixes the duration in advance or uses sequential methods", "Mentions novelty effects fading"]
+    h: ["How many chances does random noise get to look significant?"]
+    fu: ["How do sequential tests allow early stopping safely?"]
+    m: "Significance on any day means the result is real."
+    s: ["Names the inflation", "Correct remedy"]
+
+  ab_guardrails:
+    c: [ab_testing, product_metrics]
+    d: core
+    t: design
+    f: "guardrail metrics"
+    q: "A test raises sign-ups by 8 percent. What else would you check before shipping it?"
+    a: "Check guardrail metrics that the change might harm: retention and activation of the new sign-ups, revenue, page latency, error rates and support tickets, since a pushier flow may bring low-quality users. Confirm the randomisation was healthy with a sample ratio check, look at key segments for opposite effects, and make sure the result is not a novelty spike."
+    k: ["!Checks guardrails such as retention, revenue or latency", "Checks for sample ratio mismatch", "Looks at segments or novelty before shipping"]
+    h: ["Could the extra sign-ups be users who leave the next day?"]
+    fu: ["What would a sample ratio mismatch tell you?"]
+    m: "If the primary metric wins, ship it."
+    s: ["Guardrails", "Experiment health"]
+
+  eda_first_look:
+    c: [exploratory_data_analysis, pandas_numpy]
+    d: intro
+    t: practical
+    f: "first look at a dataset"
+    q: "You are handed a new dataset of customer orders. What do you do in the first hour?"
+    a: "Understand the grain — what one row is — and the columns and types. Check row counts, date ranges, missing values, duplicates and impossible values, then look at distributions of key fields and counts by category. Compare a few totals with known figures to validate, and note questions for the data owner. Only then start analysis."
+    k: ["!Establishes what one row represents", "Checks missing values, duplicates and odd values", "Looks at distributions and validates totals against known figures"]
+    h: ["What is one row: an order or an order line?"]
+    fu: ["How would you document what you found?"]
+    m: "Start modelling straight away to save time."
+    s: ["Grain first", "Validates"]
+
+  eda_missing:
+    c: [exploratory_data_analysis, feature_engineering]
+    d: core
+    t: tradeoff
+    f: "missing and odd values"
+    q: "Twenty percent of customers have no age recorded. How do you decide what to do about it?"
+    a: "First find out why it is missing: random, or concentrated in one channel or older accounts? If it is not random, dropping those rows biases the analysis. Options are leaving it as its own category, imputing with a median or a model, or adding a missing flag so the absence itself is used. Report how the choice affects the results."
+    k: ["!Investigates the reason and pattern of missingness", "Warns that dropping non-random missing rows biases results", "Lists options like a category, imputation or a missing flag"]
+    h: ["Is age missing equally across signup channels?"]
+    fu: ["When is it fine to drop the rows?"]
+    m: "Filling missing values with zero is harmless."
+    s: ["Mechanism first", "Bias awareness"]
+
+  eda_relationships:
+    c: [exploratory_data_analysis, data_visualisation]
+    d: core
+    t: scenario
+    f: "forming hypotheses"
+    q: "Churn went up last quarter. How would you explore the data to form hypotheses about why?"
+    a: "Break churn down by segment — plan, region, signup cohort, acquisition channel, device — and over time to see where the rise concentrates. Compare churned users' behaviour before leaving, such as declining usage or support tickets, with retained users. Overlay events such as a price change or release. Each pattern becomes a hypothesis to test, not a conclusion."
+    k: ["!Segments churn to find where the increase concentrates", "Compares behaviour of churned and retained users", "Overlays events and treats patterns as hypotheses"]
+    h: ["Did churn rise everywhere, or in one group?"]
+    fu: ["How would you test the pricing hypothesis?"]
+    m: "The first pattern you find is the cause."
+    s: ["Segmentation", "Hypothesis discipline"]
+
+  viz_choose:
+    c: [data_visualisation]
+    d: intro
+    t: conceptual
+    f: "choosing a chart"
+    q: "Which chart would you use to show monthly revenue over two years, revenue share by product, and the relation between price and units sold?"
+    a: "A line chart for revenue over time, since it shows trend and seasonality. A bar chart sorted by value for share by product, because bars are easier to compare than pie slices, especially with many products. A scatter plot for price against units, adding a trend line, since it shows relationship and spread."
+    k: ["!Line chart for change over time", "Sorted bar chart for comparing categories", "Scatter plot for the relationship between two numbers"]
+    h: ["What question does each chart answer?"]
+    fu: ["When is a pie chart acceptable?"]
+    m: "Pie charts are best for comparing many categories."
+    s: ["Chart matched to question", "Justified choices"]
+
+  viz_honest:
+    c: [data_visualisation, descriptive_statistics]
+    d: core
+    t: debugging
+    f: "honest axes and scales"
+    q: "A chart shows a bar for this year's sales twice as tall as last year's, but sales only grew 5 percent. What went wrong?"
+    a: "The y-axis does not start at zero, so a small difference looks huge; bar lengths must be proportional to values, so bar charts should start at zero. Line charts can zoom in on a range if clearly labelled. Other honesty checks are consistent scales across panels, labelled units and not cherry-picking the time range."
+    k: ["!Identifies a truncated y-axis exaggerating the difference", "Says bar charts should start at zero", "Mentions other honesty checks like labels and consistent scales"]
+    h: ["Where does the y-axis start?"]
+    fu: ["When is a log scale appropriate?"]
+    m: "Truncating axes is fine for any chart if it looks clearer."
+    s: ["Names the distortion", "General rules"]
+
+  viz_audience:
+    c: [data_visualisation, stakeholder_communication]
+    d: hard
+    t: scenario
+    f: "a chart for an audience"
+    q: "You have a detailed analysis with twelve charts, and the CEO has two minutes. What do you show?"
+    a: "Lead with the one decision or finding, stated as a sentence, and one chart that proves it, with the key number labelled directly and everything else removed. Have the supporting charts ready as an appendix. A chart for an executive answers one question at a glance; a chart for analysts can carry detail."
+    k: ["!Leads with the finding as a headline sentence", "Shows one clear chart with direct labels", "Keeps the detail in an appendix"]
+    h: ["What decision do they need to make?"]
+    fu: ["How would the same chart change for the analytics team?"]
+    m: "Showing all the work proves the analysis is thorough."
+    s: ["Audience-first", "One message"]
+
+  sqla_window:
+    c: [sql_for_analytics, aggregation_and_grouping]
+    d: core
+    t: coding
+    f: "window functions"
+    q: "Describe how you would find each customer's three most recent orders in SQL."
+    a: "Use a window function: ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date DESC) as rn, computed in a subquery or CTE, then keep rows where rn is at most three. Unlike GROUP BY, window functions keep every row and add the ranking alongside it. Choose RANK or DENSE_RANK if ties should share a position."
+    k: ["!Uses ROW_NUMBER partitioned by customer ordered by date descending", "Filters on the row number in an outer query or CTE", "Explains windows keep rows unlike GROUP BY, or mentions ties"]
+    h: ["How do you number orders within each customer?"]
+    fu: ["How would you compute a 7-day moving average?"]
+    m: "You can filter on a window function in the same WHERE clause."
+    s: ["Correct pattern", "Tie handling"]
+
+  sqla_cohort:
+    c: [sql_for_analytics, product_metrics]
+    d: hard
+    t: coding
+    f: "cohorts and funnels in SQL"
+    q: "Explain how you would compute month-by-month retention for users grouped by their signup month."
+    a: "First find each user's signup month as their cohort. Then join users to their activity, computing for each activity the number of months since signup. Count distinct active users per cohort and month offset, and divide by the cohort's size to get retention percentages. A CTE per step keeps it readable, and the result pivots into a cohort triangle."
+    k: ["!Assigns each user a cohort by signup month", "Computes months since signup for each activity", "Counts active users per cohort and offset divided by cohort size"]
+    h: ["What two dates define the month offset?"]
+    fu: ["How would you handle users active twice in a month?"]
+    m: "Retention is just active users divided by total users."
+    s: ["Stepwise CTEs", "Correct denominator"]
+
+  sqla_dates:
+    c: [sql_for_analytics, data_quality_and_governance]
+    d: core
+    t: debugging
+    f: "dates and time zones"
+    q: "Daily sales in your report do not match the finance team's numbers, though totals for the month do. What would you check?"
+    a: "Time zones: if timestamps are stored in UTC and finance counts days in IST, orders near midnight fall on different dates. Convert to the business time zone before truncating to a date. Also check the definition of a sale date — order, payment or delivery — and cut-off handling for refunds, which shift daily but not monthly totals."
+    k: ["!Suspects UTC versus local time zone at day boundaries", "Converts to the business time zone before grouping by day", "Checks which date defines a sale, or refund handling"]
+    h: ["What time zone are timestamps stored in?"]
+    fu: ["How would you make this consistent across reports?"]
+    m: "Dates are dates; time zones only matter for global apps."
+    s: ["Boundary reasoning", "Definition alignment"]
+
+  excel_lookup:
+    c: [excel_analytics]
+    d: intro
+    t: practical
+    f: "lookups and references"
+    q: "A VLOOKUP returns wrong prices after someone inserted a column in the lookup table. Why, and what would you use instead?"
+    a: "VLOOKUP uses a hard-coded column number, so inserting a column shifts the target and it silently returns the wrong field; it also defaults to approximate match. XLOOKUP or INDEX-MATCH look up by the actual return column and use exact match by default, so they survive inserted columns. Use absolute references or structured table names for the ranges."
+    k: ["!Explains VLOOKUP's column index breaks when columns move", "Mentions the approximate-match default risk", "Uses XLOOKUP or INDEX-MATCH with proper references"]
+    h: ["What does the third argument of VLOOKUP point to?"]
+    fu: ["What do structured table references add?"]
+    m: "VLOOKUP always does an exact match."
+    s: ["Root cause", "Robust replacement"]
+
+  excel_pivot:
+    c: [excel_analytics, aggregation_and_grouping]
+    d: core
+    t: practical
+    f: "pivot tables"
+    q: "How would you use a pivot table to find which region and product category grew most from last year?"
+    a: "Put the data in a proper table with one row per sale and a year column. Create a pivot with region and category as rows, year as columns and sum of sales as values, then add a calculated difference or percent-difference from the previous year. Sort by the change, and use slicers to filter. Refreshing the pivot picks up new data."
+    k: ["!Starts from clean tabular data with one row per record", "Builds a pivot with dimensions as rows and years as columns", "Adds year-over-year difference and sorts by it"]
+    h: ["What does each row of the source data need to be?"]
+    fu: ["How would you show this as a chart for a meeting?"]
+    m: "Pivot tables update automatically when data changes."
+    s: ["Clean source", "Year-over-year logic"]
+
+  excel_model:
+    c: [excel_analytics, writing_for_an_audience]
+    d: hard
+    t: design
+    f: "building a model someone else can read"
+    q: "You are building a pricing model in Excel that others will update after you leave. How do you structure it?"
+    a: "Separate inputs, calculations and outputs on different sheets, with inputs clearly marked and labelled with units. Avoid hard-coded numbers inside formulas, use named ranges or tables, keep formulas consistent across rows, and add checks that flag errors such as totals not reconciling. Document assumptions on a notes sheet, and protect calculation cells from accidental edits."
+    k: ["!Separates inputs, calculations and outputs", "Avoids hard-coded numbers and uses names or tables", "Adds checks, documentation and protection"]
+    h: ["Where would a new person change the discount rate?"]
+    fu: ["How would you test the model is right?"]
+    m: "A model is fine if it gives the right answer today."
+    s: ["Structure for others", "Self-checking"]
+
+  bi_dashboard_use:
+    c: [bi_dashboards, product_metrics]
+    d: core
+    t: design
+    f: "building a dashboard people use"
+    q: "The sales team ignores the dashboard you built with forty charts. How would you redesign it?"
+    a: "Start from the decisions the team makes each week and the few metrics that drive them. Put the top three or four numbers with their targets and trend at the top, then breakdowns that explain changes, and let users filter to their own region or accounts. Remove charts nobody uses, check usage data, and ask the team what they look at first."
+    k: ["!Designs around the users' decisions and key metrics", "Puts headline numbers with targets first, details below", "Removes clutter and checks usage or asks users"]
+    h: ["What does a sales manager decide on Monday morning?"]
+    fu: ["How would you measure whether the new dashboard is used?"]
+    m: "More charts make a dashboard more useful."
+    s: ["Decision-first", "Iterates with users"]
+
+  bi_data_model:
+    c: [bi_dashboards, data_warehousing]
+    d: hard
+    t: debugging
+    f: "data models in a BI tool"
+    q: "In Power BI, a sales total is double-counted when you filter by product category. What is the likely cause?"
+    a: "Probably the data model: a many-to-many or bidirectional relationship, or a join between two fact tables, so filtering propagates through an ambiguous path and duplicates rows. Model it as a star with one-to-many relationships from dimensions to facts, single-direction filtering, and measures written in DAX rather than summing pre-joined columns."
+    k: ["!Suspects relationships such as many-to-many or bidirectional filters", "Recommends a star schema with one-to-many relationships", "Uses proper DAX measures"]
+    h: ["How many paths can a category filter take to the sales table?"]
+    fu: ["When is a bidirectional relationship justified?"]
+    m: "Double counting means the source data is wrong."
+    s: ["Model-level diagnosis", "Star schema fix"]
+
+  bi_refresh:
+    c: [bi_dashboards, data_pipelines]
+    d: intro
+    t: tradeoff
+    f: "refresh and performance"
+    q: "Should a dashboard import data on a schedule or query the warehouse live? What decides it?"
+    a: "Imported data is fast and cheap to query but only as fresh as the last refresh, suiting daily reporting. Live connections are always fresh but every interaction queries the warehouse, which is slower and costs compute, suiting operational dashboards that need near-real-time numbers. Data size, freshness needs and warehouse cost decide; aggregations or hybrid models combine both."
+    k: ["!Contrasts import speed with live freshness", "Matches each to reporting versus operational needs", "Mentions cost, size or hybrid approaches"]
+    h: ["How fresh does the number need to be for the decision?"]
+    fu: ["How would incremental refresh help a large dataset?"]
+    m: "Live connections are always better because they are fresh."
+    s: ["Freshness versus cost", "Hybrid awareness"]

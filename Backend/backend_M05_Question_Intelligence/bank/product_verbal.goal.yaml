@@ -1,0 +1,529 @@
+# =============================================================================
+#  GOAL BANK — product_verbal (2026-11-12, for M22 Follow Your Goal)
+#  Product, design, business analysis, consulting, sales and writing rounds.
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: product_verbal
+provenance: generated
+items:
+  ux_heuristics:
+    c: [ux_design_fundamentals]
+    d: intro
+    t: conceptual
+    f: "usability heuristics"
+    q: "Pick three usability heuristics and show how each would improve a college fee-payment page."
+    a: "Visibility of system status — show clearly that a payment is processing and then confirmed, with a receipt. Error prevention — validate the amount and card details before submitting and confirm before paying. Recognition rather than recall — pre-fill the student's details and show the fee breakdown instead of asking them to remember it. Each reduces anxiety and mistakes on a high-stakes page."
+    k: ["!Names three recognised heuristics", "Applies each concretely to the payment page", "Links them to fewer errors or less anxiety"]
+    h: ["What does the user wonder right after clicking Pay?"]
+    fu: ["How would you test whether the page improved?"]
+    m: "Usability is about making pages look attractive."
+    s: ["Concrete application", "User-feeling focus"]
+
+  ux_design_thinking:
+    c: [ux_design_fundamentals, usability_research]
+    d: core
+    t: scenario
+    f: "design thinking"
+    q: "Students say the campus app is \"confusing\". How would you go from that complaint to a better design?"
+    a: "Empathise first: interview and observe students using the app to find where and why they get confused, rather than guessing. Define the specific problems, such as not finding the timetable. Ideate several solutions, prototype the most promising cheaply, and test them with students, iterating until the tasks are easy. Measure task success before and after."
+    k: ["!Starts with research to find specific problems", "Defines problems before ideating solutions", "Prototypes, tests with users and measures improvement"]
+    h: ["What exactly is confusing, and for whom?"]
+    fu: ["How many users would you test with?"]
+    m: "Redesigning the visuals fixes confusion."
+    s: ["Research-led", "Iterative"]
+
+  ux_ia:
+    c: [ux_design_fundamentals, wireframing_and_prototyping]
+    d: hard
+    t: design
+    f: "information architecture"
+    q: "An app's menu has grown to 25 items and users cannot find features. How would you reorganise it?"
+    a: "Run a card sort with real users to learn how they group the features, and look at usage data to see what is used most. Group items into a few top-level categories using the users' language, put frequent tasks one tap away, and move rare settings deeper. Validate with tree testing: give users tasks and check they find the right place without visual design."
+    k: ["!Uses card sorting and usage data", "Groups into few categories in users' words, frequent tasks prominent", "Validates with tree testing"]
+    h: ["Whose mental model should the menu follow?"]
+    fu: ["How do you handle a feature that fits two categories?"]
+    m: "The team's org chart is a good menu structure."
+    s: ["User-derived structure", "Validation"]
+
+  wf_fidelity:
+    c: [wireframing_and_prototyping, ux_design_fundamentals]
+    d: core
+    t: tradeoff
+    f: "fidelity and when to raise it"
+    q: "When would you show stakeholders low-fidelity wireframes instead of polished mock-ups?"
+    a: "Early, when the structure and flow are still open, low-fidelity wireframes keep the discussion on what the screen should do; polished mock-ups invite feedback on colours and fonts and make people reluctant to suggest big changes. Raise fidelity once the flow is validated, for usability tests on details and for engineering handoff."
+    k: ["!Uses low fidelity early to focus on structure and flow", "Notes polished designs draw feedback to visuals", "Raises fidelity after validation for details and handoff"]
+    h: ["What feedback do you want at this stage?"]
+    fu: ["When is a clickable prototype worth building?"]
+    m: "High-fidelity designs always get better feedback."
+    s: ["Stage-appropriate", "Feedback quality"]
+
+  wf_design_system:
+    c: [wireframing_and_prototyping, component_architecture]
+    d: hard
+    t: design
+    f: "design systems"
+    q: "Three product teams build inconsistent buttons, forms and colours. How would a design system help, and what goes in it?"
+    a: "A design system gives shared foundations — colour, type and spacing tokens — and reusable, accessible components with documented usage, matched by coded components engineers use directly. Teams build faster and consistently, accessibility is solved once, and changes propagate. It needs an owner, contribution rules and versioning, or it becomes outdated."
+    k: ["!Includes tokens and reusable, documented components", "Pairs design components with coded components", "Needs ownership, contribution and versioning"]
+    h: ["Where would a new button style be decided?"]
+    fu: ["How would you get teams to adopt it?"]
+    m: "A design system is just a style guide PDF."
+    s: ["Design and code", "Governance"]
+
+  wf_handoff:
+    c: [wireframing_and_prototyping, stakeholder_communication]
+    d: intro
+    t: practical
+    f: "handing a design to engineers"
+    q: "What should a designer give engineers so the built screen matches the design?"
+    a: "Annotated designs covering every state — loading, empty, error, long text, disabled — and responsive behaviour at different sizes, using design-system components and tokens rather than one-off values. Include interaction details like animations and focus order, accessibility notes, and the flows between screens. Review the built version together before release."
+    k: ["!Covers all states, not just the happy path", "Uses system components and tokens with responsive rules", "Adds interaction and accessibility notes and reviews the build"]
+    h: ["What does the screen show with no data?"]
+    fu: ["How would you handle a design that is too costly to build?"]
+    m: "A single static mock-up is enough for engineers."
+    s: ["Complete states", "Collaboration"]
+
+  ur_leading:
+    c: [usability_research]
+    d: intro
+    t: practical
+    f: "asking without leading"
+    q: "Rewrite \"Don't you think this new checkout is easier?\" as a good user-research question, and explain why."
+    a: "That question leads the user toward agreeing. Better: give them a task, such as \"buy this book using the app\", watch what they do, and then ask open questions like \"walk me through what you were thinking there\" or \"what, if anything, was difficult?\" Observing behaviour and asking about specific past experiences gives far more reliable answers than opinions on hypotheticals."
+    k: ["!Identifies the original as a leading question", "Replaces it with a task and open, neutral questions", "Prefers observed behaviour over stated opinions"]
+    h: ["Does the question suggest the answer?"]
+    fu: ["Why are questions about the future unreliable?"]
+    m: "Asking users what they want gives the best insights."
+    s: ["Neutral wording", "Behaviour over opinion"]
+
+  ur_test:
+    c: [usability_research, ab_testing]
+    d: core
+    t: tradeoff
+    f: "usability tests"
+    q: "Why can five users in a usability test reveal most problems, while an A/B test needs thousands?"
+    a: "A usability test is qualitative: it finds problems, and severe problems show up with most users, so a handful of sessions reveals the big issues. An A/B test is quantitative: it measures whether one version performs better, and detecting small differences reliably needs large samples. They answer different questions — why users struggle versus which version wins."
+    k: ["!Says usability tests find problems qualitatively", "Says A/B tests measure differences and need statistical power", "Contrasts why versus which questions"]
+    h: ["Are you finding problems or measuring a difference?"]
+    fu: ["When would you run both?"]
+    m: "Five users is too few to learn anything."
+    s: ["Method purpose", "Complementary"]
+
+  ur_findings:
+    c: [usability_research, stakeholder_communication]
+    d: hard
+    t: scenario
+    f: "turning findings into decisions"
+    q: "Your research found twelve usability problems, but the team can fix only three this sprint. How do you decide and present them?"
+    a: "Rate each problem by severity — does it block the task, slow it or annoy — and by how many users hit it and how often the task is done. Prioritise high-severity, frequent problems on critical tasks, consider fix effort, and present the top three with short video clips or quotes as evidence, plus the rest as a ranked backlog."
+    k: ["!Rates problems by severity and frequency", "Prioritises critical tasks while weighing effort", "Presents with evidence such as clips and a ranked backlog"]
+    h: ["Which problem stops people completing the task?"]
+    fu: ["How would you convince an engineer the problem is real?"]
+    m: "All findings are equally important."
+    s: ["Prioritisation", "Evidence"]
+
+  ps_improve_product:
+    c: [product_sense, ux_design_fundamentals]
+    d: core
+    t: design
+    f: "who the users are"
+    q: "How would you improve the campus placement portal for students?"
+    a: "Clarify the goal first, such as more students applying to suitable drives on time. Identify user segments — final-years hunting jobs, pre-final students seeking internships — and their pain points: missing deadlines, unclear eligibility, not knowing which drives fit. Pick one high-impact problem, such as missed deadlines, propose solutions like personalised eligibility alerts, and define how to measure success."
+    k: ["!States the goal and user segments", "Identifies pain points and picks one to focus on", "Proposes a solution with success metrics"]
+    h: ["Which students struggle most, and with what?"]
+    fu: ["How would you prioritise among your ideas?"]
+    m: "Good product answers list many features."
+    s: ["Structured", "Focus and metrics"]
+
+  ps_problem_worth:
+    c: [product_sense, business_case_analysis]
+    d: hard
+    t: scenario
+    f: "problems worth solving"
+    q: "A founder wants to build an app that matches students with study partners. How would you test whether it is a problem worth solving?"
+    a: "Check the problem before building: interview students about how they find study partners today and how painful it is, look for workarounds like WhatsApp groups as evidence of demand, and size the segment. Then test cheaply — a landing page, a manual matching service through a form — to see if students sign up and keep using it before investing in the app."
+    k: ["!Validates the problem through interviews and existing workarounds", "Estimates the size of the opportunity", "Tests demand cheaply before building"]
+    h: ["What do students do about this today?"]
+    fu: ["What result would make you stop?"]
+    m: "If an idea sounds useful, people will use it."
+    s: ["Evidence before building", "Cheap experiments"]
+
+  ps_scope:
+    c: [product_sense, prioritisation_frameworks]
+    d: core
+    t: tradeoff
+    f: "trade-offs and scope"
+    q: "Engineering says your feature will take three months, but the drive season starts in four weeks. What do you do?"
+    a: "Find the smallest version that solves the core problem for the deadline: separate must-haves from nice-to-haves with the team, cut or simplify edge cases, consider manual workarounds behind the scenes, and ship a first version in four weeks, planning the rest after. Communicate the trade-offs and what the first version will not do."
+    k: ["!Defines a minimal version that solves the core problem", "Works with engineering on what to cut or simplify", "Communicates trade-offs and a plan for later"]
+    h: ["What is the one thing students need before the season?"]
+    fu: ["How would you decide what to build next?"]
+    m: "Pushing engineers harder is the solution."
+    s: ["Scope negotiation", "Transparency"]
+
+  pm_north_star:
+    c: [product_metrics, product_sense]
+    d: core
+    t: design
+    f: "choosing a north-star metric"
+    q: "What would you choose as the north-star metric for a mock-interview practice platform, and why?"
+    a: "Something that reflects users getting real value, not vanity numbers like sign-ups: for example, weekly students completing at least one full practice interview with feedback reviewed. It ties to learning and predicts retention. Pair it with guardrails such as session quality ratings and drop-off rates so the team does not push quantity over value."
+    k: ["!Chooses a metric reflecting delivered value", "Rejects vanity metrics like sign-ups", "Adds guardrail metrics"]
+    h: ["When does a student actually benefit?"]
+    fu: ["How would you break the metric into inputs teams can move?"]
+    m: "Daily active users is always the right north star."
+    s: ["Value-based", "Guardrails"]
+
+  pm_drop:
+    c: [product_metrics, exploratory_data_analysis]
+    d: hard
+    t: scenario
+    f: "diagnosing a metric drop"
+    q: "Daily orders on a food app dropped 15 percent yesterday. How do you investigate?"
+    a: "First check it is real: data pipeline delays, tracking changes or a dashboard bug. Then check external causes — a holiday, weather, a competitor's promotion — and internal ones — a release, outage or pricing change. Segment the drop by platform, city, new versus returning users and funnel step to localise it, then form and test hypotheses for the segment where it concentrates."
+    k: ["!Rules out data or tracking issues first", "Considers internal and external causes", "Segments by platform, region, user type and funnel step"]
+    h: ["Is the drop everywhere or in one segment?"]
+    fu: ["Which funnel step would you check first?"]
+    m: "A drop always means the product got worse."
+    s: ["Validate first", "Localise by segment"]
+
+  pm_funnel:
+    c: [product_metrics, sql_for_analytics]
+    d: core
+    t: practical
+    f: "funnels and retention"
+    q: "How would you measure where students drop off between signing up and completing their first mock interview?"
+    a: "Define the funnel steps — sign up, complete profile, start setup, start interview, finish interview — and count unique users reaching each within a time window, giving step-to-step conversion. Segment by acquisition channel or device to find where drop-off is worst, and follow cohorts over time to see whether changes improve it."
+    k: ["!Defines ordered funnel steps", "Computes conversion between steps for unique users", "Segments and tracks cohorts over time"]
+    h: ["Which step loses the most users?"]
+    fu: ["How do you count a user who skips a step?"]
+    m: "Total sign-ups show whether onboarding works."
+    s: ["Clear funnel", "Segmentation"]
+
+  pr_rice:
+    c: [prioritisation_frameworks, product_metrics]
+    d: intro
+    t: practical
+    f: "impact against effort"
+    q: "Explain the RICE framework and its limitations."
+    a: "RICE scores ideas by Reach, how many users it affects in a period, Impact per user, Confidence in those estimates, and Effort, computing reach times impact times confidence divided by effort. It makes trade-offs explicit and comparable. Its limits are that the inputs are guesses, it ignores strategic bets and dependencies, and it can give false precision."
+    k: ["!Defines reach, impact, confidence and effort", "Says it makes trade-offs explicit", "Names limitations such as guessed inputs or ignoring strategy"]
+    h: ["Which part reflects how sure you are?"]
+    fu: ["When would you override the RICE ranking?"]
+    m: "A RICE score is objective truth."
+    s: ["Formula understood", "Limits stated"]
+
+  pr_saying_no:
+    c: [prioritisation_frameworks, stakeholder_communication]
+    d: core
+    t: scenario
+    f: "saying no"
+    q: "A senior stakeholder insists their feature goes into this quarter, but it does not fit the goals. How do you handle it?"
+    a: "Understand the underlying need — the problem they are trying to solve — rather than arguing about the feature. Show how it compares against current priorities using the agreed goals and data, and what would be dropped to fit it. Offer alternatives, such as a smaller version or a later slot, and if needed escalate the trade-off to whoever owns priorities, keeping the relationship respectful."
+    k: ["!Uncovers the underlying need", "Shows the trade-off against agreed priorities", "Offers alternatives or escalates transparently"]
+    h: ["What problem is the feature meant to solve?"]
+    fu: ["What if they outrank you?"]
+    m: "Saying yes to senior people is the safest choice."
+    s: ["Needs over requests", "Explicit trade-offs"]
+
+  pr_roadmap:
+    c: [prioritisation_frameworks, project_management_basics]
+    d: hard
+    t: design
+    f: "sequencing a roadmap"
+    q: "How would you sequence a year's roadmap for a new product with uncertain demand?"
+    a: "Organise by outcomes and themes rather than fixed feature dates, with near-term work detailed and later work kept as problems to explore. Sequence to reduce the biggest risks first — validate demand and core value before scaling features — and account for dependencies. Revisit the roadmap regularly as learning arrives, communicating it as a plan, not a promise."
+    k: ["!Uses outcome-based themes with detail fading over time", "Sequences to reduce the biggest risks first", "Revisits regularly and communicates it as a plan"]
+    h: ["What must be true for the product to succeed at all?"]
+    fu: ["How do you handle sales asking for dates?"]
+    m: "A roadmap is a fixed list of features with dates."
+    s: ["Risk-first", "Adaptive"]
+
+  ba_stories:
+    c: [requirements_elicitation, sdlc_and_agile]
+    d: intro
+    t: practical
+    f: "user stories and acceptance criteria"
+    q: "Write a user story with acceptance criteria for students downloading their fee receipt."
+    a: "As a student, I want to download my fee receipt so that I can submit it for my scholarship. Acceptance criteria: given I have paid a term's fees, when I open the payments page, then I can download a PDF receipt showing my name, roll number, amount, date and transaction id; unpaid terms show no receipt; the download works on mobile."
+    k: ["!Uses the as-a, I-want, so-that format with a real goal", "Gives testable acceptance criteria", "Covers an edge case like unpaid terms"]
+    h: ["Why does the student need the receipt?"]
+    fu: ["How small should a story be?"]
+    m: "A user story is a technical task description."
+    s: ["User value", "Testable criteria"]
+
+  ba_real_need:
+    c: [requirements_elicitation, clarifying_questions]
+    d: core
+    t: scenario
+    f: "finding the real need"
+    q: "A department head asks for \"a report with every student's data in Excel\". How do you work out what they actually need?"
+    a: "Ask what decision or task the report supports, who will use it and how often, and what they do with it today. Often the real need is narrower — for example tracking students at risk of failing — which a focused dashboard or a filtered report meets better, without exposing unnecessary personal data. Confirm the understanding with a quick mock-up before building."
+    k: ["!Asks about the decision or task behind the request", "Identifies a narrower real need", "Confirms with a mock-up and considers data privacy"]
+    h: ["What will they do with the report?"]
+    fu: ["How do you handle a stakeholder who insists on everything?"]
+    m: "Build exactly what the stakeholder asks for."
+    s: ["Need behind the request", "Privacy aware"]
+
+  ba_nfr:
+    c: [requirements_elicitation, availability_and_reliability]
+    d: hard
+    t: practical
+    f: "functional and non-functional"
+    q: "Requirements for an exam-results portal list only features. What non-functional requirements would you add?"
+    a: "Performance and scale — handle every student checking results in the first hour, say 20,000 concurrent users. Availability during result release, security and privacy — students see only their own results, with audit logs — accessibility, supported devices, data retention, and recovery time if it fails. Each should be measurable so it can be tested."
+    k: ["!Adds performance and peak load requirements", "Adds security, privacy and availability requirements", "Makes them measurable"]
+    h: ["What happens on results day at 10 a.m.?"]
+    fu: ["How would you test the peak load requirement?"]
+    m: "Non-functional requirements are optional extras."
+    s: ["Peak-aware", "Measurable"]
+
+  ba_document:
+    c: [requirements_elicitation, writing_for_an_audience]
+    d: core
+    t: practical
+    f: "documenting so others can build"
+    q: "What makes a requirements document that engineers and testers can actually build and test from?"
+    a: "State the problem and goals, the users, and scope including what is out of scope. Write requirements as specific, testable statements with acceptance criteria, cover business rules and edge cases, and include flows or diagrams for complex processes. Record assumptions and open questions, keep it versioned, and walk through it with the team to catch misunderstandings."
+    k: ["!States problem, goals and scope including out-of-scope", "Writes testable requirements with rules and edge cases", "Records assumptions and reviews with the team"]
+    h: ["Could a tester write a test from each line?"]
+    fu: ["How do you manage changes after sign-off?"]
+    m: "Longer documents are better documents."
+    s: ["Testable", "Shared understanding"]
+
+  proc_waste:
+    c: [process_modelling, requirements_elicitation]
+    d: core
+    t: scenario
+    f: "finding waste"
+    q: "Students wait two weeks for a bonafide certificate. How would you analyse and improve the process?"
+    a: "Map the current process step by step with the people involved — request, approvals, printing, signing — and measure waiting versus working time at each step. Usually most time is waiting in queues or for approvals that add little. Remove unnecessary approvals, digitise the request, auto-fill student details and use digital signatures, then measure the new turnaround."
+    k: ["!Maps the current process with the people involved", "Separates waiting time from working time", "Removes waste and measures the new turnaround"]
+    h: ["How much of the two weeks is anyone actually working?"]
+    fu: ["How would you get approvers to accept fewer steps?"]
+    m: "Automating every step is always the answer."
+    s: ["Measure waits", "Targeted changes"]
+
+  proc_bpmn:
+    c: [process_modelling, sdlc_and_agile]
+    d: intro
+    t: conceptual
+    f: "mapping the current process"
+    q: "Why do business analysts draw process maps with swimlanes, and what do they reveal?"
+    a: "Swimlanes show which person, team or system does each step, so hand-offs between them become visible. Hand-offs are where delays, errors and lost information happen, and lanes also show duplicated work and decisions without a clear owner. A shared picture helps stakeholders agree on how things really work before changing them."
+    k: ["!Explains lanes show who does each step", "Says hand-offs reveal delays and errors", "Notes it builds shared agreement before change"]
+    h: ["Where does work wait between teams?"]
+    fu: ["What is the difference between as-is and to-be maps?"]
+    m: "Process maps are documentation nobody uses."
+    s: ["Hand-off insight", "Shared picture"]
+
+  proc_measure:
+    c: [process_modelling, product_metrics]
+    d: hard
+    t: practical
+    f: "measuring the change"
+    q: "You redesigned the hostel-allocation process. How do you prove it worked?"
+    a: "Define success measures before launch, such as time from application to allocation, number of complaints, manual effort per allocation and fairness indicators, and capture a baseline from the old process. After launch, compare the same measures over a comparable period, watch for side effects, and gather staff and student feedback."
+    k: ["!Defines measures and a baseline before changing", "Compares the same measures after a comparable period", "Watches side effects and gathers feedback"]
+    h: ["What did the old process take, in numbers?"]
+    fu: ["How would you separate the change's effect from a quieter season?"]
+    m: "If nobody complains, the change worked."
+    s: ["Baseline first", "Side effects"]
+
+  pmb_risks:
+    c: [project_management_basics, stakeholder_communication]
+    d: intro
+    t: practical
+    f: "risks and dependencies"
+    q: "You are coordinating a college fest app built by three student teams. How do you manage risks and dependencies?"
+    a: "List the risks — late API from one team, app-store approval delays, exam weeks — with their likelihood, impact, an owner and a mitigation, and review the list weekly. Map dependencies between teams with dates, so the frontend is not blocked waiting for the backend, using agreed mock APIs. Escalate early when a risk turns into an issue."
+    k: ["!Keeps a risk list with owners and mitigations", "Maps cross-team dependencies with dates", "Reviews regularly and escalates early"]
+    h: ["What could make you miss the fest date?"]
+    fu: ["How do mock APIs reduce a dependency?"]
+    m: "Risks only need attention once they happen."
+    s: ["Proactive", "Dependency mapping"]
+
+  pmb_status:
+    c: [project_management_basics, stakeholder_communication]
+    d: core
+    t: scenario
+    f: "reporting status honestly"
+    q: "Your project is two weeks behind, but the last status report said green. What do you do now?"
+    a: "Report the real status now rather than hoping to catch up: state that it is amber or red, why it slipped, the impact on the date, and the options — reduce scope, add people, move the date — with a recommendation. Explain why earlier reports missed it and change how progress is measured so it is caught earlier next time."
+    k: ["!Reports the true status promptly", "Explains causes, impact and options with a recommendation", "Fixes how progress is tracked"]
+    h: ["What happens if you report it in two more weeks instead?"]
+    fu: ["How would you measure progress more honestly?"]
+    m: "Reporting red makes you look bad, so stay green until certain."
+    s: ["Honesty", "Options"]
+
+  pmb_scope:
+    c: [project_management_basics, prioritisation_frameworks]
+    d: core
+    t: tradeoff
+    f: "scope time and cost"
+    q: "Halfway through a fixed-deadline project, the client adds three new features. How do you respond?"
+    a: "Use the project triangle: with time fixed, adding scope requires more resources or cutting other scope, otherwise quality suffers. Assess the new features' effort, show the client the options and their trade-offs, and agree changes through a simple change-control step so the plan stays realistic. Record the decision."
+    k: ["!Applies the scope, time and cost trade-off", "Assesses effort and presents options to the client", "Uses change control and records the decision"]
+    h: ["What gives if the deadline cannot move?"]
+    fu: ["How do you prevent scope creep from small requests?"]
+    m: "Good teams absorb new scope without changing anything."
+    s: ["Triangle reasoning", "Client choice"]
+
+  case_profit:
+    c: [business_case_analysis, data_interpretation]
+    d: core
+    t: scenario
+    f: "profitability and growth cases"
+    q: "A chain of college canteens saw profits fall 20 percent this year. How would you structure finding the cause?"
+    a: "Profit is revenue minus costs, so split both. Revenue is customers times average spend: check footfall and ticket size by outlet, item and time of day. Costs split into fixed, like rent and salaries, and variable, like ingredients and wastage. Compare against last year to find which component moved most, then dig into why — perhaps a new competitor nearby or rising ingredient prices."
+    k: ["!Breaks profit into revenue and costs", "Decomposes revenue and costs into drivers", "Compares year on year to locate the change before diving in"]
+    h: ["Did revenue fall or did costs rise?"]
+    fu: ["What would you recommend if wastage doubled?"]
+    m: "Profit falls are always about sales."
+    s: ["MECE structure", "Data-led"]
+
+  case_hypothesis:
+    c: [business_case_analysis, hypothesis_testing]
+    d: hard
+    t: scenario
+    f: "hypotheses and data"
+    q: "In a case interview, how do you use a hypothesis without biasing your analysis?"
+    a: "State an early hypothesis to focus the analysis, such as \"profits fell because of rising raw-material prices\", then identify the data that would prove or disprove it and ask for it. If the data contradicts it, drop it openly and move to the next branch of your structure. A hypothesis guides where to look first; it is not a conclusion to defend."
+    k: ["!Uses an early hypothesis to focus the analysis", "Names data that would confirm or reject it", "Abandons it openly when the data disagrees"]
+    h: ["What would prove your hypothesis wrong?"]
+    fu: ["How do you keep the rest of the structure in view?"]
+    m: "A good candidate defends their first hypothesis."
+    s: ["Hypothesis-driven", "Intellectual honesty"]
+
+  case_recommend:
+    c: [business_case_analysis, stakeholder_communication]
+    d: core
+    t: practical
+    f: "a recommendation with its risks"
+    q: "How should you close a case interview?"
+    a: "Give a clear recommendation first, in one sentence, then the two or three reasons backed by the numbers you found, then the main risks and how to mitigate them, and the next steps you would take. The interviewer should be able to act on it as if they were the client's CEO."
+    k: ["!Leads with a clear recommendation", "Supports it with key evidence", "States risks, mitigations and next steps"]
+    h: ["What would the CEO do with your answer?"]
+    fu: ["What if the data was inconclusive?"]
+    m: "Summarise everything you analysed in order."
+    s: ["Answer first", "Risk-aware"]
+
+  stake_simple:
+    c: [stakeholder_communication, explaining_tradeoffs]
+    d: intro
+    t: practical
+    f: "explaining technical work simply"
+    q: "Explain to a non-technical principal why the college website needs two weeks of \"invisible\" security work."
+    a: "Lead with the risk in their terms: the site holds student records, and an outdated component has a known weakness attackers use, which could leak data and damage the college's reputation and legal standing. The two weeks update and test those parts; nothing changes visibly, but the risk drops. Offer what is needed from them — approval and a maintenance window."
+    k: ["!Frames the work in terms of the principal's risks", "Avoids jargon and uses a concrete consequence", "States what is needed from them"]
+    h: ["What does the principal care about?"]
+    fu: ["How would you report progress on invisible work?"]
+    m: "Technical details convince non-technical people."
+    s: ["Audience framing", "Clear ask"]
+
+  stake_bad_news:
+    c: [stakeholder_communication, ownership_and_accountability]
+    d: core
+    t: scenario
+    f: "bad news early"
+    q: "You discover the data migration you own will miss its date and affect three teams. Who do you tell, when and how?"
+    a: "Tell your manager and the affected teams as soon as you are confident of the slip, not on the deadline. Explain what happened, the new realistic date, the impact on each team and what you are doing to recover, and offer options to reduce their impact. Follow up in writing so everyone has the same information, and update regularly."
+    k: ["!Communicates early to manager and affected teams", "Gives cause, new date, impact and recovery plan", "Follows up in writing with regular updates"]
+    h: ["What can the other teams do if they know today?"]
+    fu: ["How would you rebuild trust after a slip?"]
+    m: "Hiding a delay until you are sure gives you time to fix it."
+    s: ["Early and complete", "Options for others"]
+
+  stake_updates:
+    c: [stakeholder_communication, writing_for_an_audience]
+    d: core
+    t: practical
+    f: "written updates"
+    q: "Write the structure of a weekly project update that a busy manager will actually read."
+    a: "Start with a one-line status and whether it is on track. Then three short sections: progress this week, what is next, and risks or decisions needed, with the ask clearly marked. Keep it short, use numbers and dates, link to details instead of pasting them, and send it at the same time each week."
+    k: ["!Opens with a one-line status", "Covers progress, next steps and risks or decisions", "Keeps it short and marks any ask clearly"]
+    h: ["What does the manager need to do after reading it?"]
+    fu: ["How would the update differ for a client?"]
+    m: "Long updates show more effort."
+    s: ["Skimmable", "Clear ask"]
+
+  neg_objection:
+    c: [negotiation_and_persuasion, customer_focus]
+    d: core
+    t: scenario
+    f: "handling an objection"
+    q: "A school principal says your learning software is too expensive. How do you respond?"
+    a: "First understand the objection: too expensive compared with what — budget, a competitor, or the value they expect? Ask questions, then address the real concern: show value in their terms, such as teacher hours saved or results improved at similar schools, offer a smaller pilot or phased plan within budget, and avoid immediately discounting."
+    k: ["!Asks questions to understand the real objection", "Reframes in terms of value to the customer", "Offers options like a pilot rather than an immediate discount"]
+    h: ["Expensive compared to what?"]
+    fu: ["When would you walk away from the deal?"]
+    m: "The answer to price objections is a discount."
+    s: ["Diagnose first", "Value framing"]
+
+  neg_walkaway:
+    c: [negotiation_and_persuasion, business_case_analysis]
+    d: hard
+    t: tradeoff
+    f: "knowing your walk-away"
+    q: "You are negotiating your first job offer. How do you prepare, and what is your walk-away point?"
+    a: "Research the market range for the role and location, know your best alternative — another offer, or continuing your studies — and set your walk-away point from it. Consider the whole package: base, bonus, joining date, learning, location and bond terms. Ask for specific numbers with reasons, stay respectful, and decide in advance what trade-offs you would accept."
+    k: ["!Researches the market and knows the best alternative", "Sets a walk-away point from the alternative", "Negotiates the whole package with reasons"]
+    h: ["What will you do if they say no?"]
+    fu: ["How do you respond to an exploding offer deadline?"]
+    m: "Freshers cannot negotiate anything."
+    s: ["BATNA thinking", "Whole package"]
+
+  neg_value:
+    c: [negotiation_and_persuasion, product_sense]
+    d: intro
+    t: practical
+    f: "framing value"
+    q: "Pitch an attendance-tracking app to a college in under a minute."
+    a: "Lead with the college's problem: faculty lose ten minutes a class on manual attendance, and records are error-prone and late for parents. Our app takes attendance in seconds with a QR scan, alerts parents automatically and gives the office live reports. A similar college saved around 300 faculty hours a semester. Offer a free one-month pilot in one department."
+    k: ["!Starts with the customer's problem", "States the benefit with evidence or a number", "Ends with a clear, low-risk next step"]
+    h: ["What does the college lose today?"]
+    fu: ["How would the pitch change for the finance officer?"]
+    m: "A pitch should list every feature."
+    s: ["Problem-first", "Clear call to action"]
+
+  writing_headline:
+    c: [writing_for_an_audience]
+    d: intro
+    t: practical
+    f: "structure and headlines"
+    q: "Rewrite the headline \"Our company is pleased to announce the launch of a new app\" for students, and explain the changes."
+    a: "For example, \"Book your mock interview in two taps — the new placement app is live\". The original talks about the company; the rewrite leads with what the student gets, uses active, concrete words and fewer of them. Good headlines name the benefit and the audience's interest first, and earn the click by being specific."
+    k: ["!Rewrites to lead with the reader's benefit", "Uses concrete, active, shorter wording", "Explains why the change works"]
+    h: ["What does the student get from the app?"]
+    fu: ["How would you test two headlines?"]
+    m: "Headlines should announce the company's news."
+    s: ["Reader-first", "Specific"]
+
+  writing_edit:
+    c: [writing_for_an_audience, summarising_concisely]
+    d: core
+    t: practical
+    f: "editing for clarity"
+    q: "How do you edit your own draft to make it clearer?"
+    a: "Read it as the reader: cut words that add nothing, replace jargon and abstract nouns with plain verbs, split long sentences, and put the main point first in each paragraph. Read it aloud to catch awkward phrasing, check every claim is accurate, and take a break before the final pass. Ask someone from the audience to read it if possible."
+    k: ["!Cuts unnecessary words and jargon", "Puts the main point first and shortens sentences", "Reads aloud or gets a reader's feedback"]
+    h: ["Which sentence could you delete without losing meaning?"]
+    fu: ["How do you know when an edit is finished?"]
+    m: "Clear writing comes out right the first time."
+    s: ["Concrete techniques", "Reader check"]
+
+  writing_tone:
+    c: [writing_for_an_audience, stakeholder_communication]
+    d: hard
+    t: scenario
+    f: "tone and brand voice"
+    q: "A brand's voice is friendly and playful, but you must write a message about a data breach. How do you handle tone?"
+    a: "Serious news overrides playfulness: keep the brand's plain, human language but drop jokes and casual phrasing. Lead with what happened and what it means for the reader, what they should do, what the company is doing, and how to get help, with a sincere apology. Brand voice is consistent personality; tone adapts to the situation."
+    k: ["!Distinguishes consistent voice from situational tone", "Drops playfulness for a serious, human message", "Structures it around what happened and what to do"]
+    h: ["How would a joke read to someone whose data leaked?"]
+    fu: ["What should the subject line say?"]
+    m: "Brand voice must never change."
+    s: ["Voice versus tone", "Reader-first structure"]

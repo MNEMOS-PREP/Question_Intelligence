@@ -1,0 +1,522 @@
+# =============================================================================
+#  GOAL BANK — system_design_verbal (2026-11-12, for M22 Follow Your Goal)
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: system_design_verbal
+provenance: generated
+items:
+  lb_l4_l7:
+    c: [load_balancing, osi_and_tcp_ip_model]
+    d: core
+    t: tradeoff
+    f: "layer 4 versus layer 7"
+    q: "What is the difference between a layer 4 and a layer 7 load balancer, and when would you pick each?"
+    a: "A layer 4 balancer routes by IP and port without reading the payload, so it is fast and protocol-agnostic, good for raw TCP or very high throughput. A layer 7 balancer reads HTTP, so it can route by path or header, terminate TLS, add cookies for affinity and do smarter health checks, at more CPU cost. Web APIs usually use layer 7; databases or game servers may use layer 4."
+    k: ["!Says layer 4 routes on IP and port without inspecting content", "Says layer 7 understands HTTP and can route by path or header", "Matches each to a use case"]
+    h: ["Can a layer 4 balancer see the URL path?"]
+    fu: ["Where would you terminate TLS and why?"]
+    m: "Layer 7 is always better."
+    s: ["Capability versus cost", "Use-case fit"]
+
+  lb_algorithms:
+    c: [load_balancing, scalability]
+    d: intro
+    t: conceptual
+    f: "balancing algorithms"
+    q: "Round robin sends equal traffic to each server, yet one server is overloaded. Why, and what algorithm would help?"
+    a: "Round robin ignores how heavy each request is and how busy each server already is, so long requests or a slower machine pile up. Least-connections sends new requests to the server with the fewest active ones, and weighted variants account for different machine sizes. Consistent hashing helps when requests for the same key should hit the same server for caching."
+    k: ["!Says round robin ignores request cost and current load", "Proposes least connections or weighted balancing", "Mentions consistent hashing for cache affinity"]
+    h: ["Are all requests equally expensive?"]
+    fu: ["What does power-of-two-choices do?"]
+    m: "Equal request counts mean equal load."
+    s: ["Explains the mismatch", "Several algorithms"]
+
+  lb_health_checks:
+    c: [load_balancing, availability_and_reliability]
+    d: core
+    t: scenario
+    f: "health checks"
+    q: "A server's process is running but its database connection pool is exhausted, and the load balancer keeps sending it traffic. How should health checks be designed?"
+    a: "A shallow check that only confirms the process answers misses this. Use a readiness check that verifies the service can actually do work, including critical dependencies like a database connection, and remove the instance from rotation when it fails. Keep liveness checks shallow so a slow dependency does not restart every instance at once, and require several failures before ejecting to avoid flapping."
+    k: ["!Says a shallow process check misses a broken dependency", "Proposes a readiness check that tests real ability to serve", "Separates liveness from readiness and avoids flapping"]
+    h: ["What does the current health check actually test?"]
+    fu: ["Why could a deep liveness check take down the whole fleet?"]
+    m: "If the port is open, the server is healthy."
+    s: ["Readiness versus liveness", "Avoids cascades"]
+
+  lb_sticky_sessions:
+    c: [load_balancing, web_storage_and_cookies]
+    d: core
+    t: tradeoff
+    f: "session affinity"
+    q: "Your app stores sessions in server memory, so you enabled sticky sessions. What problems does that bring?"
+    a: "Sticky sessions tie each user to one server, so load spreads unevenly, a server crash logs its users out, and scaling down or deploying drops sessions. It also blocks moving to stateless scaling. Moving sessions into a shared store such as Redis, or using signed tokens, lets any server handle any request."
+    k: ["!Names uneven load and lost sessions on server failure", "Says it complicates scaling and deployments", "Proposes a shared session store or stateless tokens"]
+    h: ["What happens to a user's cart when their server restarts?"]
+    fu: ["When is affinity still useful?"]
+    m: "Sticky sessions are a scaling technique."
+    s: ["Failure-mode reasoning", "Stateless alternative"]
+
+  scale_up_vs_out:
+    c: [scalability, load_balancing]
+    d: intro
+    t: tradeoff
+    f: "scaling up versus out"
+    q: "Your API server is at full CPU. Should you buy a bigger machine or add more machines?"
+    a: "Scaling up is simplest — no code changes — but has a ceiling, gets expensive and remains a single point of failure. Scaling out adds machines behind a load balancer, gives redundancy and near-linear capacity, but requires stateless services and moves bottlenecks to shared parts like the database. A common path is scale up first for quick relief, then design to scale out."
+    k: ["!Explains scaling up is simple but limited and a single point of failure", "Explains scaling out needs statelessness and a load balancer", "Notes the bottleneck may move to shared components"]
+    h: ["What fails if your one big machine fails?"]
+    fu: ["What has to change in the code to scale out?"]
+    m: "Adding servers always scales linearly."
+    s: ["Both options weighed", "Bottleneck awareness"]
+
+  scale_bottleneck:
+    c: [scalability, observability]
+    d: core
+    t: scenario
+    f: "finding the bottleneck"
+    q: "Adding more app servers did not improve your API's throughput. How do you find the real bottleneck?"
+    a: "Measure each stage rather than guessing. Look at latency and saturation per component: database CPU, connections, lock waits and slow queries; cache hit rates; downstream services; thread or connection pool limits on the app. If the app servers are idle while the database is saturated, the database is the bottleneck, and fixes there include indexes, caching, read replicas or reducing queries per request."
+    k: ["!Measures each component's latency and saturation", "Checks shared resources such as the database or pools", "Matches the fix to the component found"]
+    h: ["Were the new app servers busy or waiting?"]
+    fu: ["How would distributed tracing help here?"]
+    m: "More servers always means more throughput."
+    s: ["Measurement first", "Component-by-component"]
+
+  scale_reads_writes:
+    c: [scalability, database_replication]
+    d: hard
+    t: design
+    f: "scaling reads and writes"
+    q: "A social app has a hundred reads for every write. How do you scale reads, and what changes when writes also grow?"
+    a: "For reads, add caches for hot data, read replicas and denormalised read models, and push static content to a CDN. Writes are harder because they need a single source of truth: batch and queue non-urgent writes, partition the data by user or region so different shards take different writes, and avoid hot rows such as a single global counter by sharding counters."
+    k: ["!Scales reads with caches, replicas and read models", "Scales writes by partitioning or sharding", "Mentions queuing writes or avoiding hot rows"]
+    h: ["Can a read replica accept writes?"]
+    fu: ["How would you count likes on a viral post?"]
+    m: "Read replicas solve write scaling too."
+    s: ["Reads versus writes", "Hot-spot awareness"]
+
+  scale_stateless:
+    c: [scalability, authentication]
+    d: core
+    t: conceptual
+    f: "statelessness"
+    q: "Why does scaling out require stateless application servers, and where does the state go?"
+    a: "If a server holds user state in memory, requests must return to that server, and losing it loses the state. Stateless servers keep nothing request-to-request, so any instance can serve any request and instances can be added or removed freely. State moves to shared stores: sessions to Redis or signed tokens, files to object storage, and data to the database."
+    k: ["!Explains in-memory state ties users to servers", "Says stateless servers can be added or removed freely", "Names where state moves: shared cache, object storage, database"]
+    h: ["What happens to in-memory uploads when an instance is removed?"]
+    fu: ["Is a WebSocket server stateless?"]
+    m: "Stateless means the app has no data."
+    s: ["Why and where", "Concrete stores"]
+
+  repl_leader_follower:
+    c: [database_replication]
+    d: intro
+    t: conceptual
+    f: "leader and followers"
+    r: [dbms_verbal]
+    q: "Explain leader-follower replication. What is it good for?"
+    a: "One leader accepts all writes and streams its changes to followers, which apply them and serve reads. It spreads read load across followers, keeps copies of the data for failover, and lets you run heavy reporting queries on a follower without slowing the leader. It does not scale writes, since every write still goes through the leader."
+    k: ["!Says the leader takes writes and followers replay its changes", "Names read scaling and failover as benefits", "Notes writes still go through one leader"]
+    h: ["Where does an insert go first?"]
+    fu: ["What is multi-leader replication for?"]
+    m: "Followers can accept writes too."
+    s: ["Clear roles", "Knows the limit"]
+
+  repl_lag:
+    c: [database_replication, consistency_models]
+    d: core
+    t: debugging
+    f: "replication lag"
+    r: [dbms_verbal]
+    q: "A user updates their bio, refreshes, and sees the old bio — then the new one a few seconds later. Explain and fix it."
+    a: "Reads are going to an asynchronous replica that has not yet applied the write — replication lag. Fix it with read-your-writes consistency: route the user's reads to the leader for a short time after they write, or read from a replica only if it has caught up to the user's last write position, or return the updated object from the write itself."
+    k: ["!Identifies replica lag on asynchronous replication", "Proposes read-your-writes, such as reading from the leader after a write", "Mentions checking replica position or returning the written data"]
+    h: ["Which database served the refresh?"]
+    fu: ["How would you monitor replication lag?"]
+    m: "Replication is instant."
+    s: ["Names the guarantee", "Practical routing fix"]
+
+  repl_sync_async:
+    c: [database_replication, availability_and_reliability]
+    d: hard
+    t: tradeoff
+    f: "synchronous versus asynchronous"
+    r: [dbms_verbal]
+    q: "Synchronous or asynchronous replication for a payments database — what do you lose with each?"
+    a: "Synchronous replication waits for a replica to confirm before acknowledging a write, so a leader crash loses nothing, but every write is slower and a slow or failed replica can stall writes. Asynchronous acknowledges immediately, which is fast, but recent writes can be lost if the leader dies before shipping them. Payments often use semi-synchronous: wait for one replica, others async."
+    k: ["!Explains synchronous protects writes but adds latency and can stall", "Explains asynchronous is fast but can lose recent writes on failover", "Proposes semi-synchronous as a middle ground"]
+    h: ["What happens to a write acknowledged but not yet shipped?"]
+    fu: ["How do you choose which replica must confirm?"]
+    m: "Asynchronous replication never loses data."
+    s: ["Durability versus latency", "Practical compromise"]
+
+  repl_failover:
+    c: [database_replication, distributed_systems_fundamentals]
+    d: hard
+    t: scenario
+    f: "failover"
+    r: [dbms_verbal]
+    q: "The leader database becomes unreachable. Walk me through a safe failover and what can go wrong."
+    a: "Detect the failure with health checks over a timeout, choose the most up-to-date replica, promote it, and repoint clients and other replicas to it. Risks include promoting a replica that lacks recent writes, a split brain if the old leader comes back and still accepts writes, and false failovers on a brief network blip. Fencing the old leader and requiring consensus on promotion prevent split brain."
+    k: ["!Describes detect, choose the most current replica, promote, repoint", "Names split brain and data loss as risks", "Mentions fencing or consensus to prevent two leaders"]
+    h: ["What if the old leader wakes up still thinking it is in charge?"]
+    fu: ["How long should the failure timeout be?"]
+    m: "Failover is always automatic and safe."
+    s: ["Ordered procedure", "Split-brain awareness"]
+
+  shard_key:
+    c: [database_sharding, data_modelling]
+    d: core
+    t: design
+    f: "choosing a shard key"
+    r: [dbms_verbal]
+    q: "You need to shard an orders table. Would you shard by order id, customer id or date? Justify it."
+    a: "Sharding by customer id keeps all of a customer's orders together, so their history is a single-shard query, and spreads load well across many customers. Order id spreads writes evenly but scatters a customer's orders. Date creates a hot shard taking every new write. The key should match the dominant query and avoid hot spots, so customer id is usually best, watching for very large customers."
+    k: ["!Chooses a key that matches the main access pattern", "Explains date keys create a hot shard for new writes", "Notes skew from very large customers"]
+    h: ["Which query must be fast for most users?"]
+    fu: ["How would you handle one huge enterprise customer?"]
+    m: "Any column works as a shard key."
+    s: ["Access-pattern driven", "Hot-spot aware"]
+
+  shard_consistent_hashing:
+    c: [database_sharding, hashing]
+    d: hard
+    t: conceptual
+    f: "consistent hashing"
+    r: [dbms_verbal]
+    q: "Why does hash modulo N break when you add a shard, and how does consistent hashing help?"
+    a: "With hash modulo N, changing N changes almost every key's shard, so adding one shard moves nearly all data. Consistent hashing places shards and keys on a ring, and a key belongs to the next shard clockwise; adding a shard only takes keys from its neighbour, about one Nth of the data. Virtual nodes give each shard many points on the ring to balance load."
+    k: ["!Explains modulo N remaps most keys when N changes", "Describes the ring where a new node takes only nearby keys", "Mentions virtual nodes for balance"]
+    h: ["What fraction of keys change shard when N goes from 4 to 5?"]
+    fu: ["How do virtual nodes help with uneven machines?"]
+    m: "Consistent hashing means no data ever moves."
+    s: ["Quantifies movement", "Virtual nodes"]
+
+  shard_cross_queries:
+    c: [database_sharding, query_optimisation]
+    d: hard
+    t: tradeoff
+    f: "queries that cross shards"
+    r: [dbms_verbal]
+    q: "After sharding by customer, the admin dashboard needs total revenue across all customers. What are your options?"
+    a: "A scatter-gather query asks every shard and combines results, which works but is slow and loads every shard. Better for analytics is to stream changes into a separate warehouse or aggregate store built for cross-cutting queries, or maintain running aggregates updated by events. Operational queries should be designed to stay within a shard."
+    k: ["!Names scatter-gather and its cost", "Proposes a warehouse or precomputed aggregates for cross-shard analytics", "Keeps operational queries single-shard"]
+    h: ["Should the dashboard load every production shard?"]
+    fu: ["How fresh does the revenue number need to be?"]
+    m: "Sharding has no effect on queries."
+    s: ["Separates OLTP from analytics", "Cost-aware"]
+
+  cons_strong_eventual:
+    c: [consistency_models, nosql_vs_relational]
+    d: core
+    t: tradeoff
+    f: "choosing per feature"
+    q: "For a shopping site, which features need strong consistency and which can be eventually consistent?"
+    a: "Payments, stock reservation at checkout and account balances need strong consistency, because two users must not buy the last item or a balance must not go negative. Product reviews, recommendation lists, like counts and search indexes can be eventually consistent, since being seconds stale harms nobody and allows more availability and speed. Choosing per feature avoids paying for strong consistency everywhere."
+    k: ["!Names money and stock as needing strong consistency", "Names counts, reviews or search as fine eventually", "Argues for choosing per feature"]
+    h: ["What harm does a stale like count cause?"]
+    fu: ["How would you keep the cart available during an outage?"]
+    m: "The whole system must use one consistency model."
+    s: ["Per-feature thinking", "Harm-based reasoning"]
+
+  cons_partition:
+    c: [consistency_models, distributed_systems_fundamentals]
+    d: hard
+    t: conceptual
+    f: "the availability trade-off under a partition"
+    q: "Explain what the CAP theorem actually says, and what it does not say."
+    a: "CAP says that when a network partition separates nodes, a system must choose between staying consistent, refusing some requests, and staying available, serving possibly stale data. It does not say you pick two of three all the time: without a partition you can have both. PACELC adds that even without partitions there is a latency versus consistency trade-off."
+    k: ["!States the choice is between consistency and availability during a partition", "Corrects the 'pick any two' reading", "Mentions latency trade-offs without partitions (PACELC)"]
+    h: ["What happens when there is no network partition?"]
+    fu: ["Which side does a bank ledger choose?"]
+    m: "You choose two of consistency, availability and partition tolerance."
+    s: ["Precise statement", "Corrects the myth"]
+
+  cons_quorum:
+    c: [consistency_models, database_replication]
+    d: hard
+    t: conceptual
+    f: "quorums"
+    q: "With three replicas, how do read and write quorums give you consistent reads?"
+    a: "Each write must be acknowledged by W replicas and each read must ask R replicas. If R plus W is greater than N, here for example W of 2 and R of 2 with N of 3, every read set overlaps every write set in at least one replica, so a read sees the latest acknowledged write, using versions to pick the newest. Lower quorums are faster but can return stale data."
+    k: ["!States R plus W greater than N makes read and write sets overlap", "Gives a concrete example such as W=2, R=2, N=3", "Notes lower quorums trade freshness for speed"]
+    h: ["Must the replicas you read from share at least one with the write?"]
+    fu: ["What do sloppy quorums and hinted handoff change?"]
+    m: "Reading from any single replica is consistent."
+    s: ["Overlap argument", "Trade-off"]
+
+  dist_partial_failure:
+    c: [distributed_systems_fundamentals, fault_tolerance]
+    d: core
+    t: scenario
+    f: "partial failure"
+    q: "Service A calls service B and gets a timeout. Did B do the work? How should A behave?"
+    a: "A cannot know: the request may have been lost, processed slowly, or processed with the response lost. That is partial failure. A should retry only if the operation is idempotent or carries an idempotency key, use timeouts and backoff, and design so a duplicate or a missing result can be detected, for example by querying the status before retrying."
+    k: ["!Says a timeout does not reveal whether the work happened", "Retries only idempotent operations or with an idempotency key", "Uses timeouts, backoff or a status check"]
+    h: ["Where could the request or response have been lost?"]
+    fu: ["How would you make 'transfer money' safe to retry?"]
+    m: "A timeout means the request failed."
+    s: ["Names the ambiguity", "Safe retry design"]
+
+  dist_clocks:
+    c: [distributed_systems_fundamentals]
+    d: hard
+    t: conceptual
+    f: "time and ordering"
+    q: "Two servers record events with their local clocks, and sorting by timestamp gives the wrong order. Why, and what can you use instead?"
+    a: "Machine clocks drift and are adjusted by NTP, so timestamps from different machines are not comparable precisely, and an effect can appear earlier than its cause. Logical clocks, such as Lamport timestamps, order events by causality; vector clocks detect concurrent events. Where real time matters, systems like Spanner bound clock uncertainty and wait it out."
+    k: ["!Explains clock drift and skew make cross-machine timestamps unreliable", "Proposes logical or vector clocks for ordering", "Mentions bounded uncertainty such as TrueTime"]
+    h: ["Are two servers' clocks exactly equal?"]
+    fu: ["How does a Lamport clock decide its next value?"]
+    m: "NTP makes clocks identical."
+    s: ["Causality versus wall time", "Knows the tools"]
+
+  dist_consensus:
+    c: [distributed_systems_fundamentals, availability_and_reliability]
+    d: hard
+    t: conceptual
+    f: "consensus and leader election"
+    q: "Why do systems like etcd need a consensus algorithm such as Raft, and why do they run an odd number of nodes?"
+    a: "Consensus lets a group of nodes agree on one sequence of values, such as which node is leader or the order of writes, even if some nodes crash. Raft elects a leader by majority vote and commits entries once a majority stores them. A majority is required so two groups can never both decide, and an odd count, such as five tolerating two failures, gives the best fault tolerance per node."
+    k: ["!Explains consensus agrees on one order or leader despite failures", "Says decisions need a majority, preventing two groups deciding", "Explains odd node counts maximise tolerated failures"]
+    h: ["How many nodes can fail in a cluster of five?"]
+    fu: ["What happens to writes if three of five nodes are partitioned away?"]
+    m: "More nodes always makes consensus faster."
+    s: ["Majority argument", "Failure arithmetic"]
+
+  dist_two_phase:
+    c: [distributed_systems_fundamentals, transactions_acid]
+    d: hard
+    t: tradeoff
+    f: "distributed transactions"
+    q: "An order must debit a wallet and reserve stock in two different services. Compare two-phase commit with a saga."
+    a: "Two-phase commit has a coordinator ask every participant to prepare, then commit if all agree, giving atomicity, but it blocks if the coordinator fails mid-way and couples services tightly. A saga runs local transactions in sequence and, if a step fails, runs compensating actions such as refunding the wallet; it is available and loosely coupled but only eventually consistent, and compensations must be designed carefully."
+    k: ["!Describes two-phase commit's prepare and commit and its blocking risk", "Describes a saga of local steps with compensations", "Weighs atomicity against availability and coupling"]
+    h: ["What happens to participants if the coordinator dies after prepare?"]
+    fu: ["Orchestration or choreography for this saga?"]
+    m: "Microservices can use ordinary database transactions across services."
+    s: ["Both mechanisms", "Honest trade-off"]
+
+  avail_slo:
+    c: [availability_and_reliability, observability]
+    d: core
+    t: conceptual
+    f: "measuring with SLOs"
+    q: "What is the difference between an SLI, an SLO and an SLA, and what is an error budget for?"
+    a: "An SLI is a measurement, such as the share of requests served successfully under 300 milliseconds. An SLO is the target for it, such as 99.9 percent over thirty days. An SLA is a contract with customers with consequences if missed, usually looser than the SLO. The error budget is the allowed unreliability, 0.1 percent here; while budget remains the team ships features, and when it runs out it focuses on reliability."
+    k: ["!Defines SLI as the measure, SLO as the target, SLA as the contract", "Explains the error budget as allowed failure", "Says the budget balances feature work against reliability work"]
+    h: ["Which of the three has penalties attached?"]
+    fu: ["How would you choose the SLO's number?"]
+    m: "The goal is always 100 percent uptime."
+    s: ["Precise definitions", "Budget as a decision tool"]
+
+  avail_spof:
+    c: [availability_and_reliability, load_balancing]
+    d: intro
+    t: design
+    f: "removing single points of failure"
+    q: "Look at a design with one load balancer, two app servers and one database. Where are the single points of failure, and how would you remove them?"
+    a: "The single load balancer and the single database are single points of failure; the two app servers are already redundant. Add a second load balancer with a floating IP or use a managed one spread across zones, and give the database a standby replica with automatic failover. Spread instances across availability zones so a data-centre failure does not take everything down."
+    k: ["!Identifies the load balancer and the database as single points of failure", "Adds redundancy with failover for each", "Spreads across availability zones"]
+    h: ["What stops working if the database machine dies?"]
+    fu: ["What new risk does automatic failover add?"]
+    m: "Two app servers make the system highly available."
+    s: ["Finds every SPOF", "Zone awareness"]
+
+  avail_graceful:
+    c: [availability_and_reliability, fault_tolerance]
+    d: core
+    t: scenario
+    f: "degrading gracefully"
+    q: "The recommendation service is down. Should the product page fail? How do you design for this?"
+    a: "No — recommendations are not essential. Call them with a short timeout, and on failure render the page without the section or show cached or popular items instead. Classify each dependency as critical, such as price and stock, or optional, and design fallbacks for the optional ones. Feature flags let you switch off a struggling feature entirely."
+    k: ["!Says optional features should not break the core page", "Uses timeouts with fallbacks like cached or popular items", "Classifies dependencies as critical or optional"]
+    h: ["Can a customer still buy without recommendations?"]
+    fu: ["How would you test that the fallback works?"]
+    m: "Every failure should show an error page."
+    s: ["Critical versus optional", "Concrete fallback"]
+
+  avail_disaster:
+    c: [availability_and_reliability, cloud_fundamentals]
+    d: hard
+    t: design
+    f: "recovering from disaster"
+    q: "Define RPO and RTO, and design backup and recovery for a system that can lose at most five minutes of data and be down at most one hour."
+    a: "RPO is how much data you can afford to lose, five minutes here; RTO is how long recovery may take, one hour. Five minutes RPO needs continuous backups such as point-in-time recovery from write-ahead logs or cross-region replication, not nightly dumps. One hour RTO needs infrastructure as code and rehearsed runbooks to rebuild in another region, and regular restore drills, because an untested backup is not a backup."
+    k: ["!Defines RPO as tolerable data loss and RTO as tolerable downtime", "Matches the RPO with continuous or point-in-time backups", "Matches the RTO with automation and rehearsed restores"]
+    h: ["Would a nightly backup meet a five-minute RPO?"]
+    fu: ["How often would you run a restore drill?"]
+    m: "Having backups means you can recover."
+    s: ["Numbers drive design", "Tests restores"]
+
+  ft_retries_backoff:
+    c: [fault_tolerance, distributed_systems_fundamentals]
+    d: core
+    t: practical
+    f: "timeouts and retries with backoff"
+    q: "A downstream service is slow, and every client retries immediately three times. What happens, and what should clients do?"
+    a: "Immediate retries multiply the load on a service that is already struggling, turning a slowdown into an outage — a retry storm. Clients should set timeouts, retry only idempotent requests, wait with exponential backoff plus random jitter so retries spread out, cap the number of retries, and share a retry budget so retries stay a small share of traffic."
+    k: ["!Explains immediate retries amplify load into a retry storm", "Uses exponential backoff with jitter and a cap", "Retries only idempotent requests or uses a retry budget"]
+    h: ["How much extra load do three instant retries add?"]
+    fu: ["Why is jitter needed on top of backoff?"]
+    m: "More retries always improve reliability."
+    s: ["Names the storm", "Complete retry policy"]
+
+  ft_circuit_breaker:
+    c: [fault_tolerance, microservices]
+    d: core
+    t: conceptual
+    f: "circuit breakers"
+    q: "How does a circuit breaker work, and how is it different from a retry?"
+    a: "A circuit breaker watches calls to a dependency; when failures pass a threshold it opens and fails calls immediately, without waiting on the broken service, giving it time to recover. After a cool-down it lets a few trial calls through, half-open, and closes if they succeed. Retries handle brief blips on a single call; a breaker protects both sides from a dependency that is persistently failing."
+    k: ["!Describes closed, open and half-open states", "Says an open breaker fails fast instead of waiting", "Contrasts with retries handling brief, single-call failures"]
+    h: ["What does the caller do while the breaker is open?"]
+    fu: ["What would you show the user while it is open?"]
+    m: "A circuit breaker fixes the failing service."
+    s: ["State machine", "Purpose versus retries"]
+
+  ft_bulkhead:
+    c: [fault_tolerance, concurrency_synchronisation]
+    d: hard
+    t: scenario
+    f: "bulkheads"
+    q: "One slow third-party API used for exports makes the whole application unresponsive, even for pages that never call it. Why, and what would you change?"
+    a: "All requests share one pool of threads or connections; the slow API holds them until none are left, so unrelated requests queue too. Isolate it with a bulkhead: give export calls their own small pool or queue, with timeouts, so when it saturates only exports wait or fail. Moving exports to a background job queue isolates them further."
+    k: ["!Explains a shared pool is exhausted by the slow dependency", "Proposes a separate bounded pool or queue (bulkhead)", "Adds timeouts or moves the work to background jobs"]
+    h: ["What resource are the waiting requests holding?"]
+    fu: ["How would you size the export pool?"]
+    m: "Adding threads fixes it."
+    s: ["Resource isolation", "Background offload"]
+
+  ft_cascade:
+    c: [fault_tolerance, availability_and_reliability]
+    d: hard
+    t: design
+    f: "stopping a failure from spreading"
+    q: "A database slowdown cascaded until every service was down. How would you design so one failure stays contained?"
+    a: "Contain it at each layer: timeouts on every call so threads are not held forever, circuit breakers to fail fast, bulkheads so one dependency cannot exhaust shared pools, load shedding and rate limiting to reject excess work early, and fallbacks for non-critical features. Queues absorb bursts, and back-pressure tells callers to slow down instead of piling up work."
+    k: ["!Uses timeouts and circuit breakers to stop waiting on a failing dependency", "Uses bulkheads and load shedding to protect shared resources", "Adds fallbacks or back-pressure"]
+    h: ["What were the other services doing while the database was slow?"]
+    fu: ["Which of these would you add first?"]
+    m: "Cascading failures only come from bugs."
+    s: ["Layered defences", "Prioritises"]
+
+  hld_url_shortener:
+    c: [high_level_design, hashing]
+    d: core
+    t: design
+    f: "components and data flow"
+    q: "Design a URL shortener like bit.ly. Walk me through the main components and the read and write paths."
+    a: "A write takes a long URL, generates a short code — a base-62 encoding of a unique id from a counter or id service, which avoids collisions — and stores code to URL in a key-value store. A read looks up the code, preferably from a cache in front of the store, and returns a 301 or 302 redirect. Reads vastly outnumber writes, so caching and replication matter most; analytics are logged asynchronously."
+    k: ["!Generates a unique short code, for example base-62 of an id", "Stores code-to-URL in a key-value store with a cache in front", "Notes reads dominate, and logs analytics asynchronously"]
+    h: ["How do you guarantee two URLs never get the same code?"]
+    fu: ["301 or 302 — which keeps your click analytics?"]
+    m: "Hashing the URL and taking six characters never collides."
+    s: ["Clear read and write paths", "Read-heavy reasoning"]
+
+  hld_estimation:
+    c: [high_level_design, scalability]
+    d: core
+    t: practical
+    f: "back-of-envelope estimation"
+    q: "Estimate the storage and request rate for a photo app with 10 million daily users who each view 50 photos and upload 1 a day."
+    a: "Views are 10 million times 50, which is 500 million a day, about 6,000 per second on average and perhaps 20,000 at peak. Uploads are 10 million a day, around 115 per second. At 2 megabytes per photo that is about 20 terabytes a day, roughly 7 petabytes a year before replication. So storage and image delivery through a CDN dominate the design, not the upload API."
+    k: ["!Computes reads and writes per second from daily figures", "Estimates daily and yearly storage with a stated photo size", "Draws a design conclusion, such as CDN and object storage dominate"]
+    h: ["How many seconds are in a day, roughly?"]
+    fu: ["How would thumbnails change the storage estimate?"]
+    m: "Estimates must be exact to be useful."
+    s: ["Shows the arithmetic", "Turns numbers into decisions"]
+
+  hld_requirements:
+    c: [high_level_design, clarifying_questions]
+    d: intro
+    t: scenario
+    f: "pinning down requirements"
+    q: "You are asked to design a chat app. What do you ask before drawing anything?"
+    a: "Ask about functional scope — one-to-one or groups, media, read receipts, history — and the scale, such as daily users and messages per second. Ask about non-functional needs: delivery latency, ordering guarantees, whether messages must never be lost, offline delivery, encryption and regions. These answers decide the design, for example whether you need persistent connections and how messages are stored."
+    k: ["!Clarifies functional scope such as groups, media and history", "Asks for scale numbers", "Asks non-functional needs like latency, ordering, durability"]
+    h: ["Would a design for 1,000 users differ from one for 100 million?"]
+    fu: ["Which answer changes your design the most?"]
+    m: "Good candidates start drawing immediately."
+    s: ["Functional and non-functional", "Links answers to design"]
+
+  hld_datastore:
+    c: [high_level_design, nosql_vs_relational]
+    d: hard
+    t: tradeoff
+    f: "the data store"
+    q: "For a ride-hailing app, which data stores would you use for trips, driver locations and payments, and why?"
+    a: "Payments need strong consistency and transactions, so a relational database. Trips are relational records too, partitioned by city or time as they grow. Live driver locations change every few seconds and are queried by area, so an in-memory store with geospatial indexes, such as Redis geo sets, fits, with history streamed to cheaper storage. Choosing per data type beats one store for everything."
+    k: ["!Chooses a transactional relational store for payments", "Chooses an in-memory geospatial store for live locations", "Justifies one store per data type"]
+    h: ["How often does a driver's location change?"]
+    fu: ["How would you find the nearest five drivers quickly?"]
+    m: "One database type should serve every need."
+    s: ["Matches store to access pattern", "Polyglot reasoning"]
+
+  hld_bottlenecks:
+    c: [high_level_design, caching_strategies]
+    d: hard
+    t: scenario
+    f: "bottlenecks and trade-offs"
+    q: "Your news feed design works for a million users. What breaks first at a hundred million, and what would you change?"
+    a: "Building feeds at read time by querying everyone a user follows becomes too slow, and celebrity posts create fan-out storms. Precompute feeds by pushing post ids into followers' feed caches on write, but pull celebrity posts at read time and merge, a hybrid. Shard feed storage by user, cache aggressively, and process fan-out through queues. Each fix trades storage or freshness for read speed."
+    k: ["!Identifies read-time feed assembly and celebrity fan-out as bottlenecks", "Proposes fan-out on write with a hybrid for celebrities", "Mentions sharding, caching or queues and the trade-offs"]
+    h: ["What happens when an account with 50 million followers posts?"]
+    fu: ["How stale can a feed be?"]
+    m: "Scaling is just adding servers to the same design."
+    s: ["Finds the real bottleneck", "Hybrid design"]
+
+  lld_parking_lot:
+    c: [low_level_design, classes_and_objects]
+    d: core
+    t: design
+    f: "finding the classes"
+    q: "Design the classes for a parking lot that has floors, different spot sizes and tickets."
+    a: "Core classes are ParkingLot, Floor, ParkingSpot with a size, Vehicle with a size, Ticket and a PaymentProcessor. The lot finds a free spot of a fitting size through a strategy such as nearest first, assigns it, and issues a ticket with entry time; on exit the ticket is priced by a pricing strategy and the spot freed. Spot allocation must be thread-safe because cars arrive concurrently."
+    k: ["!Identifies core classes such as lot, floor, spot, vehicle and ticket", "Uses strategies for spot selection or pricing", "Notes concurrency in assigning spots"]
+    h: ["What happens when two cars want the last small spot?"]
+    fu: ["How would you add electric-vehicle charging spots?"]
+    m: "More classes always mean a better design."
+    s: ["Responsibilities assigned", "Extensibility"]
+
+  lld_interfaces:
+    c: [low_level_design, abstraction_and_interfaces]
+    d: core
+    t: design
+    f: "responsibilities and interfaces"
+    q: "Design a notification module that can send email, SMS and push, where new channels will be added later."
+    a: "Define a NotificationChannel interface with a send method, and implement EmailChannel, SmsChannel and PushChannel. A NotificationService takes a message and the user's preferences and delegates to the right channels, chosen by a registry or factory. Adding WhatsApp then means one new class and a registration, without touching existing code — the open-closed principle. Retries and rate limits sit in the service, not in each channel."
+    k: ["!Defines a channel interface with one implementation per channel", "Selects channels via preferences and a registry or factory", "Shows adding a channel without modifying existing code"]
+    h: ["What changes when a fourth channel arrives?"]
+    fu: ["Where would you handle a failed SMS?"]
+    m: "A switch statement over channel types is fine forever."
+    s: ["Open-closed", "Clear service boundary"]
+
+  lld_concurrency:
+    c: [low_level_design, concurrency_synchronisation]
+    d: hard
+    t: design
+    f: "concurrency in the design"
+    q: "Design a movie-ticket booking system so two people can never book the same seat."
+    a: "Model Show, Seat and Booking. When a user picks seats, place a short-lived hold, for example ten minutes, using an atomic conditional update in the database such as update seat set held_by where held_by is null, or a unique constraint per show and seat. Only the holder can confirm with payment; expired holds are released. This keeps the check and the claim atomic instead of checking first and writing later."
+    k: ["!Makes the check and claim of a seat atomic", "Uses a time-limited hold before payment", "Uses a conditional update, lock or unique constraint"]
+    h: ["What happens between checking a seat is free and booking it?"]
+    fu: ["How would you release holds when users abandon checkout?"]
+    m: "Checking availability before booking is enough."
+    s: ["Atomicity", "Hold-then-confirm"]
+
+  lld_design_for_change:
+    c: [low_level_design, solid_principles]
+    d: hard
+    t: tradeoff
+    f: "designing for change"
+    q: "In a low-level design round, how do you decide how much flexibility to build in, without over-engineering?"
+    a: "Build extension points where the requirements already hint at variation — new vehicle types, payment methods, pricing rules — using interfaces and strategies there. Keep the rest simple and concrete, because every abstraction has a cost in indirection. State the assumptions out loud and show how the design would change if a likely requirement arrived, which demonstrates judgement better than abstracting everything."
+    k: ["!Adds abstraction only where variation is expected", "Keeps the rest concrete and simple", "Explains assumptions and how the design would evolve"]
+    h: ["Which requirements are likely to change?"]
+    fu: ["Give an example of an abstraction you would not add."]
+    m: "More interfaces always make a design better."
+    s: ["Judgement over patterns", "States assumptions"]

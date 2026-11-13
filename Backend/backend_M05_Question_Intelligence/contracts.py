@@ -77,6 +77,26 @@ class ItemStatus(StrEnum):
     broken = "broken"
 
 
+class QuestionType(StrEnum):
+    """What an item asks the candidate to DO (2026-11-12, for M22's goals).
+
+    Difficulty says how deep; this says what kind of thinking. A role's
+    interview is not "twelve conceptual questions": a backend panel asks to
+    debug, to weigh a trade-off, to design, to defend a project. Coverage is
+    counted per type so a thin type is visible (`/v1/bank/coverage`)."""
+
+    conceptual = "conceptual"
+    coding = "coding"
+    debugging = "debugging"
+    scenario = "scenario"
+    design = "design"
+    tradeoff = "tradeoff"
+    project = "project"
+    behavioural = "behavioural"
+    practical = "practical"
+    optimisation = "optimisation"
+
+
 class DifficultyBand(StrEnum):
     """What an author can actually judge.
 
@@ -294,6 +314,13 @@ class Question(BaseModel):
     follow_ups: list[FollowUpTemplate] = Field(default_factory=list)
     time_budget_s: int = 300
     hint_ladder: list[str] = Field(default_factory=list)
+    #: 2026-11-12: what kind of question, which sub-competency of the primary
+    #: concept it is about (one of M04's `facets` for it), what people usually
+    #: get wrong, and what a strong answer shows. The last two are answer key.
+    question_type: QuestionType = QuestionType.conceptual
+    facet: str | None = None
+    misconceptions: list[str] = Field(default_factory=list)
+    strong_answer: list[str] = Field(default_factory=list)
     stem_simhash: int = 0
     ontology_version: str = "1.0"
     quality: QualityStats = Field(default_factory=QualityStats)
@@ -540,6 +567,7 @@ __all__ = [
     "QualityStats",
     "Question",
     "QuestionPackage",
+    "QuestionType",
     "SelectionReason",
     "SelectionRequest",
     "SelectionResult",

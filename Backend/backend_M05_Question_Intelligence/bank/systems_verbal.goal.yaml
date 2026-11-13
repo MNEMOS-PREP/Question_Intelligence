@@ -1,0 +1,203 @@
+# =============================================================================
+#  GOAL BANK — systems_verbal, engineering practice (2026-11-12, for M22)
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: systems_verbal
+provenance: generated
+items:
+  git_rebase_merge:
+    c: [git, code_quality_and_review]
+    d: core
+    t: tradeoff
+    f: "rebase versus merge"
+    q: "When would you rebase a branch and when would you merge it? What is the golden rule of rebasing?"
+    a: "Rebasing replays your commits on top of the latest main, giving a linear, readable history, which suits updating a private feature branch. Merging keeps the true history with a merge commit and never rewrites commits. The golden rule is never to rebase commits others have already pulled, because rewriting shared history forces everyone to reconcile diverged copies."
+    k: ["!Explains rebase rewrites commits for a linear history", "Explains merge preserves history without rewriting", "States not to rebase shared, published commits"]
+    h: ["What happens to commits your teammate already pulled?"]
+    fu: ["What does squash-merging trade away?"]
+    m: "Rebasing is always better than merging."
+    s: ["Mechanics", "Safety rule"]
+
+  git_undo:
+    c: [git]
+    d: intro
+    t: practical
+    f: "undoing safely"
+    q: "You committed a bug and already pushed it to the shared main branch. How do you undo it safely?"
+    a: "Use git revert on the bad commit, which creates a new commit that reverses its changes, so history is preserved and nobody's copy breaks. Avoid git reset with a force push on a shared branch, because it rewrites history others depend on. Reset is fine for commits that exist only on your machine."
+    k: ["!Uses git revert to add an undoing commit", "Avoids reset plus force-push on shared branches", "Notes reset is fine for local, unpushed commits"]
+    h: ["Who else has this commit?"]
+    fu: ["How would you recover a commit lost after a reset?"]
+    m: "Force-pushing a reset is the cleanest fix on main."
+    s: ["Safe undo", "Local versus shared"]
+
+  git_conflicts:
+    c: [git, code_quality_and_review]
+    d: core
+    t: practical
+    f: "resolving conflicts"
+    q: "You get a merge conflict in a file both you and a teammate changed. Walk me through resolving it well."
+    a: "Open the conflicted sections and understand both sides' intent, not just the text — talk to the teammate if unclear. Combine the changes so both goals are met, remove the conflict markers, then build and run the tests before committing, since a textually clean merge can still be logically broken. Frequent small merges reduce conflicts."
+    k: ["!Understands both sides' intent before editing", "Combines changes and removes markers", "Builds and tests before committing the resolution"]
+    h: ["Could a cleanly merged file still be wrong?"]
+    fu: ["How do small pull requests reduce conflicts?"]
+    m: "Choosing 'ours' for every conflict is safe."
+    s: ["Intent-aware", "Verifies"]
+
+  git_branching:
+    c: [git, ci_cd]
+    d: hard
+    t: tradeoff
+    f: "branching strategies"
+    q: "Compare trunk-based development with Git Flow. Which suits a team deploying several times a day?"
+    a: "Git Flow uses long-lived develop and release branches, suiting scheduled releases but causing big merges and slow integration. Trunk-based development has everyone merging small changes to main at least daily, protected by CI and feature flags, so integration problems surface early. For several deploys a day, trunk-based development fits far better."
+    k: ["!Describes Git Flow's long-lived branches and scheduled releases", "Describes trunk-based small, frequent merges to main", "Chooses trunk-based for frequent deployment, with CI and flags"]
+    h: ["How long do branches live in each model?"]
+    fu: ["How do feature flags make trunk-based work safe?"]
+    m: "More branches mean safer releases."
+    s: ["Fit to cadence", "Enablers"]
+
+  sdlc_agile:
+    c: [sdlc_and_agile, project_management_basics]
+    d: intro
+    t: conceptual
+    f: "agile and scrum"
+    q: "What happens in a two-week Scrum sprint, and what is each ceremony for?"
+    a: "Sprint planning picks the highest-priority backlog items the team can finish and sets a sprint goal. The daily stand-up surfaces progress and blockers in a few minutes. The sprint review demonstrates working software to stakeholders for feedback, and the retrospective asks how the team can work better. Backlog refinement keeps upcoming items clear and estimated."
+    k: ["!Explains planning, stand-up, review and retrospective", "Gives each ceremony's purpose", "Mentions the sprint goal or backlog refinement"]
+    h: ["Which meeting is about the product and which about the process?"]
+    fu: ["What do you do if the sprint goal becomes impossible?"]
+    m: "Agile means no planning."
+    s: ["Purpose of each", "Feedback loops"]
+
+  sdlc_estimates:
+    c: [sdlc_and_agile, prioritisation_under_pressure]
+    d: core
+    t: scenario
+    f: "estimating and planning"
+    q: "Your manager asks how long a feature will take, and it has many unknowns. How do you answer?"
+    a: "Break it into smaller pieces, estimate the parts you understand, and identify the unknowns. Give a range with your confidence, not a single date, and propose a short spike to reduce the biggest uncertainty first. Commit to revisiting the estimate after the spike, and flag dependencies on other teams early."
+    k: ["!Breaks work down and names the unknowns", "Gives a range with confidence rather than one date", "Proposes a spike and re-estimates"]
+    h: ["What is the riskiest part you cannot estimate yet?"]
+    fu: ["How do you handle pressure to commit to a date?"]
+    m: "A precise date is always expected and possible."
+    s: ["Honest uncertainty", "Reduces risk first"]
+
+  sdlc_done:
+    c: [sdlc_and_agile, testing_and_debugging]
+    d: core
+    t: practical
+    f: "definition of done"
+    q: "What should a team's definition of done include, and why does it matter?"
+    a: "Done should mean releasable, not just coded: code reviewed and merged, tests written and passing in CI, acceptance criteria met, documentation and release notes updated, and deployed to staging with monitoring in place. A shared definition stops half-finished work being counted as complete and hidden work piling up before release."
+    k: ["!Defines done as releasable rather than coded", "Lists reviews, tests, acceptance criteria and deployment", "Explains it prevents hidden unfinished work"]
+    h: ["Is a feature done if it has no tests?"]
+    fu: ["How does done differ from acceptance criteria?"]
+    m: "Done means the code compiles."
+    s: ["Release-ready standard", "Shared understanding"]
+
+  cq_naming:
+    c: [code_quality_and_review, functions_and_scope]
+    d: intro
+    t: practical
+    f: "readability and naming"
+    q: "You inherit a function called process(data, flag) that is 300 lines long. How would you make it readable?"
+    a: "First add tests that pin current behaviour. Then rename it after what it does, replace the boolean flag with two clearly named functions or an enum, and extract coherent steps into small, well-named functions. Use descriptive variable names, remove dead code and comments that only restate the code, keeping comments that explain why."
+    k: ["!Adds tests before changing it", "Renames and replaces the boolean flag", "Extracts small, well-named functions"]
+    h: ["What does the flag switch between?"]
+    fu: ["How small should a function be?"]
+    m: "Comments are the best way to explain confusing code."
+    s: ["Safety first", "Concrete refactors"]
+
+  cq_refactor:
+    c: [code_quality_and_review, test_automation]
+    d: core
+    t: scenario
+    f: "refactoring safely"
+    q: "You want to restructure a core module that has no tests and is used everywhere. How do you do it without breaking things?"
+    a: "Write characterisation tests that capture what the code currently does, including odd behaviour, then refactor in small steps, running tests after each. Use the IDE's automated refactorings, keep behaviour changes separate from structural changes, merge often, and put risky new paths behind a flag with the old path as fallback."
+    k: ["!Adds characterisation tests first", "Refactors in small, tested steps", "Separates behaviour changes from restructuring, using flags if risky"]
+    h: ["How would you know you changed its behaviour?"]
+    fu: ["What is the strangler fig pattern?"]
+    m: "Big-bang rewrites are faster and safer."
+    s: ["Incremental", "Safety net"]
+
+  cq_review:
+    c: [code_quality_and_review, stakeholder_communication]
+    d: core
+    t: practical
+    f: "reviewing someone else's code"
+    q: "What do you look for when reviewing a teammate's pull request, and how do you give feedback?"
+    a: "Check correctness and edge cases first, then design and readability, tests, security and performance where relevant, leaving style to automated linters. Comment on the code, not the person, explain why something matters, distinguish blocking issues from suggestions, and ask questions when unsure. Praise good decisions too, and keep reviews quick so work does not stall."
+    k: ["!Prioritises correctness, tests and design over style", "Gives specific, kind feedback explaining why", "Separates blocking issues from suggestions"]
+    h: ["What would a linter catch for you?"]
+    fu: ["How would you handle a disagreement in review?"]
+    m: "Code review is mainly about formatting."
+    s: ["Priorities", "Respectful tone"]
+
+  cq_debt:
+    c: [code_quality_and_review, prioritisation_frameworks]
+    d: hard
+    t: tradeoff
+    f: "technical debt"
+    q: "How would you convince a product manager to spend time on technical debt?"
+    a: "Translate the debt into business terms: how it slows features, causes incidents or risks outages, with evidence such as time spent on workarounds or bug counts in that area. Propose targeted, incremental work tied to upcoming features, or a steady share of each sprint, rather than a vague rewrite, and measure the improvement afterwards."
+    k: ["!Frames debt in business impact with evidence", "Proposes incremental, targeted work or a fixed share", "Measures the outcome"]
+    h: ["How many hours did that module's bugs cost last quarter?"]
+    fu: ["Which debt would you not fix?"]
+    m: "Technical debt should always be paid immediately."
+    s: ["Business framing", "Pragmatic plan"]
+
+  ts_reproduce:
+    c: [troubleshooting, testing_and_debugging]
+    d: intro
+    t: practical
+    f: "reproducing and isolating a fault"
+    q: "A customer reports that the app sometimes shows the wrong total. How do you start investigating?"
+    a: "Gather specifics: which account, when, what they did, screenshots and any request ids. Try to reproduce it with the same data and steps; if it is intermittent, look for patterns such as particular times, devices or concurrent actions. Narrow the cause by comparing working and failing cases, then confirm with logs before fixing, and add a test that reproduces it."
+    k: ["!Collects specifics and tries to reproduce", "Looks for patterns and compares good and bad cases", "Confirms with logs and adds a reproducing test"]
+    h: ["What is different when it goes wrong?"]
+    fu: ["How do you debug something you cannot reproduce locally?"]
+    m: "Guessing a fix quickly is the most efficient approach."
+    s: ["Evidence first", "Regression test"]
+
+  ts_escalate:
+    c: [troubleshooting, stakeholder_communication]
+    d: core
+    t: scenario
+    f: "escalation and communication"
+    q: "You are on support duty and a major customer's integration is down. You don't know the cause after twenty minutes. What do you do?"
+    a: "Acknowledge the customer quickly with what you know and when you will update next. Escalate to the owning team or on-call engineer with the evidence gathered so far rather than working alone too long. Keep a timeline, apply a workaround if one exists, and keep updates regular and factual until resolved."
+    k: ["!Communicates early with the customer and sets update times", "Escalates with gathered evidence instead of struggling alone", "Keeps a timeline and uses workarounds"]
+    h: ["When does the customer next hear from you?"]
+    fu: ["What goes into an escalation message?"]
+    m: "Escalating means you failed."
+    s: ["Communication rhythm", "Timely escalation"]
+
+  ts_rca:
+    c: [troubleshooting, learning_from_failure]
+    d: hard
+    t: practical
+    f: "writing a root-cause analysis"
+    q: "How would you write a root-cause analysis for an outage so it actually prevents the next one?"
+    a: "Describe impact and timeline factually, then ask why repeatedly until you reach causes in the system and process, not just the trigger — for example, a bad config passed review and no alert caught it. List contributing factors, what went well, and specific actions with owners and dates that address each layer: prevention, detection and recovery. Keep it blameless."
+    k: ["!Gives impact and a factual timeline", "Digs past the trigger to systemic causes", "Defines owned actions for prevention, detection and recovery"]
+    h: ["Why did nobody notice for forty minutes?"]
+    fu: ["How do you check actions are completed?"]
+    m: "The root cause is the person who made the change."
+    s: ["Systemic", "Actionable"]
+
+  ts_logs_metrics:
+    c: [troubleshooting, observability]
+    d: core
+    t: debugging
+    f: "reading logs and metrics"
+    q: "Error rates jumped at 2 p.m. How would you use logs and metrics to find out what changed?"
+    a: "Line up the error spike with other signals: deployments, config changes, traffic, dependency latency and resource metrics around 2 p.m. Filter logs to the errors in that window and group them by type, endpoint and host to see if it is one service, one version or one customer. Correlate with traces to find the failing call."
+    k: ["!Correlates the spike with deploys, config changes or traffic", "Groups error logs by type, endpoint or host", "Uses traces to find the failing dependency or call"]
+    h: ["What was deployed around 2 p.m.?"]
+    fu: ["How would you confirm a rollback fixes it?"]
+    m: "Reading logs line by line is the fastest approach."
+    s: ["Change correlation", "Aggregation"]

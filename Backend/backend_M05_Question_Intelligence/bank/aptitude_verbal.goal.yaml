@@ -1,0 +1,179 @@
+# =============================================================================
+#  GOAL BANK — aptitude_verbal (2026-11-12, for M22 Follow Your Goal)
+#  Reasoning a placement test or a case round asks for, said out loud: the
+#  answer is the reasoning, so key points are steps, not just the number.
+#  Drafted by Claude (Opus 5.5) while building M22. NOT reviewed: provenance
+#  generated, practised and never scored until a reviewer approves (FR-5.6).
+# =============================================================================
+format: compact
+track: aptitude_verbal
+provenance: generated
+items:
+  qa_percent:
+    c: [quantitative_aptitude]
+    d: intro
+    t: conceptual
+    f: "percentages and ratios"
+    q: "A price rises by 20 percent and then falls by 20 percent. Is it back where it started? Explain out loud."
+    a: "No. Take 100: a 20 percent rise makes it 120, and a 20 percent fall takes 20 percent of 120, which is 24, leaving 96. The second percentage applies to a larger base, so the net change is a 4 percent loss. In general, a rise and fall of x percent gives a loss of x squared over 100 percent."
+    k: ["!Uses a concrete base such as 100", "Explains the fall applies to the larger base", "States the net 4 percent loss or the general rule"]
+    h: ["What is 20 percent of 120?"]
+    fu: ["What single change equals a 10 percent rise then a 10 percent rise?"]
+    m: "Equal percentage rises and falls cancel out."
+    s: ["Base reasoning", "Generalises"]
+
+  qa_work:
+    c: [quantitative_aptitude, logical_reasoning]
+    d: core
+    t: scenario
+    f: "rates and work"
+    q: "A can build a website in 10 days and B in 15 days. Working together, how long do they take? Talk through your method."
+    a: "Convert to rates: A does a tenth of the job per day, B a fifteenth. Together they do one tenth plus one fifteenth, which is 3 thirtieths plus 2 thirtieths, five thirtieths or one sixth per day, so the job takes 6 days. Rates add when people work together; times do not."
+    k: ["!Converts times to work rates per day", "Adds the rates to get a combined rate of one sixth", "Inverts to get 6 days, noting times do not add"]
+    h: ["What fraction of the job does A finish in one day?"]
+    fu: ["If B leaves after 2 days, when does A finish?"]
+    m: "Average the two times to get the answer."
+    s: ["Rate method", "Clear steps"]
+
+  qa_probability:
+    c: [quantitative_aptitude, probability_for_ml]
+    d: hard
+    t: scenario
+    f: "probability puzzles"
+    q: "In a group of 23 people, is it more or less likely than not that two share a birthday? Reason it out."
+    a: "More likely. It is easier to compute the chance that all birthdays differ: the second person avoids the first with probability 364 over 365, the third avoids both with 363 over 365, and so on. Multiplying these 22 fractions gives about 0.49, so the chance of at least one shared birthday is about 51 percent. Intuition fails because there are 253 possible pairs."
+    k: ["!Computes the complement: all birthdays different", "Multiplies the decreasing fractions to about 0.49", "Concludes about 51 percent and notes the number of pairs"]
+    h: ["Is it easier to count shared or all-different birthdays?"]
+    fu: ["How many people make it 99 percent likely?"]
+    m: "You need about 183 people for a 50 percent chance."
+    s: ["Complement trick", "Explains intuition gap"]
+
+  qa_estimation:
+    c: [quantitative_aptitude, guesstimates]
+    d: core
+    t: practical
+    f: "estimation under time pressure"
+    q: "Without a calculator, estimate 49 times 51, then 18 percent of 4,950. Explain your shortcuts."
+    a: "49 times 51 is 50 minus 1 times 50 plus 1, a difference of squares, so 2,500 minus 1 equals 2,499. For 18 percent of 4,950, round to 5,000: 18 percent of 5,000 is 900, and 18 percent of the extra 50 removed is 9, so the answer is 891. Rounding to a friendly number and correcting is fast and accurate."
+    k: ["!Uses the difference of squares for 49 times 51", "Rounds to a friendly base and corrects for 18 percent of 4,950", "Explains the shortcuts aloud"]
+    h: ["What is 50 squared minus 1 squared?"]
+    fu: ["How would you check your answer quickly?"]
+    m: "Mental maths requires memorising tables."
+    s: ["Algebraic shortcut", "Round and correct"]
+
+  lr_deduction:
+    c: [logical_reasoning]
+    d: intro
+    t: conceptual
+    f: "deduction"
+    q: "Consider: all engineers in the team know Python; Ravi knows Python; therefore Ravi is an engineer. Is this valid? Explain."
+    a: "No. The statement says every engineer knows Python, but not that only engineers know Python, so non-engineers can know Python too. Concluding Ravi is an engineer from knowing Python reverses the condition — affirming the consequent. What follows validly is: if Ravi is an engineer, then he knows Python."
+    k: ["!Says the argument is invalid", "Explains the condition is reversed (affirming the consequent)", "States what can validly be concluded"]
+    h: ["Can a designer know Python?"]
+    fu: ["What would make the conclusion valid?"]
+    m: "If all A are B and x is B, then x is A."
+    s: ["Names the fallacy", "Correct inference"]
+
+  lr_puzzle:
+    c: [logical_reasoning]
+    d: core
+    t: scenario
+    f: "constraint puzzles"
+    q: "Five friends sit in a row. A is not at either end, B sits right of C, D is next to E, and E is at the left end. Talk me through finding a valid order."
+    a: "Start with the fixed facts: E is in seat 1, so D, next to E, is in seat 2. A cannot be at an end, so A is in seat 3 or 4. That leaves seats for B and C with B to the right of C. If A takes seat 3, C and B take seats 4 and 5, giving E, D, A, C, B. Checking every condition confirms it works."
+    k: ["!Places the fixed facts first", "Uses each constraint to narrow positions", "Finds a valid order and checks all conditions"]
+    h: ["Which person's seat is certain?"]
+    fu: ["Is the order unique? How would you check?"]
+    m: "Trying random orders is the fastest way."
+    s: ["Most constrained first", "Verifies"]
+
+  lr_aloud:
+    c: [logical_reasoning, thinking_aloud]
+    d: hard
+    t: practical
+    f: "explaining your reasoning aloud"
+    q: "You have 8 identical-looking coins, one heavier, and a balance scale. Find it in two weighings, explaining each step aloud."
+    a: "Weigh 3 against 3. If they balance, the heavy coin is among the remaining 2: weigh those two, and the heavier side is it. If one side is heavier, the coin is among those 3: weigh 1 against 1 from them; if they balance, it is the third, otherwise it is the heavier one. Splitting into three groups works because each weighing has three outcomes."
+    k: ["!Splits into groups of 3, 3 and 2 for the first weighing", "Handles both outcomes in the second weighing", "Explains why three-way splits use the three outcomes"]
+    h: ["How many outcomes does one weighing have?"]
+    fu: ["What is the most coins you can handle in three weighings?"]
+    m: "Halving the coins each time is optimal."
+    s: ["Complete case analysis", "Explains the principle"]
+
+  di_rates:
+    c: [data_interpretation, descriptive_statistics]
+    d: core
+    t: scenario
+    f: "comparing rates not totals"
+    q: "Campus A placed 300 students and campus B placed 200. Can you say A has the better placement record?"
+    a: "Not from totals. If A had 1,000 eligible students and B had 400, A's placement rate is 30 percent and B's is 50 percent, so B performs better. Compare rates relative to the right base — eligible or registered students — and check the definition, such as whether internships count, before concluding."
+    k: ["!Says totals cannot be compared without the base", "Computes rates with an example base", "Checks definitions before concluding"]
+    h: ["How many students could each campus place?"]
+    fu: ["What other measure would you add, such as median salary?"]
+    m: "Bigger totals mean better performance."
+    s: ["Rates over totals", "Definition check"]
+
+  di_misleading:
+    c: [data_interpretation, data_visualisation]
+    d: intro
+    t: debugging
+    f: "spotting a misleading figure"
+    q: "A brochure says \"average package rose from 6 to 9 lakh\". What questions would you ask before believing it?"
+    a: "Is it the mean, which a few very high offers can inflate, or the median? Is it the same group of students both years, or did only some report? Does it include internships or offers students did not accept? Is it the same currency and package definition, such as CTC versus take-home? Without these, the rise may not mean typical students earn more."
+    k: ["!Asks mean versus median and outlier effects", "Asks whether the groups and coverage are comparable", "Asks about definitions like CTC versus in-hand"]
+    h: ["Could three very high offers explain the rise?"]
+    fu: ["Which single figure would you trust most?"]
+    m: "An average describes the typical student."
+    s: ["Several sharp questions", "Definition awareness"]
+
+  di_sufficiency:
+    c: [data_interpretation, logical_reasoning]
+    d: hard
+    t: conceptual
+    f: "sufficiency"
+    q: "\"Is x greater than y? (1) x squared is greater than y squared. (2) x is positive.\" Which statements are sufficient? Explain."
+    a: "Statement 1 alone is not enough: 3 and 2 give yes, but minus 3 and 2 give no. Statement 2 alone says nothing about y. Together, x positive and x squared greater than y squared means the absolute value of y is less than x, so y lies between minus x and x, hence x is greater than y. So both together are sufficient, but neither alone."
+    k: ["!Shows statement 1 alone fails with a counter-example", "Shows statement 2 alone is insufficient", "Shows both together imply x greater than y"]
+    h: ["Try a negative x with statement 1."]
+    fu: ["What if statement 2 said y is positive instead?"]
+    m: "If x squared is greater than y squared, then x is greater than y."
+    s: ["Counter-examples", "Combined reasoning"]
+
+  gs_structure:
+    c: [guesstimates, quantitative_aptitude]
+    d: core
+    t: scenario
+    f: "structuring the estimate"
+    q: "Estimate how many cups of tea are sold on a typical engineering college campus in a day."
+    a: "Segment the population: say 5,000 students and 500 staff. Assume 60 percent of students drink tea, averaging 1.5 cups a day, giving about 4,500 cups, and 80 percent of staff at 2 cups, about 800. That totals roughly 5,300 cups. Sanity check: with 5 tea stalls open 10 hours, that is about 100 cups an hour each, plausible at peak."
+    k: ["!Segments the population and states assumptions", "Computes step by step to a total", "Sanity-checks against another view such as stall capacity"]
+    h: ["Who drinks tea on campus, and how often?"]
+    fu: ["How would exams change the estimate?"]
+    m: "A guesstimate needs the exact number."
+    s: ["Clear segmentation", "Sanity check"]
+
+  gs_topdown:
+    c: [guesstimates, business_case_analysis]
+    d: hard
+    t: tradeoff
+    f: "top-down versus bottom-up"
+    q: "Estimate the market for online mock-interview subscriptions among Indian engineering students, and say whether you went top-down or bottom-up."
+    a: "Top-down: about 15 lakh engineering graduates a year; perhaps 40 percent actively prepare for placements, and say 10 percent of those would pay, giving about 60,000 subscribers; at around 1,500 rupees a year that is roughly 9 crore. Bottom-up would build it from colleges and conversion rates. Doing both and comparing tests the assumptions."
+    k: ["!Builds a top-down estimate with stated assumptions", "Converts users into revenue", "Contrasts with a bottom-up approach as a cross-check"]
+    h: ["How many engineers graduate each year?"]
+    fu: ["Which assumption most changes the answer?"]
+    m: "Top-down and bottom-up must give the same number."
+    s: ["Explicit assumptions", "Cross-check"]
+
+  gs_sanity:
+    c: [guesstimates, descriptive_statistics]
+    d: intro
+    t: practical
+    f: "sanity checks"
+    q: "You estimated that a city of 10 lakh people uses 50 crore litres of water a day. How would you sanity-check that?"
+    a: "Divide by people: 50 crore litres over 10 lakh people is 500 litres per person per day. Typical domestic use is about 100 to 150 litres per person, so even with industry and losses, 500 seems high. Recheck the assumptions — perhaps a unit slip — and compare with a known benchmark before presenting."
+    k: ["!Converts to a per-person figure", "Compares with a known benchmark", "Rechecks assumptions when it looks off"]
+    h: ["How much water does one person use in a day?"]
+    fu: ["What other benchmark could you use?"]
+    m: "If the maths is right, the estimate is right."
+    s: ["Per-unit check", "Benchmark"]
