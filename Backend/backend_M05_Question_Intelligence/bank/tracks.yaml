@@ -7,6 +7,12 @@
 #  only says what each one is called and how it is grouped on the setup page,
 #  and — `kind`, technical unless it says otherwise — which kind of
 #  interviewer runs it.
+#  `mixed: true` (2026-11-13): asked in a MIXED interview for a student with
+#  nothing else to go on — no goal, no courses, no job description. These
+#  are the nine tracks a mixed interview drew from before the career-goal
+#  tracks arrived; without the flag, a mixed interview drew from all 23 and
+#  a would-be SDE was asked embedded firmware and product cases. A track
+#  without it is still offered to pick, and asked for a goal that needs it.
 #  No `items:` key, so the bank loader reads nothing from it.
 # =============================================================================
 
@@ -14,38 +20,47 @@ groups: [Core CS, Software engineering, Data, AI and ML, Infrastructure and secu
 
 tracks:
   dsa_verbal:
+    mixed: true
     title: Data structures and algorithms
     group: Core CS
     blurb: Arrays to graphs, out loud — why it works, what it costs, when it breaks.
   os_verbal:
+    mixed: true
     title: Operating systems
     group: Core CS
     blurb: Processes and threads, scheduling, memory, synchronisation, deadlocks.
   dbms_verbal:
+    mixed: true
     title: Databases (DBMS and SQL)
     group: Core CS
     blurb: Keys and normal forms, indexes, transactions, joins and query plans.
   cn_verbal:
+    mixed: true
     title: Computer networks
     group: Core CS
     blurb: The layers, TCP and UDP, DNS, HTTP, routing and congestion.
   oop_verbal:
+    mixed: true
     title: OOP and language fundamentals
     group: Core CS
     blurb: Classes and interfaces, polymorphism, memory and exceptions, design patterns.
   systems_verbal:
+    mixed: true
     title: Computer systems and practice
     group: Core CS
     blurb: Compilers, caches and the machine underneath, and engineering habits.
   ml_verbal:
+    mixed: true
     title: Machine learning
     group: AI and ML
     blurb: Framing a problem, metrics, overfitting, and the classic models' trade-offs.
   dl_verbal:
+    mixed: true
     title: Deep learning
     group: AI and ML
     blurb: Networks and backprop, CNNs, sequence models, transformers and LLMs.
   behavioural:
+    mixed: true
     title: HR and behavioural
     group: HR
     # Who runs it: M06 seats an HR interviewer for a behavioural part.
