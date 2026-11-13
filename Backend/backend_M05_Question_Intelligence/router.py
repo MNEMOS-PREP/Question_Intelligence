@@ -336,6 +336,9 @@ def bank_tracks() -> dict:
                 "blurb": info.get("blurb") or "",
                 # Which kind of interviewer runs it (M06 `panel.py`).
                 "kind": info.get("kind") or "technical",
+                # Asked in a mixed interview when nothing says otherwise
+                # (2026-11-13, `tracks.yaml`): no goal, courses or posting.
+                "mixed": bool(info.get("mixed")),
                 "approved": entry["approved"],
                 "drafts": entry["drafts"],
                 "concepts": len(entry["concepts"]),

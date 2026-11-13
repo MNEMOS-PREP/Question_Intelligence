@@ -89,6 +89,17 @@ def test_every_goal_track_is_offered(client):
         assert track in offered, track
 
 
+def test_only_the_original_core_tracks_join_a_mixed_interview_by_default(client):
+    """`mixed: true` in tracks.yaml: what a mixed interview draws from for a
+    student with no goal, courses or posting. The goal tracks are offered to
+    pick and asked for a goal, never sprinkled into everyone's mixed round."""
+    tracks = {t["round_type"]: t for t in client.get("/v1/bank/tracks").json()["tracks"]}
+    mixed = {rt for rt, t in tracks.items() if t["mixed"]}
+    assert mixed == {"dsa_verbal", "os_verbal", "dbms_verbal", "cn_verbal", "oop_verbal",
+                     "systems_verbal", "ml_verbal", "dl_verbal", "behavioural"}
+    assert not tracks["embedded_verbal"]["mixed"] and not tracks["product_verbal"]["mixed"]
+
+
 def test_a_browser_does_not_get_the_answer_key(client):
     item = next(q for q in bank_module.load().questions if q.primary_concept == "concept:react")
     body = client.get(f"/v1/questions/{item.id}").json()
