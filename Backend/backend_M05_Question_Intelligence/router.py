@@ -37,6 +37,7 @@ from . import ontology as ontology_module
 from . import review as review_module
 from . import selection as selection_module
 from . import session as session_module
+from . import usage as usage_module
 from .contracts import (
     ItemStatus,
     ProvisionalOutcome,
@@ -435,6 +436,7 @@ def review_queue(
     track: str | None = None,
     limit: int = 1,
     offset: int = 0,
+    order: str = "asked",
     principal: Principal | None = Depends(guard),
 ) -> dict:
     """The next drafted item(s) awaiting a human. Deterministic order, so two
@@ -443,34 +445,51 @@ def review_queue(
 
     `offset` skips that many: an item a reviewer is unsure about, or has just
     edited (an edit keeps it in the queue), would otherwise come back first
-    every time and stand between them and the rest (2026-10-14 review)."""
+    every time and stand between them and the rest (2026-10-14 review).
+
+    `order=asked` (the default since 2026-11-22) puts first the drafts
+    students have been asked most (usage.py): an hour of review then turns
+    the most answers into scored ones. `order=track` is the old order."""
     _reviewer(principal)
     loaded = bank_module.load()
     everything = list(loaded.questions)
     pending = [q for q in everything if review_module.in_queue(q)]
     if track:
         pending = [q for q in pending if review_module.track_of(q) == track]
-    pending.sort(key=lambda q: (review_module.track_of(q), q.primary_concept, str(q.id)))
+    asked = usage_module.counts()
+    by_track = (review_module.track_of, lambda q: q.primary_concept, lambda q: str(q.id))
+    if order == "track":
+        pending.sort(key=lambda q: tuple(f(q) for f in by_track))
+    else:
+        pending.sort(key=lambda q: (-asked.get(str(q.id), 0), *(f(q) for f in by_track)))
     limit = max(1, min(limit, 20))
     # Past the end wraps to the start: skipping the last item shows the first.
     start = max(0, offset) % len(pending) if pending else 0
     return {
         "remaining": len(pending),
         "offset": start,
-        "items": [_review_item(q, everything) for q in pending[start : start + limit]],
+        "items": [
+            {**_review_item(q, everything), "times_asked": asked.get(str(q.id), 0)}
+            for q in pending[start : start + limit]
+        ],
+        # Drafts students have met and that still count for nothing.
+        "asked_pending": sum(1 for q in pending if asked.get(str(q.id), 0)),
     }
 
 
 @router.get("/review/progress")
 def review_progress(principal: Principal | None = Depends(guard)) -> dict:
     _reviewer(principal)
+    asked = usage_module.counts()
     tracks: dict[str, dict[str, int]] = {}
     for q in bank_module.load().questions:
         row = tracks.setdefault(
-            review_module.track_of(q), {"approved": 0, "pending": 0, "rejected": 0}
+            review_module.track_of(q),
+            {"approved": 0, "pending": 0, "rejected": 0, "asked_pending": 0},
         )
         if review_module.in_queue(q):
             row["pending"] += 1
+            row["asked_pending"] += 1 if asked.get(str(q.id), 0) else 0
         elif q.scored_use_approved and q.status is ItemStatus.active:
             row["approved"] += 1
         elif q.status is ItemStatus.retired:
@@ -478,7 +497,8 @@ def review_progress(principal: Principal | None = Depends(guard)) -> dict:
     return {
         "tracks": tracks,
         "totals": {
-            k: sum(r[k] for r in tracks.values()) for k in ("approved", "pending", "rejected")
+            k: sum(r[k] for r in tracks.values())
+            for k in ("approved", "pending", "rejected", "asked_pending")
         },
         "decisions_logged": len(review_module.store().history()),
     }
@@ -558,7 +578,7 @@ def select(
             }
         )
     try:
-        return selection_module.select(
+        result = selection_module.select(
             loaded.questions, request, fallback_playlist=loaded.playlist
         )
     except selection_module.NoItemAvailable as exc:
@@ -567,6 +587,12 @@ def select(
         # round and tells the student honestly, which it cannot do if this
         # looks like a crash.
         raise HTTPException(status_code=409, detail=str(exc)) from exc
+    # A draft served is a draft a student met (usage.py, 2026-11-22): the
+    # review queue puts the ones met most first.
+    served = loaded.get(result.question_id)
+    if served is not None and review_module.in_queue(served):
+        usage_module.record(str(result.question_id), result.round_type)
+    return result
 
 
 # ── the session's provisional θ (§6.10) ──────────────────────────────────
