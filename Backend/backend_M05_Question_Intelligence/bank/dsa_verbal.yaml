@@ -17,10 +17,20 @@
 #      evaluator is told this explicitly.
 #    * First concept listed is the primary, and it is the one that becomes
 #      mastery in M04. At most two secondary (FR-5.26).
+#
+#  Follow-ups (2026-11-22, good_and_bads #3): two per item, drafted by Claude
+#  (Opus 5.5) and NOT yet looked at by a reviewer. These twelve are the only
+#  items whose answers count, and they had none, so every scored follow-up was
+#  a generic rung. They shape what the interviewer asks next, never the score:
+#  M13 marks the thread against the key points above. Each is a scenario that
+#  names no key point (a fallback is said verbatim, without M06's guard).
 # =============================================================================
 
 items:
   hashing_average_lookup:
+    follow_ups:
+      - "Suppose the table keeps growing but never gets any bigger itself. What happens to a lookup as it fills up?"
+      - "If an attacker could choose every key you store, what could they do to your lookups?"
     stem: >-
       Why is average-case lookup in a hash map O(1), and what has to be true
       for that to hold?
@@ -52,6 +62,9 @@ items:
       - What happens if every key lands in the same bucket?
 
   hashing_collision_strategies:
+    follow_ups:
+      - "Say the table is nearly full. How does that change what a lookup has to do in the approach you described?"
+      - "Which of the approaches you described would you pick for a table that is read constantly and written rarely, and why?"
     stem: >-
       Two keys hash to the same bucket. Walk me through how a hash map can
       handle that, and what it costs.
@@ -80,6 +93,9 @@ items:
         statement: Names a cost — traversal, clustering, or deletion needing tombstones.
 
   hashing_bad_hash_function:
+    follow_ups:
+      - "After this ships, what would you look at first to tell whether it is the cause?"
+      - "How would you test a hash function before shipping it, so this never reaches production?"
     stem: >-
       Someone ships a hash function that returns the string length. What
       actually goes wrong, and how would you notice in production?
@@ -109,6 +125,9 @@ items:
         statement: Names an observable symptom or the denial-of-service angle.
 
   recursion_base_case:
+    follow_ups:
+      - "Walk me through what your example does when it is called with the smallest input it accepts."
+      - "Can a function have a base case and still never reach it? Give me an input that would do that."
     stem: >-
       What is a base case, and what happens without one? Give an example from
       something you have written.
@@ -132,6 +151,9 @@ items:
         statement: States that the stack overflows or the function does not terminate.
 
   recursion_vs_iteration:
+    follow_ups:
+      - "Take a linked list with a million nodes. Would you still write it the way you described? What changes?"
+      - "How would you turn one of your recursive solutions into a loop without losing what made it clear?"
     stem: >-
       When would you choose recursion over a loop, and when is that the wrong
       call?
@@ -158,6 +180,9 @@ items:
         required: true
 
   recursion_memoisation:
+    follow_ups:
+      - "Picture the calls your function makes for a small input. What would you look for in that picture?"
+      - "Your function also reads a setting that can change between calls. Does your plan still work?"
     stem: >-
       Your recursive solution is correct but too slow. How do you decide whether
       memoisation will help?
@@ -186,6 +211,9 @@ items:
         statement: Says memoisation costs memory and does not help without repeats.
 
   complexity_amortised:
+    follow_ups:
+      - "What would change if the array grew by ten slots each time instead?"
+      - "Is there any single append a latency-sensitive system should still worry about? What would you do about it?"
     stem: >-
       A dynamic array's append is O(1) amortised but sometimes O(n). Explain
       that to someone who thinks it is a contradiction.
@@ -215,6 +243,9 @@ items:
         statement: Says amortised describes a sequence rather than one operation.
 
   complexity_big_o_meaning:
+    follow_ups:
+      - "Your input is about 50 elements, every time. Does the Big-O still decide it for you?"
+      - "Name two things about your data or your machine that could make one of them the better choice."
     stem: >-
       Two algorithms are both O(n log n). Is there anything left to choose
       between them?
@@ -240,6 +271,9 @@ items:
         statement: Names a non-time consideration such as memory, stability, or cache behaviour.
 
   sorting_stability:
+    follow_ups:
+      - "You sort a class list by name, then by marks. What do you expect to see among students with the same marks?"
+      - "Your language's default sort turns out not to be stable. How would you still get the behaviour you need?"
     stem: What does it mean for a sort to be stable, and when does it matter?
     modality: verbal
     round_types: [dsa_verbal]
@@ -261,6 +295,9 @@ items:
         statement: Gives a case where it matters, such as multi-key sorting.
 
   joins_inner_vs_left:
+    follow_ups:
+      - "A report counts orders per customer, and some customers have no orders yet. What does each join show for them?"
+      - "After a left join, you filter in the WHERE clause on a column of the right-hand table. What happens to your result?"
     stem: >-
       Explain the difference between an inner join and a left join, and give me
       a case where picking the wrong one is a silent bug.
@@ -289,6 +326,9 @@ items:
         statement: Gives a concrete case where the wrong choice silently changes a result.
 
   trees_bst_worst_case:
+    follow_ups:
+      - "Insert the numbers 1 to 1,000 into an empty tree in that order. What does it look like?"
+      - "How does a database index keep lookups fast while rows are inserted all day?"
     stem: >-
       A binary search tree gives O(log n) lookup. When does that stop being
       true, and what is done about it?
@@ -317,6 +357,9 @@ items:
         statement: Names a self-balancing tree or the idea of rebalancing on write.
 
   graphs_bfs_vs_dfs:
+    follow_ups:
+      - "Your graph has a million nodes and the target is two steps away. How much of the graph does your choice explore?"
+      - "Now the edges have different weights. Does your answer still hold?"
     stem: >-
       You need the shortest path in an unweighted graph. BFS or DFS, and why
       does the other one not work?

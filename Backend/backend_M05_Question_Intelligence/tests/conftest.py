@@ -38,6 +38,13 @@ def _service_secret(monkeypatch):
     monkeypatch.setenv("SERVICE_SECRET", "m05-test-secret")
 
 
+@pytest.fixture(autouse=True)
+def _usage_log(monkeypatch, tmp_path):
+    """Every draft served is counted (usage.py, 2026-11-22) — into the test's
+    own folder, never the developer's log."""
+    monkeypatch.setenv("M05_USAGE_LOG", str(tmp_path / "usage.jsonl"))
+
+
 def make_question(
     *,
     concept: str = "concept:hashing",

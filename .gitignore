@@ -43,3 +43,6 @@ annotation_exports/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Which drafts students are served (usage.py): runtime data, not the bank.
+Backend/data/usage_log.jsonl
