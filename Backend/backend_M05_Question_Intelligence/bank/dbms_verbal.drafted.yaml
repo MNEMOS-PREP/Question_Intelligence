@@ -10,6 +10,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: core
+    question_type: design
     time_budget_s: 180
     concepts:
     - id: concept:relational_model
@@ -49,6 +50,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:relational_model
@@ -92,6 +94,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: core
+    question_type: coding
     time_budget_s: 180
     concepts:
     - id: concept:sql_queries
@@ -133,6 +136,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: hard
+    question_type: optimisation
     time_budget_s: 240
     concepts:
     - id: concept:sql_queries
@@ -216,6 +220,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: core
+    question_type: coding
     time_budget_s: 180
     concepts:
     - id: concept:aggregation_and_grouping
@@ -261,6 +266,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:aggregation_and_grouping
@@ -399,6 +405,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: core
+    question_type: design
     time_budget_s: 180
     concepts:
     - id: concept:normalisation
@@ -443,6 +450,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: hard
+    question_type: tradeoff
     time_budget_s: 240
     concepts:
     - id: concept:normalisation
@@ -488,6 +496,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: core
+    question_type: optimisation
     time_budget_s: 180
     concepts:
     - id: concept:indexing
@@ -536,6 +545,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:indexing
@@ -584,6 +594,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: core
+    question_type: scenario
     time_budget_s: 180
     concepts:
     - id: concept:query_optimisation
@@ -633,6 +644,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: hard
+    question_type: optimisation
     time_budget_s: 240
     concepts:
     - id: concept:query_optimisation
@@ -681,6 +693,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:transactions_acid
@@ -726,6 +739,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:transactions_acid
@@ -770,6 +784,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:concurrency_control
@@ -818,6 +833,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:concurrency_control
@@ -865,6 +881,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:isolation_levels
@@ -907,6 +924,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:isolation_levels
@@ -955,6 +973,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: hard
+    question_type: tradeoff
     time_budget_s: 180
     concepts:
     - id: concept:nosql_vs_relational
@@ -1002,6 +1021,7 @@ items:
     round_types:
     - dbms_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:nosql_vs_relational

@@ -1,0 +1,166 @@
+# =============================================================================
+#  GAP BANK — os_verbal (2026-11-23). Every operating-systems concept had two
+#  questions; this adds the third, in the band it lacked — mostly the plain
+#  fundamentals campus interviews open with.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: os_verbal
+provenance: generated
+items:
+  gx_os_thread_shared_hard:
+    c: [process_vs_thread, concurrency_synchronisation]
+    d: hard
+    t: tradeoff
+    f: "isolation versus sharing"
+    q: "Chrome runs each tab as a separate process instead of a thread. What does it gain, and what does it pay?"
+    a: "Separate processes each get their own address space, so a crash or a memory-corruption bug in one tab cannot take down or read the others, and the OS can apply stricter sandboxing per process, which matters for running untrusted web pages. The cost is memory, since every process carries its own copies of runtime data, and communication becomes slower because tabs must use inter-process messages rather than shared memory. Creating and switching processes is also more expensive than threads. Threads would be lighter and share data easily, but one bad thread can corrupt the whole program."
+    k: ["!Says separate processes isolate crashes and memory between tabs", "Mentions sandboxing or security for untrusted pages", "!Names the costs of more memory and slower inter-process communication", "Contrasts with threads sharing one address space"]
+    h: ["What happens to other tabs when one tab's code corrupts memory?"]
+    fu: ["A phone with little RAM opens 50 tabs. How might the browser adapt?", "Which kind of bug would threads make harder to contain?"]
+    m: "Processes are always faster than threads because they run independently."
+    s: ["Weighs isolation against cost", "Connects isolation to security"]
+
+  gx_os_sched_intro:
+    c: [process_scheduling]
+    d: intro
+    t: conceptual
+    f: "common scheduling policies"
+    q: "Compare first-come-first-served, shortest-job-first and round-robin CPU scheduling. Which would you use for an interactive system and why?"
+    a: "First-come-first-served runs jobs in arrival order; it is simple but a long job makes everyone behind it wait, the convoy effect. Shortest-job-first minimises average waiting time but needs job lengths in advance and can starve long jobs. Round-robin gives each ready process a fixed time slice in turn, preempting it when the slice ends. For an interactive system I would use round-robin or a priority scheme built on it, because every process gets the CPU regularly, so response time stays low even when a long job is running. The time slice must balance responsiveness against context-switch overhead."
+    k: ["!Describes FCFS and its convoy effect", "!Describes shortest-job-first and its starvation risk or need to know job length", "!Describes round-robin time slices", "Chooses round-robin for interactivity, with the time-slice trade-off"]
+    h: ["What happens to a short job stuck behind a very long one?"]
+    fu: ["Each process now runs for only 1 microsecond before the next one gets the CPU. What goes wrong?", "No program tells the scheduler how long it will run. How could it guess from past behaviour?"]
+    m: "Round-robin always gives the lowest average waiting time."
+    s: ["Names a weakness for each policy", "Explains the time-slice trade-off"]
+
+  gx_os_ctxswitch_intro:
+    c: [context_switching]
+    d: intro
+    t: conceptual
+    f: "what is saved and restored"
+    q: "What is a context switch, and what exactly does the operating system save and restore during one?"
+    a: "A context switch is the OS stopping the running process or thread and resuming another on the same CPU. It saves the current one's state, the program counter, CPU registers, stack pointer and status flags, into its control block, then loads the saved state of the next one. Switching between processes also changes the memory mapping, switching the page table, which can flush the TLB and makes caches cold. That overhead is pure cost, so switching too often wastes CPU time. Switches happen on timer interrupts, blocking I/O or a higher-priority task becoming ready."
+    k: ["!Defines it as pausing one task and resuming another on the CPU", "!Lists saved state such as program counter, registers and stack pointer", "Mentions switching the address space or page table for processes", "Explains the overhead and what triggers a switch"]
+    h: ["What would the CPU need to continue the paused program later exactly where it left off?"]
+    fu: ["Why is switching between two threads of the same process usually cheaper?", "A server switches a lakh times per second. Where does that time go?"]
+    m: "A context switch copies the whole memory of the process."
+    s: ["Lists the saved state precisely", "Mentions TLB or cache effects"]
+
+  gx_os_sync_intro:
+    c: [concurrency_synchronisation]
+    d: intro
+    t: conceptual
+    f: "race conditions and mutual exclusion"
+    q: "Two threads each add one to a shared counter a lakh times, and the final value is less than two lakh. Explain why, and what a mutex does about it."
+    a: "Incrementing a counter is not one step: a thread reads the value, adds one and writes it back. If both threads read the same value before either writes, both write the same result and one increment is lost. That is a race condition on a critical section. A mutex lets only one thread hold it at a time, so a thread locks it, does the read-add-write, and unlocks; the other thread waits, making the increment effectively atomic. Atomic instructions such as fetch-and-add achieve the same for a single counter without a lock."
+    k: ["!Explains that increment is a read, add and write sequence", "!Describes two threads interleaving so an update is lost", "!Says a mutex allows only one thread into the critical section at a time", "Mentions atomic operations as an alternative"]
+    h: ["What does 'counter plus one' look like at the machine level?"]
+    fu: ["What happens if a thread forgets to release the mutex on an error path?", "Why might locking around every single increment slow the program a lot?"]
+    m: "Increment on a shared variable is always atomic."
+    s: ["Traces an interleaving step by step", "Offers locks and atomics"]
+
+  gx_os_deadlock_intro:
+    c: [deadlocks]
+    d: intro
+    t: conceptual
+    f: "the four necessary conditions"
+    q: "What are the four conditions that must all hold for a deadlock, and how can you prevent one by breaking just one of them?"
+    a: "Mutual exclusion: a resource can be held by only one process at a time. Hold and wait: a process holds one resource while waiting for another. No preemption: a resource cannot be forcibly taken away. Circular wait: a cycle of processes each waiting for a resource the next one holds. Breaking any one prevents deadlock. The most practical is breaking circular wait by making every process acquire locks in one global order, for example always lock account A before account B by account number. Another is requiring a process to request all resources at once, which removes hold and wait."
+    k: ["!Names mutual exclusion and hold and wait", "!Names no preemption and circular wait", "!Explains that breaking any one condition prevents deadlock", "Gives a concrete prevention such as a global lock order"]
+    h: ["What if every thread locked resources in the same order?"]
+    fu: ["Two bank transfers lock accounts in opposite orders. How would you fix the code?", "Could you make a printer usable by two programs at the very same moment? What does that tell you?"]
+    m: "Deadlocks only happen when a process crashes."
+    s: ["Lists all four conditions", "Gives a practical prevention"]
+
+  gx_os_ipc_intro:
+    c: [inter_process_communication]
+    d: intro
+    t: conceptual
+    f: "IPC mechanisms"
+    q: "Processes have separate memory. What are the main ways they can still exchange data, and when would you pick each?"
+    a: "Pipes connect the output of one process to the input of another as a byte stream, good for parent and child or command pipelines. Message queues pass discrete messages through the kernel, useful when you want message boundaries and decoupling. Shared memory maps the same physical pages into both processes, the fastest option for large data, but you must synchronise access yourself, for example with semaphores. Sockets work between processes on the same or different machines, which is why many services use them even locally. Signals are tiny notifications rather than data channels."
+    k: ["!Names pipes and when they fit", "!Names shared memory as fastest but needing synchronisation", "Names message queues or sockets with a fitting use", "Distinguishes signals as notifications"]
+    h: ["Which method avoids copying data through the kernel?"]
+    fu: ["Two processes share memory and both write at once. What protects the data?", "Why might a team use local sockets even though shared memory is faster?"]
+    m: "Processes can read each other's variables directly if they run on the same machine."
+    s: ["Matches each mechanism to a use", "Mentions synchronisation for shared memory"]
+
+  gx_os_syscall_hard:
+    c: [system_calls, context_switching]
+    d: hard
+    t: optimisation
+    f: "cost of crossing into the kernel"
+    q: "A logging library writes each log line with its own write system call, and the service slows down under load. Why, and how would you fix it?"
+    a: "Every system call switches the CPU from user mode to kernel mode and back, saving state, validating arguments and possibly invalidating caches, so it costs far more than an ordinary function call. Doing that once per log line multiplies the overhead and can also cause many small disk writes. The fix is buffering: collect lines in a user-space buffer and flush it with one write when it fills or after a short interval, or use an asynchronous logger thread. The trade-off is that unflushed lines can be lost on a crash, so critical logs may still flush immediately."
+    k: ["!Explains that each system call crosses from user mode to kernel mode with overhead", "!Proposes buffering many lines into fewer write calls", "Mentions the risk of losing buffered lines on a crash", "Mentions an asynchronous or batched logger"]
+    h: ["What is the difference between calling a function and asking the kernel to do something?"]
+    fu: ["How would you measure how much time goes into system calls?", "Which log messages would you still flush immediately, and why?"]
+    m: "A system call costs the same as an ordinary function call."
+    s: ["Names the mode switch as the cost", "States the durability trade-off of buffering"]
+
+  gx_os_memory_fragment_hard:
+    c: [memory_management]
+    d: hard
+    t: scenario
+    f: "fragmentation"
+    q: "A long-running server has plenty of free memory in total, yet a request for one large block fails. What is happening, and what can be done?"
+    a: "This is external fragmentation: free memory is split into many small, non-adjacent holes, so no single hole is big enough for the large block even though the total is ample. It builds up when objects of varied sizes are allocated and freed over time. Remedies include allocators that group similar sizes into pools or slabs so holes are reusable, compaction that moves objects together, which managed runtimes can do because they can update references, and paging, which removes the need for physically contiguous memory. Internal fragmentation is the opposite problem: wasted space inside allocated blocks."
+    k: ["!Identifies external fragmentation with many small non-contiguous free holes", "!Says no single hole is large enough despite enough total free memory", "Proposes pools, slab allocation, compaction or paging", "Distinguishes internal fragmentation"]
+    h: ["Is the free memory in one piece?"]
+    fu: ["Why can a garbage-collected runtime compact memory while a C program usually cannot?", "How does paging avoid needing a physically contiguous block?"]
+    m: "If total free memory is enough, any allocation must succeed."
+    s: ["Names the fragmentation type correctly", "Offers several remedies"]
+
+  gx_os_vm_intro:
+    c: [virtual_memory]
+    d: intro
+    t: conceptual
+    f: "what virtual memory gives you"
+    q: "What is virtual memory, and why does every process seem to have the whole address space to itself?"
+    a: "Virtual memory gives each process its own range of addresses, which the hardware's memory management unit translates to physical RAM through page tables maintained by the OS. Because each process has its own page table, the same virtual address in two processes maps to different physical pages, so they are isolated and each believes it owns the whole space. Pages not currently needed can live on disk and be brought in on access, a page fault, so programs can use more memory than is physically present. It also lets shared libraries be mapped once into many processes."
+    k: ["!Explains translation from virtual to physical addresses using page tables and the MMU", "!Says each process has its own page table, giving isolation", "Mentions pages on disk loaded on a page fault", "Mentions sharing pages such as libraries"]
+    h: ["Who translates an address before it reaches RAM?"]
+    fu: ["Two processes print the same pointer value. Are they pointing at the same memory?", "A program reads an address whose data was moved out of RAM earlier. Walk through what happens next."]
+    m: "Virtual memory just means using the hard disk as extra RAM."
+    s: ["Explains isolation through separate page tables", "Mentions page faults"]
+
+  gx_os_paging_intro:
+    c: [paging_and_segmentation, virtual_memory]
+    d: intro
+    t: conceptual
+    f: "pages and frames"
+    q: "In paging, what are pages and frames, and how is a virtual address split to find the physical location?"
+    a: "Memory is divided into fixed-size blocks: pages in the virtual address space and frames of the same size in physical memory, commonly 4 kilobytes. A virtual address is split into a page number and an offset within the page. The page number indexes the page table to find which frame holds that page, and the physical address is that frame's start plus the same offset. Fixed sizes mean any free frame can hold any page, which removes external fragmentation, at the cost of some internal fragmentation in the last page and the memory used by page tables."
+    k: ["!Defines pages and frames as equal fixed-size blocks", "!Explains splitting an address into page number and offset", "Says the page table maps page numbers to frames", "Notes it removes external fragmentation"]
+    h: ["With 4 kilobyte pages, how many bits of the address are the offset?"]
+    fu: ["Page tables for a 64-bit address space would be huge. How do real systems shrink them?", "Why does every memory access not go through the page table in RAM each time?"]
+    m: "Pages and frames can be of different sizes."
+    s: ["Walks through the address translation", "Mentions fragmentation trade-offs"]
+
+  gx_os_replacement_intro:
+    c: [page_replacement]
+    d: intro
+    t: conceptual
+    f: "FIFO, LRU and optimal"
+    q: "When memory is full and a new page is needed, the OS must evict one. Compare FIFO, LRU and the optimal policy."
+    a: "FIFO evicts the page that was loaded earliest, which is simple but may throw out a heavily used page, and it can even get worse with more memory, Belady's anomaly. LRU evicts the page not used for the longest time, betting that recent use predicts future use; it works well thanks to locality but tracking exact recency is expensive, so real systems approximate it with the clock algorithm and reference bits. The optimal policy evicts the page used furthest in the future; it cannot be implemented because it needs the future, but it is the benchmark others are measured against."
+    k: ["!Describes FIFO and a weakness such as Belady's anomaly", "!Describes LRU and why locality makes it effective", "!Describes the optimal policy as unimplementable but a benchmark", "Mentions approximations like the clock algorithm"]
+    h: ["Which page is least likely to be needed soon?"]
+    fu: ["A program scans a huge file once from start to end. How does LRU behave?", "Why is exact LRU too expensive to do on every memory access?"]
+    m: "FIFO always improves when you add more memory frames."
+    s: ["Mentions Belady's anomaly or the scan problem", "Explains the approximation used in practice"]
+
+  gx_os_fs_intro:
+    c: [file_systems]
+    d: intro
+    t: conceptual
+    f: "inodes and directories"
+    q: "In a Unix-like file system, what is an inode, and what does a directory actually store?"
+    a: "An inode is the record for one file: its size, owner, permissions, timestamps and pointers to the data blocks on disk, but not its name. A directory is a special file that maps names to inode numbers. So opening a path means walking directories from the root, looking up each name to get the next inode. This design is why a hard link is simply a second name pointing to the same inode, why renaming within a file system is fast, and why a file's data stays until the last link and the last open handle are gone."
+    k: ["!Says an inode holds file metadata and pointers to data blocks", "!Says directories map names to inode numbers and inodes hold no name", "Explains path lookup by walking directories", "Explains hard links or fast rename as a consequence"]
+    h: ["Where is a file's name stored?"]
+    fu: ["You delete a file while a program still has it open. What happens to the data?", "The disk has free space but you cannot create new files. What could have run out?"]
+    m: "The file name is stored inside the inode with the file's data."
+    s: ["Separates names from inodes", "Explains a consequence such as hard links"]

@@ -71,6 +71,7 @@ items:
     modality: verbal
     round_types: [dsa_verbal]
     difficulty_band: core
+    question_type: conceptual
     time_budget_s: 240
     concepts:
       - id: concept:hashing_internals
@@ -102,6 +103,7 @@ items:
     modality: verbal
     round_types: [dsa_verbal]
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 300
     concepts:
       - id: concept:hashing_internals
@@ -189,6 +191,7 @@ items:
     modality: verbal
     round_types: [dsa_verbal]
     difficulty_band: hard
+    question_type: optimisation
     time_budget_s: 300
     concepts:
       - id: concept:dynamic_programming
@@ -220,6 +223,7 @@ items:
     modality: verbal
     round_types: [dsa_verbal]
     difficulty_band: hard
+    question_type: conceptual
     time_budget_s: 300
     concepts:
       - id: concept:amortized_analysis
@@ -335,6 +339,7 @@ items:
     modality: verbal
     round_types: [dsa_verbal]
     difficulty_band: core
+    question_type: conceptual
     time_budget_s: 240
     concepts:
       - id: concept:binary_search_trees

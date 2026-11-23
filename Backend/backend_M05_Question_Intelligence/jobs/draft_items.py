@@ -47,6 +47,7 @@ from pathlib import Path
 import yaml
 
 from ..bank import BANK_DIR
+from ..contracts import QuestionType
 from ..ontology import SNAPSHOT
 
 #: An ontology heading -> the round type its concepts are asked in. First
@@ -87,6 +88,7 @@ SYSTEM = """You write questions for the question bank of a mock placement-interv
 House style — follow every rule:
 - The stem is one or two spoken sentences, at most 40 words, concrete and answerable in 2-4 minutes. No lists of sub-questions, no "explain everything about X".
 - Vary the angle across items: why something holds, compare and contrast, a scenario ("in production you see X — what is happening?"), a trade-off, or debugging.
+- question_type names that angle — what the item asks the student to DO: conceptual (explain why something holds), debugging (find the cause of a symptom), scenario (reason through a concrete situation), tradeoff (weigh options against each other), design (structure a system, schema or class), practical (apply a technique to a task), optimisation (make something faster or cheaper), coding (describe the code you would write); behavioural for a behavioural round. A question that opens "you notice X in production" is debugging, not conceptual.
 - difficulty_band is the depth of the CONCEPT being tested (intro, core, hard), never how long the answer takes. A question that is hard only because its wording is unclear is a badly written question.
 - key_points: 2 to 4 statements, each one a claim that an answer either makes or does not ("Explains that a collision sends two keys to one bucket"), never a topic ("collisions"). Mark the essential ones required.
 - reference_answer: a good spoken answer of 60 to 140 words — a good answer, not the only correct one.
@@ -110,6 +112,7 @@ SCHEMA = {
                     "label",
                     "stem",
                     "difficulty_band",
+                    "question_type",
                     "time_budget_s",
                     "secondary_concepts",
                     "reference_answer",
@@ -120,6 +123,7 @@ SCHEMA = {
                     "label": {"type": "string"},
                     "stem": {"type": "string"},
                     "difficulty_band": {"type": "string", "enum": ["intro", "core", "hard"]},
+                    "question_type": {"type": "string", "enum": [t.value for t in QuestionType]},
                     "time_budget_s": {"type": "integer"},
                     "secondary_concepts": {"type": "array", "items": {"type": "string"}},
                     "reference_answer": {"type": "string"},
@@ -279,9 +283,15 @@ def valid(item: dict, allowed: set[str], seen: list[str]) -> dict | None:
     if not any(kp.get("required") for kp in points):
         points[0]["required"] = True
     secondaries = [c for c in item.get("secondary_concepts") or [] if c in allowed][:2]
+    # 2026-11-23: drafts used to carry no type, so the loader read every one as
+    # conceptual — "you notice X in production" included — and a concept asked
+    # three ways looked like one way (audit_bank's no_spread). Keep the writer's
+    # word when it is a real type; an unknown one is read as conceptual, as before.
+    kind = str(item.get("question_type", "")).strip().lower()
     return {
         "stem": stem,
         "difficulty_band": item.get("difficulty_band", "core"),
+        "question_type": kind if kind in {t.value for t in QuestionType} else "conceptual",
         "time_budget_s": max(120, min(420, int(item.get("time_budget_s") or 240))),
         "secondaries": secondaries,
         "reference_answer": answer,
@@ -394,6 +404,7 @@ def write(track: str, cid: str, items: list[dict], model: str) -> None:
             "modality": "verbal",
             "round_types": [track],
             "difficulty_band": item["difficulty_band"],
+            "question_type": item["question_type"],
             "time_budget_s": item["time_budget_s"],
             "concepts": [{"id": cid, "weight": 0.7}]
             + [{"id": s, "weight": 0.15} for s in item["secondaries"]],

@@ -1,0 +1,335 @@
+# =============================================================================
+#  GAP BANK — ml_verbal, foundations and models (2026-11-23). Every ML concept
+#  had two questions; this adds the third, in the band it lacked. The
+#  reinforcement-learning concepts had none and live in ml_verbal.gaps-rl.yaml.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: ml_verbal
+provenance: generated
+items:
+  gx_ml_framing_core:
+    c: [ml_problem_framing]
+    d: core
+    t: scenario
+    f: "from a business wish to a prediction target"
+    q: "A food-delivery app wants to use ML to reduce late deliveries. How would you turn that wish into a concrete ML problem: what you predict, from what, and how you judge success?"
+    a: "First pick a target that drives an action, for example predicting the delivery time at the moment of ordering, a regression, or the probability an order is late against its promise, a classification. The prediction can then set a realistic promised time or trigger extra riders. Inputs must be available when the prediction is made: distance, the restaurant's past preparation times, time of day, weather and rider availability, never anything recorded after dispatch. Labels come from historical delivery logs. Success needs an offline metric, such as mean absolute error in minutes, and a business metric checked in an A/B test, such as fewer late orders. Always compare against a simple baseline, like distance divided by average speed plus average preparation time."
+    k: ["!Defines a concrete prediction target such as delivery time or probability of being late", "!Uses only inputs available at the moment of prediction", "!Names an offline metric and a business metric for success", "Compares against a simple non-ML baseline"]
+    h: ["What decision would the prediction change?"]
+    fu: ["The only examples you have are orders customers complained about. What goes wrong?", "Your model is accurate, yet riders are still late. What might your framing have missed?"]
+    m: "Framing just means choosing which algorithm to use."
+    s: ["Ties the target to an action", "Checks what is known at prediction time"]
+
+  gx_ml_linalg_core:
+    c: [linear_algebra_for_ml, linear_regression]
+    d: core
+    t: debugging
+    f: "rank and collinear features"
+    q: "Your feature matrix has 1,000 rows and 50 columns, but its rank is only 45. What does that mean, and what trouble does it cause when fitting linear regression?"
+    a: "A rank of 45 means five columns are exact linear combinations of the others, so they add no new information. Typical causes are a total column that equals the sum of its parts, or one-hot encoding every category while also keeping an intercept. Then X transpose X is singular, so the normal equations have no unique solution: infinitely many weight vectors give identical predictions, and the reported coefficients are arbitrary and meaningless to interpret. Fixes are to drop the redundant columns, drop one dummy per categorical feature, use ridge regression, which adds a small multiple of the identity and makes the matrix invertible, or solve with a pseudo-inverse through SVD."
+    k: ["!Says five columns are linear combinations of the others", "!Explains X transpose X becomes singular so the weights are not unique", "Gives a cause such as one-hot dummies with an intercept or a total column", "!Proposes dropping redundant columns, ridge or a pseudo-inverse"]
+    h: ["Can any column be written using the others?"]
+    fu: ["Two columns are almost, but not exactly, copies of each other. What do you see in the fitted weights?", "Why would predictions stay fine even when the weights are nonsense?"]
+    m: "A rank-deficient matrix only slows training down; the weights are still correct."
+    s: ["Connects rank to non-unique solutions", "Names the one-hot trap"]
+
+  gx_ml_split_core:
+    c: [train_test_split, data_leakage]
+    d: core
+    t: scenario
+    f: "grouped splits"
+    q: "You are predicting a patient's diagnosis at their next visit, and most patients have several visits in the data. How should you split train and test, and what goes wrong with a random row split?"
+    a: "Split by patient, so all visits of one patient fall in the same set; this is a grouped split. A random row split puts some visits of a patient in training and others in test, so the model can recognise the patient from stable traits such as age, history and test values, and effectively look up their known diagnosis. The test score is then inflated and does not reflect performance on new patients, which is what the hospital needs. If the model will be used on future patients, also split by time, training on earlier years and testing on later ones. Stratify by the outcome if it is rare, and keep the test set untouched until the end."
+    k: ["!Splits by patient so all of one patient's visits stay in the same set", "!Explains a random row split lets the model see the same patient in training and test", "!Says this inflates the test score compared with new patients", "Mentions a time-based split or stratifying a rare outcome"]
+    h: ["What could the model memorise about a person?"]
+    fu: ["The hospital will use the model on next year's patients. Does that change your split?", "Only 3% of visits have the diagnosis. What should you check about each set?"]
+    m: "A random split is always fine as long as the test set is large enough."
+    s: ["Names grouped splitting", "Explains why the score is inflated"]
+
+  gx_ml_overfit_intro:
+    c: [overfitting]
+    d: intro
+    t: conceptual
+    f: "telling the two failures apart"
+    q: "What are overfitting and underfitting, and how do you tell them apart from training and validation scores?"
+    a: "Overfitting is when a model learns the noise and quirks of its training data instead of the general pattern, so it scores very well on training data but much worse on new data. Underfitting is when the model is too simple, or trained too little, to capture the real pattern, so it does poorly on both. You tell them apart by comparing scores: a large gap between high training and lower validation scores signals overfitting, while low scores on both signal underfitting. Remedies for overfitting include more data, a simpler model, regularisation and early stopping; for underfitting, add useful features, use a more flexible model or train longer."
+    k: ["!Defines overfitting as fitting training noise and generalising poorly", "!Defines underfitting as missing the real pattern", "!Says overfitting shows a large gap between training and validation scores while underfitting is poor on both", "Gives a remedy for each"]
+    h: ["Compare how the model does on data it has seen and data it has not."]
+    fu: ["Training accuracy is 70% and validation accuracy 69% on a task where people reach 95%. What would you try?", "Can collecting more examples ever fix the other problem?"]
+    m: "A model with very high training accuracy is always a good model."
+    s: ["Uses the train-validation gap", "Gives remedies for both"]
+
+  gx_ml_reg_intro:
+    c: [regularisation]
+    d: intro
+    t: conceptual
+    f: "L1 versus L2"
+    q: "What is regularisation, and how do L1 and L2 penalties differ in what they do to a model's weights?"
+    a: "Regularisation adds a penalty on the size of the weights to the training loss, so the model prefers simpler explanations and overfits less. L2, used in ridge regression, adds the sum of squared weights: it shrinks all weights smoothly towards zero but rarely makes any exactly zero, and it spreads weight across correlated features. L1, used in lasso, adds the sum of absolute weights: its constant pull drives many weights to exactly zero, so it performs feature selection and gives sparse models. Elastic net mixes both. The penalty's strength, often called lambda or alpha, is a hyperparameter chosen on validation data; too strong and the model underfits."
+    k: ["!Explains regularisation adds a penalty on weight size to the loss", "!Says L2 shrinks all weights smoothly without making them exactly zero", "!Says L1 drives some weights exactly to zero, acting as feature selection", "Says the strength is tuned on validation data"]
+    h: ["Which penalty keeps pulling with the same force even when a weight is tiny?"]
+    fu: ["You have 10,000 inputs and suspect only 50 matter. Which would you try first?", "What happens to the fitted model if lambda is set enormously high?"]
+    m: "Regularisation is only needed for neural networks."
+    s: ["Explains why L1 gives zeros", "Mentions tuning the strength"]
+
+  gx_ml_cv_intro:
+    c: [cross_validation]
+    d: intro
+    t: conceptual
+    f: "k-fold mechanics"
+    q: "How does k-fold cross-validation work, and why is it more trustworthy than a single train-validation split on a small dataset?"
+    a: "The data is split into k roughly equal folds, often five or ten. The model is trained k times, each time holding out a different fold for validation and training on the rest, and the k validation scores are averaged. Every example is used for validation exactly once. On a small dataset, a single split's score depends heavily on which few examples happened to land in the validation set, so it is noisy; averaging over k folds gives a more stable estimate, and the spread of fold scores shows how uncertain it is. The cost is training k times. For classification, stratified folds keep class proportions similar, and a final test set is still kept apart."
+    k: ["!Explains splitting into k folds and holding each out once", "!Says the k validation scores are averaged", "!Explains a single split on small data gives a noisy estimate", "Mentions the cost of training k times or stratified folds"]
+    h: ["How much would your score change if a different 20% were held out?"]
+    fu: ["Your five fold scores are 0.91, 0.62, 0.88, 0.90 and 0.89. What would you look into?", "Why would you not shuffle daily stock prices into folds this way?"]
+    m: "Cross-validation removes the need for a separate test set."
+    s: ["Describes the rotation clearly", "Mentions variance across folds"]
+
+  gx_ml_cls_metrics_intro:
+    c: [classification_metrics]
+    d: intro
+    t: conceptual
+    f: "precision and recall"
+    q: "Explain precision and recall using a spam filter as the example. Which mistake does each one punish?"
+    a: "Precision asks: of the emails the filter flagged as spam, what fraction really were spam? It drops when real emails are wrongly flagged, so it punishes false positives. Recall asks: of all the spam that arrived, what fraction did the filter catch? It drops when spam slips into the inbox, so it punishes false negatives. Moving the decision threshold trades one for the other: a stricter filter raises precision but misses more spam. F1, their harmonic mean, summarises both. For a spam filter, users usually hate losing a real email more than seeing some spam, so precision tends to matter more."
+    k: ["!Defines precision as the share of flagged emails that are really spam", "!Defines recall as the share of all spam that was caught", "!Says precision punishes false positives and recall punishes false negatives", "Mentions the threshold trade-off or F1"]
+    h: ["Which mistake makes you miss an important email?"]
+    fu: ["For a cancer screening test, which of the two would you protect, and why?", "A filter marks every single email as junk. What are its two scores?"]
+    m: "Accuracy tells you everything precision and recall do."
+    s: ["Maps each metric to a mistake", "Chooses by the cost of errors"]
+
+  gx_ml_hpo_intro:
+    c: [hyperparameter_tuning]
+    d: intro
+    t: conceptual
+    f: "parameters versus hyperparameters"
+    q: "What is the difference between a model's parameters and its hyperparameters, and how would you choose good hyperparameters?"
+    a: "Parameters are learned from the data during training, such as the weights of a linear model or the split thresholds of a tree. Hyperparameters are set before training and control how learning happens, such as the learning rate, tree depth, the number of neighbours in k-NN or the regularisation strength. To choose them, try candidate settings and compare each on validation data or with cross-validation, never on the test set, which must stay an honest final check. Common search methods are grid search, random search, which is often more efficient when only a few settings matter, and Bayesian optimisation. Searching ranges like the learning rate on a log scale helps."
+    k: ["!Says parameters are learned from data during training", "!Says hyperparameters are set before training and control learning", "!Describes evaluating candidate settings on validation data or cross-validation, not the test set", "Names a search method such as grid, random or Bayesian search"]
+    h: ["Which numbers does training itself change?"]
+    fu: ["You tried 500 settings and kept the best validation score. Why might the test score disappoint?", "Why might trying values at random beat an even grid when only one of six knobs really matters?"]
+    m: "Hyperparameters should be tuned on the test set to get the best final score."
+    s: ["Clear definitions with examples", "Protects the test set"]
+
+  gx_ml_logreg_intro:
+    c: [logistic_regression]
+    d: intro
+    t: conceptual
+    f: "from scores to classes"
+    q: "Logistic regression is used for classification despite its name. What does it actually compute, and how do you turn its output into a class?"
+    a: "It computes a weighted sum of the features plus a bias, exactly like linear regression, and passes it through the sigmoid function, which squashes any number into a probability between 0 and 1. Equivalently, it models the log-odds of the positive class as a linear function of the features. It is trained by minimising log loss, also called cross-entropy, rather than squared error. To get a class, compare the probability with a threshold, 0.5 by default, though you should move it when the two kinds of error have different costs. Because the log-odds are linear, the decision boundary is a straight line or flat plane."
+    k: ["!Says it passes a weighted sum of features through a sigmoid to give a probability", "!Says a threshold, by default 0.5, turns the probability into a class", "Mentions training by minimising log loss", "Says the decision boundary is linear or that coefficients change the log-odds"]
+    h: ["What function maps any number into the range 0 to 1?"]
+    fu: ["One class forms an inner circle and the other an outer ring. What happens, and what could you add?", "Why might a bank flag a loan as risky well below a fifty percent chance?"]
+    m: "Logistic regression predicts a continuous value, so it is a regression model."
+    s: ["Explains the sigmoid and threshold", "Knows the boundary is linear"]
+
+  gx_ml_bv_intro:
+    c: [bias_variance_tradeoff]
+    d: intro
+    t: conceptual
+    f: "the two sources of error"
+    q: "Explain bias and variance in your own words with an example, and why lowering one tends to raise the other."
+    a: "Bias is error from overly simple assumptions: a straight line fitted to curved data misses in the same way no matter which sample you train on. Variance is error from being too sensitive to the particular training sample: a very deep decision tree changes a lot if retrained on a slightly different sample. Expected error splits into bias squared, plus variance, plus irreducible noise. Making a model more flexible lowers bias because it can follow the true pattern, but it also starts fitting noise, so variance rises; making it simpler does the reverse. The goal is the complexity that minimises the total, and tools like regularisation, more data and averaging many models shift that balance."
+    k: ["!Defines bias as systematic error from overly simple assumptions", "!Defines variance as sensitivity to the particular training sample", "!Explains more flexible models lower bias but raise variance", "Mentions total error as bias squared plus variance plus noise"]
+    h: ["What happens if you retrain the same model on a fresh sample?"]
+    fu: ["Retraining on five different samples gives five wildly different prices for one house. Which problem is that?", "How can averaging many models change this balance?"]
+    m: "A model with zero training error has neither bias nor variance problems."
+    s: ["Gives an example of each", "States the decomposition"]
+
+  gx_ml_leak_intro:
+    c: [data_leakage]
+    d: intro
+    t: conceptual
+    f: "what leakage is"
+    q: "What is data leakage in machine learning, and why does it make a model look better than it really is?"
+    a: "Data leakage happens when information that will not be available at prediction time, or that comes from the evaluation data, gets into training. Examples are a feature recorded after the outcome, such as refund issued when predicting complaints, fitting a scaler or imputer on the whole dataset before splitting, and duplicate rows that appear in both training and test. The model learns a shortcut that works on the leaked information, so the validation score is inflated; in production that information is missing and performance collapses. Prevention: split first, fit all preprocessing on training data only, ideally inside a pipeline, check when each feature is recorded, and treat near-perfect scores with suspicion."
+    k: ["!Defines leakage as information unavailable at prediction time entering training", "!Gives an example such as a feature recorded after the outcome or preprocessing fit on all data", "!Explains the validation score is inflated and production performance drops", "Mentions splitting first or fitting preprocessing on training data only"]
+    h: ["Would the model have this information at the moment it must predict?"]
+    fu: ["A churn model's most important input is 'account closure date is set'. What do you think?", "Your first model scores 99.8% on a famously hard problem. What do you check before celebrating?"]
+    m: "Leakage only happens when test rows are copied into the training set."
+    s: ["Gives realistic examples", "Knows the pipeline remedy"]
+
+  gx_ml_imbalance_intro:
+    c: [class_imbalance, classification_metrics]
+    d: intro
+    t: conceptual
+    f: "why accuracy misleads"
+    q: "Only 1% of transactions are fraud. Why is accuracy a misleading measure here, and what are two ways to train a better model on such data?"
+    a: "A model that labels every transaction as genuine scores 99% accuracy while catching no fraud at all, so accuracy hides the failure that matters. Better measures are recall and precision on the fraud class, the F1 score or the area under the precision-recall curve. To train better, use class weights so mistakes on the rare class cost more in the loss, or resample: oversample fraud cases, for example with SMOTE, or undersample genuine ones. Resampling must be applied to training data only, never to validation or test data. Tuning the decision threshold, and collecting more fraud examples, also help."
+    k: ["!Explains always predicting the majority class gives 99% accuracy but catches no fraud", "!Suggests metrics such as recall, precision or PR-AUC instead", "!Names class weighting or resampling as a training remedy", "Says resampling is applied to training data only or mentions threshold tuning"]
+    h: ["What score does a model get if it never says fraud?"]
+    fu: ["You duplicated fraud rows before splitting, and validation recall is suddenly 0.97. What happened?", "Fraud patterns change every month. Does that affect how you handle the rare class?"]
+    m: "With imbalanced data you should simply aim for higher accuracy."
+    s: ["Shows the trivial-model trap", "Keeps resampling out of evaluation"]
+
+  gx_ml_tree_intro:
+    c: [decision_trees]
+    d: intro
+    t: conceptual
+    f: "choosing splits"
+    q: "How does a decision tree decide which question to ask at each split, and why do deep trees overfit?"
+    a: "At each node the tree tries candidate features and thresholds and picks the split that makes the child nodes purest, measured by the drop in Gini impurity or entropy, also called information gain, for classification, or the drop in variance for regression. It then repeats on each child until a stopping rule is met. A tree allowed to grow without limit can keep splitting until every leaf holds a single training example, which memorises noise and fails on new data; small changes in the data can also produce a completely different tree. Depth is controlled with a maximum depth, a minimum number of samples per leaf, pruning, or by averaging many trees."
+    k: ["!Says it picks the feature and threshold that most reduce impurity", "!Names Gini impurity, entropy or variance reduction as the criterion", "!Explains deep trees can memorise individual training samples", "Names a control such as maximum depth, minimum leaf size or pruning"]
+    h: ["What makes one split better than another?"]
+    fu: ["Your tree's very first split is on customer ID. What went wrong?", "Why does this model not care whether you rescale your inputs?"]
+    m: "A deeper tree is always more accurate."
+    s: ["Names the criterion", "Explains the memorisation risk"]
+
+  gx_ml_svm_intro:
+    c: [support_vector_machines]
+    d: intro
+    t: conceptual
+    f: "margin and support vectors"
+    q: "What is the margin in a support vector machine, and what are the support vectors?"
+    a: "A support vector machine looks for the separating boundary with the widest margin, meaning the largest gap between the boundary and the nearest training points of each class. Those nearest points are the support vectors: they alone determine where the boundary sits, so moving or removing any other point leaves it unchanged. A wide margin tends to generalise better because small shifts in new data do not cross the boundary. Real data overlaps, so a soft margin allows some points inside the margin or on the wrong side, with the parameter C setting how heavily those violations are penalised. Kernels such as RBF allow curved boundaries by implicitly mapping data into higher dimensions."
+    k: ["!Says SVM picks the boundary with the widest gap to the nearest points of each class", "!Defines support vectors as the closest points that fix the boundary", "Explains a soft margin with C allows some violations", "Mentions kernels for non-linear boundaries"]
+    h: ["Which training points would change the answer if you nudged them?"]
+    fu: ["You delete half the training points, none of them near the dividing line. What changes?", "The two classes overlap a little because of labelling noise. What setting would you adjust?"]
+    m: "Every training point affects where an SVM draws its boundary."
+    s: ["Explains why only some points matter", "Mentions C and kernels"]
+
+  gx_ml_nb_intro:
+    c: [naive_bayes]
+    d: intro
+    t: conceptual
+    f: "the naive assumption"
+    q: "Why is Naive Bayes called naive, and why does it still work well for spam filtering?"
+    a: "Naive Bayes uses Bayes' theorem: the probability of a class given the features is proportional to the class's prior probability times the likelihood of the features under that class. It is naive because it assumes the features are independent of each other given the class, so it simply multiplies each word's likelihood, even though words like free and offer clearly appear together. It still classifies well because it only needs the right class to come out highest, not accurate probabilities, and errors from the assumption often cancel. It is also very fast, needs little data and handles thousands of word features. Laplace smoothing stops an unseen word from zeroing out a class."
+    k: ["!Says it applies Bayes' theorem to get the class probability from feature likelihoods", "!Explains the naive assumption that features are independent given the class", "!Explains it still classifies well because only the ranking of classes matters", "Mentions smoothing for unseen words or speed with little data"]
+    h: ["What does it assume about how words relate to each other?"]
+    fu: ["An email contains a word never seen in training. Without any fix, what happens to the score?", "Why would you not trust its output numbers as real confidence?"]
+    m: "Naive Bayes only works when the features really are independent."
+    s: ["States the assumption precisely", "Explains why it survives the violation"]
+
+  gx_ml_cluster_intro:
+    c: [clustering]
+    d: intro
+    t: conceptual
+    f: "k-means step by step"
+    q: "How does k-means clustering work step by step, and how would you choose k?"
+    a: "Start by placing k centroids, ideally with k-means++, which spreads them out. Assign each point to its nearest centroid, then move each centroid to the mean of the points assigned to it. Repeat these two steps until the assignments stop changing. This minimises the total squared distance of points to their centroids, but only reaches a local optimum, so it is run several times from different starts. To choose k, plot that total distance against k and look for the elbow where improvement slows, compare silhouette scores, or use what the business can act on. It assumes roughly round, similar-sized clusters, and features should be scaled first."
+    k: ["!Describes assigning points to the nearest centroid and recomputing centroids as means", "!Says it repeats until assignments stop changing", "!Names a way to choose k such as the elbow method or silhouette score", "Mentions sensitivity to initialisation or feature scaling"]
+    h: ["What two steps keep alternating?"]
+    fu: ["One input is income in rupees and another is age in years. What happens to your groups?", "The real groups are two interlocking crescent shapes. How will it do?"]
+    m: "k-means finds the true number of groups in the data by itself."
+    s: ["Clear iteration", "Practical way to choose k"]
+
+  gx_ml_dimred_intro:
+    c: [dimensionality_reduction]
+    d: intro
+    t: conceptual
+    f: "what PCA does"
+    q: "What does PCA do to a dataset, and why would you use it before training a model?"
+    a: "PCA finds new axes, the principal components, which are linear combinations of the original features, at right angles to each other and ordered by how much of the data's variance they capture. You keep the first few components, which often explain most of the variance, and project the data onto them, turning hundreds of features into a handful. Reasons to use it: faster training, less overfitting when features far outnumber examples, removing correlated features, denoising, and plotting data in two dimensions. Standardise features first, or large-unit features dominate. The downsides are that components are hard to interpret and high variance does not guarantee usefulness for the target."
+    k: ["!Says PCA finds new axes that capture the most variance", "!Says you keep the top components and project the data onto them", "!Gives a reason such as speed, less overfitting, removing correlation or visualisation", "Mentions standardising first or loss of interpretability"]
+    h: ["Which direction in the data spreads out the most?"]
+    fu: ["The input that best predicts your label barely varies. What could happen after this step?", "Why would measuring height in millimetres instead of metres change the result?"]
+    m: "PCA picks the original features that matter most for prediction."
+    s: ["Explains projection", "Knows its limits"]
+
+  gx_ml_calibration_hard:
+    c: [probability_for_ml, classification_metrics]
+    d: hard
+    t: debugging
+    f: "calibration"
+    q: "A fraud model gives many transactions a score of 0.9, yet only about 40% of those turn out to be fraud. What is wrong, and how would you fix it?"
+    a: "The model is poorly calibrated: its scores may still rank transactions well, but they are not honest probabilities, and here it is overconfident. You can see this with a reliability diagram: group predictions into bins, then compare each bin's average score with the fraction that really were fraud; the Brier score or expected calibration error summarise the gap. Common causes are resampling the training data so fraud looked far more common, boosted trees and overfitted networks. The fix is post-hoc calibration on held-out data, such as Platt scaling, isotonic regression or temperature scaling, or correcting for the resampled class prior. It matters whenever decisions use the probability itself, such as expected-loss rules."
+    k: ["!Identifies the model as poorly calibrated or overconfident", "!Describes checking with a reliability diagram or binned comparison", "!Proposes Platt scaling, isotonic regression or temperature scaling on held-out data", "Names a cause such as resampling during training"]
+    h: ["Among all cases scored around 0.9, how many should be fraud?"]
+    fu: ["Ranking by the score still works well. When does this problem actually matter?", "Your training data had fraud boosted to half the rows. How does that alone explain it?"]
+    m: "A model with a high AUC must output trustworthy probabilities."
+    s: ["Separates ranking from calibration", "Fits the calibrator on held-out data"]
+
+  gx_ml_loss_hard:
+    c: [loss_functions, linear_regression]
+    d: hard
+    t: tradeoff
+    f: "robust losses and log targets"
+    q: "Your house-price data includes a few mansions priced fifty times the median. Which loss would you train with, and why?"
+    a: "Mean squared error squares each error, so the few mansions produce enormous errors that dominate the gradients and pull the model towards them, hurting ordinary homes. Mean absolute error is robust because it grows linearly, effectively targeting the median, though its gradient is constant. Huber loss combines them: squared for small errors, linear beyond a threshold, so it is smooth and robust. Often the best choice is to predict the logarithm of price with squared error, which turns errors into relative ones, matching how prices vary multiplicatively. Ultimately the loss should reflect the business cost; if underpricing hurts more, a quantile or asymmetric loss fits better."
+    k: ["!Explains squared error lets the few huge prices dominate training", "!Proposes MAE or Huber loss for robustness", "!Proposes predicting the log of price to model relative errors", "Says the loss should match the business cost of errors"]
+    h: ["What happens to an error of 100 lakh when you square it?"]
+    fu: ["The business loses far more by underpricing than overpricing. How could training reflect that?", "After training on the logarithm, your predictions come out slightly too low on average. Why?"]
+    m: "Squared error is always the right loss for regression."
+    s: ["Explains the outlier effect", "Offers the log-target option"]
+
+  gx_ml_gd_scaling_hard:
+    c: [gradient_descent, feature_engineering]
+    d: hard
+    t: debugging
+    f: "conditioning and feature scale"
+    q: "Gradient descent diverges unless you use a tiny learning rate, and then training crawls. One feature ranges in the thousands and another between 0 and 1. Explain the connection."
+    a: "Features on very different scales stretch the loss surface into a long, narrow valley: the loss is very steep along the weight of the large-scale feature and almost flat along the other. A single learning rate must be small enough not to overshoot in the steep direction, which makes it far too small for progress in the flat direction, so updates zig-zag across the valley and creep along it. Standardising the features, to zero mean and unit variance, makes the contours roughly circular so one step size suits every direction. Momentum damps the zig-zag, and adaptive optimisers such as Adam scale each parameter's step separately."
+    k: ["!Explains different feature scales stretch the loss surface into a narrow valley", "!Explains a step stable for the steep direction is too small for the flat one", "!Proposes standardising or normalising the features", "Mentions momentum or adaptive per-parameter step sizes"]
+    h: ["Picture the loss contours when one weight matters a thousand times more."]
+    fu: ["Why does a decision tree trained on the same data not suffer from this at all?", "You fixed the training data this way. What must you do with the test data?"]
+    m: "Feature scale does not matter because the weights will adjust."
+    s: ["Geometric explanation", "Names both fixes"]
+
+  gx_ml_fe_hard:
+    c: [feature_engineering, data_leakage]
+    d: hard
+    t: tradeoff
+    f: "high-cardinality categories"
+    q: "A city column with 4,000 distinct values is a key input for predicting delivery time, and one-hot encoding blows up the model. What would you do instead, and what is the main risk?"
+    a: "A strong option is target encoding: replace each city with the average delivery time of that city in the training data, smoothed towards the overall average for rare cities with few orders. The main risk is leakage: because the encoding uses the label, the model can see its own answer and overfit, so compute it out-of-fold, using only other folds' rows for each row, and fit it on training data only. Alternatives are frequency encoding, grouping rare cities into an other bucket, the hashing trick, learned embeddings, or replacing the city with descriptive numbers such as population, road density or distance to a hub, which also generalise to unseen cities."
+    k: ["!Proposes target encoding with smoothing for rare categories", "!Names leakage or overfitting as the risk of target encoding", "!Says to compute the encoding out-of-fold or on training data only", "Mentions alternatives such as hashing, frequency encoding, embeddings or grouping rare cities"]
+    h: ["What single number could summarise a city for this task?"]
+    fu: ["A new city appears in production that was never in training. What value does it get?", "Could you describe each city with numbers instead of its name?"]
+    m: "Label encoding cities as 1 to 4,000 solves the problem for any model."
+    s: ["Handles rare categories", "Guards against leakage"]
+
+  gx_ml_regmetrics_hard:
+    c: [regression_metrics]
+    d: hard
+    t: scenario
+    f: "when R-squared misleads"
+    q: "Your demand forecast has an R-squared of 0.92, but store managers say it is useless. How can both be true?"
+    a: "R-squared measures how much variance the model explains compared with always predicting the overall mean. If the data mixes huge and tiny stores, simply knowing which store it is explains most of the variance, so R-squared looks excellent while errors within each store remain large relative to that store's own sales. Errors may also be biased, such as under-forecasting every festival peak, or concentrated on the items managers care about most. Better checks are per-store or per-item MAE, weighted absolute percentage error, bias, and error by segment, compared with a naive baseline such as last week's sales, ideally weighting errors by the real cost of stockouts and waste."
+    k: ["!Explains R-squared compares against predicting the overall mean and can be high across varied stores", "!Says errors can still be large for each store or item that matters", "!Proposes per-store metrics such as MAE, WAPE or bias checks", "Compares against a naive baseline like last week's sales"]
+    h: ["What is R-squared measured against?"]
+    fu: ["Some products sell zero units on many days. Which percentage-based measure breaks, and why?", "How would you show the forecast beats what managers do today?"]
+    m: "A high R-squared means the forecast is accurate enough to use."
+    s: ["Explains the baseline inside R-squared", "Proposes decision-relevant metrics"]
+
+  gx_ml_linreg_hard:
+    c: [linear_regression, feature_engineering]
+    d: hard
+    t: debugging
+    f: "multicollinearity and coefficient signs"
+    q: "In a salary model, the coefficient for years of experience turns negative after you add age as a feature. Does experience lower salary? Explain."
+    a: "Not necessarily. Age and experience are strongly correlated, which is multicollinearity. Each coefficient now means the effect of that feature while holding the other fixed, but in the data experience barely varies at a fixed age, so the model has little information to separate them. The estimates become unstable with large standard errors, and a sign can flip with small changes in the data. Predictions may still be accurate, because the combined effect is well estimated. Check correlations or variance inflation factors, then drop one feature, combine them, or use ridge regression. Coefficients from observational data are associations anyway, not causal effects."
+    k: ["!Identifies multicollinearity between age and experience", "!Explains the coefficient is the effect holding the other feature fixed", "!Says the estimates become unstable and can flip sign", "Mentions checking VIF or correlation and dropping, combining or ridge"]
+    h: ["How much does experience vary among people of exactly the same age?"]
+    fu: ["Your test predictions did not get worse at all. Why might that be?", "A manager wants to cut pay for experienced staff based on this number. What do you tell them?"]
+    m: "A negative coefficient always means the feature has a negative effect."
+    s: ["Explains holding-other-fixed", "Separates prediction from interpretation"]
+
+  gx_ml_knn_scale_hard:
+    c: [k_nearest_neighbours, dimensionality_reduction]
+    d: hard
+    t: optimisation
+    f: "nearest neighbours at scale"
+    q: "Your k-NN recommender works well on 10,000 items but takes seconds per query at 50 million. How would you make it fast enough, and what do you give up?"
+    a: "Brute-force k-NN compares the query with every item, so cost grows with the number of items times their dimension. Tree indexes like KD-trees and ball trees help in low dimensions but degrade towards brute force in high dimensions. At this scale use approximate nearest neighbour indexes: graph-based HNSW, clustering-based IVF combined with product quantisation as in FAISS, or locality-sensitive hashing. Reducing dimension with PCA and compressing vectors also helps. What you give up is exactness, since some true neighbours are missed, along with extra memory for the index and build time. You tune index settings to trade recall against latency."
+    k: ["!Says brute force compares the query with every item", "!Proposes approximate nearest neighbour indexes such as HNSW, IVF or LSH", "!Says the trade-off is exactness or recall for speed", "Mentions memory or build time, or that KD-trees weaken in high dimensions"]
+    h: ["Do you need the exact nearest items, or just very close ones?"]
+    fu: ["How would you measure how many true neighbours the fast version misses?", "New items are added every minute. What does that do to your index?"]
+    m: "k-NN has no training, so it is always cheap to run."
+    s: ["Names concrete index types", "States what is traded"]
+
+  gx_ml_ensemble_intro:
+    c: [ensemble_methods, decision_trees]
+    d: intro
+    t: conceptual
+    f: "bagging versus boosting"
+    q: "What is the difference between bagging and boosting? Use random forests and gradient boosting as examples."
+    a: "Bagging trains many models independently, each on a bootstrap sample drawn with replacement from the training data, and averages or votes their predictions. A random forest is bagging with decision trees that also consider a random subset of features at each split, making the trees more different. Averaging mainly reduces variance, and the models can be trained in parallel. Boosting trains models one after another, each focusing on the mistakes of the ensemble so far; gradient boosting fits each new tree to the gradient of the loss, the residual errors. It mainly reduces bias and is often more accurate, but it is sequential and can overfit noisy labels, so the learning rate and number of rounds need tuning."
+    k: ["!Says bagging trains models independently on bootstrap samples and averages them", "!Says boosting trains models in sequence, each fixing the previous errors", "!Says bagging mainly reduces variance while boosting mainly reduces bias", "Mentions random forests sampling features or boosting's sensitivity to noise"]
+    h: ["Do the models learn at the same time or one after another?"]
+    fu: ["Your labels contain many mistakes. Which of the two would you trust more, and why?", "Which one can you spread across eight machines more easily?"]
+    m: "Bagging and boosting are just two names for averaging trees."
+    s: ["Contrasts parallel and sequential", "Links each to bias or variance"]

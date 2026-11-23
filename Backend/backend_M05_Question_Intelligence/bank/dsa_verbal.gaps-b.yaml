@@ -1,0 +1,413 @@
+# =============================================================================
+#  GAP BANK — dsa_verbal, part B: recursion and dynamic programming, trees,
+#  graphs and maths (2026-11-23). Every concept here had one or two questions;
+#  these bring each to at least three, in the band and angle it lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: dsa_verbal
+provenance: generated
+items:
+  gx_recursion_permutations_hard:
+    c: [recursion, backtracking]
+    d: hard
+    t: design
+    f: "recursion with shared state"
+    q: "You write a recursive function that builds all permutations of a list by appending to one shared list, and the output comes back full of duplicates and missing orders. What usually causes this?"
+    a: "The usual cause is shared mutable state that is not restored after each recursive call. If the function appends an element to the current path and recurses, it must remove that element afterwards, otherwise later branches start from a polluted path. A related bug is saving the path itself into the results instead of a copy, so every saved entry is the same list that keeps changing. The fixes are to undo every change after the call returns, and to append a copy of the path when recording a result, or to pass new lists down instead of mutating one."
+    k: ["!Identifies shared mutable state that is not undone after the recursive call", "!Says results must store a copy of the path, not the path itself", "Proposes undoing changes after each call or passing new lists down"]
+    h: ["What does the path look like when the second branch starts?"]
+    fu: ["How would you check, without printing everything, that you produce exactly n factorial results?", "What changes if the input list contains repeated values?"]
+    m: "Recursion automatically gives each call its own copy of every list."
+    s: ["Explains the undo step precisely", "Spots the copy-versus-reference bug"]
+
+  gx_dandc_intro:
+    c: [divide_and_conquer]
+    d: intro
+    t: conceptual
+    f: "the three steps"
+    q: "What are the three steps of a divide and conquer algorithm? Explain them using merge sort."
+    a: "Divide the problem into smaller subproblems of the same kind, conquer each subproblem by solving it recursively until it is small enough to solve directly, and combine the subresults into the answer. In merge sort you divide the array into two halves, sort each half recursively down to single elements, which are already sorted, and combine by merging the two sorted halves in linear time. The approach pays off when the combine step is cheap compared with solving the whole problem at once, and it often parallelises well because the subproblems are independent."
+    k: ["!Names divide, conquer recursively, and combine", "!Maps each step to merge sort", "Says it helps when combining is cheap", "Mentions independence of subproblems"]
+    h: ["What is the smallest piece that is already sorted?"]
+    fu: ["Binary search also splits the input in half. Is it divide and conquer in the same sense?", "Why might two subproblems that overlap make this approach slow?"]
+    m: "Divide and conquer always means splitting into exactly two halves."
+    s: ["Uses the example correctly", "Explains when it helps"]
+
+  gx_backtracking_intro:
+    c: [backtracking]
+    d: intro
+    t: conceptual
+    f: "choose, explore, undo"
+    q: "In simple terms, what is backtracking? Use solving a Sudoku as your example."
+    a: "Backtracking builds a solution step by step and abandons a partial solution as soon as it cannot lead to a valid answer. In Sudoku you find an empty cell, try a digit that does not break any row, column or box rule, and move on to the next empty cell. If you reach a cell where no digit fits, the earlier choice was wrong, so you undo the most recent choice and try the next digit there. The three moves are choose, explore and undo. Pruning invalid choices early is what keeps it far faster than trying every complete grid."
+    k: ["!Describes building a solution incrementally and abandoning dead ends", "!Explains undoing the last choice and trying the next option", "Says pruning invalid choices early is what makes it efficient"]
+    h: ["What do you do when a cell has no legal digit?"]
+    fu: ["Which empty cell would you fill first to make the search faster, and why?", "How is this different from trying every possible filled grid?"]
+    m: "Backtracking is the same as brute force."
+    s: ["Uses choose, explore, undo", "Explains the value of pruning"]
+
+  gx_dp_intro_fib:
+    c: [dynamic_programming]
+    d: intro
+    t: conceptual
+    f: "overlapping subproblems"
+    q: "Computing the 40th Fibonacci number with plain recursion is very slow. Why, and how does dynamic programming fix it?"
+    a: "Plain recursion computes fib of n by calling fib of n minus 1 and fib of n minus 2, and those calls recompute the same smaller values again and again: the number of calls grows exponentially, roughly 1.6 to the power n. Dynamic programming stores each result the first time it is computed, either top-down by memoising the recursive function or bottom-up by filling values from 0 upward. Each value is then computed once, giving O(n) time, and the bottom-up version needs only the last two values, so O(1) space."
+    k: ["!Explains that plain recursion recomputes the same subproblems", "Says the number of calls grows exponentially", "!Describes storing results top-down or bottom-up so each is computed once", "States O(n) time and that two variables suffice"]
+    h: ["How many times is fib of 2 computed for fib of 10?"]
+    fu: ["When is memoisation not enough, for example with very deep recursion?", "How would you know a new problem has overlapping subproblems?"]
+    m: "Dynamic programming is just recursion with a different name."
+    s: ["Quantifies the exponential blow-up", "Reduces the space to constant"]
+
+  gx_grid_dp_intro:
+    c: [dp_on_grids]
+    d: intro
+    t: conceptual
+    f: "building a table cell by cell"
+    q: "A robot starts at the top-left of a grid and can move only right or down. Why can the number of ways to reach each cell be built from its neighbours?"
+    a: "Every path to a cell must arrive either from the cell above it or from the cell to its left, and those two sets of paths do not overlap. So the number of ways to reach a cell is the ways to reach the cell above plus the ways to reach the cell on the left. The first row and first column have exactly one way each. Filling the table row by row, every value you need is already computed, so the whole grid takes O(rows times columns) time. You can even keep only one row in memory, since each cell needs just the current and previous row."
+    k: ["!Says each path arrives from above or from the left", "!Gives the sum of the two neighbours as the recurrence", "Sets the first row and column to one", "Mentions the fill order and optional one-row memory"]
+    h: ["Where must the robot have been one step before reaching a cell?"]
+    fu: ["Some cells are walls. How does one wall change its neighbours' counts?", "The robot may also move diagonally. What changes in your recurrence?"]
+    m: "You must list every path to count them."
+    s: ["Justifies why the two path sets do not overlap", "Notes the space optimisation"]
+
+  gx_grid_dp_square_hard:
+    c: [dp_on_grids]
+    d: hard
+    t: optimisation
+    f: "non-obvious grid states"
+    q: "In a grid of zeroes and ones, how would you find the side of the largest square made only of ones, in a single pass?"
+    a: "Let each cell store the side of the largest all-ones square whose bottom-right corner is that cell. If the cell is zero, the value is zero. If it is one, the value is one plus the minimum of the values above, to the left and diagonally above-left, because a square of side s ending here needs squares of side s minus 1 ending at each of those three neighbours. Track the maximum while filling the table in row order: O(rows times columns) time, and O(columns) space if you keep one row plus a saved diagonal value."
+    k: ["!Defines the state as the largest square ending at that cell as bottom-right corner", "!Uses one plus the minimum of the three neighbours", "Explains why all three neighbours limit the square", "States linear time in the grid size"]
+    h: ["What must be true about the three cells touching the bottom-right corner?"]
+    fu: ["Why the minimum and not the maximum of the three?", "How would you find the largest rectangle of ones instead of a square?"]
+    m: "You need to check every possible square from every cell."
+    s: ["States the state definition clearly", "Explains the minimum with a picture or example"]
+
+  gx_knapsack_intro:
+    c: [knapsack, greedy]
+    d: intro
+    t: conceptual
+    f: "why greedy fails for 0/1 knapsack"
+    q: "For a bag with a weight limit and items you take whole or not at all, why doesn't picking items by best value per kilogram always give the best total?"
+    a: "Greedy by value per kilogram can leave capacity unused or block a better combination. Take a bag of 10 kilograms and items of 6 kilograms worth 30, 5 kilograms worth 24 and 5 kilograms worth 24. The first has the best ratio, so greedy takes it and then cannot fit either other item, total 30, while taking the two 5 kilogram items gives 48. Because items cannot be split, a locally best choice can rule out the best overall set. Greedy is optimal only for the fractional version; the whole-item version needs dynamic programming over items and capacity."
+    k: ["!Gives a counterexample where the ratio-greedy choice is worse", "!Explains that items cannot be split so early choices can waste capacity", "Says greedy works for the fractional version", "Names dynamic programming for the 0/1 version"]
+    h: ["Try a bag where the best-ratio item leaves an awkward gap."]
+    fu: ["When the capacity is a crore, why does the usual table become a problem?", "What would you change to also report which items were picked?"]
+    m: "Greedy by ratio always works because the best value per kilogram is always worth taking."
+    s: ["Builds a concrete counterexample", "Separates fractional and 0/1 cases"]
+
+  gx_lis_intro:
+    c: [longest_increasing_subsequence]
+    d: intro
+    t: conceptual
+    f: "subsequence versus subarray"
+    q: "What is the longest increasing subsequence of an array, and how is a subsequence different from a subarray?"
+    a: "A subarray is a contiguous block of the array, while a subsequence keeps the original order but may skip elements. The longest increasing subsequence is the longest such ordered selection where each value is larger than the previous one. In 3, 10, 2, 1, 20 one longest increasing subsequence is 3, 10, 20, of length 3, even though no increasing subarray is that long. The simple dynamic programming answer stores, for each position, the longest increasing subsequence ending there, by looking back at every earlier smaller value: O(n squared). A cleverer method with binary search reaches O(n log n)."
+    k: ["!Distinguishes contiguous subarrays from order-preserving subsequences", "Gives a correct example", "!Describes the state as the longest increasing subsequence ending at each position", "States O(n squared) for the simple method"]
+    h: ["Can a subsequence skip elements?"]
+    fu: ["What changes if equal values are allowed, so non-decreasing instead of increasing?", "How would you recover the actual subsequence, not just its length?"]
+    m: "The longest increasing subsequence must be contiguous."
+    s: ["Uses a correct worked example", "Gives the DP state precisely"]
+
+  gx_edit_distance_intro:
+    c: [edit_distance]
+    d: intro
+    t: conceptual
+    f: "what edit distance measures"
+    q: "What does the edit distance between two words measure, and where might a product actually use it?"
+    a: "Edit distance, often Levenshtein distance, is the minimum number of single-character insertions, deletions or substitutions needed to turn one word into the other. 'cat' to 'cut' is one substitution, 'cat' to 'cats' is one insertion. Products use it for spelling suggestions, fuzzy search that tolerates typos, matching names across records that were typed differently, and comparing DNA sequences. It is computed with a table where each cell holds the distance between prefixes of the two words, in O(m times n) time."
+    k: ["!Defines it as the minimum number of insertions, deletions and substitutions", "Gives a small correct example", "Names a realistic use such as spell checking or fuzzy matching", "Mentions the prefix table and its cost"]
+    h: ["How many single-letter changes turn 'cat' into 'cut'?"]
+    fu: ["You compare one typed word against a dictionary of five lakh words. What makes that expensive?", "Two letters swapped is a common typo. How would you count it as one edit?"]
+    m: "Edit distance is the number of positions where the words differ."
+    s: ["Uses correct examples", "Names a real product use"]
+
+  gx_tree_dp_intro:
+    c: [dp_on_trees, trees]
+    d: intro
+    t: conceptual
+    f: "combining children's answers"
+    q: "What does it mean to do dynamic programming on a tree? Explain with finding the height of every subtree."
+    a: "You compute an answer for each node from the answers of its children, visiting children before parents, typically with a post-order depth-first search. For subtree height, a leaf has height zero and every other node's height is one plus the largest height among its children. Because each node is processed once after its children, the whole tree takes O(n). Harder problems store more than one value per node, for example the best answer when the node is included and when it is not, and combine those from the children in the same bottom-up way."
+    k: ["!Computes each node's answer from its children's answers", "!Says children are processed before parents, as in post-order traversal", "Gives the height recurrence correctly", "Mentions storing more than one value per node for harder problems"]
+    h: ["What does a node need to know from its children?"]
+    fu: ["The tree has a million nodes in one long chain. What breaks in a recursive solution?", "How would you also find the diameter of the tree in the same pass?"]
+    m: "Tree DP needs a table indexed by every pair of nodes."
+    s: ["Explains the visiting order", "Generalises beyond height"]
+
+  gx_greedy_intro_coins:
+    c: [greedy]
+    d: intro
+    t: scenario
+    f: "when greedy is safe"
+    q: "A vending machine has coins of 1, 3 and 4 rupees and gives change by always taking the largest coin that fits. Customers say they sometimes get more coins than needed. Why?"
+    a: "Because always taking the largest coin is not optimal for this coin system. For 6 rupees it takes 4, then 1, then 1, three coins, while 3 plus 3 uses only two. Greedy happens to work for systems like the Indian 1, 2, 5, 10, where taking the largest coin never blocks a better combination. A greedy algorithm is correct only when you can prove the greedy choice is part of some optimal solution and the rest of the problem has the same form. When you cannot prove that, dynamic programming over amounts gives the true minimum."
+    k: ["!Says greedy coin change is not optimal for every coin system", "!Finds an amount, such as 6, where greedy uses more coins than needed", "Explains greedy needs a proof that the greedy choice stays optimal", "Names dynamic programming as the general method"]
+    h: ["Work out the change for 6 rupees both ways."]
+    fu: ["How would you convince an interviewer that greedy is safe for a particular coin system?", "The amount can be one crore. How much memory does your table need then, and what would you try instead?"]
+    m: "Greedy always gives the optimal answer if you sort the choices first."
+    s: ["Constructs a counterexample", "States the condition for greedy correctness"]
+
+  gx_intervals_intro:
+    c: [interval_scheduling, greedy]
+    d: intro
+    t: conceptual
+    f: "earliest finish time"
+    q: "You can attend only one talk at a time at a fest. To attend as many talks as possible, which talk should you pick first, and why?"
+    a: "Pick the talk that finishes earliest, then repeatedly pick the next talk that starts after the last chosen one ends. Finishing early leaves the most time for everything after it. Choosing the earliest start or the shortest talk can fail: an early-starting long talk can block several short ones. The proof is an exchange argument: any optimal schedule can swap its first talk for the earliest-finishing one without losing a talk. After sorting by end time it is a single pass, so O(n log n) overall."
+    k: ["!Chooses the talk with the earliest finishing time", "Repeats with talks starting after the last chosen one ends", "!Explains why earliest start or shortest duration can fail", "Mentions sorting by end time and O(n log n)"]
+    h: ["Which choice leaves the most of the day free?"]
+    fu: ["Talks now have different importance scores. Does the same rule still work?", "How many rooms would you need to hold every talk if they could run in parallel?"]
+    m: "Picking the shortest talk first always maximises the count."
+    s: ["Gives the counterexample for other rules", "Mentions the exchange argument"]
+
+  gx_trees_lca_hard:
+    c: [trees, tree_traversals]
+    d: hard
+    t: design
+    f: "lowest common ancestor"
+    q: "In a large company's reporting tree, how would you find the lowest common manager of two employees, and how would you answer many such queries quickly?"
+    a: "For one query, a recursive search works: return the node if it is one of the two employees, otherwise search both children; the first node where both sides report a found employee is the answer, O(n). With parent pointers you can instead walk both nodes up to the same depth and then move them up together until they meet. For many queries, preprocess with binary lifting: store each node's 2 to the power k ancestor, then raise the deeper node to equal depth and lift both together in O(log n) per query after O(n log n) preprocessing."
+    k: ["!Gives a correct single-query method such as recursive search or equalising depths", "!Proposes preprocessing such as binary lifting for many queries", "States query and preprocessing costs", "Handles the case where one employee manages the other"]
+    h: ["What if both people were first brought to the same depth?"]
+    fu: ["One employee is the other's manager. Does your method still return the right person?", "The tree changes every day as people move teams. What does that do to your preprocessing?"]
+    m: "You must store the full list of ancestors for every pair of employees."
+    s: ["Separates one-off and repeated queries", "Covers the ancestor edge case"]
+
+  gx_traversal_iterative_hard:
+    c: [tree_traversals, stacks]
+    d: hard
+    t: design
+    f: "iterative traversal"
+    q: "Recursion is not allowed in your environment because trees can be very deep. How would you do an in-order traversal of a binary tree iteratively?"
+    a: "Use an explicit stack to play the role of the call stack. Start at the root and push nodes while moving left until there is no left child. Then pop a node, visit it, and move to its right child, repeating the push-left step from there. Stop when the current pointer is null and the stack is empty. Each node is pushed and popped once, so it is O(n) time and O(h) space, where h is the height. If even that space is too much, Morris traversal temporarily threads right pointers to the in-order successor and restores them, using O(1) extra space."
+    k: ["!Uses an explicit stack in place of recursion", "!Pushes nodes going left, then pops, visits and moves right", "States O(n) time and O(h) stack space", "Mentions Morris traversal for constant space"]
+    h: ["What does the recursive version keep on the call stack?"]
+    fu: ["How would you adapt this to a post-order traversal?", "Morris traversal changes the tree temporarily. When is that unacceptable?"]
+    m: "An iterative traversal needs a queue."
+    s: ["Describes the loop precisely", "Knows the constant-space variant exists"]
+
+  gx_bst_intro:
+    c: [binary_search_trees]
+    d: intro
+    t: conceptual
+    f: "the BST property"
+    q: "What rule makes a binary tree a binary search tree, and how does that rule let you search it?"
+    a: "In a binary search tree every key in a node's left subtree is smaller than the node's key and every key in its right subtree is larger. To search, compare the target with the current node: if equal you are done, if smaller go left, if larger go right, and stop at a missing child, meaning the key is absent. Each comparison discards an entire subtree, so a search follows one path from the root, costing O(h) where h is the height, about log n when the tree is balanced. An in-order traversal also visits the keys in sorted order."
+    k: ["!States the left-smaller and right-larger rule for whole subtrees", "!Describes searching by comparing and going left or right", "Says search costs the tree height, about log n when balanced", "Mentions in-order traversal gives sorted order"]
+    h: ["Where must every key smaller than the root be?"]
+    fu: ["A tree where each node is only checked against its direct children passes your check. Is it a valid BST?", "Someone inserts 1, 2, 3 up to 1000 one after another. What shape do you get, and what does a lookup cost?"]
+    m: "Checking each node against its two children is enough to verify a BST."
+    s: ["States the rule for whole subtrees", "Ties search cost to height"]
+
+  gx_balanced_intro:
+    c: [balanced_trees, binary_search_trees]
+    d: intro
+    t: debugging
+    f: "why balance matters"
+    q: "A plain binary search tree of user IDs was fast in testing, but in production, where new IDs always arrive in increasing order, lookups crawl. Why, and what do libraries and databases use instead?"
+    a: "A plain binary search tree is only fast when its height stays near log n, but its shape depends on insertion order. IDs arriving in increasing order always go to the right, so the tree becomes a chain with height n and every lookup walks the whole chain, which is linear. Self-balancing trees such as AVL and red-black trees perform rotations after insertions and deletions to keep the height O(log n) no matter the order, so every operation stays logarithmic. Library ordered maps use red-black trees, and databases use B-trees, which keep balance while storing many keys per node to suit disk pages."
+    k: ["!Explains that a plain BST can become a chain with sorted inserts", "!Says self-balancing trees keep height O(log n) using rotations", "Names AVL, red-black or B-trees", "Links B-trees to storing many keys per disk page"]
+    h: ["What happens if you insert 1, 2, 3, 4, 5 in order?"]
+    fu: ["Why might a red-black tree be preferred over an AVL tree for frequent inserts?", "Why do databases prefer very wide nodes over binary ones?"]
+    m: "A binary search tree is always balanced if the keys are random."
+    s: ["Gives the sorted-insert example", "Knows where each tree type is used"]
+
+  gx_tries_intro:
+    c: [tries]
+    d: intro
+    t: conceptual
+    f: "prefix trees"
+    q: "How does a trie store words, and why is it good at answering 'which words start with these letters'?"
+    a: "A trie is a tree where each edge is a character and each path from the root spells a prefix; a node marks whether a complete word ends there. Words that share a prefix share the same path, so 'car', 'cart' and 'care' reuse the nodes for c, a and r. To find words starting with a prefix you walk down one character at a time, O(length of the prefix), and then everything below that node is a match. The cost is memory: each node may hold many child pointers, which is why compressed tries or arrays per node are used in practice."
+    k: ["!Describes edges as characters and paths as prefixes", "Says shared prefixes share nodes", "!Explains prefix lookup by walking down one character at a time", "Notes the memory cost of child pointers"]
+    h: ["Where would 'car' and 'cart' differ in the tree?"]
+    fu: ["You also want the five most searched words for each prefix. What would you store at each node?", "When would a sorted array with binary search beat a trie?"]
+    m: "A trie is just a hash table keyed by the first letter."
+    s: ["Uses a shared-prefix example", "Mentions memory trade-off"]
+
+  gx_segment_intro:
+    c: [segment_trees]
+    d: intro
+    t: conceptual
+    f: "why range queries need a structure"
+    q: "You need both range sums and single-element updates on an array, mixed together, many times. Why aren't a plain array or a prefix sum array enough?"
+    a: "With a plain array, an update is O(1) but a range sum is O(n). With a prefix sum array, a range sum is O(1) but an update forces every later prefix to change, O(n). When both operations are frequent, either choice is slow overall. A segment tree stores sums of segments in a tree: each node covers a range, children split it in half. A query combines O(log n) nodes and an update changes the O(log n) nodes on the path from the leaf to the root, so both are logarithmic."
+    k: ["!Explains that a plain array has slow range queries", "!Explains that a prefix sum array has slow updates", "Describes nodes covering ranges split in half", "States O(log n) for both query and update"]
+    h: ["What does one update cost in each simple option?"]
+    fu: ["You now need the minimum over a range instead of the sum. What changes?", "Updates now add a value to a whole range. What would you add to the tree?"]
+    m: "A prefix sum array handles updates in constant time."
+    s: ["Explains the trade-off of each simple option", "States both costs"]
+
+  gx_fenwick_intro:
+    c: [fenwick_trees, prefix_sums]
+    d: intro
+    t: tradeoff
+    f: "Fenwick versus segment tree"
+    q: "A Fenwick tree and a segment tree both give logarithmic prefix sums with updates. Why might you choose the Fenwick tree?"
+    a: "A Fenwick tree, or binary indexed tree, stores partial sums in a single array of size n plus one, and both update and prefix query move through indices using the lowest set bit, O(log n) each. It is shorter to write, uses less memory and has small constants, which makes it attractive for prefix sums and counts. A segment tree is more general: it handles operations like range minimum or maximum, range updates with lazy propagation, and combining operations that have no inverse. So I would choose Fenwick for sums or counts with point updates, and a segment tree for anything richer."
+    k: ["!Says a Fenwick tree uses one array and moves by the lowest set bit", "!States O(log n) for update and prefix query", "Says it is simpler and lighter than a segment tree", "Says segment trees handle more general operations such as range minimum or lazy updates"]
+    h: ["What can a segment tree do that only works for sums in a Fenwick tree?"]
+    fu: ["You need the smallest value between positions 100 and 500. What goes wrong if you try a Fenwick tree?", "How would you get the sum of a range, not just a prefix, from a Fenwick tree?"]
+    m: "A Fenwick tree is a faster segment tree that supports every operation."
+    s: ["Compares generality and simplicity", "Mentions the invertibility requirement"]
+
+  gx_graph_repr_intro:
+    c: [graphs_representation]
+    d: intro
+    t: conceptual
+    f: "adjacency list versus matrix"
+    q: "What are the two common ways to store a graph in memory, and when would you use each?"
+    a: "An adjacency matrix is a V by V table where entry i, j says whether there is an edge from i to j. It answers 'is there an edge' in O(1) but always uses O(V squared) memory and listing a vertex's neighbours costs O(V). An adjacency list keeps, for each vertex, a list of its neighbours, using O(V plus E) memory and letting you visit neighbours in time proportional to how many there are. Most real graphs, like road networks or social graphs, are sparse, so adjacency lists are the default; a matrix suits small or dense graphs or frequent edge-existence checks."
+    k: ["!Describes the adjacency matrix and its O(V squared) memory", "!Describes the adjacency list and its O(V plus E) memory", "Compares edge lookup and neighbour iteration costs", "Says sparse graphs favour lists and dense graphs can favour a matrix"]
+    h: ["How many cells would a matrix need for one lakh users?"]
+    fu: ["You often need to check whether two users are friends in a huge sparse network. How would you make that fast without a matrix?", "How would you store edge weights in each representation?"]
+    m: "An adjacency matrix is always faster because lookups are O(1)."
+    s: ["Does the memory arithmetic", "Chooses based on density"]
+
+  gx_bfs_multisource_hard:
+    c: [graph_traversal_bfs]
+    d: hard
+    t: design
+    f: "multi-source BFS"
+    q: "On a city grid, you need each house's distance to its nearest hospital, and there are many hospitals. How would you do it in one traversal?"
+    a: "Run a multi-source breadth-first search: put every hospital into the queue at the start with distance zero, then process the queue as usual, setting each newly reached house's distance to its neighbour's distance plus one. Because BFS expands in order of distance, the first time a house is reached is from its nearest hospital, so its distance is final. Every cell is enqueued once, so it is O(rows times columns), instead of running a separate BFS from every house or every hospital. It works because all edges have the same cost; with different road lengths you would use Dijkstra with all hospitals as starting points."
+    k: ["!Starts the BFS with every hospital in the queue at distance zero", "!Explains that the first arrival at a house is from its nearest hospital", "States one traversal costing linear time in the grid size", "Notes Dijkstra for unequal edge costs"]
+    h: ["What if all hospitals started spreading at the same moment?"]
+    fu: ["You also need to know which hospital is nearest, not just the distance. What would you store?", "Some roads take twice as long as others. What breaks?"]
+    m: "You must run a separate BFS from each house."
+    s: ["Explains why distances are final", "Handles the weighted variant"]
+
+  gx_dfs_iterative_hard:
+    c: [graph_traversal_dfs, stacks]
+    d: hard
+    t: debugging
+    f: "recursion depth in DFS"
+    q: "Your recursive depth-first search works on test graphs but crashes on a real graph that is one long chain of five lakh nodes. Why, and how would you fix it?"
+    a: "Each recursive call adds a stack frame, and on a chain the recursion goes five lakh calls deep, exceeding the call stack limit, which is typically a few thousand frames in Python and limited in other languages too. Raising the recursion limit only delays the crash and can corrupt the process. The robust fix is an iterative DFS with an explicit stack on the heap: push the start node, and loop popping a node, skipping it if visited, marking it and pushing its unvisited neighbours. If the order of visiting or post-order times matter, push a marker or keep an iterator per node to imitate the recursive order exactly."
+    k: ["!Explains that recursion depth equals the path length and overflows the call stack", "!Proposes an iterative DFS with an explicit stack", "Warns that raising the recursion limit is not a real fix", "Explains how to preserve visit or finish order iteratively"]
+    h: ["How deep does the recursion go on a chain?"]
+    fu: ["Your algorithm needs each node's finishing time, as in topological sort. How do you get it iteratively?", "Your iterative and recursive versions print nodes in a different sequence. Why, and does it matter?"]
+    m: "Increasing the recursion limit is a safe fix."
+    s: ["Names the call stack limit as the cause", "Preserves traversal order in the iterative version"]
+
+  gx_topo_intro:
+    c: [topological_sort]
+    d: intro
+    t: conceptual
+    f: "ordering with dependencies"
+    q: "What is a topological order of tasks, and why can't you find one when the dependencies contain a cycle?"
+    a: "A topological order lists tasks so that every task comes after all the tasks it depends on, like taking prerequisite courses before advanced ones. One way to build it: repeatedly pick a task with no remaining prerequisites, output it, and remove its outgoing edges. If the dependencies form a cycle, for example A needs B, B needs C and C needs A, then no task in the cycle ever has zero prerequisites, so the process gets stuck before outputting every task. That stuck state is how you detect the cycle."
+    k: ["!Defines a topological order as each task after all its dependencies", "Describes repeatedly removing a task with no remaining prerequisites", "!Explains that tasks in a cycle never become free", "Says getting stuck detects the cycle"]
+    h: ["In a cycle, which task could go first?"]
+    fu: ["Several tasks have no prerequisites at the same moment. Does it matter which you pick?", "How would you tell the user which tasks form the cycle?"]
+    m: "Any graph can be ordered topologically if you start from the right node."
+    s: ["Uses a concrete prerequisite example", "Explains cycle detection"]
+
+  gx_shortest_intro:
+    c: [shortest_paths]
+    d: intro
+    t: conceptual
+    f: "choosing a shortest path algorithm"
+    q: "When do you use BFS, Dijkstra's algorithm or Bellman-Ford to find shortest paths?"
+    a: "BFS finds shortest paths when every edge has the same cost, because it explores in layers of distance; it is O(V plus E). Dijkstra's algorithm handles different non-negative edge weights by always settling the closest unsettled vertex, using a priority queue, O(E log V). It fails with negative weights, because a later negative edge could make a settled distance smaller. Bellman-Ford handles negative weights by relaxing every edge V minus 1 times, O(V times E), and can detect a negative cycle when another round still improves something."
+    k: ["!Says BFS suits graphs where all edges have equal cost", "!Says Dijkstra handles non-negative weights with a priority queue", "!Says Bellman-Ford handles negative weights and detects negative cycles", "States approximate costs of each"]
+    h: ["What changes when the roads have different lengths?"]
+    fu: ["Edge weights are only 0 or 1. Is there something faster than Dijkstra?", "Why exactly does a negative edge break Dijkstra's settled distances?"]
+    m: "Dijkstra's algorithm works for any graph, including negative edges."
+    s: ["Matches each algorithm to its condition", "Explains the negative-edge failure"]
+
+  gx_mst_intro:
+    c: [minimum_spanning_tree]
+    d: intro
+    t: conceptual
+    f: "what a spanning tree is"
+    q: "A company must lay cable to connect all its offices at the lowest total cost. Why is this a minimum spanning tree problem, and how would Kruskal's algorithm solve it?"
+    a: "A spanning tree connects all vertices with no cycles, using exactly V minus 1 edges; any cycle would include a redundant cable. The minimum spanning tree is the one with the lowest total weight, which is exactly the cheapest way to connect every office. Kruskal's algorithm sorts all possible cables by cost and adds them cheapest first, skipping any cable that would connect two offices already connected, which would form a cycle. A union-find structure checks that quickly. Sorting dominates, so it costs O(E log E)."
+    k: ["!Defines a spanning tree as connecting all vertices without cycles", "Says a cycle would mean a redundant connection", "!Describes Kruskal adding the cheapest edges that do not form a cycle", "Mentions union-find for the cycle check"]
+    h: ["Why would a cheapest network never contain a loop?"]
+    fu: ["The cheapest network is not unique. When can that happen?", "Is the minimum spanning tree also the shortest path between every pair of offices?"]
+    m: "The minimum spanning tree gives the shortest path between any two offices."
+    s: ["Explains why cycles are wasteful", "Distinguishes MST from shortest paths"]
+
+  gx_union_find_intro:
+    c: [union_find]
+    d: intro
+    t: conceptual
+    f: "disjoint sets"
+    q: "What problem does a union-find structure solve, and what are its two operations?"
+    a: "It keeps track of elements split into groups that only ever merge, such as which computers are connected after cables are added. Find returns a representative of the element's group, so two elements are in the same group when their representatives are equal. Union merges two groups by linking one representative under the other. Internally each element points to a parent, and the root is the representative. With union by rank and path compression, which flattens the paths found along the way, both operations run in nearly constant amortised time."
+    k: ["!Says it tracks groups that merge, answering whether two elements are in the same group", "!Names find and union and what each does", "Describes parent pointers with the root as representative", "Mentions union by rank and path compression for near-constant time"]
+    h: ["How would you check whether two computers are already connected?"]
+    fu: ["Groups also need to split apart sometimes. Does union-find still fit?", "You also need to know how many computers are in each network at any time. What extra field would you keep?"]
+    m: "Union-find stores the full list of members for every group and searches it."
+    s: ["Uses a concrete connectivity example", "Knows the two optimisations"]
+
+  gx_scc_intro:
+    c: [strongly_connected_components]
+    d: intro
+    t: conceptual
+    f: "mutual reachability"
+    q: "What is a strongly connected component in a directed graph, and why would a social or web graph care about them?"
+    a: "A strongly connected component is a maximal set of vertices where every vertex can reach every other one by following edge directions. In a follower graph it is a group where influence can travel around in both directions; in the web graph it is a cluster of pages that all link to each other through some path. Collapsing each component into a single node turns any directed graph into a directed acyclic graph, which makes problems like ordering or reachability easier. Kosaraju's or Tarjan's algorithm finds all components in O(V plus E)."
+    k: ["!Defines it as a maximal set where every vertex reaches every other along directed edges", "Gives a meaningful real-world interpretation", "!Says collapsing components gives a directed acyclic graph", "Names Kosaraju or Tarjan with linear time"]
+    h: ["Can every page in the set reach every other page?"]
+    fu: ["Two components exist, and one edge is added between them in each direction. What happens?", "Why is the condensed graph always free of cycles?"]
+    m: "Any two connected vertices are in the same strongly connected component."
+    s: ["Explains the condensation into a DAG", "Gives a real interpretation"]
+
+  gx_bits_subsets_hard:
+    c: [bit_manipulation, combinatorics]
+    d: hard
+    t: design
+    f: "bitmasks as sets"
+    q: "You must try every subset of 20 tasks to find the best team assignment. How can an integer's bits represent a subset, and what does iterating over all of them cost?"
+    a: "Number the tasks 0 to 19 and let bit i of an integer mean task i is chosen, so every integer from 0 to 2 to the power 20 minus 1 is exactly one subset. Looping over that range visits all subsets, about ten lakh of them. Checking whether task i is in a mask is mask AND 1 shifted left by i, adding it is OR, and the number of tasks is the popcount. If each subset needs O(n) work, the total is about 2 crore operations, fine for 20 tasks but impossible near 40. Bitmask dynamic programming over subsets reuses results between masks."
+    k: ["!Maps each task to a bit so each integer represents one subset", "!States there are 2 to the power n subsets", "Gives bit operations for membership and adding an element", "Estimates the total cost and its limit around n of 20 to 25"]
+    h: ["How many integers fit in 20 bits?"]
+    fu: ["How would you loop over only the subsets of a given mask?", "With 40 tasks this is too slow. How could splitting into two halves help?"]
+    m: "Using bits makes trying every subset polynomial time."
+    s: ["Gives the operations precisely", "Estimates the feasible size"]
+
+  gx_number_theory_sieve_hard:
+    c: [number_theory]
+    d: hard
+    t: optimisation
+    f: "smallest prime factor sieve"
+    q: "You must factorise up to ten lakh different numbers, each below one crore. How would you make every factorisation fast?"
+    a: "Precompute the smallest prime factor of every number up to one crore with a sieve: for each prime p, mark multiples of p, starting at p squared, that do not yet have a smallest factor. With that array, factorising any n is just repeated division by its smallest prime factor, which takes O(log n) steps because each division at least halves n. The sieve costs about O(N log log N) time and O(N) memory, roughly 40 megabytes for one crore integers, acceptable once and then every query is quick. Trial division up to the square root per query would be far slower at this volume."
+    k: ["!Precomputes the smallest prime factor for every number up to the limit", "!Factorises by repeatedly dividing by the smallest prime factor in O(log n) steps", "States sieve time and memory cost", "Compares with trial division per query"]
+    h: ["What if you already knew each number's smallest prime factor?"]
+    fu: ["Memory is limited to a few megabytes. What would you give up?", "Numbers now go up to ten to the power twelve. What changes?"]
+    m: "Factorising each number by trial division is fast enough at any volume."
+    s: ["Estimates memory concretely", "Explains why factorisation is logarithmic"]
+
+  gx_modular_intro:
+    c: [modular_arithmetic]
+    d: intro
+    t: conceptual
+    f: "why answers are given modulo a prime"
+    q: "Many coding problems ask for the answer modulo ten to the power nine plus seven. Why, and which operations can you safely do under that modulus?"
+    a: "The true answers, such as counts of arrangements, grow far beyond what 64-bit integers can hold, so the problem asks for the remainder to keep numbers small and comparable. Addition, subtraction and multiplication can be reduced at every step: the remainder of a sum or product equals the remainder of the remainders, as long as each intermediate product fits, which is why the modulus is chosen below about two to the power 30. Subtraction needs adding the modulus back to avoid negatives. Division is not direct; you multiply by a modular inverse, which exists because the modulus is prime."
+    k: ["!Explains the modulus keeps huge results within integer range", "!Says addition and multiplication can be reduced at every step", "Mentions fixing negative results after subtraction", "!Says division needs a modular inverse, which exists because the modulus is prime"]
+    h: ["What happens to a 64-bit integer if you compute 30 factorial?"]
+    fu: ["Two numbers below the modulus are multiplied in a 32-bit integer. What goes wrong?", "The modulus is no longer prime. What happens to division?"]
+    m: "You can divide under a modulus exactly like ordinary numbers."
+    s: ["Explains why intermediate products must fit", "Handles subtraction and division correctly"]
+
+  gx_combinatorics_intro:
+    c: [combinatorics]
+    d: intro
+    t: conceptual
+    f: "permutations versus combinations"
+    q: "What is the difference between permutations and combinations? Use choosing a team versus arranging a podium as your example."
+    a: "A combination counts selections where order does not matter, and a permutation counts arrangements where it does. Choosing a team of 3 from 10 people is a combination: 10 choose 3, which is 10 times 9 times 8 divided by 3 factorial, 120 teams. Awarding gold, silver and bronze to 3 of those 10 is a permutation: 10 times 9 times 8, which is 720, because the same three people in different positions count as different outcomes. Each team corresponds to 3 factorial, or 6, podiums, which is why the counts differ by that factor."
+    k: ["!Says combinations ignore order and permutations count it", "!Computes 10 choose 3 as 120 and the ordered count as 720", "Explains the counts differ by the number of orderings of the chosen people"]
+    h: ["Is gold-silver-bronze the same outcome as bronze-silver-gold?"]
+    fu: ["The same person can win more than one medal. How does the count change?", "Two of the ten people refuse to be on the same team. How would you count teams now?"]
+    m: "Permutations and combinations give the same number when you pick the same people."
+    s: ["Computes both correctly", "Explains the 3 factorial relationship"]

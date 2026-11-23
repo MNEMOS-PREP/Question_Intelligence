@@ -1,0 +1,166 @@
+# =============================================================================
+#  GAP BANK — cn_verbal (2026-11-23). Every networks concept had two questions;
+#  this adds the third, in the band it lacked — mostly the plain fundamentals
+#  campus interviews open with.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: cn_verbal
+provenance: generated
+items:
+  gx_cn_layers_hard:
+    c: [osi_and_tcp_ip_model]
+    d: hard
+    t: debugging
+    f: "localising a fault by layer"
+    q: "A user can ping a server by IP address but cannot open its website by name. Using the layer models, how would you narrow down where the problem is?"
+    a: "A successful ping by IP shows the physical, link and network layers work: packets reach the server and come back. So the fault is higher up. First check name resolution, which is an application-layer service: does the name resolve to the right address? If not, it is DNS. If it resolves correctly, check the transport layer: is the web port reachable, or is a firewall blocking TCP port 443 while allowing ICMP? Then the application itself: is the web server running and answering? Working up the stack layer by layer avoids guessing."
+    k: ["!Infers that working ping means the lower layers and IP routing are fine", "!Checks name resolution as a likely cause", "Checks whether the TCP port is reachable or blocked by a firewall", "Checks the application service itself, moving up the layers"]
+    h: ["What does a successful ping by IP already prove?"]
+    fu: ["Ping fails but the website opens fine. How is that possible?", "Which command-line tools would you use at each step?"]
+    m: "If ping works, every layer up to the application must be working."
+    s: ["Reasons from what the evidence proves", "Moves layer by layer"]
+
+  gx_cn_nat_hard:
+    c: [ip_addressing]
+    d: hard
+    t: conceptual
+    f: "NAT and private addresses"
+    q: "Every device in a hostel uses an address like 192.168.1.x, yet they all browse the internet through one public IP. How does that work, and what does it break?"
+    a: "Those are private addresses, not routable on the internet. The router performs network address translation: for each outgoing connection it rewrites the source address to its public IP and the source port to a port it chooses, recording the mapping in a table. Replies come back to that public port, and the router translates them back to the right private device. It conserves IPv4 addresses. What it breaks is unsolicited inbound connections: an outside host cannot start a connection to a device behind NAT without port forwarding, which complicates peer-to-peer apps, gaming and hosting servers, and needs techniques like hole punching."
+    k: ["!Says the 192.168 range is private and not routable on the internet", "!Explains the router rewrites source address and port and keeps a translation table", "Says replies are translated back using the table", "!Says inbound connections fail without port forwarding or similar"]
+    h: ["How does the reply find its way back to the right laptop?"]
+    fu: ["Two laptops in the hostel connect to the same website at once. How does the router keep their replies apart?", "Why does IPv6 make NAT much less necessary?"]
+    m: "NAT is a security feature designed to act as a firewall."
+    s: ["Mentions ports in the translation", "Names what NAT breaks"]
+
+  gx_cn_subnet_intro:
+    c: [subnetting, ip_addressing]
+    d: intro
+    t: conceptual
+    f: "CIDR notation"
+    q: "What does 192.168.10.0/24 mean, how many usable hosts does it have, and how do you tell whether two addresses are on the same subnet?"
+    a: "The /24 means the first 24 bits are the network part and the last 8 bits identify hosts, so the subnet mask is 255.255.255.0. Eight host bits give 256 addresses, of which the all-zeros network address and the all-ones broadcast address are reserved, leaving 254 usable hosts. Two addresses are on the same subnet if they match in the network bits, which you check by ANDing each address with the mask and comparing the results; for /24 that means the first three numbers must be equal."
+    k: ["!Explains /24 as 24 network bits and a mask of 255.255.255.0", "!Calculates 254 usable hosts and why two are reserved", "!Explains comparing addresses after ANDing with the mask"]
+    h: ["How many bits are left for hosts?"]
+    fu: ["You need about 500 hosts in one subnet. Which prefix would you choose?", "Is 192.168.10.255 a host you can assign to a laptop?"]
+    m: "A /24 network has 256 usable host addresses."
+    s: ["Does the arithmetic correctly", "Explains the mask comparison"]
+
+  gx_cn_tcp_udp_intro:
+    c: [tcp_vs_udp]
+    d: intro
+    t: conceptual
+    f: "connection, reliability, order"
+    q: "What are the main differences between TCP and UDP, and why does a video call use UDP while a file download uses TCP?"
+    a: "TCP sets up a connection with a handshake and guarantees reliable, ordered delivery: lost packets are retransmitted and data arrives in sequence, with flow and congestion control. UDP just sends independent datagrams with no connection, no retransmission and no ordering, so it has less overhead and no waiting. A file download must be complete and exact, so TCP fits. A video call cares about timeliness: a frame retransmitted half a second late is useless, and waiting for it would freeze the call, so UDP is used and the app tolerates or conceals a little loss."
+    k: ["!Says TCP is connection-oriented with reliable ordered delivery", "!Says UDP is connectionless without retransmission or ordering", "!Explains why late data is useless for a live call", "Explains why a download needs completeness"]
+    h: ["What is worse for a live call, a lost frame or a late one?"]
+    fu: ["DNS mostly uses UDP. What happens when a DNS answer is too big?", "Why is QUIC built on UDP even though it provides reliability?"]
+    m: "UDP is simply a faster but worse version of TCP."
+    s: ["Ties the choice to timeliness", "Covers reliability and ordering"]
+
+  gx_cn_reliability_intro:
+    c: [tcp_reliability]
+    d: intro
+    t: conceptual
+    f: "sequence numbers and acknowledgements"
+    q: "How does TCP make sure data arrives completely and in order over an unreliable network?"
+    a: "TCP numbers every byte with a sequence number. The receiver sends acknowledgements saying the next byte it expects, so the sender knows what arrived. If an acknowledgement does not come within a timeout, or the sender sees three duplicate acknowledgements, it retransmits the missing data. The receiver uses sequence numbers to put out-of-order segments back in order and to discard duplicates, and a checksum detects corrupted segments. A sliding window lets the sender have several segments in flight at once instead of waiting for each acknowledgement."
+    k: ["!Mentions sequence numbers on the data", "!Mentions acknowledgements and retransmission after timeout or duplicate acks", "Explains reordering and duplicate removal at the receiver", "Mentions a checksum or the sliding window"]
+    h: ["How would the sender know that a piece went missing?"]
+    fu: ["Why does TCP not wait for an acknowledgement after every single segment?", "What could make a sender retransmit data that actually arrived?"]
+    m: "TCP guarantees delivery by sending every packet twice."
+    s: ["Explains acknowledgements precisely", "Mentions the window"]
+
+  gx_cn_congestion_intro:
+    c: [congestion_control, tcp_reliability]
+    d: intro
+    t: conceptual
+    f: "slow start and backing off"
+    q: "What problem does TCP congestion control solve, and how do slow start and backing off after loss work?"
+    a: "Without it, senders could push more data than routers can forward, queues overflow, packets drop, retransmissions add more load, and throughput collapses for everyone. TCP keeps a congestion window limiting data in flight. In slow start it begins small and doubles the window every round trip, probing quickly for available capacity. After a threshold it grows more gently, roughly one segment per round trip. When loss signals congestion, it cuts the window, sharply after a timeout or by half after duplicate acknowledgements, so senders share the bottleneck fairly. Flow control is different: it protects the receiver, not the network."
+    k: ["!Says congestion control prevents overloading the network and collapse", "!Describes slow start doubling the window each round trip", "!Describes reducing the window after packet loss", "Distinguishes flow control from congestion control"]
+    h: ["What happens to router queues when everyone sends as fast as possible?"]
+    fu: ["On a lossy wireless link, why might loss-based congestion control slow down for the wrong reason?", "Why is the window doubled at first but grown slowly later?"]
+    m: "Congestion control and flow control are the same thing."
+    s: ["Explains collapse as the motivation", "Separates flow and congestion control"]
+
+  gx_cn_routing_intro:
+    c: [routing]
+    d: intro
+    t: conceptual
+    f: "how a router forwards packets"
+    q: "When a router receives a packet, how does it decide where to send it next, and how does it learn its routes?"
+    a: "The router looks up the packet's destination address in its routing table and picks the entry with the longest matching prefix, the most specific route, which names the next hop and outgoing interface; a default route catches everything else. It does not know the full path, only the next step. Routes come from directly connected networks, static configuration, or routing protocols: inside an organisation, link-state protocols like OSPF share the topology so each router computes shortest paths, and between organisations BGP exchanges reachable prefixes based on policy."
+    k: ["!Says the router looks up the destination in its routing table", "!Explains longest prefix match and next hop", "Mentions the default route", "Says routes are learned statically or via protocols such as OSPF and BGP"]
+    h: ["Does a router know the whole path to the destination?"]
+    fu: ["Two table entries match a destination, a /16 and a /24. Which wins, and why?", "Why is BGP described as policy-based rather than shortest-path?"]
+    m: "Routers plan the full path for each packet before sending it."
+    s: ["Explains longest prefix match", "Separates interior and exterior routing"]
+
+  gx_cn_dns_intro:
+    c: [dns]
+    d: intro
+    t: conceptual
+    f: "resolution steps and caching"
+    q: "What happens when you type a website's name into the browser, before any page is loaded? Walk through the DNS lookup."
+    a: "The browser first checks its own cache and the operating system's cache. If the name is not there, the OS asks a recursive resolver, usually the ISP's or a public one. If the resolver has no cached answer, it asks a root server, which points to the servers for the top-level domain such as .com; those point to the domain's authoritative name servers, which return the IP address. The resolver caches the answer for its time-to-live and returns it to your machine. Only then does the browser open a connection to that IP address."
+    k: ["!Mentions checking the browser and operating system caches first", "!Describes the recursive resolver querying root, TLD and authoritative servers", "Mentions caching according to the time-to-live", "Says the browser connects to the returned IP afterwards"]
+    h: ["Who does your laptop ask when it does not know the address?"]
+    fu: ["A site changes its server's IP address. Why do some users still reach the old server for a while?", "Why can DNS be a target for attackers who want to redirect users?"]
+    m: "The browser looks up every website directly from a single central DNS server."
+    s: ["Orders the steps correctly", "Mentions TTL caching"]
+
+  gx_cn_http_conditional_hard:
+    c: [http_and_rest, caching_and_locality]
+    d: hard
+    t: optimisation
+    f: "conditional requests and caching headers"
+    q: "A dashboard downloads the same 5 megabyte report every minute even when nothing in it has changed. How can HTTP itself avoid sending it again?"
+    a: "Use validators and caching headers. The server sends an ETag, a fingerprint of the report's content, or a Last-Modified time with the response. On the next request the client sends If-None-Match with that ETag, or If-Modified-Since; if the report is unchanged the server replies 304 Not Modified with no body, so only a few hundred bytes cross the network. Cache-Control with a max-age lets the client skip even that request for a while. The server must compute the ETag cheaply, for example from a version number, otherwise it still does the expensive work before answering 304."
+    k: ["!Describes an ETag or Last-Modified validator sent with the response", "!Explains the client revalidates with If-None-Match or If-Modified-Since", "!Says an unchanged resource gets 304 Not Modified with no body", "Mentions Cache-Control max-age or computing the ETag cheaply"]
+    h: ["What if the client could ask 'has this changed since my copy?'"]
+    fu: ["The report changes every few seconds. Do these headers still help?", "Where else between the browser and the server could a cached copy be served from?"]
+    m: "Caching in HTTP only happens inside the browser and cannot be controlled by the server."
+    s: ["Names the validator and the 304 flow", "Notes the server-side cost of computing the validator"]
+
+  gx_cn_tls_intro:
+    c: [https_and_tls]
+    d: intro
+    t: conceptual
+    f: "what HTTPS protects"
+    q: "What does HTTPS protect that plain HTTP does not, and how does your browser know it is talking to the real website?"
+    a: "HTTPS runs HTTP over TLS, which encrypts the traffic so others on the network cannot read it, protects integrity so it cannot be changed undetected, and authenticates the server. During the handshake the server presents a certificate binding its domain name to a public key, signed by a certificate authority. The browser checks that the signature chains up to a root authority it trusts, that the name matches the site and that the certificate is valid and unexpired. The two sides then agree on session keys, used with fast symmetric encryption for the rest of the connection."
+    k: ["!Says HTTPS provides confidentiality, integrity and server authentication", "!Explains the certificate binds the domain to a public key and is signed by a certificate authority", "Says the browser verifies the chain, name and validity", "Mentions session keys with symmetric encryption"]
+    h: ["What stops someone on the Wi-Fi from pretending to be the bank?"]
+    fu: ["A site's certificate expired yesterday. What exactly is the browser warning you about?", "HTTPS hides the page contents. Can a network observer still see which site you visit?"]
+    m: "HTTPS only encrypts passwords, not the rest of the page."
+    s: ["Names all three protections", "Explains certificate verification"]
+
+  gx_cn_sockets_intro:
+    c: [sockets]
+    d: intro
+    t: conceptual
+    f: "the server socket lifecycle"
+    q: "What are the steps a TCP server goes through with sockets, from starting up to talking with a client?"
+    a: "The server creates a socket, binds it to an address and port so clients know where to find it, and calls listen to mark it as accepting connections, with a backlog for pending ones. It then calls accept, which blocks until a client connects and returns a new socket dedicated to that client, while the listening socket keeps waiting for others. The server reads and writes on the new socket and closes it when done. On the client side, the program creates a socket and calls connect with the server's address and port, which performs the TCP handshake."
+    k: ["!Names create, bind, listen and accept in order", "!Explains accept returns a new socket per client while the listening socket remains", "Mentions the client side creating a socket and calling connect", "Mentions reading, writing and closing"]
+    h: ["What does accept give back?"]
+    fu: ["One server must handle thousands of clients at once. What are your options?", "The server restarts and bind fails with 'address already in use'. Why?"]
+    m: "A server uses the same socket to talk to every client."
+    s: ["Gets the order right", "Explains the per-client socket"]
+
+  gx_cn_security_intro:
+    c: [network_security_basics]
+    d: intro
+    t: conceptual
+    f: "the CIA triad and common attacks"
+    q: "What do confidentiality, integrity and availability mean in network security? Give one attack that targets each."
+    a: "Confidentiality means only authorised parties can read data; eavesdropping on unencrypted Wi-Fi traffic attacks it, and encryption defends it. Integrity means data cannot be altered without detection; a man-in-the-middle changing a bank transfer's account number attacks it, and message authentication codes or signatures defend it. Availability means the service stays reachable for legitimate users; a distributed denial-of-service flood attacks it, and rate limiting, filtering and spare capacity defend it. A good security design names which of the three each control protects."
+    k: ["!Defines confidentiality, integrity and availability correctly", "!Gives a matching attack for each, such as eavesdropping, tampering and DDoS", "Names a defence for each", "Says controls should be mapped to what they protect"]
+    h: ["Which property does a flood of fake requests attack?"]
+    fu: ["Encryption is on everywhere. Which of the three is still exposed?", "Where would hashing passwords fit in this picture?"]
+    m: "Encryption alone guarantees all three properties."
+    s: ["Pairs attacks and defences", "Shows encryption is not enough on its own"]

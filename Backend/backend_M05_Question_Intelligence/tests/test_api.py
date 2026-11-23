@@ -11,6 +11,7 @@ from ai_core.guard import identity_headers
 from fastapi.testclient import TestClient
 
 from backend_M05_Question_Intelligence import bank as bank_module
+from backend_M05_Question_Intelligence import ontology as ontology_module
 from backend_M05_Question_Intelligence.app import app
 from backend_M05_Question_Intelligence.jobs import refresh_ontology
 from backend_M05_Question_Intelligence.ontology import SNAPSHOT
@@ -92,8 +93,27 @@ def test_bank_health_reports_what_to_author_next(client):
     body = client.get("/v1/bank/health").json()
     assert body["active"] > 0
     assert body["playlist"] > 0, "§6.8 step 5 has no last line without a playlist"
-    assert body["n_thin"] > 0
-    assert "authoring" in body["note"].lower()
+    # Counted from the bank, not assumed thin: since 2026-11-23 every concept
+    # has three items, and the note must then stop asking for authoring.
+    ontology = ontology_module.load()
+    thin = sorted(c for c in ontology.ids()
+                  if body["counts"].get(c, 0) < ontology_module.MIN_ITEMS_PER_CONCEPT)
+    assert body["n_thin"] == len(thin)
+    assert body["thin"] == thin[:40]
+    if thin:
+        assert "authoring" in body["note"].lower()
+    else:
+        assert "can pass" in body["note"] and "reviewer" in body["note"]
+
+
+def test_thin_concepts_are_what_granularity_reports():
+    """The branch the full bank no longer exercises: an empty count leaves
+    every concept thin, and one concept at the minimum drops out of the list."""
+    ontology = ontology_module.load()
+    some = sorted(ontology.ids())[0]
+    assert ontology_module.granularity({})["thin"] == sorted(ontology.ids())
+    counts = {some: ontology_module.MIN_ITEMS_PER_CONCEPT}
+    assert some not in ontology_module.granularity(counts)["thin"]
 
 
 def test_every_seed_item_is_scorable(client):

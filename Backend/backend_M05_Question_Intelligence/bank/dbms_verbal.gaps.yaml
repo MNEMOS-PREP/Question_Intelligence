@@ -1,0 +1,166 @@
+# =============================================================================
+#  GAP BANK — dbms_verbal (2026-11-23). Every databases concept had two
+#  questions; this adds the third, in the band it lacked — mostly the plain
+#  fundamentals campus interviews open with.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: dbms_verbal
+provenance: generated
+items:
+  gx_db_keys_intro:
+    c: [relational_model]
+    d: intro
+    t: conceptual
+    f: "primary and foreign keys"
+    q: "What are a primary key and a foreign key, and what does the database do for you once you declare them?"
+    a: "A primary key is a column or set of columns that uniquely identifies each row; it cannot be null and the database rejects duplicates. A foreign key is a column in one table that refers to the primary key of another, such as an order's customer id pointing to the customers table. Once declared, the database enforces referential integrity: it refuses an order that points to a customer who does not exist, and on deleting a customer it blocks the delete, cascades it or sets the reference to null, depending on what you specified. Indexes on these keys also speed up lookups and joins."
+    k: ["!Defines a primary key as a unique, non-null row identifier", "!Defines a foreign key as a reference to another table's primary key", "!Explains that the database enforces referential integrity", "Mentions delete behaviour such as restrict or cascade"]
+    h: ["What should happen if an order names a customer who is not in the table?"]
+    fu: ["A customer with past orders is deleted. What are the choices, and which would you pick for a bank?", "Why might a team choose not to declare foreign keys at all?"]
+    m: "A foreign key must have the same name as the primary key it refers to."
+    s: ["Explains enforcement, not just definitions", "Covers delete behaviour"]
+
+  gx_db_sql_order_intro:
+    c: [sql_queries]
+    d: intro
+    t: conceptual
+    f: "logical order of a SELECT"
+    q: "A SELECT query is written as SELECT, FROM, WHERE, GROUP BY, HAVING, ORDER BY. In what order does the database logically process those clauses, and why does it matter?"
+    a: "Logically it starts with FROM and any joins to build the rows, then WHERE filters individual rows, then GROUP BY forms groups, then HAVING filters groups, then SELECT computes the output columns, and finally ORDER BY sorts and LIMIT cuts. This explains common errors: you cannot use a column alias defined in SELECT inside WHERE, because WHERE runs before SELECT, and you cannot filter on an aggregate like a sum in WHERE, because groups do not exist yet, so that belongs in HAVING. ORDER BY can use the alias because it runs last."
+    k: ["!Gives the order FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY", "!Explains why a SELECT alias cannot be used in WHERE", "Explains why aggregates are filtered in HAVING rather than WHERE", "Notes ORDER BY runs after SELECT"]
+    h: ["When does the database know the value of SUM for a group?"]
+    fu: ["Does this logical order mean the database physically runs the clauses in that order?", "Where would a window function like ROW_NUMBER fit in this order?"]
+    m: "SQL clauses execute in the order they are written."
+    s: ["Uses the order to explain an error", "Separates logical from physical execution"]
+
+  gx_db_not_in_null_hard:
+    c: [joins, sql_queries]
+    d: hard
+    t: debugging
+    f: "anti-joins and NULL"
+    q: "To find customers with no orders, a teammate writes 'WHERE id NOT IN (SELECT customer_id FROM orders)' and gets zero rows, though such customers exist. What went wrong?"
+    a: "If any row in orders has a null customer_id, the subquery result contains a null. NOT IN compares id against every value, and a comparison with null is unknown rather than false, so the whole NOT IN condition becomes unknown for every customer and no rows pass. The safe rewrites are NOT EXISTS with a correlated subquery, which only checks for a matching row, or a LEFT JOIN from customers to orders keeping rows where the order side is null. Alternatively filter nulls out of the subquery, but NOT EXISTS states the intent directly."
+    k: ["!Explains that a null in the subquery makes NOT IN unknown for every row", "Explains three-valued logic where comparison with null is unknown", "!Proposes NOT EXISTS or a LEFT JOIN with an IS NULL check", "Mentions filtering nulls from the subquery as a partial fix"]
+    h: ["What is the result of comparing 5 with NULL?"]
+    fu: ["Would IN, rather than NOT IN, have the same problem?", "Which of your rewrites would you expect the optimiser to handle best, and why?"]
+    m: "NULL is treated like an ordinary value that simply never matches."
+    s: ["Explains three-valued logic", "Gives a robust rewrite"]
+
+  gx_db_where_having_intro:
+    c: [aggregation_and_grouping]
+    d: intro
+    t: conceptual
+    f: "WHERE versus HAVING"
+    q: "What is the difference between WHERE and HAVING in a query that uses GROUP BY? Give an example where you need each."
+    a: "WHERE filters individual rows before they are grouped, and HAVING filters whole groups after aggregation. For sales data, to count orders per city but only for orders placed in 2026, the year condition goes in WHERE, because it is about each row. To show only cities with more than 100 such orders, the count condition goes in HAVING, because it is about the group. Putting row conditions in WHERE is also faster, since fewer rows reach the grouping step."
+    k: ["!Says WHERE filters rows before grouping", "!Says HAVING filters groups after aggregation", "Gives an example needing each", "Notes filtering early in WHERE is more efficient"]
+    h: ["Is the condition about one order or about a whole city?"]
+    fu: ["Can HAVING ever be used without GROUP BY? What does it mean then?", "Someone puts a non-aggregate row condition in HAVING. Is it wrong, or just slower?"]
+    m: "WHERE and HAVING are interchangeable."
+    s: ["Uses a two-part example", "Mentions performance"]
+
+  gx_db_fd_closure_hard:
+    c: [functional_dependencies, normalisation]
+    d: hard
+    t: design
+    f: "attribute closure and candidate keys"
+    q: "Given a relation R(A, B, C, D, E) with dependencies A to B, B to C, CD to E, how do you find its candidate keys, and what are they?"
+    a: "Compute attribute closures. A determines B, and B determines C, so the closure of A is A, B, C. Nothing determines D, so D must be in every key. The closure of A and D is A, D, then B, C from A, and E from C and D: every attribute, so AD is a superkey. Neither A alone nor D alone reaches everything, so AD is minimal, a candidate key. Any other key would also need D and something that reaches A, and nothing else determines A, so AD is the only candidate key. Attributes never on a right-hand side must be in every key."
+    k: ["!Uses attribute closure to test whether a set determines all attributes", "!Says attributes never on a right-hand side must be in every key", "!Concludes AD is the only candidate key", "Checks minimality of the key"]
+    h: ["Which attributes never appear on the right of any dependency?"]
+    fu: ["Is the relation in 3NF with key AD? Which dependency would you look at first?", "Add the dependency E to A. Do the candidate keys change?"]
+    m: "The candidate key is always the left-hand side of the first dependency."
+    s: ["Computes closures step by step", "Uses the never-on-the-right shortcut"]
+
+  gx_db_normal_forms_intro:
+    c: [normalisation]
+    d: intro
+    t: conceptual
+    f: "why normalise"
+    q: "What problems does normalisation solve? Explain update, insert and delete anomalies with a small example."
+    a: "Take a table that stores each student's enrolment along with the course's teacher. If the teacher changes, you must update every row for that course, and missing one leaves the data inconsistent: an update anomaly. You cannot record a new course and its teacher until a student enrols, an insert anomaly. Deleting the last student in a course also deletes the only record of its teacher, a delete anomaly. Normalisation splits the data so each fact is stored once, here a courses table with the teacher and an enrolments table, removing all three anomalies."
+    k: ["!Describes an update anomaly with an example", "!Describes an insert anomaly with an example", "!Describes a delete anomaly with an example", "Says normalisation stores each fact once by splitting tables"]
+    h: ["Where is the teacher's name stored, and how many times?"]
+    fu: ["When would you deliberately keep some duplication, and what would you do to keep it correct?", "Which normal form does your split satisfy, and why?"]
+    m: "Normalisation is mainly about saving disk space."
+    s: ["Uses one example for all three anomalies", "Explains the fix as one fact in one place"]
+
+  gx_db_index_intro:
+    c: [indexing]
+    d: intro
+    t: conceptual
+    f: "what an index is"
+    q: "What is a database index, and why does it make some queries faster but inserts slower?"
+    a: "An index is a separate data structure, usually a B-tree, that keeps a column's values in sorted order with pointers to their rows, like a book's index. A query filtering or sorting on that column can walk the tree in logarithmic time instead of scanning every row. The cost is that every insert, update or delete must also update each index on the table, and the indexes take disk space and memory. So you index columns that are frequently searched, joined or sorted on, and avoid indexing columns that are rarely queried or have very few distinct values."
+    k: ["!Describes an index as a sorted structure such as a B-tree pointing to rows", "!Explains faster lookups by avoiding a full scan", "!Explains that writes must also update every index", "Gives guidance on which columns to index"]
+    h: ["How do you find a topic in a book without reading every page?"]
+    fu: ["A column has only two values, active and inactive. Will an index on it help most queries?", "A query wraps the indexed column in a function. Can the index still be used?"]
+    m: "Adding an index to every column always makes the database faster."
+    s: ["Explains the write cost", "Advises which columns to index"]
+
+  gx_db_optimiser_intro:
+    c: [query_optimisation]
+    d: intro
+    t: conceptual
+    f: "what the query optimiser does"
+    q: "What does a database's query optimiser do with your SQL, and how can you see what it decided?"
+    a: "SQL says what result you want, not how to compute it. The optimiser considers different execution plans, such as which index to use, whether to scan, which join algorithm and in what order to join tables, estimates their cost from table statistics, and picks the cheapest one. You can see its choice with EXPLAIN, which shows the plan, and EXPLAIN ANALYZE in PostgreSQL, which also runs the query and reports actual row counts and timings. Big gaps between estimated and actual rows usually mean outdated statistics or a predicate the optimiser cannot estimate well."
+    k: ["!Says the optimiser chooses an execution plan for a declarative query", "!Mentions choices like index use, join order and join algorithm based on cost estimates", "!Names EXPLAIN or EXPLAIN ANALYZE to inspect the plan", "Links bad plans to outdated statistics"]
+    h: ["Does SQL tell the database how to find the rows?"]
+    fu: ["The plan estimates 10 rows but 2 lakh come back. What would you check first?", "Why might the same query get a different plan after a large data load?"]
+    m: "The database runs the query exactly in the order it is written."
+    s: ["Separates what from how", "Uses estimated versus actual rows"]
+
+  gx_db_acid_intro:
+    c: [transactions_acid]
+    d: intro
+    t: conceptual
+    f: "the four ACID properties"
+    q: "Explain the four ACID properties using a money transfer between two bank accounts."
+    a: "Atomicity: the debit from one account and the credit to the other both happen or neither does; if the system fails midway, the partial work is rolled back. Consistency: the transaction moves the database from one valid state to another, respecting rules such as no negative balances and money being conserved. Isolation: two transfers running at the same time do not see each other's half-finished changes, so the result is as if they ran one after another. Durability: once the transfer is committed, it survives a crash, because the change is written to a log on stable storage before success is reported."
+    k: ["!Explains atomicity as all-or-nothing", "!Explains consistency as preserving valid states and rules", "!Explains isolation as concurrent transactions not seeing partial changes", "!Explains durability as committed changes surviving crashes"]
+    h: ["What should happen if power fails after the debit but before the credit?"]
+    fu: ["How does a database make the commit durable without writing every page to disk immediately?", "Which of the four properties do many distributed databases relax first, and why?"]
+    m: "Consistency in ACID means all replicas show the same data."
+    s: ["Uses the transfer for all four", "Mentions the write-ahead log for durability"]
+
+  gx_db_locking_intro:
+    c: [concurrency_control]
+    d: intro
+    t: conceptual
+    f: "locking versus optimistic control"
+    q: "Two users edit the same row at the same time. How do pessimistic locking and optimistic concurrency control each handle that?"
+    a: "Pessimistic locking assumes conflicts are likely: the first transaction locks the row, and the second waits until the lock is released, so nobody overwrites anyone. It is safe but reduces concurrency and can cause deadlocks. Optimistic concurrency assumes conflicts are rare: both read freely, and on update each checks a version number or timestamp; if the row changed since it was read, that update is rejected and retried. It allows more concurrency but wastes work when conflicts are common. I would use locking for hot rows like a seat booking, optimistic for things like profile edits."
+    k: ["!Describes pessimistic locking as locking the row so others wait", "!Describes optimistic control as checking a version on update and retrying on conflict", "Gives the trade-off of each", "Matches each to a fitting scenario"]
+    h: ["What if each row carried a version number?"]
+    fu: ["A flash sale has ten lakh people buying the last 100 phones. Which approach would struggle, and why?", "How does MVCC let readers avoid waiting for writers?"]
+    m: "Optimistic concurrency means conflicts are simply ignored."
+    s: ["Explains the version check", "Chooses based on conflict rate"]
+
+  gx_db_isolation_intro:
+    c: [isolation_levels]
+    d: intro
+    t: conceptual
+    f: "read phenomena"
+    q: "What are dirty reads, non-repeatable reads and phantom reads, and which isolation levels prevent each?"
+    a: "A dirty read sees another transaction's uncommitted change, which may be rolled back. A non-repeatable read reads the same row twice and gets different values because another transaction committed an update in between. A phantom read runs the same range query twice and sees new or missing rows because another transaction inserted or deleted. Read uncommitted allows all three; read committed prevents dirty reads; repeatable read also prevents non-repeatable reads; serializable prevents phantoms as well. Higher levels give stronger guarantees at the cost of more locking, aborts or overhead."
+    k: ["!Defines dirty, non-repeatable and phantom reads correctly", "!Maps read committed, repeatable read and serializable to what they prevent", "Mentions read uncommitted allows all three", "Notes higher isolation costs concurrency"]
+    h: ["What changes between the first and second read in each case?"]
+    fu: ["Which level is the default in PostgreSQL or MySQL, and what does that mean for your code?", "Why might a reporting query be fine at read committed while a balance transfer is not?"]
+    m: "Serializable means transactions actually run one at a time."
+    s: ["Defines each phenomenon precisely", "States the cost of higher levels"]
+
+  gx_db_nosql_intro:
+    c: [nosql_vs_relational]
+    d: intro
+    t: conceptual
+    f: "kinds of NoSQL stores"
+    q: "What does NoSQL mean, and what are the main kinds of NoSQL databases with an example use for each?"
+    a: "NoSQL is a family of databases that do not use the relational table model with SQL as the primary interface, usually trading joins and strict schemas for flexible data and easy horizontal scaling. Key-value stores like Redis map a key to a value, ideal for caching and sessions. Document stores like MongoDB keep JSON-like documents, good for product catalogues where fields vary. Wide-column stores like Cassandra suit huge write-heavy data such as event logs. Graph databases like Neo4j store relationships directly, useful for social or recommendation queries. Relational databases remain the default when you need transactions across many entities."
+    k: ["!Explains NoSQL as non-relational stores trading joins or strict schema for flexibility and scaling", "!Names key-value, document, wide-column and graph stores", "Gives a fitting use case for each", "Says relational remains right for multi-entity transactions"]
+    h: ["What would you use to store user sessions that expire after an hour?"]
+    fu: ["Your product needs reports that join orders, customers and payments. What does that suggest?", "What does eventual consistency mean for a user who just updated their profile?"]
+    m: "NoSQL databases cannot be queried at all and never support transactions."
+    s: ["Matches store types to uses", "Keeps relational in the picture"]

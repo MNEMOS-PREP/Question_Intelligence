@@ -1,0 +1,370 @@
+# =============================================================================
+#  GAP BANK — ml_verbal, reinforcement learning (2026-11-23). The nine RL
+#  concepts in the ontology had no questions at all; this gives each an intro,
+#  a core and a hard one, in the order Sutton and Barto teach them.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: ml_verbal
+provenance: generated
+items:
+  # ---- foundations ---------------------------------------------------------
+  gx_rl_foundations_intro:
+    c: [rl_foundations]
+    d: intro
+    t: conceptual
+    f: "agent, environment, reward"
+    q: "What is reinforcement learning, and how is it different from supervised learning?"
+    a: "In reinforcement learning an agent interacts with an environment: it observes a state, takes an action, and receives a reward and the next state. Its goal is to learn a policy that maximises the total reward it collects over time, not just the next reward. Unlike supervised learning, nobody gives it the correct action for each input; the reward only says how good the outcome was, and it often arrives many steps after the action that earned it. The agent's own choices also decide what data it sees, so it must explore to discover good actions. Game-playing agents and robots learning to walk are classic examples."
+    k: ["!Describes an agent taking actions in an environment and receiving rewards", "!Says the goal is to maximise cumulative reward over time", "!Contrasts with supervised learning, which has correct labels for each input", "Mentions delayed rewards or that the agent's actions change the data it sees"]
+    h: ["Who tells the agent what the right move was?"]
+    fu: ["A chess program learns only from whether it won at the very end. Which move deserves the credit?", "Why can't you just collect a dataset once and train on it here?"]
+    m: "Reinforcement learning is supervised learning with rewards used as labels."
+    s: ["Names the interaction loop", "Explains evaluative, delayed feedback"]
+
+  gx_rl_discount_core:
+    c: [rl_foundations, markov_decision_processes]
+    d: core
+    t: conceptual
+    f: "return and the discount factor"
+    q: "What is the discount factor gamma, and how does changing it from 0.5 to 0.99 change what an agent learns to do?"
+    a: "The return is the sum of future rewards with each one weighted by gamma raised to how many steps away it is, so the next reward counts fully and later ones count less. Gamma below one also keeps the return finite in tasks that never end. With gamma 0.5 a reward ten steps away is worth about a thousandth of its value, so the agent becomes short-sighted and grabs immediate rewards. With 0.99 the effective horizon is roughly one over one minus gamma, about a hundred steps, so it learns to plan for distant rewards. The cost is that learning is slower and noisier, because long chains of uncertain future rewards matter."
+    k: ["!Defines the return as a sum of rewards weighted by powers of gamma", "!Says low gamma makes the agent short-sighted and high gamma makes it plan far ahead", "Mentions the effective horizon of roughly one over one minus gamma", "Says gamma below one keeps the return finite in continuing tasks"]
+    h: ["How much is a reward ten steps away worth with each value?"]
+    fu: ["A robot must walk 200 steps to reach a charging dock, its only reward. What goes wrong when this number is small?", "Why might training get harder as gamma approaches one?"]
+    m: "Gamma is the learning rate of the agent."
+    s: ["Works through a numeric example", "Mentions the horizon"]
+
+  gx_rl_reward_hacking_hard:
+    c: [rl_foundations]
+    d: hard
+    t: scenario
+    f: "reward design and reward hacking"
+    q: "A cleaning robot rewarded for not seeing any dirt learns to cover its own camera. What does this tell you about reward design, and how would you fix it?"
+    a: "It is reward hacking, or specification gaming: the agent maximises the reward exactly as written, not the goal the designer had in mind, and finds any loophole. The fix starts with rewarding an outcome the agent cannot fake, such as dirt actually collected, measured by a sensor it cannot block, or room cleanliness checked independently. Add penalties for side effects, such as blocking sensors or knocking things over, and constrain dangerous actions. Shaping rewards to guide learning should be potential-based so it does not change which policy is optimal. For goals hard to write down, learn the reward from human feedback or demonstrations, and test the trained agent for exploits before deployment."
+    k: ["!Identifies reward hacking, where the agent maximises the literal reward rather than the goal", "!Proposes rewarding an outcome the agent cannot fake, such as dirt actually collected", "Mentions penalties for side effects or constraints on actions", "Mentions potential-based shaping or learning rewards from human feedback"]
+    h: ["What exactly did the reward measure?"]
+    fu: ["You add a small bonus for every step spent moving. What new behaviour might appear?", "How would you detect a loophole before the robot ships?"]
+    m: "If the agent misbehaves, the learning algorithm must be broken."
+    s: ["Names specification gaming", "Proposes an unfakeable outcome"]
+
+  # ---- multi-armed bandits -------------------------------------------------
+  gx_rl_bandit_intro:
+    c: [multi_armed_bandits]
+    d: intro
+    t: conceptual
+    f: "exploration versus exploitation"
+    q: "Explain the exploration-exploitation trade-off using the example of choosing where to eat each evening."
+    a: "Exploiting means going to the restaurant you currently believe is best; exploring means trying another one that might turn out better. If you only exploit, you may never discover the excellent place round the corner; if you only explore, you waste many evenings on bad meals. A multi-armed bandit formalises this: several options, each with an unknown reward distribution, and no changing state. A simple strategy is epsilon-greedy: with a small probability pick a random option, otherwise pick the best estimate so far. Regret, the reward lost compared with always choosing the best option, measures how well a strategy balances the two."
+    k: ["!Explains exploitation as choosing the best option known so far", "!Explains exploration as trying options to learn whether they are better", "!Says pure exploitation can miss a better option and pure exploration wastes trials", "Describes epsilon-greedy or the idea of regret"]
+    h: ["What do you lose by never trying anywhere new?"]
+    fu: ["After ten visits you are fairly sure of your favourite place. Should you still sometimes try new ones?", "How would your answer change if you were leaving the city next week?"]
+    m: "Once you find a good option you should never try anything else."
+    s: ["Relatable example", "Names a concrete strategy"]
+
+  gx_rl_ucb_core:
+    c: [multi_armed_bandits]
+    d: core
+    t: conceptual
+    f: "upper confidence bounds"
+    q: "How does the upper confidence bound method choose which arm to pull, and why does it often beat epsilon-greedy?"
+    a: "UCB picks the arm with the highest estimated mean reward plus an uncertainty bonus, typically a constant times the square root of the log of total pulls divided by that arm's own pulls. The bonus is large for arms tried rarely and shrinks as an arm is tried more, which is optimism in the face of uncertainty. So exploration is directed: it goes to arms that might still be best, and arms known to be poor are tried less and less. Epsilon-greedy explores uniformly at random forever, wasting pulls on clearly bad arms, so its regret grows linearly with a fixed epsilon, while UCB's grows only logarithmically. Thompson sampling is a strong Bayesian alternative."
+    k: ["!Says UCB adds an uncertainty bonus to each arm's estimated mean", "!Explains the bonus is large for rarely tried arms and shrinks with more pulls", "!Explains its exploration is directed rather than uniformly random like epsilon-greedy", "Mentions logarithmic regret or Thompson sampling"]
+    h: ["What should happen to curiosity about an arm once you have tried it a thousand times?"]
+    fu: ["One arm has been pulled 1,000 times with a poor average. How often will each method still pick it?", "What happens if the arms' true payouts slowly drift over weeks?"]
+    m: "Exploring at random is as good as any other way of exploring."
+    s: ["Explains the bonus term", "Compares regret"]
+
+  gx_rl_bandit_ab_hard:
+    c: [multi_armed_bandits]
+    d: hard
+    t: tradeoff
+    f: "bandits versus A/B tests"
+    q: "A news site wants to pick headlines with a bandit instead of an A/B test. What do they gain, what do they lose, and when would you still run the A/B test?"
+    a: "A bandit shifts traffic towards the better headline while the experiment runs, so fewer readers see the weaker one and fewer clicks are lost; that suits short-lived content like headlines. What they lose is clean measurement: traffic allocation depends on earlier results, so effect estimates are biased and standard significance tests no longer apply, and the losing arm gets too little data to measure secondary effects. Delayed rewards and changing behaviour over the day also confuse it. Run an A/B test when the decision is permanent, when you need a trustworthy effect size, or when guardrail metrics such as time on page matter. Contextual bandits go further and personalise by reader."
+    k: ["!Says a bandit shifts traffic to the better headline during the experiment, losing fewer clicks", "!Says adaptive allocation makes clean effect estimates and significance testing harder", "!Says A/B tests suit permanent decisions or when trustworthy measurement matters", "Mentions contextual bandits, delayed rewards or guardrail metrics"]
+    h: ["Which approach cares more about learning, and which about earning?"]
+    fu: ["Headlines only live for six hours. Which approach fits better?", "Clicks rise but readers leave the page within seconds. What did the reward miss?"]
+    m: "A bandit gives the same statistical conclusions as an A/B test, only faster."
+    s: ["Weighs regret against inference", "Names when A/B still wins"]
+
+  # ---- Markov decision processes ------------------------------------------
+  gx_rl_mdp_intro:
+    c: [markov_decision_processes]
+    d: intro
+    t: conceptual
+    f: "parts of an MDP"
+    q: "What are the parts of a Markov decision process, and what does the Markov property assume?"
+    a: "An MDP has a set of states, a set of actions, transition probabilities giving the chance of each next state after taking an action in a state, a reward function, and a discount factor. The Markov property assumes that the next state and reward depend only on the current state and action, not on the history of how the agent got there. So the state must contain everything relevant for predicting what happens next: a chess board position is enough, but a single camera frame for a driving agent is not, because it hides speed. A policy maps each state to an action, or to probabilities over actions."
+    k: ["!Names states, actions, transition probabilities, rewards and a discount factor", "!Says the Markov property means the future depends only on the current state and action", "Explains the state must include all information needed to predict what happens next", "Mentions that a policy maps states to actions"]
+    h: ["Does knowing the past add anything once you know the present state?"]
+    fu: ["A self-driving agent sees one still image per step. Is its world Markov, and how could you fix that?", "Why is the board alone enough to decide a chess move?"]
+    m: "The Markov property means the environment is random."
+    s: ["Lists all five parts", "Gives a non-Markov example"]
+
+  gx_rl_bellman_core:
+    c: [markov_decision_processes, policy_and_value_iteration]
+    d: core
+    t: conceptual
+    f: "the Bellman expectation equation"
+    q: "State the Bellman expectation equation for a policy's state values in words, and explain why it is so useful."
+    a: "The value of a state under a policy equals the expected immediate reward plus the discounted value of the next state, where the expectation averages over the actions the policy chooses and over where the environment then moves. It is recursive: each state's value is written in terms of its successors' values. That turns policy evaluation into a set of linear equations that can be solved directly for small problems or by repeated sweeps, and it gives the targets used by temporal-difference learning and Q-learning. The Bellman optimality equation replaces the average over the policy's actions with a maximum, describing the best achievable values."
+    k: ["!States value equals expected immediate reward plus discounted value of the next state", "!Says the expectation is over the policy's actions and the transitions", "!Explains its recursive form lets values be computed from successor values", "Contrasts it with the optimality version that takes a max over actions"]
+    h: ["How does the value now relate to the value one step later?"]
+    fu: ["In a small grid you know exactly how every move changes the position. How could you solve for all values at once?", "Why do learning methods that never know the environment's dynamics still lean on this relationship?"]
+    m: "The Bellman equation only applies when rewards are deterministic."
+    s: ["Explains recursion", "Contrasts expectation and optimality"]
+
+  gx_rl_pomdp_hard:
+    c: [markov_decision_processes]
+    d: hard
+    t: scenario
+    f: "partial observability"
+    q: "An agent playing a card game cannot see the other players' hands. Why is this not a standard MDP, and how do practical systems cope?"
+    a: "The game is partially observable: what the agent sees does not determine the true state, because the hidden hands matter for what happens next. Two situations can look identical yet need different moves, so the Markov property fails for observations. Formally this is a POMDP. The agent can maintain a belief state, a probability distribution over the hidden states, updated with Bayes' rule after each card played; the belief is Markov again, but exact planning over beliefs is computationally very hard. Practical systems use the history of observations instead, through recurrent networks or stacked recent observations, or approximate the belief with sampling methods such as particle filters."
+    k: ["!Says the game is partially observable, so observations alone are not Markov", "!Describes a belief state as a probability distribution over hidden states", "!Says practical systems use observation history, such as recurrent networks or stacked frames", "Mentions that exact planning over beliefs is computationally hard"]
+    h: ["What does the agent not know that the environment does?"]
+    fu: ["Two situations look the same to the agent but need opposite moves. What can it do?", "How should the agent revise its guess about the others' cards after one is played?"]
+    m: "Hidden information makes reinforcement learning impossible."
+    s: ["Names POMDP and belief state", "Gives practical approximations"]
+
+  # ---- policy and value iteration -----------------------------------------
+  gx_rl_dp_intro:
+    c: [policy_and_value_iteration]
+    d: intro
+    t: conceptual
+    f: "evaluation and improvement"
+    q: "In dynamic programming for reinforcement learning, what is the difference between policy evaluation and policy improvement?"
+    a: "Policy evaluation computes the value of every state for a fixed policy, by repeatedly applying the Bellman expectation update until the values stop changing. Policy improvement then makes the policy greedy with respect to those values: in each state it picks the action with the highest expected reward plus discounted value of the next state. The policy improvement theorem guarantees the new policy is at least as good as the old one. Alternating the two is policy iteration, which reaches the optimal policy in a finite number of steps for a finite MDP. Both steps need a known model of transitions and rewards, which is why this is called planning."
+    k: ["!Says evaluation computes the value of a fixed policy using repeated Bellman updates", "!Says improvement makes the policy greedy with respect to those values", "!Says alternating them is policy iteration and reaches the optimal policy", "Notes that this requires a known model of transitions and rewards"]
+    h: ["One step measures the policy; what does the other do?"]
+    fu: ["After an improvement step nothing changes in any state. What can you conclude?", "Why can't a robot in an unknown building use this directly?"]
+    m: "Policy iteration learns from trial and error like Q-learning."
+    s: ["Clear two-step loop", "Notes the model requirement"]
+
+  gx_rl_vi_pi_core:
+    c: [policy_and_value_iteration]
+    d: core
+    t: tradeoff
+    f: "value iteration versus policy iteration"
+    q: "How does value iteration differ from policy iteration, and when would you prefer each?"
+    a: "Value iteration applies the Bellman optimality update in every sweep, setting each state's value to the maximum over actions of expected reward plus discounted next value; this merges a single, truncated evaluation sweep with improvement, and the greedy policy is extracted at the end. Policy iteration fully evaluates the current policy, often many sweeps, before improving it. Policy iteration therefore needs few iterations, each expensive, while value iteration needs many cheap ones. Value iteration suits problems where full evaluation is costly; policy iteration often wins when the policy settles quickly. Modified policy iteration, with a few evaluation sweeps, sits between them. Each sweep costs roughly states squared times actions."
+    k: ["!Says value iteration applies the optimality update with a max over actions each sweep", "!Says policy iteration fully evaluates a policy before improving it", "!Explains policy iteration needs fewer but costlier iterations than value iteration", "Mentions modified policy iteration or the per-sweep cost in states and actions"]
+    h: ["How many sweeps of evaluation happen before each improvement?"]
+    fu: ["You stop early, when no value moves by more than 0.01. Is the greedy policy already good?", "With a million states, what makes either approach impractical?"]
+    m: "Value iteration and policy iteration give different optimal policies."
+    s: ["Compares cost per iteration", "Mentions the middle ground"]
+
+  gx_rl_dp_curse_hard:
+    c: [policy_and_value_iteration, planning_with_models]
+    d: hard
+    t: scenario
+    f: "the curse of dimensionality"
+    q: "A robot arm has six joints, each discretised into 100 angles. Why does dynamic programming become hopeless here, and what would you do instead?"
+    a: "The state space has 100 to the power six, a trillion, states before counting velocities, and every sweep must touch each state and its transitions, so neither memory nor time suffices; this is the curse of dimensionality. Instead, approximate the value function or policy with a parameterised function such as a neural network rather than a table, and use sample-based methods, such as temporal-difference learning, Q-learning or policy gradients, which only update states the robot actually visits. Planning can focus on relevant states through real-time dynamic programming from the start state or prioritised sweeping. Coarser or adaptive discretisation and local trajectory optimisation, such as model-predictive control, also help."
+    k: ["!Computes about 10 to the 12 states and explains full sweeps are impossible", "!Names the curse of dimensionality", "!Proposes function approximation instead of a table of values", "Mentions sample-based updates, prioritised sweeping or focusing on reachable states"]
+    h: ["How many combinations of joint angles are there?"]
+    fu: ["Most of those angle combinations are physically impossible. How could you exploit that?", "What new risk appears once a neural network replaces the lookup table?"]
+    m: "Faster computers will soon make full sweeps practical for such problems."
+    s: ["Does the arithmetic", "Offers approximation and sampling"]
+
+  # ---- Monte Carlo methods -------------------------------------------------
+  gx_rl_mc_intro:
+    c: [monte_carlo_methods]
+    d: intro
+    t: conceptual
+    f: "averaging returns"
+    q: "How do Monte Carlo methods estimate the value of a state in reinforcement learning?"
+    a: "They run complete episodes following the policy, and each time the state is visited they compute the return that followed, the discounted sum of rewards until the episode ended. The value estimate is simply the average of these returns over many episodes, which converges to the true value. First-visit Monte Carlo uses only the first visit in each episode, every-visit uses all of them. No model of the environment is needed; the agent learns purely from experience. The limits are that updates wait until an episode ends, so it suits episodic tasks only, and the estimates have high variance because each return depends on many random steps."
+    k: ["!Says it runs complete episodes and records the return after visiting the state", "!Says the value estimate is the average of those returns", "!Says no model of the environment is needed", "Mentions that it needs episodes to end or has high variance"]
+    h: ["What could you average over many plays of the game?"]
+    fu: ["A task never ends, like running a power grid continuously. What is the problem?", "From one blackjack position, one game ends at +1 and another at -1. How many games might you need?"]
+    m: "Monte Carlo methods require knowing the transition probabilities."
+    s: ["Explains averaging returns", "States the episodic limitation"]
+
+  gx_rl_mc_control_core:
+    c: [monte_carlo_methods]
+    d: core
+    t: conceptual
+    f: "exploration in Monte Carlo control"
+    q: "In Monte Carlo control, why must the policy keep exploring, and how do epsilon-soft policies make that happen?"
+    a: "Control improves the policy using action values, so it needs estimates for every action in every state. A greedy, deterministic policy never tries some actions, so their values are never estimated and the agent can lock onto a poor choice forever. One fix is exploring starts, beginning each episode from a random state and action, but that is usually impossible in the real world. Epsilon-soft policies instead give every action at least a small probability, epsilon divided by the number of actions, for example by acting epsilon-greedily. The result is optimal only among epsilon-soft policies; off-policy learning with importance sampling can learn the truly greedy policy while still exploring."
+    k: ["!Explains a greedy policy never tries some actions, so their values are never estimated", "!Says epsilon-soft policies give every action at least a small probability", "Mentions exploring starts and why they are often impractical", "Mentions that the result is optimal only among epsilon-soft policies, or off-policy learning"]
+    h: ["What do you know about an action you have never taken?"]
+    fu: ["Why can't a real robot simply begin each trial in a random position with a random action?", "Once learning is finished, would you keep the randomness in deployment?"]
+    m: "Acting greedily from the start finds the best policy fastest."
+    s: ["Explains the missing estimates", "Knows the epsilon-soft limitation"]
+
+  gx_rl_importance_hard:
+    c: [monte_carlo_methods]
+    d: hard
+    t: scenario
+    f: "off-policy evaluation from logs"
+    q: "You want to evaluate a new pricing policy using logs collected under the old one, without running it live. How does importance sampling make that possible, and why can it fail badly?"
+    a: "Each logged episode's return is weighted by the ratio of how likely its actions were under the new policy versus the old one, multiplied across the steps of the episode; averaging these weighted returns gives an unbiased estimate of the new policy's value. It requires coverage: the old policy must have given non-zero probability to every action the new one might take, or those outcomes are simply invisible. It fails because the product of many ratios can be enormous or tiny, so a handful of episodes dominate and the variance explodes, especially over long episodes. Weighted importance sampling trades a little bias for much lower variance, and per-decision or doubly robust estimators help further."
+    k: ["!Says each logged return is weighted by the probability ratio of the actions under the new and old policies", "!Says the old policy must give nonzero probability to actions the new one takes", "!Explains products of ratios over long episodes cause huge variance", "Mentions weighted importance sampling or doubly robust estimators"]
+    h: ["How much more or less likely was each logged action under the new rule?"]
+    fu: ["The old system always showed exactly the same price to a given customer type. What can you estimate?", "Three logged sessions out of ten thousand dominate your estimate. What would you do?"]
+    m: "Logs from any old policy can evaluate any new policy without bias."
+    s: ["Explains the ratio and coverage", "Diagnoses the variance problem"]
+
+  # ---- temporal-difference learning ---------------------------------------
+  gx_rl_td_intro:
+    c: [temporal_difference_learning]
+    d: intro
+    t: conceptual
+    f: "bootstrapping from the next state"
+    q: "What is temporal-difference learning, and how does its update differ from Monte Carlo?"
+    a: "TD learning updates a state's value after every single step. After moving from one state to the next and receiving a reward, it nudges the old estimate towards the reward plus the discounted estimated value of the next state; the gap between that target and the old estimate is the TD error, scaled by a learning rate. This is bootstrapping: it learns a guess from a guess, using its own current estimate instead of waiting for the real return. Monte Carlo must wait until the episode ends and use the actual return. So TD learns online, works in tasks that never end, and has lower variance, at the cost of some bias from imperfect estimates."
+    k: ["!Says it updates after every step towards the reward plus the discounted estimate of the next state", "!Explains bootstrapping from its own current estimate instead of waiting for the full return", "!Contrasts with Monte Carlo waiting until the episode ends", "Names the TD error or lower variance with some bias"]
+    h: ["Do you have to wait until the end to learn something?"]
+    fu: ["You are driving home and hit heavy traffic halfway. How would each method revise your estimate of the trip time?", "Early in training every value guess is wildly off. Why does learning still get anywhere?"]
+    m: "TD learning needs a model of the environment because it looks one step ahead."
+    s: ["States the update", "Explains bootstrapping"]
+
+  gx_rl_td_vs_mc_core:
+    c: [temporal_difference_learning, monte_carlo_methods]
+    d: core
+    t: tradeoff
+    f: "bias and variance of the targets"
+    q: "TD targets are biased while Monte Carlo returns are not. Why is TD still often the faster learner?"
+    a: "A Monte Carlo return adds up many random rewards and transitions until the episode ends, so it has high variance and needs many episodes to average out. A TD target depends on just one random step plus the current estimate of the next state, so its variance is much lower. Its bias comes from that estimate and shrinks as estimates improve. TD also exploits the Markov structure: in batch training it converges to the values of the most likely model of the data, while Monte Carlo merely fits the observed returns. That helps when the state really is Markov; when it is not, Monte Carlo is the safer choice."
+    k: ["!Explains the full return sums many random steps, giving high variance", "!Explains the TD target depends on one random step, giving lower variance", "!Says TD's bias comes from its own estimates and shrinks as they improve", "Mentions TD exploits the Markov property or Monte Carlo is safer when it fails"]
+    h: ["How many random events does each target depend on?"]
+    fu: ["The state your agent sees leaves out important information. Which method would you trust more now?", "Trained repeatedly on the same 100 episodes, why might the two give different answers?"]
+    m: "An unbiased method always learns faster than a biased one."
+    s: ["Frames it as bias versus variance", "Mentions the Markov dependence"]
+
+  gx_rl_deadly_triad_hard:
+    c: [temporal_difference_learning, q_learning_and_sarsa]
+    d: hard
+    t: debugging
+    f: "the deadly triad"
+    q: "Why can TD learning diverge when a neural network represents the value function, even though the same algorithm with a table converges?"
+    a: "Divergence comes from the deadly triad: function approximation, bootstrapping and off-policy data together. With a network, weights are shared, so updating one state's value also changes others, including the next-state value used as the target, so the target moves as you chase it. Off-policy data means updates are not weighted the way the current policy visits states, so errors can feed on themselves and grow without bound, as Baird's counterexample shows. A table has none of this coupling. Practical fixes are a target network copied only every few thousand steps, experience replay, smaller learning rates and double Q-learning; gradient-TD methods have convergence guarantees."
+    k: ["!Names the combination of function approximation, bootstrapping and off-policy data", "!Explains updating shared weights also moves the target being chased", "!Proposes a target network that is updated only periodically", "Mentions experience replay, gradient TD methods or Baird's counterexample"]
+    h: ["What else changes when you update one state's value through shared weights?"]
+    fu: ["Your value estimates climb to 10 to the 8 while rewards never exceed 1. Where would you look first?", "Would learning only from the current policy's own fresh experience help? Why?"]
+    m: "Divergence in deep RL is always caused by a learning rate that is too high."
+    s: ["Names all three ingredients", "Explains the moving target"]
+
+  # ---- Q-learning and SARSA -----------------------------------------------
+  gx_rl_qlearning_intro:
+    c: [q_learning_and_sarsa]
+    d: intro
+    t: conceptual
+    f: "what Q-learning learns"
+    q: "What does Q-learning learn, and what is its update rule in words?"
+    a: "Q-learning learns an action value, Q of s and a, for each state and action: the expected return from taking that action in that state and acting optimally afterwards. After each step it moves the current estimate towards the reward plus the discounted maximum Q value over all actions in the next state, by a learning rate. Because the target uses that maximum regardless of what the agent actually does next, it is off-policy: the agent can behave epsilon-greedily to explore while still learning the values of the greedy, optimal policy. Once learned, the policy simply picks the action with the highest Q value in each state, with no model needed."
+    k: ["!Says it learns action values for each state and action pair", "!States the update towards reward plus discounted max over next actions", "!Explains it is off-policy, learning the greedy policy while exploring", "Says the final policy picks the action with the highest value"]
+    h: ["What does the max in the target assume about the future?"]
+    fu: ["Your grid has 10 positions and 4 moves. How many numbers are you learning?", "How can the agent keep wandering randomly yet still learn the best behaviour?"]
+    m: "Q-learning must follow the optimal policy while it learns."
+    s: ["States the target precisely", "Explains off-policy"]
+
+  gx_rl_sarsa_cliff_core:
+    c: [q_learning_and_sarsa]
+    d: core
+    t: scenario
+    f: "on-policy versus off-policy on a cliff"
+    q: "In a gridworld beside a cliff, SARSA learns a safe path away from the edge while Q-learning learns the path right along it. Why?"
+    a: "SARSA is on-policy: its target uses the action the agent actually takes next, chosen epsilon-greedily, so the occasional random step that sends it over the cliff lowers the values of states near the edge, and it learns the path that is best given that it keeps exploring. Q-learning's target uses the maximum over next actions, so it learns the values of the greedy policy, for which the edge path is shortest and optimal. But while it is still exploring it falls off more often, so its reward during training is worse than SARSA's. If epsilon decays to zero over time, both converge to the optimal edge path."
+    k: ["!Says SARSA uses the action actually taken next, including exploratory ones", "!Says Q-learning uses the max over next actions, valuing the greedy path", "!Explains SARSA accounts for random slips near the cliff and so stays away", "Says the difference vanishes as exploration decays to zero"]
+    h: ["Which algorithm's target includes the chance of a random step?"]
+    fu: ["You are training a real robot where falls are expensive. Which would you pick, and why?", "Which of the two scores more reward while it is still learning?"]
+    m: "SARSA and Q-learning always learn the same policy."
+    s: ["Links the target to exploration", "Compares online and final performance"]
+
+  gx_rl_double_q_hard:
+    c: [q_learning_and_sarsa]
+    d: hard
+    t: conceptual
+    f: "maximisation bias"
+    q: "Why does Q-learning tend to overestimate action values, and how does double Q-learning fix it?"
+    a: "The target takes the maximum over estimated action values, and each estimate is noisy. The maximum of noisy, unbiased estimates is biased upwards, because whichever action happens to be overestimated gets picked; the expected maximum exceeds the maximum of expectations. Through bootstrapping this error propagates and compounds, especially with function approximation, making the agent prefer actions that are merely uncertain. Double Q-learning keeps two independent estimators: one selects the best next action, the other evaluates it. Because the evaluator's noise is independent of the selection, the upward bias disappears, though it can slightly underestimate. Double DQN applies this using the online network to select and the target network to evaluate."
+    k: ["!Explains taking a max over noisy estimates is biased upward", "!Says double Q-learning uses one estimator to choose the action and another to evaluate it", "!Explains this decoupling removes the upward bias", "Mentions Double DQN using the online and target networks"]
+    h: ["If ten estimates are noisy around zero, what is the largest of them likely to be?"]
+    fu: ["All ten actions in a state truly give zero reward but their estimates are noisy. What does the target report?", "Could the fix ever err in the other direction?"]
+    m: "Overestimation happens only because rewards are noisy."
+    s: ["Explains the max-of-noise effect", "Separates selection from evaluation"]
+
+  # ---- n-step bootstrapping -----------------------------------------------
+  gx_rl_nstep_intro:
+    c: [n_step_bootstrapping]
+    d: intro
+    t: conceptual
+    f: "between TD and Monte Carlo"
+    q: "What is n-step bootstrapping, and how does it sit between one-step TD and Monte Carlo?"
+    a: "An n-step target adds up the next n actual rewards, discounted, and then bootstraps by adding the discounted estimated value of the state reached n steps later. With n equal to one this is ordinary one-step TD; when n reaches the end of the episode it becomes the Monte Carlo return. Intermediate values trade off the two: a larger n relies less on possibly wrong estimates, so less bias, but includes more random rewards, so more variance. In practice an intermediate n, such as 3 to 10, often learns fastest. The cost is that each update is delayed by n steps, since those rewards must be observed first."
+    k: ["!Says the target sums n real rewards and then bootstraps from the estimate n steps ahead", "!Says n of one gives one-step TD and n reaching the episode end gives Monte Carlo", "!Explains larger n means less bias but more variance", "Mentions updates are delayed by n steps"]
+    h: ["How many real rewards does each method look at before guessing?"]
+    fu: ["A reward arrives 20 steps after the key action. How does n = 1 versus n = 10 change how fast that credit travels back?", "What is the cost of making n very large?"]
+    m: "A larger n is always better because it uses more real information."
+    s: ["Places both extremes", "Explains the trade-off"]
+
+  gx_rl_lambda_core:
+    c: [n_step_bootstrapping, temporal_difference_learning]
+    d: core
+    t: conceptual
+    f: "TD(lambda) and eligibility traces"
+    q: "How does TD(lambda) combine many n-step returns, and what do eligibility traces add?"
+    a: "The lambda-return is a weighted average of all n-step returns, with weights decaying geometrically by lambda: the one-step return gets the most weight, longer ones progressively less, normalised so they sum to one. Lambda of zero gives one-step TD and lambda of one gives Monte Carlo. Computing this directly needs future rewards, the forward view. Eligibility traces give an equivalent backward view: each state keeps a trace that jumps when it is visited and decays by gamma times lambda every step, and every new TD error updates all states in proportion to their traces. This works online, step by step, and spreads credit back to recently visited states efficiently."
+    k: ["!Says the lambda-return is a geometrically weighted average of all n-step returns", "!Says lambda of zero gives one-step TD and lambda of one gives Monte Carlo", "!Explains eligibility traces mark recently visited states and decay each step", "Says each TD error updates states in proportion to their traces, online"]
+    h: ["What if every n-step return got a vote, with shorter ones weighted more?"]
+    fu: ["With lambda 0.9 and gamma 1, how much does a surprise now change your estimate for a room you passed 50 moves ago?", "Why is the backward view practical when the forward view is not?"]
+    m: "Eligibility traces store whole episodes in memory."
+    s: ["Explains the weighting", "Connects forward and backward views"]
+
+  gx_rl_nstep_replay_hard:
+    c: [n_step_bootstrapping, q_learning_and_sarsa]
+    d: hard
+    t: tradeoff
+    f: "multi-step targets from replay"
+    q: "Deep RL agents such as Rainbow use 3-step returns drawn from a replay buffer. What does that gain, and why is it technically incorrect off-policy?"
+    a: "Using three real rewards before bootstrapping spreads reward information back three times faster per update and leans less on early, poor value estimates, so learning speeds up noticeably. But the intermediate actions in a stored three-step segment were chosen by an older behaviour policy, not by the current greedy policy whose values are being learned. A correct off-policy multi-step target would reweight or cut those steps, using importance sampling, tree backup or Retrace. Rainbow skips the correction, which adds bias. For small n and a slowly changing policy the bias is tolerable and the speed-up wins; with large n the mismatch grows and learning can become unstable."
+    k: ["!Says multi-step returns spread rewards back faster and reduce bootstrapping bias", "!Explains the intermediate actions came from an older policy stored in the buffer", "!Says skipping off-policy correction adds bias that is tolerable for small n", "Names corrections such as importance sampling, tree backup or Retrace"]
+    h: ["Who chose the second and third actions in the stored segment?"]
+    fu: ["You raise n from 3 to 30 and learning becomes unstable. Why?", "Why does the uncorrected version still work well in practice?"]
+    m: "Replay buffers make every multi-step target exactly correct."
+    s: ["Names the mismatch", "Weighs bias against speed"]
+
+  # ---- planning with models -----------------------------------------------
+  gx_rl_model_based_intro:
+    c: [planning_with_models]
+    d: intro
+    t: conceptual
+    f: "model-free versus model-based"
+    q: "What is the difference between model-free and model-based reinforcement learning?"
+    a: "Model-free methods, such as Q-learning and policy gradients, learn values or a policy directly from real experience, without learning how the environment works. Model-based methods learn, or are given, a model that predicts the next state and reward for a state and action, and then use it to plan: simulate experience, look ahead several moves, or search before acting. A model makes learning much more sample-efficient, because imagined experience replaces costly real interactions. The main risks are model errors that compound over long imagined rollouts and an agent that exploits flaws in the model, plus the extra computation for planning. AlphaZero plans with the known rules of a game."
+    k: ["!Says model-free learns values or policies directly from real experience", "!Says model-based learns or uses a model that predicts next state and reward", "!Says the model is used to plan or simulate experience, saving real interactions", "Mentions model errors as the main risk"]
+    h: ["Does the agent learn how the world responds, or only what to do?"]
+    fu: ["Each real trial of a robot costs ten minutes and some wear. Which family appeals, and why?", "Why can a chess agent look ahead perfectly while a stock-trading agent cannot?"]
+    m: "Model-based means the agent uses a neural network model."
+    s: ["Clear distinction", "Names sample efficiency and model error"]
+
+  gx_rl_dyna_core:
+    c: [planning_with_models]
+    d: core
+    t: scenario
+    f: "Dyna-Q and stale models"
+    q: "How does Dyna-Q mix real experience with planning, and what happens when the environment changes?"
+    a: "After each real step, Dyna-Q does an ordinary Q-learning update, records the observed reward and next state in a learned model, and then performs several planning steps: it samples state-action pairs it has seen before, asks the model what happened, and applies Q-learning updates to these simulated transitions. More planning steps per real step mean far fewer real episodes to learn. When the environment changes, the model is stale. A newly blocked path is discovered through real experience, but a newly opened shortcut may never be found, because the model still predicts a wall there. Dyna-Q+ adds a bonus for actions not tried for a long time, encouraging the agent to recheck."
+    k: ["!Says each real step updates both the Q-values and a learned model", "!Says extra planning updates replay simulated transitions sampled from the model", "!Explains a stale model can stop the agent finding a newly opened shortcut", "Mentions Dyna-Q+ adding a bonus for long-untried actions"]
+    h: ["What does the agent do with the memory of past steps between real moves?"]
+    fu: ["You raise planning updates from 0 to 50 per real move. What changes in how many real episodes are needed?", "A door that was always locked is now open. How would the agent ever learn that?"]
+    m: "Once learned, a model never needs updating."
+    s: ["Describes the full loop", "Explains the stale-model failure"]
+
+  gx_rl_mcts_hard:
+    c: [planning_with_models, multi_armed_bandits]
+    d: hard
+    t: conceptual
+    f: "Monte Carlo tree search with networks"
+    q: "How does Monte Carlo tree search choose a move in a game like Go, and why did AlphaZero pair it with neural networks?"
+    a: "From the current position, MCTS repeats four phases many times. Selection descends the tree choosing children by a rule such as UCT, balancing high average value against few visits, much like a bandit. Expansion adds a new leaf. Evaluation estimates that leaf's value, classically by a random playout. Backup updates visit counts and values along the path. After the budget is spent, it plays the most-visited move. Random playouts are weak in Go, so AlphaZero uses a policy network as a prior that focuses search on promising moves, and a value network that evaluates leaves instead of playouts. Search results then train the networks, and all of this relies on an exact model of the rules."
+    k: ["!Describes selection, expansion, evaluation and backup repeated many times", "!Says selection balances high value and few visits, as in UCT", "!Explains a policy network focuses the search and a value network replaces random rollouts", "Says search results are used to train the networks, which need an exact model of the rules"]
+    h: ["How does the search decide which branch deserves another look?"]
+    fu: ["Why does picking the most-visited move work better than picking the highest average?", "Could this drive a robot whose physics you can only approximate? What breaks?"]
+    m: "Tree search explores every possible move to the end of the game."
+    s: ["Names all four phases", "Explains each network's role"]

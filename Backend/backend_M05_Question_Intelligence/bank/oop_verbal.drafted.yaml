@@ -167,6 +167,7 @@ items:
     round_types:
     - oop_verbal
     difficulty_band: core
+    question_type: design
     time_budget_s: 180
     concepts:
     - id: concept:inheritance
@@ -213,6 +214,7 @@ items:
     round_types:
     - oop_verbal
     difficulty_band: hard
+    question_type: design
     time_budget_s: 240
     concepts:
     - id: concept:inheritance
@@ -259,6 +261,7 @@ items:
     round_types:
     - oop_verbal
     difficulty_band: core
+    question_type: conceptual
     time_budget_s: 180
     concepts:
     - id: concept:polymorphism
@@ -303,6 +306,7 @@ items:
     round_types:
     - oop_verbal
     difficulty_band: intro
+    question_type: design
     time_budget_s: 240
     concepts:
     - id: concept:polymorphism
@@ -348,6 +352,7 @@ items:
     round_types:
     - oop_verbal
     difficulty_band: core
+    question_type: design
     time_budget_s: 180
     concepts:
     - id: concept:abstraction_and_interfaces
@@ -397,6 +402,7 @@ items:
     round_types:
     - oop_verbal
     difficulty_band: hard
+    question_type: design
     time_budget_s: 240
     concepts:
     - id: concept:abstraction_and_interfaces
@@ -445,6 +451,7 @@ items:
     round_types:
     - oop_verbal
     difficulty_band: core
+    question_type: design
     time_budget_s: 180
     concepts:
     - id: concept:solid_principles
@@ -491,6 +498,7 @@ items:
     round_types:
     - oop_verbal
     difficulty_band: hard
+    question_type: design
     time_budget_s: 240
     concepts:
     - id: concept:solid_principles
@@ -536,6 +544,7 @@ items:
     round_types:
     - oop_verbal
     difficulty_band: core
+    question_type: design
     time_budget_s: 180
     concepts:
     - id: concept:design_patterns
@@ -582,6 +591,7 @@ items:
     round_types:
     - oop_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:design_patterns
@@ -724,6 +734,7 @@ items:
     round_types:
     - oop_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:memory_model_gc
@@ -770,6 +781,7 @@ items:
     round_types:
     - oop_verbal
     difficulty_band: core
+    question_type: tradeoff
     time_budget_s: 150
     concepts:
     - id: concept:memory_model_gc

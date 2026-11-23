@@ -253,6 +253,22 @@ def bank_health() -> dict:
     counts = loaded.concept_counts()
     gaps = ontology_module.granularity(counts)
     awaiting = sum(1 for q in loaded.questions if review_module.in_queue(q))
+    n_concepts = len(ontology_module.load())
+    if gaps["thin"]:
+        note = (
+            f"{len(gaps['thin'])} of {n_concepts} concepts have fewer than "
+            f"{ontology_module.MIN_ITEMS_PER_CONCEPT} items, so M04's granularity check "
+            "cannot pass yet. Authoring is the long pole and it has no code dependency."
+        )
+    else:
+        # 2026-11-23: the bank reached three items on every concept. Saying
+        # "cannot pass yet" then would send someone authoring what is done;
+        # the long pole is now the review queue, so the note says that.
+        note = (
+            f"Every one of the {n_concepts} concepts has at least "
+            f"{ontology_module.MIN_ITEMS_PER_CONCEPT} items, so M04's granularity check can pass. "
+            f"{awaiting} drafted items still wait for a reviewer before they count toward a score."
+        )
     return {
         "active": len(loaded.questions),
         "awaiting_review": awaiting,
@@ -263,11 +279,7 @@ def bank_health() -> dict:
         "thin": gaps["thin"][:40],
         "n_thin": len(gaps["thin"]),
         "counts": counts,
-        "note": (
-            f"{len(gaps['thin'])} of {len(ontology_module.load())} concepts have fewer than "
-            f"{ontology_module.MIN_ITEMS_PER_CONCEPT} items, so M04's granularity check "
-            "cannot pass yet. Authoring is the long pole and it has no code dependency."
-        ),
+        "note": note,
     }
 
 

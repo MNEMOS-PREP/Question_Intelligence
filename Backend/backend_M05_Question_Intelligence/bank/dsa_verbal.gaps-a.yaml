@@ -1,0 +1,426 @@
+# =============================================================================
+#  GAP BANK — dsa_verbal, part A: foundations, linear structures, searching and
+#  sorting (2026-11-23). Every concept here had one or two questions; these
+#  bring each to at least three, in the difficulty band and the angle it lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: dsa_verbal
+provenance: generated
+items:
+  gx_types_float_money:
+    c: [variables_and_types]
+    d: hard
+    t: debugging
+    f: "floating point representation"
+    q: "A billing script adds 0.1 rupees ten times and the total does not compare equal to 1.0. Why does that happen, and how would you store money instead?"
+    a: "Most decimal fractions like 0.1 have no exact binary floating point representation, so each addition carries a tiny rounding error and the errors accumulate; the sum ends up as something like 0.9999999999. Comparing floats for exact equality is therefore fragile. For money I would store integer paise, or use a decimal type that represents base-ten fractions exactly, and round only at defined points such as when displaying or settling an invoice. If floats must be compared, compare within a tolerance rather than with equality."
+    k: ["!Explains that 0.1 has no exact binary floating point representation", "Says rounding errors accumulate across repeated additions", "!Proposes integer paise or a decimal type for money"]
+    h: ["How is 0.1 written in base two?"]
+    fu: ["Your report sums a million small transactions. Where would you round, and why there?", "When is comparing two floats within a tolerance still the wrong fix?"]
+    m: "Using double precision instead of single precision removes the problem."
+    s: ["Names the representation issue, not just 'precision'", "Gives a concrete storage choice for currency"]
+
+  gx_control_short_circuit:
+    c: [control_flow]
+    d: hard
+    t: debugging
+    f: "short-circuit evaluation"
+    q: "A condition reads 'if index is less than length and array at index equals target'. A teammate swaps the two checks and the program sometimes crashes. Explain exactly why."
+    a: "The logical and operator evaluates left to right and stops as soon as the result is decided. In the original order, when the index is out of range the first check is false, so the array is never read. After the swap the array access runs first, even for an index equal to the length, which reads past the end and throws an index error or reads garbage, depending on the language. Order of operands in a short-circuit expression is therefore part of the program's correctness, and guard conditions belong first."
+    k: ["!Explains that logical and stops evaluating once the first operand is false", "!Says the swapped order reads the array before the bounds check", "States that guard conditions must come first"]
+    h: ["What does the and operator do when its left side is false?"]
+    fu: ["Would the same swap be safe with the or operator? Walk through it.", "A colleague argues the compiler may reorder conditions. How would you answer?"]
+    m: "Both operands of a boolean expression are always evaluated."
+    s: ["Traces the failing input step by step", "Generalises to guard-first ordering"]
+
+  gx_scope_closure_loop:
+    c: [functions_and_scope]
+    d: hard
+    t: debugging
+    f: "closures and captured variables"
+    q: "In a loop from 0 to 2 you create three callback functions that each print the loop variable, then call them after the loop. They all print 3. Why, and how would you fix it?"
+    a: "The callbacks do not capture the value of the variable at creation time; they capture the variable itself, one shared binding. By the time they run, the loop has finished and that single variable holds its final value, 3, so every callback prints it. The fix is to give each callback its own binding: in JavaScript declare the loop variable with let, which creates a fresh binding per iteration, or pass the current value as an argument or default parameter so it is copied when the callback is made. The principle is that closures capture variables, not values."
+    k: ["!Explains that the closures share one variable rather than copying its value", "Says the variable holds its final value when the callbacks run", "!Gives a fix that creates a separate binding per iteration"]
+    h: ["When does each callback actually look up the variable?"]
+    fu: ["The callbacks now run immediately inside the loop instead. What do they print?", "How would the same bug show up in Python with lambdas?"]
+    m: "Each function remembers the value the variable had when it was created."
+    s: ["Distinguishes binding from value", "Offers two independent fixes"]
+
+  gx_pointer_dangling:
+    c: [pointers_and_references]
+    d: hard
+    t: debugging
+    f: "dangling pointers and lifetimes"
+    q: "A C function returns the address of a local array it filled. The caller prints correct values once, and garbage the next time. What is going on?"
+    a: "The local array lives in the function's stack frame, which is released when the function returns. The returned pointer still holds the old address, so it now dangles. Immediately afterwards the memory often still contains the old values, which is why the first print looks right, but the next function call reuses that stack space and overwrites it. Reading it is undefined behaviour. The fix is to give the data a lifetime that outlives the call: allocate it on the heap and document who frees it, or have the caller pass in a buffer to fill."
+    k: ["!Explains that the local array is destroyed when the function returns", "Says the stale memory is later overwritten by other calls", "!Proposes heap allocation or a caller-provided buffer"]
+    h: ["Where does a local variable live, and until when?"]
+    fu: ["Why would turning on optimisation make the bug appear or vanish?", "Once the data outlives the call, who should release it, and what happens if nobody does?"]
+    m: "The program is fine because the values printed correctly the first time."
+    s: ["Uses the words lifetime or stack frame accurately", "Names undefined behaviour rather than a deterministic outcome"]
+
+  gx_tc_growth_intro:
+    c: [time_complexity]
+    d: intro
+    t: conceptual
+    f: "what Big-O describes"
+    q: "When someone says an algorithm is O(n squared), what are they actually telling you, and what are they not telling you?"
+    a: "They are describing how the running time grows as the input size grows: doubling n roughly quadruples the work for large inputs. It is an upper bound on the growth rate, ignoring constant factors and lower-order terms. They are not telling you the actual time in seconds, how it behaves on small inputs, which case it is (worst, average or best) unless stated, or the memory it uses. Two O(n squared) algorithms can differ a lot in practice, and an O(n log n) algorithm with a large constant can lose on small inputs."
+    k: ["!Says Big-O describes growth of running time as input size grows", "Explains that constant factors and lower-order terms are dropped", "Notes it does not give actual time or say which case unless stated"]
+    h: ["What happens to the work if you double the input?"]
+    fu: ["Your input is never larger than 20. Would you still pick the algorithm with the better Big-O?", "How would you describe an algorithm whose time depends on two inputs?"]
+    m: "O(n squared) means the program takes n squared seconds."
+    s: ["Uses the doubling intuition", "Separates growth rate from wall-clock time"]
+
+  gx_tc_hidden_quadratic:
+    c: [time_complexity]
+    d: hard
+    t: optimisation
+    f: "hidden costs inside loops"
+    q: "A loop runs n times and, inside it, builds a string by appending one character and checks if a list contains an item. Someone calls it O(n). Is it?"
+    a: "Probably not. In languages where strings are immutable, appending creates a new string and copies the old contents, so each append costs time proportional to the current length and the loop totals O(n squared). Checking whether a list contains an item is a linear scan, so if that list also grows with n, that check adds another O(n) per iteration. The true cost depends on the operations inside the loop, not just the loop count. Fixes are a string builder or a list of characters joined once, and a hash set for membership."
+    k: ["!Explains that repeated string appends copy and cost linear time each", "!Says list membership is a linear scan", "Concludes the loop is quadratic, not linear", "Proposes a string builder or join, and a set for membership"]
+    h: ["What does one append cost when strings cannot be changed in place?"]
+    fu: ["How would you confirm this with a measurement instead of reasoning?", "Which of the two costs would you fix first, and why?"]
+    m: "A single loop is always O(n)."
+    s: ["Looks inside the loop body for costs", "Proposes concrete data-structure fixes"]
+
+  gx_space_recursion_stack:
+    c: [space_complexity]
+    d: core
+    t: conceptual
+    f: "auxiliary space and the call stack"
+    q: "A recursive function sums a linked list of n nodes and allocates no arrays. A teammate says it uses O(1) space. What do you say?"
+    a: "It still uses O(n) space, because each recursive call adds a frame to the call stack and none of them finishes until the end of the list is reached, so n frames are alive at once. Space complexity counts that auxiliary memory, not just explicit allocations. For a long list this can even overflow the stack. An iterative loop with a running total, or tail recursion in a language that eliminates it, brings the auxiliary space down to O(1)."
+    k: ["!Says each recursive call adds a stack frame", "!Concludes the recursion uses O(n) auxiliary space", "Offers an iterative version with O(1) space"]
+    h: ["How many calls are unfinished when you reach the last node?"]
+    fu: ["Would the answer change for a balanced binary tree instead of a list?", "Your language does not optimise tail calls. Does writing it tail-recursively help?"]
+    m: "Only memory you allocate explicitly counts toward space complexity."
+    s: ["Counts live stack frames", "Mentions stack overflow as the practical risk"]
+
+  gx_space_time_trade:
+    c: [space_complexity, hashing]
+    d: hard
+    t: tradeoff
+    f: "trading memory for time"
+    q: "You can find duplicate IDs in 50 crore records either by sorting them in place or by inserting them into a hash set. How would you choose?"
+    a: "The hash set gives expected O(n) time but needs O(n) extra memory; for 50 crore IDs that could be several gigabytes, more than the machine may have. Sorting in place takes O(n log n) time but only a small amount of extra space, and duplicates end up adjacent so one linear pass finds them. I would check the available memory first: if the set fits, use it; if not, sort in place or sort externally in chunks. A middle path is to hash the IDs into buckets on disk and deduplicate each bucket in memory."
+    k: ["!Compares the hash set's extra memory with in-place sorting's extra time", "Estimates that the set may not fit in memory at that size", "Says sorting places duplicates next to each other", "Mentions an external or chunked approach for data larger than memory"]
+    h: ["Roughly how many bytes would the set need?"]
+    fu: ["The IDs arrive as a stream you can read only once. What changes?", "You only need to know whether any duplicate exists. Is there something cheaper?"]
+    m: "The hash set is always the better choice because it is O(n)."
+    s: ["Does a rough memory estimate", "Picks based on constraints rather than Big-O alone"]
+
+  gx_amortized_intro:
+    c: [amortized_analysis]
+    d: intro
+    t: scenario
+    f: "the idea of amortised cost"
+    q: "Appending to a list in your app is usually instant, but about once in a thousand appends it takes 50 milliseconds. A teammate files it as a bug. Is it, and what does O(1) amortised mean here?"
+    a: "Probably not a bug: the slow append is the list copying itself into a bigger array. O(1) amortised means that over a long sequence of operations the average cost per operation is constant, even though an occasional single operation is expensive. Most appends just write into free space, and once in a while the array is copied into one about twice the size. Because the copies are rare enough, the total work for n appends is O(n), so each append is O(1) on average. It is a guarantee about the sequence, not about every individual call, and unlike an average-case claim it does not depend on the input being random."
+    k: ["!Says amortised cost is the average over a sequence of operations", "Explains that some individual operations can be expensive", "Gives an example such as dynamic array resizing", "Distinguishes it from average case over random inputs"]
+    h: ["Think of the occasional expensive step in a dynamic array."]
+    fu: ["Your system must answer every request within 2 milliseconds. Is amortised O(1) good enough?", "What would break the guarantee if the array grew by a fixed amount each time?"]
+    m: "Amortised O(1) means every single operation takes constant time."
+    s: ["Uses a concrete example", "Separates amortised from average case"]
+
+  gx_recurrence_intro:
+    c: [recurrence_relations]
+    d: intro
+    t: conceptual
+    f: "writing a recurrence from code"
+    q: "Merge sort splits an array in half, sorts both halves and merges them. How would you write its running time as a recurrence, and what does it solve to?"
+    a: "If T of n is the time for n elements, the algorithm does two recursive calls on halves and then a linear merge, so T of n equals 2 T of n over 2 plus c n, with T of 1 constant. Unrolling it, each level of recursion does about c n work in total, and halving gives log n levels, so the total is O(n log n). The master theorem gives the same answer, since the work per level is balanced across levels. The habit is to read the recurrence directly from the code: number of calls, size of each, plus the work outside the calls."
+    k: ["!Writes the recurrence as two subproblems of half size plus linear work", "!Concludes the solution is O(n log n)", "Explains the levels times work-per-level reasoning or the master theorem"]
+    h: ["How much work happens outside the two recursive calls?"]
+    fu: ["What if the merge step were quadratic instead of linear?", "Write the recurrence for binary search the same way."]
+    m: "Two recursive calls always means exponential time."
+    s: ["Derives the recurrence from the code", "Explains why there are log n levels"]
+
+  gx_array_rotate_inplace:
+    c: [arrays]
+    d: hard
+    t: optimisation
+    f: "in-place array manipulation"
+    q: "You must rotate an array of n elements right by k positions using only constant extra memory. How would you do it?"
+    a: "First reduce k modulo n, since rotating by n changes nothing. One clean method uses three reversals: reverse the whole array, then reverse the first k elements, then reverse the remaining n minus k elements. Each reversal swaps pairs in place, so the total time is O(n) and the extra space is a couple of indices. Another method moves elements along cycles of the permutation using the greatest common divisor of n and k. The naive approach of shifting one step k times is O(n k), and copying into a new array is easy but uses O(n) memory."
+    k: ["!Reduces k modulo n first", "!Describes the three-reversal method or cyclic replacement", "States the approach is O(n) time and O(1) extra space", "Contrasts with shifting k times or copying to a new array"]
+    h: ["What does reversing the whole array do to the element positions?"]
+    fu: ["k can be larger than n by a lot. What happens if you forget to reduce it?", "Now the data is a singly linked list. How does the approach change?"]
+    m: "In-place rotation needs a second array of size k."
+    s: ["Handles k greater than n", "Justifies why reversals produce the rotation"]
+
+  gx_strings_anagram_groups:
+    c: [strings, hashing]
+    d: hard
+    t: design
+    f: "canonical keys for strings"
+    q: "Given ten lakh lowercase words, how would you group the ones that are anagrams of each other, and what does it cost?"
+    a: "Give every word a canonical key that is identical for all its anagrams, then group with a hash map from key to list of words. One key is the word's letters sorted, which costs O(L log L) per word of length L. A cheaper key, since the alphabet is 26 letters, is a count of each letter, built in O(L) and stored as a tuple or string. The total is about O(N L) time and O(N L) space for the groups. The idea generalises: when you need to group items by an equivalence, find a canonical form and hash it."
+    k: ["!Proposes a canonical key shared by all anagrams", "!Uses a hash map from key to group", "Gives sorted letters or a 26-letter count as the key with its cost", "States overall time in terms of number of words and word length"]
+    h: ["What stays the same for every rearrangement of a word?"]
+    fu: ["The words can contain any Unicode character. Does your key still work?", "Memory is tight. Which key would you choose and why?"]
+    m: "You need to compare every pair of words."
+    s: ["Explains why the key is canonical", "Compares two key choices on cost"]
+
+  gx_matrix_intro_rowmajor:
+    c: [matrix_operations, arrays]
+    d: intro
+    t: conceptual
+    f: "matrix layout in memory"
+    q: "How is a two-dimensional matrix usually stored in memory, and why does looping over rows versus columns change speed?"
+    a: "In C, C++, Java arrays of primitives and NumPy by default, a matrix is stored row-major: each row's elements sit next to each other in memory, and the rows follow one another. The element at row i, column j is at offset i times the number of columns plus j. When you loop row by row you read memory sequentially, so the cache and prefetcher bring in neighbouring elements before you need them. Looping column by column jumps a whole row's width every step, missing the cache much more often, so it can be several times slower for large matrices even though both loops are O(n squared)."
+    k: ["!Explains row-major layout with rows stored contiguously", "Gives the index formula from row and column to offset", "!Explains that row-wise loops are cache friendly and column-wise loops are not"]
+    h: ["Which elements are next to each other in memory?"]
+    fu: ["You must sum each column of a huge matrix. In what order would you write the loops, and why?", "Fortran stores matrices differently. What would change in your loops?"]
+    m: "Both loop orders run at the same speed because they do the same number of operations."
+    s: ["Uses the offset formula", "Links speed to cache behaviour, not Big-O"]
+
+  gx_hashing_intro_why:
+    c: [hashing]
+    d: intro
+    t: conceptual
+    f: "what a hash function does"
+    q: "What is a hash function in a hash table, and what makes one good or bad for that job?"
+    a: "A hash function turns a key, such as a string or number, into an integer, which is reduced to a bucket index so the table knows where to store and look up that key. A good one is fast to compute, always gives the same output for the same key, and spreads different keys evenly across buckets so few of them land together. A bad one clusters keys, for example by using only the first character of a string, which piles many keys into a few buckets and slows lookups down toward a linear scan. It must also agree with equality: equal keys must hash the same."
+    k: ["!Says a hash function maps a key to an integer used as a bucket index", "!Names even spreading of keys as the main quality", "Says equal keys must produce equal hashes", "Gives an example of a poor hash that clusters keys"]
+    h: ["Where in the table does a key go, and who decides?"]
+    fu: ["You use a custom object as a key and change one of its fields after inserting it. What happens?", "Two different keys hash to the same number. Is that a bug?"]
+    m: "A good hash function never produces the same value for two different keys."
+    s: ["Connects hash quality to lookup speed", "States the equality contract"]
+
+  gx_hashing_resize_hard:
+    c: [hashing, amortized_analysis]
+    d: hard
+    t: tradeoff
+    f: "load factor and resizing"
+    q: "A hash table doubles its capacity when it becomes 75 percent full. Why rehash at all, why 75 percent, and why double rather than add a fixed amount?"
+    a: "As the table fills, more keys share buckets or probe sequences, so lookups slow down; keeping the load factor bounded keeps the expected cost constant. Rehashing is needed because a key's bucket depends on the capacity, so every key must be placed again in the larger table. Around 0.75 is a common balance: lower wastes memory, higher lengthens chains, especially for open addressing, which degrades sharply near full. Doubling makes resizes geometrically rarer, so the copying cost spread over all insertions stays O(1) amortised; adding a fixed amount would make resizes happen every few inserts and total O(n squared)."
+    k: ["!Explains that a bounded load factor keeps expected lookup cost constant", "Says every key must be reinserted because bucket index depends on capacity", "!Explains that doubling keeps insertion O(1) amortised while fixed growth does not", "Describes 0.75 as a memory versus speed balance"]
+    h: ["What happens to chain lengths as the table fills up?"]
+    fu: ["A latency-sensitive service cannot afford one slow insert. How could resizing be spread out?", "Why might an open-addressing table pick a lower threshold than a chained one?"]
+    m: "Rehashing is only needed to free memory from deleted keys."
+    s: ["Links load factor, resize and amortised cost together", "Justifies the threshold as a trade-off"]
+
+  gx_prefix_2d_hard:
+    c: [prefix_sums, matrix_operations]
+    d: hard
+    t: optimisation
+    f: "two-dimensional prefix sums"
+    q: "A heat map of a city is a 2000 by 2000 grid, and you must answer one lakh queries for the total inside any rectangle. How would you make each query fast?"
+    a: "Build a two-dimensional prefix sum table where cell i, j holds the sum of everything above and to the left, inclusive. It is filled in one pass using the cell's own value plus the prefix above plus the prefix to the left minus the overlapping top-left prefix, so building costs O(rows times columns). Any rectangle's sum is then the prefix at its bottom-right corner, minus the strips above and to the left, plus the top-left corner that was subtracted twice: four lookups, O(1) per query. Pad the table with a zero row and column to avoid edge cases."
+    k: ["!Defines the 2D prefix table as sums of the region above and to the left", "Explains building it in one pass with inclusion-exclusion", "!Answers each rectangle with four lookups using inclusion-exclusion", "States preprocessing cost and O(1) query cost"]
+    h: ["What if you knew the sum of every rectangle starting at the top-left corner?"]
+    fu: ["Cells now change between queries. What breaks, and what would you use instead?", "Which queries touch the top or left edge of the grid, and how would you avoid special cases for them?"]
+    m: "You need to sum the rows of the rectangle one by one for each query."
+    s: ["Writes the four-term formula correctly", "Mentions the off-by-one padding trick"]
+
+  gx_two_pointers_intro:
+    c: [two_pointers, arrays]
+    d: intro
+    t: conceptual
+    f: "pair sum on a sorted array"
+    q: "In a sorted array, how can you find two numbers that add up to a target without checking every pair?"
+    a: "Put one pointer at the start and one at the end. Look at the sum of the two values: if it equals the target you are done; if it is too small, move the left pointer right to increase the sum; if it is too large, move the right pointer left to decrease it. Because the array is sorted, each move safely rules out a value that cannot be part of any answer with the remaining elements, so you never miss a pair. It takes O(n) time and O(1) space, compared with O(n squared) for checking all pairs."
+    k: ["!Starts pointers at both ends of the sorted array", "!Moves the left pointer when the sum is too small and the right when too large", "Explains that sortedness makes discarding a value safe", "States O(n) time and constant space"]
+    h: ["If the sum is too small, which pointer can only make it bigger?"]
+    fu: ["The array is not sorted and you cannot sort it. What would you use?", "Now you need every pair, not just one. What changes?"]
+    m: "Two pointers works on any array, sorted or not."
+    s: ["Justifies why no pair is skipped", "Compares with the brute-force cost"]
+
+  gx_window_substring_hard:
+    c: [sliding_window, hashing]
+    d: hard
+    t: optimisation
+    f: "variable-size window with counts"
+    q: "Find the length of the shortest substring of a long string that contains every character of a given pattern, with repeats counted. How would you approach it?"
+    a: "Use a variable sliding window with two indices and a count map of what the pattern still needs. Expand the right edge, decrementing the need for each character, and track how many required characters are fully satisfied. Once the window covers the whole pattern, shrink from the left as far as possible while it still covers it, recording the length each time, then move on. Each index moves forward at most n times, so it is O(n plus m) time with a map whose size is bounded by the alphabet. The key is to update a 'satisfied' counter incrementally rather than recheck the whole map each step."
+    k: ["!Uses a window that expands right and shrinks left", "!Keeps counts of characters still needed from the pattern", "Tracks satisfaction incrementally rather than rescanning", "States linear time because each index only moves forward"]
+    h: ["When can you safely move the left edge?"]
+    fu: ["The pattern has duplicates such as 'aab'. Where do candidates usually go wrong?", "How would you return the substring itself, not just its length?"]
+    m: "You must check every possible substring."
+    s: ["Explains the shrink condition precisely", "Argues why total work is linear"]
+
+  gx_linked_list_intro:
+    c: [linked_lists]
+    d: intro
+    t: conceptual
+    f: "linked list versus array"
+    q: "What is a linked list, and when would you choose one over an array?"
+    a: "A linked list stores each element in a separate node that holds the value and a reference to the next node, so the elements need not be contiguous in memory. Inserting or deleting at a position you already have a reference to is O(1), since you only change a couple of pointers, and the list grows without copying. An array gives O(1) access by index and better cache behaviour, but inserting in the middle shifts elements. I would choose a linked list when there are many insertions and removals at known positions, such as an LRU cache's ordering, and an array when I mostly read by index or scan."
+    k: ["!Describes nodes holding a value and a reference to the next node", "!Says insertion or deletion at a known node is O(1)", "Says arrays give O(1) indexing and better cache locality", "Gives a fitting use case for each"]
+    h: ["What does it cost to reach the hundredth element in each?"]
+    fu: ["You keep a reference only to the head. Is inserting at the end still O(1)?", "Why are linked lists often slower than arrays in practice even when Big-O favours them?"]
+    m: "Linked lists are faster than arrays for everything except sorting."
+    s: ["Mentions cache locality", "Gives a concrete fitting use case"]
+
+  gx_linked_list_reverse_k:
+    c: [linked_lists]
+    d: hard
+    t: design
+    f: "pointer manipulation in groups"
+    q: "Reverse a singly linked list in groups of k nodes, leaving a final group with fewer than k nodes as it is. Talk me through the pointer work."
+    a: "Use a dummy node before the head so the first group is handled like the rest. For each group, first walk k nodes ahead to check that a full group exists; if not, stop. Otherwise reverse the k nodes with the usual three pointers, previous, current and next. After reversing, the node that was first in the group is now its last, so connect the previous group's tail to the new group head and the old first node to the node after the group, then move the group tail pointer forward. Each node is visited a constant number of times, so it is O(n) time and O(1) space."
+    k: ["!Uses a dummy head node to simplify reconnection", "!Checks that k nodes remain before reversing a group", "Reverses each group with previous, current and next pointers", "Reconnects the previous group's tail and the old group head correctly"]
+    h: ["After reversing a group, which node becomes its tail?"]
+    fu: ["The list has 7 nodes and k is 3. What should happen to the last node, and how does your code ensure it?", "How would you do this recursively, and what does it cost in space?"]
+    m: "You can reverse the whole list once and then fix the groups."
+    s: ["Names every reconnection step", "States time and space"]
+
+  gx_stack_intro_brackets:
+    c: [stacks]
+    d: intro
+    t: conceptual
+    f: "last in, first out"
+    q: "What does last-in-first-out mean for a stack, and why is a stack the natural tool for checking balanced brackets?"
+    a: "A stack only lets you add or remove at the top, so the most recently pushed item is the first one popped. Brackets must close in the reverse order they opened: the most recent unclosed opening bracket is the one the next closing bracket must match. So you scan the string, push every opening bracket, and on a closing bracket pop the top and check it is the matching type. The string is balanced if every check passes and the stack is empty at the end. It runs in O(n) time with stack space up to the nesting depth."
+    k: ["!Explains that the most recently added item is removed first", "!Says the latest unclosed opening bracket must match the next closing bracket", "Says the stack must be empty at the end", "Gives O(n) time"]
+    h: ["Which opening bracket must the next closing bracket match?"]
+    fu: ["The input is ')(' . Which check catches it?", "Only one kind of bracket is used. Do you still need a stack?"]
+    m: "Counting opening and closing brackets is enough for every bracket type."
+    s: ["Explains why order matters", "Covers the empty-stack ending condition"]
+
+  gx_stack_min_hard:
+    c: [stacks]
+    d: hard
+    t: design
+    f: "augmented stacks"
+    q: "Design a stack that supports push, pop and returning the current minimum, all in constant time. How would you do it?"
+    a: "Keep a second stack of minimums alongside the main stack. On push, push the value onto the main stack and push onto the min stack the smaller of the value and the current minimum. On pop, pop both. The top of the min stack is always the minimum of everything currently in the main stack, because each entry records the minimum at that depth. All operations are O(1). To save space, push onto the min stack only when the new value is less than or equal to its top, and pop it only when the popped value equals that top; equality matters so duplicates of the minimum are handled."
+    k: ["!Keeps a second stack that records the minimum at each depth", "Updates both stacks on push and pop", "!Explains that the top of the min stack is the current minimum in O(1)", "Handles duplicate minimum values correctly in the space-saving version"]
+    h: ["What if each element remembered the minimum below and including itself?"]
+    fu: ["Your values include several copies of the smallest number. Walk through popping them.", "How would you support the current maximum as well?"]
+    m: "You can keep a single variable for the minimum and update it on pop."
+    s: ["Explains the invariant", "Handles duplicates"]
+
+  gx_queue_intro_bfs:
+    c: [queues]
+    d: intro
+    t: conceptual
+    f: "first in, first out"
+    q: "What is a queue, and why does a printer spooler or a ticket counter system use one?"
+    a: "A queue adds items at the back and removes them from the front, so the first item in is the first out. That matches fairness in a printer spooler or a ticket counter: jobs or people are served in the order they arrived, nobody jumps ahead, and nothing waits forever as long as the server keeps working. Both enqueue and dequeue are O(1) in a well-built queue, usually a circular array or a linked list. Queues also show up wherever work arrives faster than it is processed, buffering it in order."
+    k: ["!Explains first-in-first-out with additions at the back and removals at the front", "Links the order to fairness in arrival order", "States enqueue and dequeue are O(1)", "Names a circular array or linked list as an implementation"]
+    h: ["Who gets served first at a ticket counter?"]
+    fu: ["Some print jobs are urgent and should go first. Is a plain queue still right?", "Why would a queue built on a plain array with removal from index 0 be slow?"]
+    m: "A queue and a stack differ only in their names."
+    s: ["Connects FIFO to fairness", "Mentions an O(1) implementation"]
+
+  gx_monotonic_intro:
+    c: [monotonic_stack]
+    d: intro
+    t: conceptual
+    f: "next greater element"
+    q: "For each day's stock price, you want the next day with a higher price. Why does a stack that keeps prices in decreasing order solve this in linear time?"
+    a: "Scan the days left to right and keep a stack of days still waiting for a higher price, with their prices decreasing from bottom to top. When today's price is higher than the price at the top, today is the answer for that day, so pop it and keep popping while today is higher. Then push today. Each day is pushed once and popped at most once, so the total work is O(n) even though there is a loop inside the loop. Anything left on the stack at the end never sees a higher price."
+    k: ["!Keeps unresolved days on a stack in decreasing price order", "!Pops days when a higher price arrives and records the answer", "Argues linear time because each day is pushed and popped once", "Says days left on the stack have no answer"]
+    h: ["Which earlier days does today's higher price resolve?"]
+    fu: ["You need the previous greater price instead. What changes?", "Prices can repeat. Should an equal price pop the stack?"]
+    m: "A nested loop always means quadratic time."
+    s: ["Explains the invariant on the stack", "Gives the push-pop counting argument"]
+
+  gx_heap_intro_pq:
+    c: [heaps]
+    d: intro
+    t: conceptual
+    f: "binary heap basics"
+    q: "What is a binary heap, and why can it give you the smallest element quickly but not search for an arbitrary one quickly?"
+    a: "A binary min-heap is a complete binary tree, usually stored in an array, where every parent is no larger than its children. That ordering means the smallest element is always at the root, so reading it is O(1), and inserting or removing the minimum takes O(log n) by sifting an element up or down one path. But the heap property says nothing about left versus right subtrees, so an arbitrary value could be anywhere; finding it needs a full scan, O(n). That is why heaps are used for priority queues and not as search structures."
+    k: ["!Describes a complete tree where each parent is no larger than its children", "!Says the minimum is at the root and insert or extract is O(log n)", "!Explains that the heap order does not support searching for arbitrary values", "Mentions array storage of the complete tree"]
+    h: ["What does the heap property say about two siblings?"]
+    fu: ["You need to update the priority of an item already in the heap. What extra information would you keep?", "Why can a heap of n items be built in O(n) rather than O(n log n)?"]
+    m: "A heap is a sorted array."
+    s: ["Contrasts heap order with search-tree order", "States operation costs correctly"]
+
+  gx_sorting_quick_vs_merge:
+    c: [sorting]
+    d: core
+    t: tradeoff
+    f: "choosing a comparison sort"
+    q: "Quicksort and merge sort are both O(n log n) on average. When would you pick one over the other?"
+    a: "Quicksort sorts in place with small extra memory and is usually faster in practice thanks to good cache behaviour, but its worst case is O(n squared) with bad pivots, and it is not stable. Merge sort guarantees O(n log n) in every case and is stable, but needs O(n) extra memory for arrays. It also suits linked lists and external sorting of data on disk, since it reads sequentially. So for an in-memory array of numbers where speed matters I would use quicksort with random or median-of-three pivots; for stable sorting, guaranteed bounds, linked lists or huge files, merge sort."
+    k: ["!Says quicksort is in place but has an O(n squared) worst case", "!Says merge sort guarantees O(n log n) and is stable but uses O(n) extra memory", "Mentions merge sort fits linked lists or external sorting", "Mentions pivot choice to avoid quicksort's worst case"]
+    h: ["What does each need beyond the input array?"]
+    fu: ["The data is already almost sorted. Does that change your choice?", "Why do many language libraries use a hybrid instead of either one?"]
+    m: "Merge sort is always faster because its worst case is better."
+    s: ["Weighs memory, stability and worst case", "Picks based on the situation"]
+
+  gx_sorting_lower_bound:
+    c: [sorting]
+    d: hard
+    t: conceptual
+    f: "the comparison sorting lower bound"
+    q: "Why can no sorting algorithm that only compares elements beat n log n comparisons in the worst case?"
+    a: "Any comparison sort can be drawn as a decision tree: each internal node is a comparison and each leaf is one final ordering. To sort every input correctly, the tree needs a leaf for every possible ordering of n distinct elements, which is n factorial leaves. A binary tree with that many leaves has height at least log base 2 of n factorial, and by Stirling's approximation that is about n log n. The height is the number of comparisons on the worst path, so n log n is a lower bound. Counting sort and radix sort escape it because they look at the values themselves rather than only comparing."
+    k: ["!Models a comparison sort as a binary decision tree", "!Says the tree needs at least n factorial leaves", "Says the height is at least log of n factorial, about n log n", "Explains that non-comparison sorts avoid the bound"]
+    h: ["How many different orderings could the input be in?"]
+    fu: ["Does the bound say anything about the best case?", "Your keys are integers below 1000. Can you beat n log n, and why is that not a contradiction?"]
+    m: "n log n is just the best anyone has found so far."
+    s: ["Uses the decision tree argument", "Explains why non-comparison sorts are not a contradiction"]
+
+  gx_noncomp_intro:
+    c: [non_comparison_sorting]
+    d: intro
+    t: conceptual
+    f: "counting sort"
+    q: "How does counting sort work, and why is it only useful for some kinds of data?"
+    a: "Counting sort assumes the keys are small integers in a known range, say 0 to k. It makes an array of k plus one counters, counts how often each key appears in one pass, turns the counts into starting positions with a running total, then places each element at its position in a second pass. That is O(n plus k) time and O(n plus k) space, and it is stable if you place elements carefully. It only pays off when k is not much larger than n: sorting ages or exam marks works well, but sorting arbitrary 64-bit numbers would need an impossible counts array."
+    k: ["!Counts occurrences of each key in an array indexed by the key", "Uses running totals to find each key's output position", "!States O(n plus k) time and that k must be small relative to n", "Notes it can be stable"]
+    h: ["What if you knew exactly how many times each mark appeared?"]
+    fu: ["Your keys go up to a crore but n is only one thousand. What happens?", "How does radix sort reuse counting sort for larger numbers?"]
+    m: "Counting sort is always faster than quicksort."
+    s: ["States the range assumption clearly", "Gives a fitting and an unfitting example"]
+
+  gx_bsearch_intro:
+    c: [binary_search]
+    d: intro
+    t: conceptual
+    f: "why binary search needs sorted data"
+    q: "Explain binary search to someone looking up a word in a dictionary. Why must the data be sorted, and how many steps does it take?"
+    a: "Open the dictionary in the middle and compare the word there with yours. Because the words are in order, if yours comes earlier the answer must be in the first half, so the second half is discarded; otherwise the first half is. Repeat on the remaining half. Each step halves the search space, so for n words it takes about log base 2 of n steps, around 20 for a million. Without sorted order, the comparison tells you nothing about which half to discard, so you would have to look at every entry."
+    k: ["!Compares with the middle element and discards half each step", "!Explains that sorted order is what makes discarding a half safe", "States about log base 2 of n steps"]
+    h: ["What does comparing with the middle word tell you?"]
+    fu: ["The dictionary has the same word printed several times. How would you find the first copy?", "Why does binary search on a linked list not give you log n time?"]
+    m: "Binary search works on any list as long as it is searched from the middle."
+    s: ["Uses the halving intuition with a number", "Explains why sortedness is essential"]
+
+  gx_bsearch_rotated_hard:
+    c: [binary_search]
+    d: hard
+    t: design
+    f: "binary search on a rotated array"
+    q: "A sorted array of distinct numbers has been rotated at an unknown point. How would you find a target value in logarithmic time?"
+    a: "At each step, look at low, mid and high. In a rotated sorted array, at least one of the two halves around mid is still sorted normally, and you can tell which by comparing the value at low with the value at mid. If the left half is sorted and the target lies between its ends, search left; otherwise search right. Do the mirror check if the right half is the sorted one. Each step still discards half the range, so it is O(log n). With duplicates allowed, low and mid can be equal and you cannot tell which half is sorted, so the worst case becomes linear."
+    k: ["!Observes that one half around mid is always normally sorted", "!Uses the sorted half's endpoints to decide where the target can be", "Keeps halving the range for O(log n)", "Notes duplicates can force a linear worst case"]
+    h: ["Compare the first element and the middle element. What does that tell you?"]
+    fu: ["How would you find the rotation point itself?", "Walk through the case low equals mid equals high with duplicates."]
+    m: "You must first rotate the array back, which takes linear time."
+    s: ["States the invariant that one half is sorted", "Mentions the duplicates edge case"]
+
+  gx_bsoa_intro:
+    c: [binary_search_on_answer]
+    d: intro
+    t: conceptual
+    f: "searching over possible answers"
+    q: "Sometimes binary search is used on the answer itself rather than on an array. What does that mean, and what property of the problem makes it possible?"
+    a: "Instead of searching a list, you search the range of possible answers, for example the minimum number of pages each of k students must read. For a guessed value you can usually check feasibility greedily: can the books be split so nobody reads more than this many pages? The key property is monotonicity: if a value is feasible, every larger value is feasible too. That turns the answers into a run of no followed by a run of yes, and binary search finds the boundary in about log of the range checks, each costing one feasibility pass."
+    k: ["!Explains searching the range of candidate answers instead of an array", "Uses a feasibility check for each guess", "!Names monotonic feasibility as the required property", "States the cost as log of the range times the check"]
+    h: ["If 500 pages works, does 600 pages also work?"]
+    fu: ["How would you pick the starting low and high values?", "The answer can be a real number, not an integer. How do you know when to stop?"]
+    m: "Binary search only works on a sorted array stored in memory."
+    s: ["Gives a concrete example", "Explains monotonicity as the condition"]
+
+  gx_string_match_intro:
+    c: [string_matching]
+    d: intro
+    t: conceptual
+    f: "naive matching and its cost"
+    q: "How does the simple way of searching for a word inside a long text work, and when does it become slow?"
+    a: "The naive method tries every starting position in the text and compares the pattern character by character until a mismatch or a full match. For a text of length n and a pattern of length m it does up to n times m comparisons. Usually mismatches come early and it is fast, but texts like 'aaaa...ab' searched for 'aaab' make it compare almost the whole pattern at every position, giving the slow case. Algorithms like KMP avoid this by remembering what was already matched so they never move back in the text, reaching O(n plus m)."
+    k: ["!Describes trying every start position and comparing character by character", "!States the worst case is about n times m comparisons", "Gives an input that triggers the slow case", "Mentions KMP or similar reaching linear time"]
+    h: ["How many comparisons happen at one position before a mismatch?"]
+    fu: ["You search the same text for thousands of different words. What would you build first?", "Why is the naive method often fine in real programs?"]
+    m: "The naive method is always O(n) because the pattern is short."
+    s: ["Constructs a worst-case input", "Knows when the naive method is fine"]
