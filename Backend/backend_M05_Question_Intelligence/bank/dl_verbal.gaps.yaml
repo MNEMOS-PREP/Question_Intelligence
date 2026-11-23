@@ -1,0 +1,152 @@
+# =============================================================================
+#  GAP BANK — dl_verbal (2026-11-23). Every deep-learning concept had two
+#  questions; this adds the third, in the band it lacked (mostly intro).
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: dl_verbal
+provenance: generated
+items:
+  gx_dl_depth_hard:
+    c: [neural_network_basics]
+    d: hard
+    t: conceptual
+    f: "why depth, given universal approximation"
+    q: "One hidden layer can approximate any continuous function, by the universal approximation theorem. Why do we still build deep networks?"
+    a: "The theorem only guarantees that suitable weights exist; the hidden layer may need an astronomically large number of units, and it says nothing about whether gradient descent can find those weights or whether they will generalise from limited data. Depth lets a network compose features hierarchically, so later layers reuse what earlier layers computed: edges, then textures, then parts, then objects. Some functions need exponentially fewer units when expressed with depth than with one wide layer. In practice deep networks trained with SGD also generalise better. The price is harder optimisation, such as vanishing gradients, which residual connections and normalisation largely solved."
+    k: ["!Says the theorem guarantees existence but may need an enormous number of units", "!Says it says nothing about whether training can find the weights or whether they generalise", "!Explains depth builds hierarchical features that reuse earlier ones", "Mentions functions that need exponentially fewer units with depth, or the optimisation cost of depth"]
+    h: ["Does knowing a solution exists tell you how to find it?"]
+    fu: ["For a photo, what might the first, middle and last layers each detect?", "If more layers help so much, why did very deep networks fail to train before about 2015?"]
+    m: "The universal approximation theorem means one hidden layer is all you ever need."
+    s: ["Separates existence from learnability", "Explains compositional features"]
+
+  gx_dl_backprop_intro:
+    c: [backpropagation]
+    d: intro
+    t: conceptual
+    f: "the chain rule, reused"
+    q: "What is backpropagation, and how does the chain rule make it efficient?"
+    a: "Backpropagation computes the gradient of the loss with respect to every weight in the network. The forward pass computes each layer's output and stores these activations. The backward pass starts from the loss and moves layer by layer towards the input, applying the chain rule: the gradient at a layer is the gradient arriving from above multiplied by that layer's local derivative. Because each layer reuses the gradient already computed for the layer above, the whole backward pass costs about as much as one or two forward passes, instead of nudging each of millions of weights separately. The optimiser, such as SGD or Adam, then uses these gradients to update the weights."
+    k: ["!Says it computes the gradient of the loss with respect to every weight", "!Describes a forward pass storing activations and a backward pass applying the chain rule layer by layer", "!Explains reusing upstream gradients makes the cost similar to a forward pass", "Distinguishes it from the optimiser that applies the update"]
+    h: ["How does a change in an early weight reach the loss?"]
+    fu: ["Training runs out of GPU memory but inference on the same batch does not. What is being kept for the backward step?", "How would you check by hand that a layer's gradient code is right?"]
+    m: "Backpropagation is the algorithm that updates the weights."
+    s: ["Explains forward and backward passes", "Explains why it is cheap"]
+
+  gx_dl_optim_intro:
+    c: [optimisers]
+    d: intro
+    t: conceptual
+    f: "momentum and Adam"
+    q: "How do momentum and Adam improve on plain stochastic gradient descent?"
+    a: "Plain SGD steps along the current mini-batch gradient, which is noisy and makes slow, zig-zagging progress in narrow valleys. Momentum keeps a running average of past gradients, a velocity, so noise cancels out and steps build up speed along directions that stay consistent. Adam combines this running average with a second one, of squared gradients, and divides each parameter's step by its square root, so every parameter effectively gets its own step size; parameters with rare or small gradients move more. It also corrects the averages' bias in early steps. Adam converges quickly with little tuning, though SGD with momentum sometimes generalises better, and AdamW handles weight decay correctly."
+    k: ["!Says momentum accumulates a running average of gradients to smooth and speed up steps", "!Says Adam also scales each parameter's step by a running average of squared gradients", "Mentions Adam's bias correction or ease of tuning", "Mentions that SGD with momentum can generalise better, or AdamW's decoupled weight decay"]
+    h: ["What if each step remembered the direction of the previous ones?"]
+    fu: ["Your loss zig-zags across a narrow valley and barely moves forward. Which idea addresses that, and how?", "Some embedding rows get a gradient only once in thousands of steps. Why would individual step sizes help them?"]
+    m: "Adam always reaches a better final model than SGD."
+    s: ["Explains both moments", "Notes the generalisation caveat"]
+
+  gx_dl_train_intro:
+    c: [training_deep_networks]
+    d: intro
+    t: conceptual
+    f: "the training toolkit"
+    q: "Name three techniques that make deep networks easier to train, and the problem each one solves."
+    a: "Careful initialisation, such as He or Xavier, sets weight scales so activations and gradients neither shrink nor blow up from layer to layer. Batch or layer normalisation keeps each layer's activations at a steady scale, which allows higher learning rates and smoother training. Residual connections add a layer's input to its output, giving gradients a direct path back through very deep networks and solving vanishing gradients. ReLU activations avoid the saturation of sigmoids. Gradient clipping stops exploding gradients, learning-rate warmup and decay schedules stabilise the early and late stages, and dropout or weight decay control overfitting. A strong answer links each technique to its specific problem."
+    k: ["!Names at least three valid techniques such as initialisation, normalisation, residual connections or clipping", "!Links each technique to the problem it solves", "Explains vanishing or exploding gradients", "Mentions learning rate schedules or warmup"]
+    h: ["What happens to a signal multiplied by many small numbers in a row?"]
+    fu: ["A 50-layer plain network trains worse than a 20-layer one, even on training data. What would you add?", "Your loss suddenly becomes NaN at step 3,000. What would you try first?"]
+    m: "Deep networks fail to train only because there is not enough data."
+    s: ["Pairs each tool with a problem", "Covers gradient flow"]
+
+  gx_dl_cnn_intro:
+    c: [convolutional_networks]
+    d: intro
+    t: conceptual
+    f: "why convolutions suit images"
+    q: "Why do convolutional layers suit images better than fully connected layers?"
+    a: "Images have local structure: nearby pixels form edges and textures. A convolutional layer slides small filters, say 3 by 3, across the image, so each output looks only at a local patch. The same filter weights are used at every position, so a pattern learned in one place is detected anywhere, and the number of parameters is tiny compared with connecting every pixel to every unit. Pooling or strided convolutions shrink the feature maps and add some tolerance to small shifts. Stacking layers grows the receptive field, so early layers detect edges, middle layers textures and parts, and deep layers whole objects."
+    k: ["!Explains filters look at small local regions of the image", "!Explains weight sharing lets one filter detect a pattern anywhere and cuts parameters", "!Says stacked layers grow the receptive field from edges to objects", "Mentions pooling or stride reducing size and adding some invariance"]
+    h: ["Does a cat's ear need different weights in the top-left and bottom-right of a photo?"]
+    fu: ["Estimate the weights needed to connect a 224 by 224 colour image fully to 1,000 units. What does a 3 by 3 filter need?", "Would these layers help for a table of customer records? Why?"]
+    m: "Convolutional networks work because they have more parameters than dense networks."
+    s: ["Names locality and sharing", "Explains the feature hierarchy"]
+
+  gx_dl_rnn_intro:
+    c: [sequence_models]
+    d: intro
+    t: conceptual
+    f: "recurrence and gating"
+    q: "How does a recurrent neural network process a sentence, and why were LSTMs invented?"
+    a: "An RNN reads the sentence one token at a time. At each step it combines the current word's vector with its hidden state from the previous step, using the same weights every step, to produce a new hidden state that acts as a memory of everything read so far. It is trained by backpropagation through time, and because gradients are multiplied through every step, they shrink or explode over long sequences, so a plain RNN forgets information from many words back. LSTMs add a separate cell state controlled by forget, input and output gates, whose mostly additive updates let information and gradients survive long spans. GRUs are a simpler variant; transformers now often replace both."
+    k: ["!Says it reads one token at a time and updates a hidden state with shared weights", "!Explains gradients vanish or explode across many time steps", "!Says LSTMs use gates and a cell state to keep information over long spans", "Mentions GRUs or that transformers often replace them now"]
+    h: ["What carries information from the first word to the last?"]
+    fu: ["In 'The keys that the man left on the table are missing', what must the model remember to choose 'are'?", "Why are these models slow to train on long texts compared with ones that read all words at once?"]
+    m: "RNNs can remember arbitrarily long contexts without any problem."
+    s: ["Explains the hidden state", "Explains why gating helps"]
+
+  gx_dl_attention_intro:
+    c: [attention_and_transformers]
+    d: intro
+    t: conceptual
+    f: "queries, keys and values"
+    q: "In self-attention, what are queries, keys and values, and how is a token's new representation computed?"
+    a: "Each token's embedding is multiplied by three learned matrices to produce a query, a key and a value vector. To update one token, its query is compared with every token's key by a dot product, divided by the square root of the key dimension to keep numbers in a sensible range, and passed through softmax to get attention weights that sum to one. The new representation is the weighted sum of all tokens' value vectors. So every token can draw information directly from any other, however far apart. Multi-head attention runs several such attentions in parallel, and positional encodings are added because attention by itself ignores word order."
+    k: ["!Says each token is projected into query, key and value vectors", "!Says scores are dot products of queries and keys, scaled and softmaxed into weights", "!Says the output is the weighted sum of value vectors", "Mentions positional information is needed because attention ignores order"]
+    h: ["Which vector asks, which one is matched, and which one is passed along?"]
+    fu: ["Without the division step, 1,024-dimensional vectors give huge raw scores. What happens to the attention pattern?", "Doubling the input length roughly quadruples the memory used. Where does that come from?"]
+    m: "Attention weights are fixed parameters learned during training."
+    s: ["Walks through the computation", "Mentions position"]
+
+  gx_dl_transfer_intro:
+    c: [transfer_learning]
+    d: intro
+    t: conceptual
+    f: "freeze or fine-tune"
+    q: "What is transfer learning, and when would you fine-tune all layers rather than only the last one?"
+    a: "Transfer learning starts from a model already trained on a large dataset, such as ImageNet for images or a large text corpus for language, because its early layers have learned general features like edges or word meanings. With a small dataset similar to the original domain, freeze the pretrained layers and train only a new output head: it is cheap and avoids overfitting. With more data, or a domain that differs a lot, such as X-rays or legal text, fine-tune more or all layers so the features adapt, using a small learning rate so the pretrained knowledge is not destroyed. Gradual unfreezing and adapters such as LoRA are middle grounds."
+    k: ["!Defines transfer learning as starting from a model pretrained on a large dataset", "!Says training only a new head suits small datasets similar to the pretraining data", "!Says fine-tuning more layers suits more data or a different domain", "Mentions a small learning rate, gradual unfreezing or adapters like LoRA"]
+    h: ["Which layers learned things that are useful almost everywhere?"]
+    fu: ["You update every layer with a large learning rate on 500 images, and accuracy collapses. What happened?", "Why do the earliest layers of a photo model still help with X-rays?"]
+    m: "A pretrained model can only be used for exactly the task it was trained on."
+    s: ["Chooses by data size and domain", "Protects pretrained weights"]
+
+  gx_dl_llm_intro:
+    c: [large_language_models]
+    d: intro
+    t: conceptual
+    f: "how LLMs are trained, and why they invent facts"
+    q: "How is a large language model trained to produce text, and why does it sometimes state false facts confidently?"
+    a: "It is first pretrained on a huge text corpus to predict the next token given all the previous ones; generating text means repeatedly predicting a distribution over the next token and sampling from it. Instruction tuning on example conversations and preference tuning, such as RLHF, then shape it into a helpful assistant. It states false facts because it learns to produce plausible continuations, not to check claims against a source: its knowledge is compressed into weights, has a cut-off date, and fluent text comes out whether or not the facts are stored. Retrieval-augmented generation, citations, tool use and training it to say when it is unsure all reduce this."
+    k: ["!Says it is pretrained to predict the next token on a very large text corpus", "!Says instruction tuning or preference tuning shapes it into an assistant", "!Explains it generates plausible text rather than checking facts against a source", "Mentions retrieval, tools or citations to reduce false statements"]
+    h: ["What exactly is the model rewarded for during pretraining?"]
+    fu: ["Asked about a paper that does not exist, a model invents authors and a year. Why is that the natural output?", "What does the temperature setting change when it writes an answer?"]
+    m: "An LLM looks up answers in a database of facts."
+    s: ["Explains both training stages", "Explains hallucination mechanistically"]
+
+  gx_dl_drift_intro:
+    c: [ml_deployment_and_monitoring]
+    d: intro
+    t: conceptual
+    f: "drift and what to monitor"
+    q: "What is data drift, and what would you monitor once a model is in production?"
+    a: "Data drift is a change in the distribution of a model's inputs compared with its training data, for example a new user segment or a seasonal shift. Concept drift is a change in the relationship between inputs and the target, for example fraudsters changing tactics, so the same inputs now mean something different. In production, monitor input feature distributions against training using measures such as the population stability index, the distribution of predictions, and accuracy once true labels arrive, which is often delayed. Also watch data quality, such as missing values and schema changes, plus latency, error rates and throughput, with alerts that trigger investigation or retraining."
+    k: ["!Defines data drift as a change in input distribution from training data", "!Distinguishes concept drift as a change in the relationship between inputs and the target", "!Names things to monitor such as feature distributions, prediction distribution and delayed accuracy", "Mentions operational metrics such as latency, errors or data quality checks"]
+    h: ["What could change in the world after the model was trained?"]
+    fu: ["Loan default labels arrive only after a year. How do you know the model is still fine meanwhile?", "One input is suddenly 40% empty after an app update. Would your monitoring notice?"]
+    m: "A model that passed testing will keep working in production unchanged."
+    s: ["Separates the two drifts", "Covers model and system metrics"]
+
+  gx_dl_embeddings_hard:
+    c: [embeddings, large_language_models]
+    d: hard
+    t: debugging
+    f: "when similar is not the same"
+    q: "Your semantic search returns 'how to close a bank account' as the top hit for 'how to open a bank account'. Why does this happen, and how would you fix it?"
+    a: "General-purpose sentence embeddings compress each text into one vector that mainly captures topic and context. The two questions share almost every word and appear in the same kind of documents, so their vectors are very close, and the single word that flips the meaning barely moves the vector. Fixes: fine-tune the embedding model contrastively with hard negatives, pairs like open versus close that must be pushed apart; rerank the top results with a cross-encoder, which reads query and document together and notices the conflict; combine with keyword search such as BM25 or metadata filters; and build a labelled query set to measure recall and ranking before and after."
+    k: ["!Explains the two sentences share topic and wording, so a single vector places them close", "!Proposes fine-tuning with hard negatives such as open versus close pairs", "!Proposes reranking the top results with a cross-encoder", "Mentions hybrid keyword search or evaluating with labelled queries"]
+    h: ["How much does one word change a vector that summarises the whole sentence?"]
+    fu: ["Running the slower model over every document is too expensive. How do you keep it affordable?", "How would you build a test set to prove the fix worked?"]
+    m: "Cosine similarity of embeddings measures whether two sentences mean the same thing."
+    s: ["Explains the compression", "Gives a training fix and a pipeline fix"]

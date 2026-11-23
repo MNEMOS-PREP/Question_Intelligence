@@ -88,6 +88,7 @@ items:
     round_types:
     - systems_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:caching_and_locality
@@ -129,6 +130,7 @@ items:
     round_types:
     - systems_verbal
     difficulty_band: hard
+    question_type: tradeoff
     time_budget_s: 240
     concepts:
     - id: concept:caching_and_locality
@@ -260,6 +262,7 @@ items:
     round_types:
     - systems_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:testing_and_debugging
@@ -297,6 +300,7 @@ items:
     round_types:
     - systems_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:testing_and_debugging

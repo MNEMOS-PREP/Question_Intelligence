@@ -1,0 +1,126 @@
+# =============================================================================
+#  GAP BANK — oop_verbal (2026-11-23). Every OOP and language concept had two
+#  questions; this adds the third, in the band it lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: oop_verbal
+provenance: generated
+items:
+  gx_oop_equals_hash_hard:
+    c: [classes_and_objects, hashing]
+    d: hard
+    t: debugging
+    f: "equality and hashing contract"
+    q: "You put a custom Student object into a Java HashSet, then check contains with an identical new Student, and it says false. What is missing?"
+    a: "By default equals compares object identity, so two separately created objects with the same fields are not equal, and hashCode is derived from identity too, so they land in different buckets. To make value equality work in hash-based collections you must override both equals, comparing the meaningful fields, and hashCode, computed from those same fields, so equal objects always have equal hash codes. Overriding only equals still fails, because the set looks in the wrong bucket first. The fields used should also not change while the object is inside the set."
+    k: ["!Says default equals and hashCode are based on object identity", "!Says both equals and hashCode must be overridden using the same fields", "Explains that overriding only equals fails because the bucket differs", "Warns against changing those fields while the object is in the set"]
+    h: ["How does the set decide which bucket to look in?"]
+    fu: ["You change a student's roll number after adding the object to the set. What happens on the next lookup?", "Why are records or data classes convenient here?"]
+    m: "Overriding equals alone is enough for HashSet to work."
+    s: ["States the equals-hashCode contract", "Mentions mutability inside collections"]
+
+  gx_oop_encap_mutable_hard:
+    c: [encapsulation]
+    d: hard
+    t: debugging
+    f: "leaking internal state"
+    q: "A class keeps its list of marks private and offers a getter, yet other code manages to add marks to it without calling any method of the class. How?"
+    a: "The getter returns a reference to the internal list itself, so any caller holding that reference can add or remove items directly, bypassing every check the class meant to enforce. Private only protects the field name, not the object it points to. The fix is to return an unmodifiable view or a defensive copy, and to copy incoming lists in the constructor or setter too, so outside references cannot alias the internal state. For stronger guarantees, make the class immutable and expose only operations, such as adding a mark through a method that validates it."
+    k: ["!Explains the getter returns a reference to the internal mutable list", "!Says private protects the field, not the object it refers to", "!Proposes returning an unmodifiable view or a defensive copy", "Mentions copying inputs or immutability"]
+    h: ["What exactly does the getter hand back?"]
+    fu: ["Returning a copy every time is expensive for a huge list. What else could you offer?", "The constructor stores the list it was given. How can a caller still break the class?"]
+    m: "Making a field private guarantees no one can change its contents."
+    s: ["Distinguishes reference and object", "Handles both the getter and constructor paths"]
+
+  gx_oop_inheritance_intro:
+    c: [inheritance]
+    d: intro
+    t: conceptual
+    f: "is-a and code reuse"
+    q: "What is inheritance, and how do you decide whether a class should inherit from another one?"
+    a: "Inheritance lets a subclass take on the fields and methods of a parent class and add or override behaviour, so a Car and a Bike can share what every Vehicle has. The test is an is-a relationship that holds everywhere the parent is used: anywhere code expects the parent, the child must work without surprises. If the relationship is really has-a, such as a Car having an Engine, use composition instead. Inheriting only to reuse code tends to create fragile hierarchies, because a change in the parent can break every child."
+    k: ["!Explains a subclass reuses and extends the parent's fields and methods", "!Gives the is-a test", "Says has-a relationships call for composition", "Warns that inheriting just for code reuse creates fragile hierarchies"]
+    h: ["Is a car a kind of engine, or does it have one?"]
+    fu: ["A Square class inherits from Rectangle and setting the width breaks it. Why?", "When would you choose an interface over a parent class?"]
+    m: "Inheritance should be used whenever two classes share some code."
+    s: ["Uses the is-a and has-a contrast", "Warns about fragility"]
+
+  gx_oop_dispatch_hard:
+    c: [polymorphism, inheritance]
+    d: hard
+    t: conceptual
+    f: "dynamic dispatch and overloading"
+    q: "A method is overloaded for Animal and for Dog, and you call it with a Dog stored in an Animal variable. Which version runs, and how is that different from calling an overridden method on it?"
+    a: "Overload resolution happens at compile time using the declared type of the argument, so with an Animal variable the Animal version of the overloaded method is chosen even though the object is a Dog. Overriding is different: a call to an overridden instance method on the object is resolved at run time by the object's actual class, so the Dog's version runs. This is single dispatch: only the receiver's run-time type decides. To choose behaviour by the argument's run-time type you need the visitor pattern or explicit checks."
+    k: ["!Says overloads are chosen at compile time by declared types", "!Says the Animal overload is chosen here", "!Says overridden methods are resolved at run time by the object's actual class", "Mentions the visitor pattern for dispatch on the argument's type"]
+    h: ["When does the compiler pick between overloads?"]
+    fu: ["How does the JVM find the right overridden method quickly at run time?", "Why are static methods never polymorphic in Java?"]
+    m: "The method that runs always depends on the object's real type, for overloads too."
+    s: ["Separates compile-time and run-time resolution", "Names single dispatch"]
+
+  gx_oop_abstract_intro:
+    c: [abstraction_and_interfaces]
+    d: intro
+    t: conceptual
+    f: "abstract class versus interface"
+    q: "Java gives you both abstract classes and interfaces. How do they differ in what they can hold, and when would you reach for each?"
+    a: "An abstract class can hold state in fields, constructors and a mix of implemented and abstract methods, and a class can extend only one. An interface declares a contract of methods, can provide default methods since Java 8 but no instance state, and a class can implement many. I use an interface to describe a capability that unrelated classes can share, like Comparable or a PaymentGateway, so code depends on the contract. I use an abstract class when closely related classes share real state and partial implementation, like a base Shape that stores a colour."
+    k: ["!Says abstract classes can hold state and constructors while interfaces cannot hold instance state", "!Says a class extends one abstract class but can implement many interfaces", "Gives a fitting use for interfaces as shared capabilities", "Gives a fitting use for abstract classes as shared state or partial implementation"]
+    h: ["Can a class have two parents in Java?"]
+    fu: ["Default methods blur the difference. When can they cause a conflict?", "Why do frameworks often ask you to depend on an interface rather than a class?"]
+    m: "Interfaces can never contain any method body."
+    s: ["Mentions default methods", "Chooses by capability versus shared state"]
+
+  gx_oop_solid_intro:
+    c: [solid_principles]
+    d: intro
+    t: conceptual
+    f: "the five principles"
+    q: "Name the five SOLID principles and explain each in one line with a small example."
+    a: "Single responsibility: a class has one reason to change, so an Invoice does not also send emails. Open-closed: add behaviour by extension rather than editing tested code, such as a new payment class implementing an interface. Liskov substitution: a subclass must work wherever its parent is expected, so a read-only list should not pretend to be a modifiable one. Interface segregation: prefer small focused interfaces, so a printer class is not forced to implement fax methods. Dependency inversion: depend on abstractions, so a service takes a Repository interface rather than creating a MySQL class itself."
+    k: ["!Explains single responsibility and open-closed with examples", "!Explains Liskov substitution with an example", "!Explains interface segregation and dependency inversion with examples"]
+    h: ["What should a class have only one of?"]
+    fu: ["Which of the five do you think is broken most often in student projects, and how would you spot it?", "Can following these principles too strictly make code worse?"]
+    m: "SOLID means every class should have exactly one method."
+    s: ["Gives an example for each", "Explains purpose, not just names"]
+
+  gx_oop_patterns_intro:
+    c: [design_patterns]
+    d: intro
+    t: conceptual
+    f: "what patterns are for"
+    q: "What is a design pattern? Explain the singleton and the observer patterns, and one risk of the singleton."
+    a: "A design pattern is a named, reusable solution to a recurring design problem, which also gives developers a shared vocabulary. A singleton ensures a class has exactly one instance with a global access point, used for things like a configuration registry. An observer lets an object notify a list of subscribers when its state changes, without knowing who they are, as in UI events or a stock ticker. The singleton's risk is that it is global state: it hides dependencies, makes testing hard because tests share it, and needs care to stay correct across threads."
+    k: ["!Defines a pattern as a reusable solution to a recurring design problem", "!Explains singleton as one instance with global access", "!Explains observer as notifying subscribers of state changes", "Names a risk of singletons such as hidden global state or testability"]
+    h: ["How does a button tell many listeners it was clicked?"]
+    fu: ["Two threads ask for the singleton at the same moment for the first time. What can go wrong?", "How would dependency injection replace a singleton in your code?"]
+    m: "Design patterns are libraries you import into a project."
+    s: ["Explains the problem each solves", "Names the testing risk"]
+
+  gx_oop_exceptions_hard:
+    c: [exception_handling]
+    d: hard
+    t: debugging
+    f: "resource cleanup and swallowed errors"
+    q: "A method opens a file, catches every exception, logs 'error' and returns null. Production keeps running out of file handles and nobody knows why reads fail. What is wrong with this code?"
+    a: "Two things. First, if an exception occurs after opening the file, the file is never closed unless the close is in a finally block, so handles leak until the process hits its limit; try-with-resources in Java or a with statement in Python closes it on every path. Second, catching every exception and returning null swallows the real cause: the log says only 'error' with no exception or stack trace, and callers may crash later with a null pointer far from the real problem. Catch only exceptions you can handle, log the exception itself with context, and otherwise let it propagate or wrap it."
+    k: ["!Explains the file handle leaks because close is not guaranteed on the error path", "!Proposes try-with-resources, finally or with statements", "!Explains that catching everything and returning null hides the real cause", "Recommends catching specific exceptions and logging the stack trace"]
+    h: ["What runs if an exception is thrown halfway through reading?"]
+    fu: ["When is it right to catch an exception and continue?", "How would you design the method's return so callers cannot ignore a failure?"]
+    m: "Catching every exception makes a program more robust."
+    s: ["Finds both defects", "Gives the idiomatic cleanup construct"]
+
+  gx_oop_gc_intro:
+    c: [memory_model_gc]
+    d: intro
+    t: conceptual
+    f: "reachability"
+    q: "How does a garbage collector decide which objects can be freed, and can a Java program still leak memory?"
+    a: "A tracing garbage collector starts from roots such as local variables on thread stacks and static fields, follows every reference, and marks the objects it reaches; anything unreachable is garbage and its memory is reclaimed. So an object is freed when nothing reachable refers to it, not when you stop using it. That is why Java programs can still leak: if a static map or cache keeps references to objects you no longer need, they stay reachable and are never collected. Listeners that are never removed and ever-growing collections are common causes."
+    k: ["!Explains tracing from roots and marking reachable objects", "!Says unreachable objects are reclaimed", "!Explains leaks happen when unneeded objects stay reachable", "Gives a common cause such as static caches or unremoved listeners"]
+    h: ["Where does the collector start looking from?"]
+    fu: ["Two objects refer only to each other and nothing else refers to them. Are they collected?", "How would you find what is holding on to memory in a running service?"]
+    m: "Garbage collection makes memory leaks impossible."
+    s: ["Defines reachability", "Gives a realistic leak"]

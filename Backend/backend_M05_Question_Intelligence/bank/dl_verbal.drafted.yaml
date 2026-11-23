@@ -10,6 +10,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: core
+    question_type: conceptual
     time_budget_s: 180
     concepts:
     - id: concept:neural_network_basics
@@ -50,6 +51,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: intro
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:neural_network_basics
@@ -91,6 +93,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:backpropagation
@@ -138,6 +141,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: hard
+    question_type: conceptual
     time_budget_s: 180
     concepts:
     - id: concept:backpropagation
@@ -184,6 +188,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: core
+    question_type: scenario
     time_budget_s: 180
     concepts:
     - id: concept:optimisers
@@ -232,6 +237,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:optimisers
@@ -281,6 +287,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:training_deep_networks
@@ -327,6 +334,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:training_deep_networks
@@ -376,6 +384,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:convolutional_networks
@@ -420,6 +429,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: hard
+    question_type: tradeoff
     time_budget_s: 240
     concepts:
     - id: concept:convolutional_networks
@@ -469,6 +479,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:sequence_models
@@ -514,6 +525,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: hard
+    question_type: tradeoff
     time_budget_s: 240
     concepts:
     - id: concept:sequence_models
@@ -640,6 +652,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: core
+    question_type: conceptual
     time_budget_s: 180
     concepts:
     - id: concept:attention_and_transformers
@@ -684,6 +697,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:attention_and_transformers
@@ -728,6 +742,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:transfer_learning
@@ -777,6 +792,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:transfer_learning
@@ -824,6 +840,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: core
+    question_type: conceptual
     time_budget_s: 180
     concepts:
     - id: concept:large_language_models
@@ -865,6 +882,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:large_language_models
@@ -908,6 +926,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:ml_deployment_and_monitoring
@@ -952,6 +971,7 @@ items:
     round_types:
     - dl_verbal
     difficulty_band: hard
+    question_type: tradeoff
     time_budget_s: 240
     concepts:
     - id: concept:ml_deployment_and_monitoring

@@ -56,6 +56,8 @@ class FakeWriter:
                 "label": f"angle {n}",
                 "stem": STEMS[n],
                 "difficulty_band": "hard",
+                # The third is not a type: it must be read as conceptual, not kept.
+                "question_type": ["debugging", "tradeoff", "riddle"][n],
                 "time_budget_s": 240,
                 "secondary_concepts": ["concept:javascript", "concept:not_allowed"],
                 "reference_answer": (
@@ -112,6 +114,9 @@ def test_drafts_are_written_unscored_for_the_gaps_track(tmp_path, monkeypatch):
         assert item["concepts"][0]["id"] == "concept:react"
         assert item["provenance"] == "generated" and item["scored_use_approved"] is False
         assert all(c["id"] != "concept:not_allowed" for c in item["concepts"])
+    # The prompt asked for other angles; the angle written must reach the bank,
+    # or the loader reads every draft as conceptual and the gap never closes.
+    assert [item["question_type"] for item in items] == ["debugging", "tradeoff", "conceptual"]
 
 
 def test_a_dry_run_calls_no_model(monkeypatch):

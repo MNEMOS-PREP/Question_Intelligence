@@ -1,0 +1,219 @@
+# =============================================================================
+#  GAP BANK — behavioural, the communication skills (2026-11-23). Every
+#  communication concept had two questions; this adds the third, in the band it
+#  lacked. As in the rest of this track, a question asks about the student's
+#  own experience, and the key points describe what a strong answer SHOWS.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: behavioural
+provenance: generated
+items:
+  gx_beh_structure_core:
+    c: [answer_structuring]
+    d: core
+    t: behavioural
+    f: "situation, task, action, result"
+    q: "Walk me through the project you are proudest of in under two minutes, so that I know what it was, what you did, and what came of it."
+    a: "A strong answer opens with one line of situation, for example a college fest registration site that crashed every year, then states the student's own task, such as rebuilding the registration flow. Most of the time goes on actions in the first person: what they designed, which tools they chose and why, and one hard problem they solved. It ends with a result, ideally measured, such as three thousand registrations with no downtime, and a short reflection. The structure lets the listener follow without asking basic questions, and it stays within the time asked."
+    k: ["!Opens with brief context before diving into detail", "!Makes clear what the candidate personally did, in the first person", "Describes at least one concrete decision or problem solved", "!Ends with a result, ideally with a number, within the time asked"]
+    h: ["Start with one sentence on why the project existed."]
+    fu: ["You have thirty seconds instead of two minutes. What would you keep?", "What is the one thing about that project you would do differently now?"]
+    m: "A good answer lists every feature of the project."
+    s: ["Clear arc from context to result", "Personal ownership of actions"]
+
+  gx_beh_clarify_core:
+    c: [clarifying_questions]
+    d: core
+    t: behavioural
+    f: "asking before solving"
+    q: "Describe a time you were handed a vague task, in college or an internship. What did you ask before starting, and how did those answers change what you built?"
+    a: "A strong answer names a real, vague request, for example 'make the attendance app better', and lists the specific questions the student asked: who the users are, what problem hurts most, what the deadline and constraints are, and how success would be judged. It then shows how the answers changed the plan, for instance discovering that teachers mainly wanted quicker marking, so they built bulk entry rather than a redesign. It ends with the outcome and a lesson about checking assumptions early instead of building the wrong thing well."
+    k: ["!Describes a genuinely ambiguous request from their own experience", "!Lists specific clarifying questions they asked", "!Shows how the answers changed what they built", "Ends with the outcome or what they learned"]
+    h: ["What did you not know when the task arrived?"]
+    fu: ["How do you decide when you have asked enough and should just start?", "What if the person who gave the task was too busy to answer?"]
+    m: "Asking questions makes you look like you do not understand the task."
+    s: ["Specific questions, not generic ones", "Clear before-and-after effect"]
+
+  gx_beh_think_aloud_intro:
+    c: [thinking_aloud]
+    d: intro
+    t: behavioural
+    f: "narrating your reasoning"
+    q: "In a technical interview you are given a problem you have not seen. What do you say out loud in the first minute, and why does it help?"
+    a: "A strong answer describes restating the problem in their own words, checking the inputs and edge cases, and saying the first approach that comes to mind even if it is brute force, with its cost, before improving it. Speaking this aloud lets the interviewer follow the reasoning, give credit for a sound process even if the final answer is incomplete, and offer a hint before the candidate goes far down a wrong path. It also helps the candidate organise their own thinking. Long silences give the interviewer nothing to evaluate."
+    k: ["!Describes restating the problem and checking inputs or edge cases aloud", "!Mentions voicing a first approach and its cost before optimising", "!Explains that narration lets the interviewer follow, give credit and offer hints", "Notes that silence gives the interviewer nothing to assess"]
+    h: ["What could the interviewer do if they heard your plan early?"]
+    fu: ["You realise halfway that your approach is wrong. What do you say?", "How do you think aloud without rambling?"]
+    m: "Staying silent until you have the full answer looks more confident."
+    s: ["Concrete opening steps", "Explains the benefit to both sides"]
+
+  gx_beh_tradeoff_intro:
+    c: [explaining_tradeoffs]
+    d: intro
+    t: behavioural
+    f: "naming what you gave up"
+    q: "Think of a technical choice you made in a project, such as a database or a framework. What did you give up by choosing it, and was that acceptable?"
+    a: "A strong answer names a real choice, for example picking Firebase over a self-hosted SQL database for a college app, then states the benefit, fast setup and free hosting, and the cost honestly, weaker querying and dependence on one vendor. It explains why the cost was acceptable in that context, such as a three-week deadline and simple data, and what would change the decision, like needing complex reports. Interviewers look for awareness that every choice has a downside and that the candidate decided deliberately."
+    k: ["!Names a specific technical choice from their own project", "!States both the benefit and the cost of the choice", "!Explains why the cost was acceptable in that context", "Says what would change the decision"]
+    h: ["What became harder because of your choice?"]
+    fu: ["If the project had to support ten times more users, would you choose the same?", "How would you explain this trade-off to a non-technical teammate?"]
+    m: "A good choice has no downsides."
+    s: ["Honest about costs", "Context-dependent reasoning"]
+
+  gx_beh_concise_hard:
+    c: [summarising_concisely]
+    d: hard
+    t: behavioural
+    f: "the one-sentence summary"
+    q: "Explain the main idea of your final-year project in one sentence that a recruiter with no technical background would understand. Then tell me how you got it that short."
+    a: "A strong answer first gives a genuinely short, plain sentence, for example 'We built a system that warns farmers about crop disease from a phone photo, before it spreads.' It avoids jargon and puts the user and benefit first, not the technology. Then it explains the process: identifying who the listener is, finding the single outcome that matters to them, cutting technical terms and supporting detail, and testing the sentence on someone outside the field. The candidate shows they can go deeper on request rather than front-loading everything."
+    k: ["!Delivers a short sentence free of jargon", "!Leads with the user or benefit rather than the technology", "Explains a deliberate process for cutting it down", "Offers to go deeper on request instead of front-loading detail"]
+    h: ["Who benefits, and from what?"]
+    fu: ["Now explain the same project to a senior engineer in one sentence. What changes?", "What detail did you most want to include but left out, and why?"]
+    m: "Using technical terms shows depth and impresses recruiters."
+    s: ["The sentence itself is genuinely concise", "Adapts to the audience"]
+
+  gx_beh_dont_know_intro:
+    c: [saying_i_dont_know]
+    d: intro
+    t: behavioural
+    f: "honest gaps"
+    q: "What do you do in an interview when you are asked about something you genuinely do not know?"
+    a: "A strong answer says the candidate admits it plainly rather than bluffing, for example 'I have not worked with Kafka', and then shows how they would reason about it: connect it to something they do know, such as message queues they have used, state what they would expect it to do, and say how they would find out. They might ask whether they may reason it through aloud. Bluffing is risky because interviewers usually probe further, and a confident wrong answer hurts trust more than an honest gap handled well."
+    k: ["!Says they would admit the gap honestly instead of bluffing", "!Describes connecting it to related knowledge they do have", "Mentions how they would find out or reason it through aloud", "Explains why bluffing damages trust"]
+    h: ["What could you say after 'I don't know' that still shows something?"]
+    fu: ["The interviewer then gives you a hint. How do you show you have picked it up?", "Can saying 'I don't know' too quickly also be a mistake?"]
+    m: "Admitting you do not know something always costs you the interview."
+    s: ["Honest and constructive", "Bridges to related knowledge"]
+
+  gx_beh_pace_hard:
+    c: [pace_and_pausing]
+    d: hard
+    t: behavioural
+    f: "pace under pressure"
+    q: "When you are nervous, how does your speaking pace change, and what have you actually done to control it in a viva or presentation?"
+    a: "A strong answer shows self-awareness, for example noticing they speed up and drop word endings when anxious, often learned from a recording or a teacher's feedback. It then describes concrete techniques they have used, not just intentions: pausing deliberately after each key point, taking a breath before answering, writing 'slow' on their notes, or practising with a timer and recording. It ends with evidence it worked, such as finishing a presentation on time with questions answered clearly, and how they recover when they catch themselves rushing mid-answer."
+    k: ["!Describes how their own pace changes under pressure, with a source of that awareness", "!Names concrete techniques they have actually used", "Gives evidence that the technique worked", "Explains how they recover when they notice rushing"]
+    h: ["How did you find out how you sound when nervous?"]
+    fu: ["You notice mid-answer that you are rushing. What do you do in the next five seconds?", "How would you tell a pause that helps from one that looks like you are stuck?"]
+    m: "Speaking fast shows confidence and knowledge."
+    s: ["Self-aware with evidence", "Concrete techniques, not intentions"]
+
+  gx_beh_fillers_hard:
+    c: [filler_reduction]
+    d: hard
+    t: behavioural
+    f: "replacing fillers"
+    q: "Fillers like 'basically' and 'you know' are hard to remove just by trying. What have you replaced them with, and how did you check it worked?"
+    a: "A strong answer recognises that fillers fill thinking time, so simply suppressing them leads to awkward stalls. The candidate describes replacing them with a short silent pause or a signposting phrase such as 'there are two reasons', which buys time and adds structure. They describe a way of measuring, such as recording mock answers and counting fillers per minute, or asking a friend to tap the table at each one, and they report a change, for example from about eight per minute to two over a few weeks."
+    k: ["!Explains that fillers fill thinking time so suppression alone fails", "!Names a replacement such as a silent pause or a signposting phrase", "!Describes a concrete way they measured their fillers", "Reports a change over time"]
+    h: ["What is the filler doing for you while you think?"]
+    fu: ["A colleague says a few fillers make you sound natural. Do you agree?", "Which situations bring your fillers back even now?"]
+    m: "The goal is to remove every filler word completely."
+    s: ["Understands why fillers happen", "Measured improvement"]
+
+  gx_beh_listening_hard:
+    c: [active_listening]
+    d: hard
+    t: behavioural
+    f: "answering the question asked"
+    q: "Tell me about a time you answered the question you expected instead of the one actually asked. How did you realise, and what do you do differently now?"
+    a: "A strong answer gives a specific, slightly uncomfortable example, such as answering 'how would you scale this' with how they built it, in a viva or a review. It shows how they noticed, perhaps from the examiner's follow-up or their puzzled look, and how they recovered in the moment by acknowledging it and answering the real question. Then it describes habits since: listening to the whole question without planning the answer, restating it briefly before answering, and asking a quick clarifying question when a question has two parts."
+    k: ["!Gives a specific example of answering the wrong question", "Explains how they realised and recovered at the time", "!Describes concrete habits adopted since, such as restating the question", "Shows reflection rather than defensiveness"]
+    h: ["What cue told you that you had missed the question?"]
+    fu: ["How do you handle a long question with three parts?", "Restating every question could sound slow. When would you skip it?"]
+    m: "Good listeners never need to restate a question."
+    s: ["Honest specific example", "Lasting habit change"]
+
+  gx_beh_interrupt_intro:
+    c: [handling_interruptions]
+    d: intro
+    t: behavioural
+    f: "staying composed when cut off"
+    q: "If an interviewer interrupts you halfway through an answer, what should you do, and why might they be doing it?"
+    a: "A strong answer stops talking at once, listens to the interruption fully and responds to what was asked rather than insisting on finishing the prepared answer. It recognises common reasons: the interviewer already has what they need, wants to steer to a deeper point, is short on time, or is testing composure. If something important was left unsaid, the candidate can briefly offer it later, for example 'one point I did not finish was the testing, shall I add it?' Staying calm and flexible matters more than completing every planned word."
+    k: ["!Says to stop and listen to the interruption fully", "!Responds to the new question rather than insisting on finishing", "Names plausible reasons interviewers interrupt", "Mentions briefly offering an important unfinished point later"]
+    h: ["What might the interviewer want that your planned answer was not giving?"]
+    fu: ["The interviewer interrupts with a point you think is wrong. What do you say?", "How would you handle being interrupted repeatedly in one interview?"]
+    m: "Being interrupted means the interview is going badly."
+    s: ["Calm, listening-first response", "Reads the interviewer's intent"]
+
+  gx_beh_interrupt_peer_hard:
+    c: [handling_interruptions, disagreeing_respectfully]
+    d: hard
+    t: behavioural
+    f: "being talked over in a group"
+    q: "In a group discussion, one participant keeps talking over you whenever you start. Describe how you have handled something like that, without sounding aggressive."
+    a: "A strong answer describes a real group discussion, project meeting or class debate where someone dominated. The candidate explains concrete tactics: waiting for a natural pause and entering with a short, clear point rather than a long build-up, briefly acknowledging the other person's point before adding theirs, holding the floor calmly with a phrase like 'let me finish this one point', and drawing in quieter members, which builds goodwill with moderators. They describe the result, such as their point being taken up, and what they learned about calm assertiveness."
+    k: ["!Describes a specific situation from their own experience", "!Names concrete tactics such as entering at pauses and holding the floor politely", "Mentions acknowledging the other person before adding a point", "Describes the outcome and the lesson"]
+    h: ["How do you get in without raising your voice?"]
+    fu: ["What if the moderator is not stepping in at all?", "How would you know you yourself are the one dominating?"]
+    m: "Speaking louder is the only way to be heard in a group discussion."
+    s: ["Assertive without aggression", "Concrete tactics"]
+
+  gx_beh_quantify_intro:
+    c: [quantifying_impact]
+    d: intro
+    t: behavioural
+    f: "finding a number"
+    q: "Pick one line from your resume. How could you show its impact with a number, even if nobody measured it formally at the time?"
+    a: "A strong answer takes a real resume line, for example 'built a canteen ordering app', and looks for something countable: how many students used it, how many orders a day it handled, how much queue time it saved, or how fast a page loaded before and after. If nothing was measured, it suggests an honest estimate with its basis, such as 'about 200 orders a day during exams, from the order logs', or a measurement they could still take. It shows understanding that numbers make claims checkable, and that an honest approximation beats a vague adjective."
+    k: ["!Uses a real line from their own resume", "!Identifies a specific countable outcome such as users, time saved or speed", "Offers an honest estimate with its basis when no measurement exists", "Explains that numbers make a claim checkable"]
+    h: ["What changed for the people who used it?"]
+    fu: ["The interviewer asks how you got that number. What do you say?", "When would a number on a resume do more harm than good?"]
+    m: "If nothing was measured, you should not mention impact at all."
+    s: ["Concrete metric", "Honest about estimates"]
+
+  gx_beh_project_hard:
+    c: [project_storytelling]
+    d: hard
+    t: behavioural
+    f: "owning a design decision"
+    q: "Choose one design decision in your main project that you would defend under pressure. Explain it, then tell me the strongest argument against it."
+    a: "A strong answer picks a real, specific decision, for example caching results in Redis instead of recomputing them, and explains the reasoning: the problem it solved, the alternatives considered, and the evidence it worked. Then it states the strongest counter-argument honestly, such as stale data and an extra system to run, rather than a weak one it can easily dismiss. It closes by explaining why the decision still holds in that context, or admitting when the counter-argument would win. This shows ownership and depth, not memorised descriptions."
+    k: ["!Picks a specific design decision from their own project", "!Explains the reasoning and alternatives considered", "!States a strong, honest argument against it", "Explains when the decision holds or would change"]
+    h: ["What would a sceptical senior engineer say about it?"]
+    fu: ["Suppose the counter-argument wins. What would you change first?", "Which part of the project did someone else design, and how well do you understand it?"]
+    m: "Admitting a weakness in your own design will lose you marks."
+    s: ["Steel-mans the opposing view", "Clear ownership"]
+
+  gx_beh_feedback_hard:
+    c: [receiving_feedback]
+    d: hard
+    t: behavioural
+    f: "feedback you disagreed with"
+    q: "Tell me about feedback you initially thought was unfair. What did you do with it, and do you still disagree?"
+    a: "A strong answer describes real feedback, for example a mentor saying their code reviews were too harsh, and an honest first reaction. It then shows how they processed it: asking for specific examples, checking with others, and separating the message from the delivery. It describes what they changed, such as framing review comments as questions, and the result. Finally it gives an honest current view, which may be partial disagreement, explained calmly. Interviewers look for openness and learning, not automatic agreement."
+    k: ["!Describes a specific piece of feedback and their honest first reaction", "!Shows how they examined it, such as asking for examples", "Describes a concrete change and its result", "Gives a reasoned current view, even if still partly disagreeing"]
+    h: ["What did you do between hearing it and deciding what to do about it?"]
+    fu: ["What would have convinced you sooner?", "How do you give feedback to others now because of this?"]
+    m: "The right answer is always that the feedback was completely correct."
+    s: ["Openness with honesty", "Concrete change"]
+
+  gx_beh_disagree_intro:
+    c: [disagreeing_respectfully]
+    d: intro
+    t: behavioural
+    f: "disagreeing with an interviewer"
+    q: "If an interviewer states something you believe is technically wrong, how would you respond?"
+    a: "A strong answer says the candidate would not stay silent, nor contradict bluntly. They would acknowledge the point, then state their view with reasoning and an example, for instance 'I understood quicksort's worst case to be quadratic, when the pivot is the smallest element; am I missing a variant you are thinking of?' This keeps the conversation technical and leaves room for the interviewer to be right or to be testing them. If the interviewer holds firm, the candidate moves on politely. Respectful disagreement with evidence often impresses more than agreement."
+    k: ["!Says they would raise the disagreement rather than stay silent", "!Explains stating their view with reasoning or an example", "Uses polite phrasing that leaves room for being wrong", "Mentions moving on gracefully if the interviewer holds firm"]
+    h: ["How can you disagree while leaving room for being the one who is wrong?"]
+    fu: ["You later realise the interviewer was right. What do you do?", "Could the interviewer have made the mistake on purpose? How would that change your answer?"]
+    m: "You should always agree with the interviewer to stay on their good side."
+    s: ["Evidence-based and polite", "Open to being wrong"]
+
+  gx_beh_closing_hard:
+    c: [closing_questions]
+    d: hard
+    t: behavioural
+    f: "tailored questions for the panel"
+    q: "For a company you are preparing for, what two questions would you ask the panel at the end, and what would each answer tell you?"
+    a: "A strong answer names a real target company and asks specific questions grounded in research, not generic ones like 'what is the culture?'. For example: 'Your engineering blog mentions moving payments to an event-driven design; what is a new graduate's first project likely to touch?' and 'How do you decide when a fresher is ready to own a service on call?'. It explains what each answer reveals, such as how quickly freshers get real responsibility and how support works. It avoids asking things easily found online, or about salary, in a technical round."
+    k: ["!Names a real company and asks questions grounded in specific research", "!Explains what each answer would reveal about the role or team", "Avoids generic questions or ones answered on the website", "Keeps the questions appropriate to the round"]
+    h: ["What would you want to know that their website does not tell you?"]
+    fu: ["The interviewer answers your first question vaguely. What would you ask next?", "Which question would you ask an HR panel instead of an engineering one?"]
+    m: "Saying you have no questions shows you understood everything."
+    s: ["Research-backed questions", "Knows what each answer reveals"]

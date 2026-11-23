@@ -89,6 +89,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:ip_addressing
@@ -135,6 +136,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: intro
+    question_type: conceptual
     time_budget_s: 150
     concepts:
     - id: concept:ip_addressing
@@ -178,6 +180,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: hard
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:subnetting
@@ -218,6 +221,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 150
     concepts:
     - id: concept:subnetting
@@ -266,6 +270,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:tcp_vs_udp
@@ -312,6 +317,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: core
+    question_type: tradeoff
     time_budget_s: 180
     concepts:
     - id: concept:tcp_vs_udp
@@ -359,6 +365,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: core
+    question_type: scenario
     time_budget_s: 180
     concepts:
     - id: concept:tcp_reliability
@@ -402,6 +409,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: hard
+    question_type: tradeoff
     time_budget_s: 240
     concepts:
     - id: concept:tcp_reliability
@@ -444,6 +452,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: hard
+    question_type: scenario
     time_budget_s: 180
     concepts:
     - id: concept:congestion_control
@@ -486,6 +495,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: core
+    question_type: tradeoff
     time_budget_s: 180
     concepts:
     - id: concept:congestion_control
@@ -528,6 +538,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: core
+    question_type: design
     time_budget_s: 180
     concepts:
     - id: concept:routing
@@ -569,6 +580,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:routing
@@ -610,6 +622,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:dns
@@ -656,6 +669,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: core
+    question_type: tradeoff
     time_budget_s: 240
     concepts:
     - id: concept:dns
@@ -784,6 +798,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:https_and_tls
@@ -830,6 +845,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:https_and_tls
@@ -875,6 +891,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:sockets
@@ -924,6 +941,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 150
     concepts:
     - id: concept:sockets
@@ -973,6 +991,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:network_security_basics
@@ -1014,6 +1033,7 @@ items:
     round_types:
     - cn_verbal
     difficulty_band: hard
+    question_type: scenario
     time_budget_s: 240
     concepts:
     - id: concept:network_security_basics

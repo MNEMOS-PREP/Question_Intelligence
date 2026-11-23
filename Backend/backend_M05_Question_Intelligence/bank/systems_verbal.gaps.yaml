@@ -1,0 +1,74 @@
+# =============================================================================
+#  GAP BANK — systems_verbal (2026-11-23). Every systems and practice concept
+#  had two questions; this adds the third, in the band it lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: systems_verbal
+provenance: generated
+items:
+  gx_sys_false_sharing_hard:
+    c: [computer_architecture_basics, caching_and_locality]
+    d: hard
+    t: debugging
+    f: "false sharing"
+    q: "Eight threads each update their own counter in a shared array, with no locks and no shared variables, yet adding threads makes it slower. What could be happening?"
+    a: "This is likely false sharing. The counters sit next to each other, so several of them fall in the same cache line, typically 64 bytes. When one core writes its counter, the cache coherence protocol invalidates that whole line in every other core's cache, so the cores keep fighting over the line even though they never touch the same variable. The fix is to pad or align each counter to its own cache line, or to have each thread accumulate in a local variable and combine the results at the end."
+    k: ["!Identifies false sharing of a cache line between independent counters", "!Explains that coherence invalidates the whole line on each write", "Proposes padding or aligning counters to separate cache lines", "Proposes thread-local accumulation combined at the end"]
+    h: ["How big is the unit that caches move between cores?"]
+    fu: ["How would you confirm this is the cause rather than guessing?", "Why would the program be fast again with only one thread?"]
+    m: "Threads that never write the same variable cannot slow each other down."
+    s: ["Names cache lines and coherence", "Offers two fixes"]
+
+  gx_sys_locality_intro:
+    c: [caching_and_locality]
+    d: intro
+    t: conceptual
+    f: "temporal and spatial locality"
+    q: "What are temporal and spatial locality, and why do they make caches work so well?"
+    a: "Temporal locality means data used recently is likely to be used again soon, such as a loop counter or a popular product page. Spatial locality means data near something just used is likely to be used next, such as the next elements of an array. Caches exploit both: they keep recently used data close to the processor, and they fetch whole blocks, cache lines, so neighbouring data arrives together. Because most programs show strong locality, a small fast cache can serve most accesses, hiding the slowness of main memory or a database."
+    k: ["!Defines temporal locality as reuse of recently accessed data", "!Defines spatial locality as access to nearby data", "!Explains caches keep recent data and fetch whole blocks", "Says this lets a small cache serve most accesses"]
+    h: ["What tends to happen right after a program reads element 5 of an array?"]
+    fu: ["A program jumps randomly around a huge linked list. What happens to its cache hit rate?", "Where else, apart from the CPU, do these same ideas show up?"]
+    m: "A cache helps only if the exact same data is read again."
+    s: ["Gives an example of each kind", "Links locality to cache design"]
+
+  gx_sys_jit_hard:
+    c: [compilation_and_interpretation]
+    d: hard
+    t: tradeoff
+    f: "just-in-time compilation"
+    q: "Java and JavaScript engines start by interpreting code and later compile the hot parts. Why not compile everything ahead of time instead?"
+    a: "Interpreting first gives fast start-up, since nothing must be compiled before running. Meanwhile the engine profiles which methods are hot and what types actually flow through them. A just-in-time compiler then compiles only those hot paths, using the observed types to specialise and inline aggressively, sometimes beating ahead-of-time code. If an assumption later breaks, for example a new type appears, it deoptimises back to the interpreter. The costs are warm-up time, memory for the compiler and compiled code, and less predictable latency, which is why some deployments use ahead-of-time compilation for fast, steady start-up."
+    k: ["!Says interpreting first gives fast start-up", "!Explains profiling hot code and compiling only that", "!Explains JIT can specialise using observed run-time types", "Mentions deoptimisation or the costs such as warm-up and memory"]
+    h: ["What does the engine know after running the code for a while that a compiler does not know beforehand?"]
+    fu: ["A serverless function lives for two seconds. Which approach suits it, and why?", "What is deoptimisation, and what triggers it?"]
+    m: "Compiled code is always faster than JIT-compiled code."
+    s: ["Explains use of run-time information", "Weighs warm-up against peak speed"]
+
+  gx_sys_testing_intro:
+    c: [testing_and_debugging]
+    d: intro
+    t: conceptual
+    f: "kinds of tests"
+    q: "What are unit, integration and end-to-end tests, and why do teams usually write many more of the first kind than the last?"
+    a: "A unit test checks one small piece, like a function or class, in isolation, often with dependencies replaced by fakes. An integration test checks that several pieces work together, such as a service with its real database. An end-to-end test drives the whole system the way a user would, through the interface. Unit tests are fast, precise about what broke and cheap to maintain, while end-to-end tests are slow, flaky and hard to diagnose, though they catch problems at the seams. So teams follow a pyramid: many unit tests, fewer integration tests, and a few end-to-end tests for critical user journeys."
+    k: ["!Defines unit, integration and end-to-end tests correctly", "!Explains unit tests are fast and pinpoint failures", "Explains end-to-end tests are slow and flaky but catch seam problems", "Describes the test pyramid"]
+    h: ["Which kind tells you exactly which function broke?"]
+    fu: ["Every unit test passes but the feature is broken for users. What does that suggest?", "Your slowest browser-driven check fails one run in ten with no code change. What would you look for?"]
+    m: "End-to-end tests are always better because they test everything."
+    s: ["Uses the pyramid idea", "Explains why seams need integration tests"]
+
+  gx_sys_hash_crypto_intro:
+    c: [hashing_internals]
+    d: intro
+    t: conceptual
+    f: "table hashes versus cryptographic hashes"
+    q: "Why does a hash table use a fast hash function like MurmurHash while password storage uses something like bcrypt? What is each optimised for?"
+    a: "A hash table's function only needs to be fast and spread keys evenly across buckets; speed matters because it runs on every lookup, and it does not need to resist deliberate attacks, though some tables add a random seed to stop crafted collisions. Password hashing has the opposite goal: if the hash database leaks, guessing passwords should be expensive, so bcrypt, scrypt or Argon2 are deliberately slow, use a unique salt per password and can be tuned to cost more over time. Using a fast hash for passwords lets attackers try billions of guesses per second."
+    k: ["!Says hash table functions are optimised for speed and even distribution", "!Says password hashes are deliberately slow to make guessing expensive", "Mentions a unique salt per password", "Explains why a fast hash is dangerous for passwords"]
+    h: ["What happens if an attacker can compute your hash a billion times a second?"]
+    fu: ["Why does a salt stop attackers from using a precomputed table of hashes?", "An attacker sends keys that all collide in your server's hash table. What could you do?"]
+    m: "SHA-256 is the right choice for storing passwords because it is secure."
+    s: ["Contrasts the two goals clearly", "Mentions salts and tunable cost"]

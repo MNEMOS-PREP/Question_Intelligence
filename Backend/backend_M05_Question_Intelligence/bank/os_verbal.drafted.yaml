@@ -98,6 +98,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: core
+    question_type: scenario
     time_budget_s: 180
     concepts:
     - id: concept:process_scheduling
@@ -144,6 +145,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:process_scheduling
@@ -190,6 +192,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: core
+    question_type: conceptual
     time_budget_s: 180
     concepts:
     - id: concept:context_switching
@@ -235,6 +238,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: hard
+    question_type: optimisation
     time_budget_s: 240
     concepts:
     - id: concept:context_switching
@@ -282,6 +286,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:concurrency_synchronisation
@@ -324,6 +329,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:concurrency_synchronisation
@@ -371,6 +377,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: core
+    question_type: scenario
     time_budget_s: 180
     concepts:
     - id: concept:deadlocks
@@ -411,6 +418,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: hard
+    question_type: practical
     time_budget_s: 240
     concepts:
     - id: concept:deadlocks
@@ -454,6 +462,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: core
+    question_type: design
     time_budget_s: 180
     concepts:
     - id: concept:inter_process_communication
@@ -498,6 +507,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:inter_process_communication
@@ -719,6 +729,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:virtual_memory
@@ -766,6 +777,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: hard
+    question_type: scenario
     time_budget_s: 240
     concepts:
     - id: concept:virtual_memory
@@ -814,6 +826,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 150
     concepts:
     - id: concept:paging_and_segmentation
@@ -863,6 +876,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:paging_and_segmentation
@@ -913,6 +927,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:page_replacement
@@ -963,6 +978,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: hard
+    question_type: tradeoff
     time_budget_s: 240
     concepts:
     - id: concept:page_replacement
@@ -1014,6 +1030,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: core
+    question_type: scenario
     time_budget_s: 180
     concepts:
     - id: concept:file_systems
@@ -1055,6 +1072,7 @@ items:
     round_types:
     - os_verbal
     difficulty_band: core
+    question_type: scenario
     time_budget_s: 180
     concepts:
     - id: concept:file_systems

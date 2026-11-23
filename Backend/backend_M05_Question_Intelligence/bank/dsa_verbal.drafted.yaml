@@ -373,6 +373,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: conceptual
     time_budget_s: 180
     concepts:
     - id: concept:amortized_analysis
@@ -416,6 +417,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: conceptual
     time_budget_s: 180
     concepts:
     - id: concept:recurrence_relations
@@ -458,6 +460,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:recurrence_relations
@@ -672,6 +675,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: coding
     time_budget_s: 180
     concepts:
     - id: concept:matrix_operations
@@ -716,6 +720,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 240
     concepts:
     - id: concept:matrix_operations
@@ -847,6 +852,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:two_pointers
@@ -889,6 +895,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: conceptual
     time_budget_s: 240
     concepts:
     - id: concept:two_pointers
@@ -1105,6 +1112,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: coding
     time_budget_s: 180
     concepts:
     - id: concept:queues
@@ -1146,6 +1154,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:queues
@@ -1190,6 +1199,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:monotonic_stack
@@ -1236,6 +1246,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:monotonic_stack
@@ -1285,6 +1296,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:heaps
@@ -1331,6 +1343,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:heaps
@@ -1380,6 +1393,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:non_comparison_sorting
@@ -1424,6 +1438,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: tradeoff
     time_budget_s: 240
     concepts:
     - id: concept:non_comparison_sorting
@@ -1514,6 +1529,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:binary_search_on_answer
@@ -1556,6 +1572,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: scenario
     time_budget_s: 240
     concepts:
     - id: concept:binary_search_on_answer
@@ -1598,6 +1615,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: conceptual
     time_budget_s: 180
     concepts:
     - id: concept:string_matching
@@ -1642,6 +1660,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:string_matching
@@ -1685,6 +1704,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:divide_and_conquer
@@ -1729,6 +1749,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: optimisation
     time_budget_s: 240
     concepts:
     - id: concept:divide_and_conquer
@@ -1776,6 +1797,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:backtracking
@@ -1824,6 +1846,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:backtracking
@@ -1873,6 +1896,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: optimisation
     time_budget_s: 180
     concepts:
     - id: concept:dynamic_programming
@@ -1965,6 +1989,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:knapsack
@@ -2009,6 +2034,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: optimisation
     time_budget_s: 180
     concepts:
     - id: concept:knapsack
@@ -2056,6 +2082,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:longest_increasing_subsequence
@@ -2100,6 +2127,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: tradeoff
     time_budget_s: 240
     concepts:
     - id: concept:longest_increasing_subsequence
@@ -2145,6 +2173,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:edit_distance
@@ -2191,6 +2220,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:edit_distance
@@ -2239,6 +2269,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:dp_on_trees
@@ -2286,6 +2317,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: scenario
     time_budget_s: 240
     concepts:
     - id: concept:dp_on_trees
@@ -2331,6 +2363,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: conceptual
     time_budget_s: 180
     concepts:
     - id: concept:greedy
@@ -2376,6 +2409,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: conceptual
     time_budget_s: 240
     concepts:
     - id: concept:greedy
@@ -2420,6 +2454,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:interval_scheduling
@@ -2467,6 +2502,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: scenario
     time_budget_s: 180
     concepts:
     - id: concept:interval_scheduling
@@ -2683,6 +2719,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: tradeoff
     time_budget_s: 180
     concepts:
     - id: concept:binary_search_trees
@@ -2732,6 +2769,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: conceptual
     time_budget_s: 180
     concepts:
     - id: concept:balanced_trees
@@ -2775,6 +2813,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: conceptual
     time_budget_s: 240
     concepts:
     - id: concept:balanced_trees
@@ -2817,6 +2856,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:tries
@@ -2862,6 +2902,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: tradeoff
     time_budget_s: 240
     concepts:
     - id: concept:tries
@@ -2914,6 +2955,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:segment_trees
@@ -2961,6 +3003,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: optimisation
     time_budget_s: 180
     concepts:
     - id: concept:segment_trees
@@ -3096,6 +3139,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: tradeoff
     time_budget_s: 180
     concepts:
     - id: concept:graphs_representation
@@ -3138,6 +3182,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:graphs_representation
@@ -3312,6 +3357,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:topological_sort
@@ -3354,6 +3400,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: tradeoff
     time_budget_s: 240
     concepts:
     - id: concept:topological_sort
@@ -3403,6 +3450,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:shortest_paths
@@ -3447,6 +3495,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: tradeoff
     time_budget_s: 240
     concepts:
     - id: concept:shortest_paths
@@ -3490,6 +3539,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: tradeoff
     time_budget_s: 180
     concepts:
     - id: concept:minimum_spanning_tree
@@ -3532,6 +3582,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:minimum_spanning_tree
@@ -3576,6 +3627,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: debugging
     time_budget_s: 180
     concepts:
     - id: concept:union_find
@@ -3620,6 +3672,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: tradeoff
     time_budget_s: 240
     concepts:
     - id: concept:union_find
@@ -3667,6 +3720,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: conceptual
     time_budget_s: 180
     concepts:
     - id: concept:strongly_connected_components
@@ -3711,6 +3765,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: scenario
     time_budget_s: 240
     concepts:
     - id: concept:strongly_connected_components
@@ -3910,6 +3965,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:modular_arithmetic
@@ -3952,6 +4008,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: debugging
     time_budget_s: 240
     concepts:
     - id: concept:modular_arithmetic
@@ -3994,6 +4051,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: core
+    question_type: practical
     time_budget_s: 180
     concepts:
     - id: concept:combinatorics
@@ -4031,6 +4089,7 @@ items:
     round_types:
     - dsa_verbal
     difficulty_band: hard
+    question_type: practical
     time_budget_s: 240
     concepts:
     - id: concept:combinatorics
