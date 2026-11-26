@@ -1,0 +1,61 @@
+# =============================================================================
+#  DEPTH BANK — analytics_verbal (2026-11-26). Concepts sitting at three
+#  questions get a fourth, in the difficulty band each still lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: analytics_verbal
+provenance: generated
+items:
+  dx_an_ab_intro:
+    c: [ab_testing]
+    d: intro
+    t: conceptual
+    f: "designing the experiment"
+    q: "What is an A/B test, and why do we split users randomly instead of simply comparing this month with last month?"
+    a: "An A/B test shows two versions of something, such as two checkout pages, to two groups of users at the same time, and compares a metric chosen in advance, such as completed purchases. Assigning users to groups at random means everything else, such as device, city or how loyal they are, is balanced between the groups on average, so a difference in the metric can be credited to the change itself. Comparing this month with last month mixes the change with everything else that differs between the months: festivals, salary days, marketing campaigns or other launches. The metric and the sample size should be decided before the test starts, and it should run for whole weeks."
+    k: ["!Describes showing two versions to randomly assigned groups at the same time", "!Explains randomisation balances other factors so differences come from the change", "!Explains month-to-month comparisons are confused by seasons, campaigns or other launches", "Mentions deciding the metric and sample size beforehand"]
+    h: ["What else changed between last month and this month?"]
+    fu: ["Users are split by whether their user id is even or odd. Is that random enough?", "Why run the test for whole weeks rather than four days?"]
+    m: "A before-and-after comparison is as good as an A/B test."
+    s: ["Explains randomisation", "Names confounders"]
+
+  dx_an_simpson_hard:
+    c: [descriptive_statistics]
+    d: hard
+    t: conceptual
+    f: "correlation versus causation"
+    q: "Treatment A has a higher success rate than treatment B in both small and large hospitals, yet B looks better overall. How is that possible?"
+    a: "This is Simpson's paradox. The two treatments are used in different mixes of cases: suppose B is given mostly in small hospitals with milder cases, where success is high anyway, and A mostly in large hospitals with severe cases. Within each kind of hospital A does better, but B's overall rate is inflated by its easier mix. Overall rates weight the subgroups differently for each treatment, so they compare unlike groups. The fair comparison is within each group, or after reweighting both to the same mix. Whether to split by the group depends on cause and effect: split by a factor that influences both treatment choice and outcome, but not by one that the treatment itself causes."
+    k: ["!Names Simpson's paradox", "!Explains the treatments are used in different mixes of easy and hard cases", "!Says overall rates weight subgroups differently, so the comparison should be within groups or reweighted", "Mentions asking whether the grouping variable is a confounder or a result of the treatment"]
+    h: ["Which hospitals mostly use which treatment?"]
+    fu: ["Your college's overall placement rate fell, yet every branch's rate rose. Explain how.", "When would splitting by the group give the wrong answer instead?"]
+    m: "If a treatment wins in every group, it must win overall."
+    s: ["Explains the weighting", "Considers causal structure"]
+
+  dx_an_eda_fooling_hard:
+    c: [exploratory_data_analysis, descriptive_statistics]
+    d: hard
+    t: conceptual
+    f: "forming hypotheses"
+    q: "After a week of exploring a dataset you have found twenty interesting patterns. How do you avoid fooling yourself, and which would you present?"
+    a: "When you search through many slices of data, some patterns will appear by chance alone, so a long list of findings is partly noise. Treat each finding as a hypothesis, not a conclusion. Confirm it on data you did not explore, such as a held-out portion or a later time period. Look at the size of the effect, not just whether it is statistically significant, and correct for having tested many things. Check for artefacts: logging bugs, duplicated rows, a change in how data was collected, or one city dominating. Remember that correlation is not cause. Present the few findings that are large, hold up on new data and suggest an action, with their caveats and a proposed experiment."
+    k: ["!Explains that searching many patterns makes some appear by chance", "!Treats findings as hypotheses to confirm on held-out or new data", "!Checks effect size and data artefacts, not only significance", "Presents a few robust, actionable findings with caveats or proposes experiments"]
+    h: ["If you look at a hundred random comparisons, how many will look significant?"]
+    fu: ["The strongest pattern disappears when one city's data is removed. What do you conclude?", "A manager wants to act on a pattern today. What do you tell them?"]
+    m: "Every statistically significant pattern found while exploring is real."
+    s: ["Names the multiple-comparisons trap", "Confirms on fresh data"]
+
+  dx_an_groupby_intro:
+    c: [sql_for_analytics]
+    d: intro
+    t: conceptual
+    f: "window functions"
+    q: "What does a window function such as ROW_NUMBER or a running SUM do in SQL, and how is it different from GROUP BY?"
+    a: "GROUP BY collapses rows into one output row per group, so you lose the individual rows. A window function also computes over a set of related rows, but it keeps every row and adds the result as a new column. The window is defined with OVER: PARTITION BY splits rows into groups and ORDER BY sets their order within each group. For example, SUM of amount over rows ordered by day gives a running total of daily sales, and ROW_NUMBER partitioned by city and ordered by amount descending ranks orders within each city. LAG compares a row with the previous one. Window functions are evaluated after WHERE and GROUP BY, so to filter on one you wrap the query in a subquery or CTE."
+    k: ["!Explains GROUP BY collapses rows into one per group", "!Explains a window function computes across related rows but keeps every row", "!Describes OVER with PARTITION BY and ORDER BY defining the window", "Gives a use such as a running total, ranking within a group or LAG, or notes it cannot be filtered in WHERE"]
+    h: ["Does the result have fewer rows than the table?"]
+    fu: ["How would you show each day's sales beside the previous day's?", "Your running total should restart every month. What do you add to the query?"]
+    m: "Window functions are just a different way to write GROUP BY."
+    s: ["Contrasts the row counts", "Explains the OVER clause"]

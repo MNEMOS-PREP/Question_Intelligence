@@ -1,0 +1,126 @@
+# =============================================================================
+#  DEPTH BANK — frontend_verbal (2026-11-26). Concepts sitting at three
+#  questions get a fourth, in the difficulty band each still lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: frontend_verbal
+provenance: generated
+items:
+  dx_fe_angular_intro:
+    c: [angular]
+    d: intro
+    t: conceptual
+    f: "components and modules"
+    q: "What are components, templates and services in Angular, and how do they work together on a page?"
+    a: "A component is a TypeScript class paired with a template and styles, and it controls one part of the page, such as a product card. The template is HTML with Angular syntax that binds the two together: interpolation shows class values, property binding sets element properties, event binding calls class methods when the user clicks, and control flow such as if and for blocks shows or repeats elements. A service is an injectable class that holds logic or data shared across components, such as calling the API or keeping the logged-in user. Angular's dependency injection hands services to the components that ask for them, so components stay focused on what the view shows."
+    k: ["!Describes a component as a class with a template that controls part of the page", "!Explains templates bind data and events between the class and the HTML", "!Describes services as injectable classes for shared logic such as API calls", "Mentions dependency injection or keeping components focused on the view"]
+    h: ["Where would code that two different pages need belong?"]
+    fu: ["Two components on different pages both need the logged-in user's details. Where should that live?", "Why keep HTTP calls out of the component class itself?"]
+    m: "Every Angular component should fetch its own data directly from the server."
+    s: ["Clear roles for each part", "Mentions injection"]
+
+  dx_fe_dom_intro:
+    c: [browser_rendering]
+    d: intro
+    t: conceptual
+    f: "critical rendering path"
+    q: "What is the DOM, and how can it differ from the HTML file the server sent?"
+    a: "The DOM is the tree of objects the browser builds in memory by parsing the HTML: each element, attribute and piece of text becomes a node. JavaScript reads and changes this tree, adding, removing or editing nodes, and the browser re-renders whatever changes. So the live DOM can look very different from the original file: a page that arrives with an empty div may be filled with a whole product list by a script. That is why view source shows the HTML as sent, while the developer tools' elements panel shows the current DOM. The browser also repairs broken HTML while parsing. Because DOM changes can trigger layout and repaint, many small changes in a loop should be batched."
+    k: ["!Describes the DOM as the in-memory tree the browser builds from the HTML", "!Explains JavaScript reads and changes the DOM, so it can differ from the original file", "!Contrasts view source with the live elements panel in developer tools", "Mentions the browser repairing broken HTML or DOM changes triggering re-rendering"]
+    h: ["What does a script actually change when it adds an element to the page?"]
+    fu: ["The HTML your server sends contains only an empty div, yet the page shows a full product list. How?", "Why can changing many elements one at a time inside a loop be slow?"]
+    m: "The DOM is just another name for the HTML file."
+    s: ["Separates file from live tree", "Mentions rendering cost"]
+
+  dx_fe_testing_login_intro:
+    c: [frontend_testing]
+    d: intro
+    t: practical
+    f: "component tests"
+    q: "For a login form in a React app, what would you check with a unit test, a component test and a browser-driven test?"
+    a: "A unit test covers small pure logic, such as the function that checks whether an email address is valid, with several good and bad inputs. A component test renders the login form with a library such as Testing Library, types an invalid email and checks the error message appears, then submits valid details and checks the API call is made with them, with the network mocked, including the loading state and the message for a wrong password. An end-to-end test drives a real browser, using Playwright or Cypress, against the running app: log in as a test user and confirm the dashboard appears. Keep many fast lower-level tests and only a few end-to-end ones for critical journeys."
+    k: ["!Gives a unit test example such as an email validation function", "!Gives a component test rendering the form and checking errors and submission", "!Gives an end-to-end test logging in through a real browser", "Says to keep many fast lower-level tests and few end-to-end ones"]
+    h: ["Which check needs no browser at all?"]
+    fu: ["Your component test inspects the form's internal state variable. Why might that break needlessly?", "The browser test needs a real account to sign in with. Where should it come from?"]
+    m: "One end-to-end test of the login flow is enough testing for a form."
+    s: ["One concrete test per level", "Balances the levels"]
+
+  dx_fe_custom_dropdown_hard:
+    c: [html_semantics]
+    d: hard
+    t: debugging
+    f: "semantic elements"
+    q: "Your team built a custom dropdown out of divs. Keyboard and screen-reader users cannot use it at all. What is missing, and what would you do?"
+    a: "A div has no role, cannot receive keyboard focus, and has no built-in keyboard behaviour, so a screen reader does not know it is a dropdown and keyboard users cannot reach or operate it. A native select gives all of that for free. A custom widget must add focusability, keyboard support for arrow keys, Enter and Escape, ARIA roles and states such as combobox, listbox, option, aria-expanded and aria-selected, a proper label, and focus management when it opens and closes. The first choice should be the native select or a well-tested accessible component library; if a custom one is needed, follow the ARIA authoring practices pattern and test with only a keyboard, a real screen reader and an automated checker such as axe."
+    k: ["!Explains plain divs have no role, keyboard focus or keyboard behaviour", "!Lists what must be added, such as focusability, arrow and Escape keys, and ARIA roles and states", "!Recommends a native select or a tested accessible component first", "Mentions testing with a keyboard, a screen reader or automated checks"]
+    h: ["What does a native select give you that a div does not?"]
+    fu: ["Adding a role made the screen reader announce the widget, yet users still cannot choose an option. Why?", "How would you catch this before release next time?"]
+    m: "Adding ARIA attributes alone makes any element fully accessible."
+    s: ["Lists the missing behaviour", "Prefers native elements"]
+
+  dx_fe_nextjs_intro:
+    c: [nextjs, rendering_strategies]
+    d: intro
+    t: conceptual
+    f: "server and client components"
+    q: "What does Next.js add on top of React, and why would a team choose it?"
+    a: "React is a library for building user interfaces; it leaves routing, data loading and rendering strategy to you. Next.js is a framework built on React that adds file-based routing, rendering pages on the server or generating them at build time, server components, route handlers for small APIs, image and font optimisation, and bundling with code splitting already configured. Teams choose it when pages must appear quickly and be visible to search engines, or when they want frontend and simple backend endpoints in one project with sensible defaults. The costs are more concepts to learn, such as which code runs on the server and which in the browser, framework conventions to follow, and needing a server, not just static hosting, for server rendering."
+    k: ["!Explains React is a UI library while Next.js is a framework built on it", "!Names additions such as file-based routing, server rendering or static generation", "!Gives reasons such as search visibility, faster first load or one full-stack project", "Mentions costs such as more concepts or needing a server for rendering"]
+    h: ["What does plain React leave for you to decide?"]
+    fu: ["An internal admin tool behind a login has no search-engine needs. Would you still pick it?", "Which parts of the app would now run on the server instead of the browser?"]
+    m: "Next.js is a different language from React."
+    s: ["Library versus framework", "Names real costs"]
+
+  dx_fe_csr_ssr_intro:
+    c: [rendering_strategies]
+    d: intro
+    t: conceptual
+    f: "client versus server rendering"
+    q: "What does the browser receive first from a client-rendered app compared with a server-rendered one, and what does the user see while waiting?"
+    a: "A client-rendered app sends an almost empty HTML page plus a JavaScript bundle. The browser must download and run that JavaScript, which then fetches data and builds the page, so the user sees a blank screen or a spinner until all of that finishes. A server-rendered app runs the components on the server and sends HTML that already contains the content, so the user can read the page as soon as it arrives; the JavaScript then loads and hydrates the page, attaching event handlers to make it interactive. Static generation goes further and builds the HTML ahead of time. Server-sent HTML also lets search engines read the content directly."
+    k: ["!Explains client rendering sends a near-empty page plus JavaScript that builds the content", "!Explains server rendering sends HTML that already contains the content", "!Says the client-rendered user sees a blank page or spinner until the JavaScript runs", "Mentions hydration making server HTML interactive, or static generation ahead of time"]
+    h: ["What is inside the very first HTML response in each case?"]
+    fu: ["On a slow phone, which page becomes readable first, and which becomes clickable first?", "Why do search engines care which approach you use?"]
+    m: "Server rendering means the page needs no JavaScript at all."
+    s: ["Describes each first response", "Explains hydration"]
+
+  dx_fe_vue_deep_watch_hard:
+    c: [vue, web_performance]
+    d: hard
+    t: optimisation
+    f: "the reactivity system"
+    q: "A Vue 3 page holds a large nested object with a deep watcher on it, and the page becomes sluggish whenever the data updates. Why, and what would you change?"
+    a: "A deep watcher must traverse the whole object to track every nested property, and it reruns on any change anywhere inside it, so large data that updates often makes each change expensive. Vue's reactive proxies also add overhead to every access on big structures. Watch only what you need, using a getter for the specific field, and use computed values for derived data so work is cached. For large data that does not need fine-grained reactivity, such as chart points or a big table loaded from the server, use shallowRef or markRaw and replace the whole value when it changes. Debounce rapid updates, and use virtual scrolling so only visible rows are rendered."
+    k: ["!Explains a deep watcher traverses the whole object to track every nested property", "!Proposes watching only the specific fields needed or using computed values", "!Proposes shallowRef, shallowReactive or markRaw for large data that need not be deeply reactive", "Mentions debouncing updates or virtual scrolling for long lists"]
+    h: ["How much of the object does the watcher look at for each change?"]
+    fu: ["After switching to a shallow ref, changing one item no longer updates the view. Why?", "How would you measure which watcher is costing the most?"]
+    m: "Vue's reactivity is free, however large the data."
+    s: ["Explains the traversal cost", "Picks targeted reactivity"]
+
+  dx_fe_web_vitals_intro:
+    c: [web_performance]
+    d: intro
+    t: conceptual
+    f: "measuring with web vitals"
+    q: "What are the Core Web Vitals, and what does each one measure about a user's experience of a page?"
+    a: "They are three user-centred measures Google uses. Largest Contentful Paint measures loading: how long until the largest visible element, often a hero image or heading, is rendered; good is within 2.5 seconds. Interaction to Next Paint measures responsiveness: how long the page takes to visibly respond after a tap, click or key press, across the visit; good is under 200 milliseconds. It replaced First Input Delay in 2024. Cumulative Layout Shift measures visual stability: how much content jumps around unexpectedly, as when an image without a set size pushes text down; good is below 0.1. They are measured from real users' browsers and in lab tools such as Lighthouse, and they affect search ranking."
+    k: ["!Names Largest Contentful Paint as measuring loading of the main content", "!Names Interaction to Next Paint as measuring responsiveness to input", "!Names Cumulative Layout Shift as measuring unexpected movement of content", "Mentions good thresholds or field versus lab measurement"]
+    h: ["Think loading, responding and staying still."]
+    fu: ["A button jumps down just as the user taps it. Which measure suffers, and what usually causes it?", "Your lab score is excellent but real users report slowness. How can both be true?"]
+    m: "Page speed is a single number: how long the whole page takes to download."
+    s: ["Names all three accurately", "Gives thresholds"]
+
+  dx_fe_storage_intro:
+    c: [web_storage_and_cookies]
+    d: intro
+    t: conceptual
+    f: "local and session storage"
+    q: "What are cookies, localStorage and sessionStorage, and how do they differ?"
+    a: "Cookies are small name-value pairs, about 4 KB each, that the browser sends automatically with every request to their domain, which is why they carry session ids. They can be marked HttpOnly so scripts cannot read them, Secure so they travel only over HTTPS, and SameSite to limit cross-site sending, and they can expire. localStorage holds several megabytes per origin, is accessed only by JavaScript, persists until cleared, and is never sent to the server automatically. sessionStorage works the same way but belongs to one tab and is cleared when that tab closes. Any script running on the page, including an injected one, can read web storage, so secrets do not belong there."
+    k: ["!Says cookies are small and sent automatically with requests to their domain", "!Says localStorage persists in the browser and is never sent automatically", "!Says sessionStorage lasts only for one tab's session", "Mentions HttpOnly or Secure flags, or that scripts can read web storage"]
+    h: ["Which of the three does the server see without any JavaScript?"]
+    fu: ["Where would you keep a user's chosen theme, and why there?", "A malicious script runs on your page. Which of the three can it read?"]
+    m: "localStorage is encrypted, so it is safe for passwords."
+    s: ["Contrasts lifetime and sending", "Flags the security point"]

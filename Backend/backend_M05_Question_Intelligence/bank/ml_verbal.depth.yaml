@@ -1,0 +1,179 @@
+# =============================================================================
+#  DEPTH BANK — ml_verbal (2026-11-26). Concepts sitting at three questions get
+#  a fourth: the difficulty band each still lacked, or an angle it had never
+#  been asked from.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: ml_verbal
+provenance: generated
+items:
+  dx_ml_pr_vs_roc_hard:
+    c: [classification_metrics, class_imbalance]
+    d: hard
+    t: conceptual
+    f: "ROC versus precision-recall under imbalance"
+    q: "Only 0.5% of cases are positive. Your model's ROC-AUC is 0.97 but its PR-AUC is 0.18. How can both be true, and which would you report?"
+    a: "The ROC curve plots recall against the false positive rate, false positives divided by all negatives. With a huge number of negatives, even thousands of false alarms barely move that rate, so the curve looks excellent. The precision-recall curve uses precision, true positives divided by everything flagged, which those same false alarms hit directly. A random model's PR-AUC equals the positive rate, about 0.005 here, so 0.18 is far better than chance, yet at useful recall most flagged cases are still false alarms. When positives are rare and reviewing alarms costs money, report PR-AUC, or better, precision at the recall you will operate at. ROC-AUC remains fine for comparing ranking quality on balanced data."
+    k: ["!Explains ROC uses the false positive rate, which stays small when negatives vastly outnumber positives", "!Explains precision is directly hurt by the many false alarms", "!Recommends PR-AUC or precision at the operating recall for rare positives", "Notes a random model's PR-AUC equals the share of positives, here about 0.005"]
+    h: ["What is each curve's false-alarm measure divided by?"]
+    fu: ["The fraud team can review only 200 alerts a day. Which single number would you show them?", "Fraud becomes twice as common next quarter with the same model. Which of the two numbers moves?"]
+    m: "A ROC-AUC of 0.97 means the model is excellent for any use."
+    s: ["Explains both denominators", "Chooses the metric by the decision"]
+
+  dx_ml_nested_cv_hard:
+    c: [cross_validation, hyperparameter_tuning]
+    d: hard
+    t: debugging
+    f: "optimism from model selection"
+    q: "You tuned hyperparameters with 5-fold cross-validation and report the best average score as your model's expected accuracy. Why is that optimistic, and what would you do instead?"
+    a: "When many configurations are scored on the same folds, the winner is partly the one that happened to suit those particular folds, so its score includes luck. The more settings you try, the larger that optimism, much like tuning on a test set. The honest estimate comes from nested cross-validation: an inner loop chooses hyperparameters using only the outer training folds, and an outer loop measures how well that whole selection procedure performs on data it never saw. A simpler alternative is to keep a final test set untouched until the very end and report the chosen model's score there. Nested cross-validation costs many more model fits: outer folds times inner folds times configurations."
+    k: ["!Explains the best of many configurations on the same folds includes luck, so it is optimistic", "!Proposes nested cross-validation with an inner loop for tuning and an outer loop for estimation", "Mentions keeping a final untouched test set as an alternative", "Notes the extra compute cost of nested cross-validation"]
+    h: ["Which data chose the winner, and which data scored it?"]
+    fu: ["You tried only two settings. Is the optimism still worth worrying about?", "After the nested procedure, which hyperparameters do you actually ship?"]
+    m: "Cross-validation scores are always unbiased, however you use them."
+    s: ["Names selection bias", "Describes both loops"]
+
+  dx_ml_forest_features_core:
+    c: [ensemble_methods, decision_trees]
+    d: core
+    t: conceptual
+    f: "why random forests subsample features"
+    q: "Bagging already trains each tree on a different bootstrap sample. Why does a random forest also choose a random subset of features at every split?"
+    a: "Bootstrap samples overlap heavily, so if a few features are strong, nearly every bagged tree splits on them near the top and the trees end up similar. Averaging highly correlated models reduces variance only a little, because their errors move together. Restricting each split to a random subset of features forces some trees to build on other features, which decorrelates them, so averaging cancels far more of their errors. A common setting is the square root of the number of features for classification. Too small a subset makes each tree weak, raising bias, so it is a tuned trade-off. A bonus of bagging is the out-of-bag estimate, scoring each tree on rows it never saw."
+    k: ["!Explains bagged trees stay correlated because strong features dominate their top splits", "!Says averaging correlated models reduces variance only a little", "!Explains random feature subsets decorrelate the trees so averaging helps more", "Mentions the square root of features setting or the bias cost of too few"]
+    h: ["What would every bagged tree choose for its first split?"]
+    fu: ["One input is almost a perfect predictor. What happens to plain bagging here?", "You let each split consider just one randomly chosen input. What do you expect?"]
+    m: "Random forests sample features only to make training faster."
+    s: ["Explains correlation between trees", "Names the trade-off"]
+
+  dx_ml_hpo_budget_hard:
+    c: [hyperparameter_tuning]
+    d: hard
+    t: optimisation
+    f: "tuning on a tight compute budget"
+    q: "Each training run takes two hours and you can afford about 30 runs. How would you search ten hyperparameters efficiently?"
+    a: "A grid is impossible: even three values each is 59,049 runs. Random search over sensible ranges, with the learning rate on a log scale, already beats a grid because only a few settings usually matter. Better still is Bayesian optimisation, for example Optuna's TPE, which uses the results so far to choose the next promising trial. Combine it with early stopping of weak runs, as in successive halving or Hyperband: start many configurations on a few epochs or a data subset and continue only the best. Fix settings known to matter little at standard defaults, tune on a smaller proxy dataset where possible, run trials in parallel, and confirm the final choice on held-out data."
+    k: ["!Rejects grid search because combinations explode", "!Proposes Bayesian optimisation that uses earlier results to choose the next trial", "!Proposes stopping weak runs early, as in successive halving or Hyperband", "Mentions fixing unimportant settings, log-scale ranges or tuning on a smaller proxy"]
+    h: ["Do you need to finish a run to know it is hopeless?"]
+    fu: ["The search picked a learning rate at the very edge of the range you allowed. What does that tell you?", "How would you know the 30 runs found something genuinely better than the defaults?"]
+    m: "More hyperparameters tried always means a better final model."
+    s: ["Uses earlier results", "Cuts losers early"]
+
+  dx_ml_svd_hard:
+    c: [linear_algebra_for_ml, dimensionality_reduction]
+    d: hard
+    t: conceptual
+    f: "SVD and low-rank approximation"
+    q: "How does the singular value decomposition let you compress a user-by-movie ratings matrix, and what do the components you keep mean?"
+    a: "SVD factors the matrix into U, a diagonal matrix of singular values sorted from largest to smallest, and V transpose. Keeping only the top k singular values and their columns gives the best possible rank-k approximation in squared error, the Eckart-Young theorem, and needs k times m plus n numbers instead of m times n. Each user and each movie becomes a k-dimensional vector, and their dot product approximates the rating; the dimensions behave like latent factors, such as a taste for action or for older films. PCA is the same idea applied to centred data. Real rating matrices are mostly missing, so recommenders fit factors on observed entries only, with regularisation, rather than a plain SVD."
+    k: ["!Explains SVD factors the matrix into U, a diagonal of singular values, and V transpose", "!Says keeping the top k singular values gives the best rank-k approximation", "!Interprets the kept components as latent factors for users and movies", "Mentions missing ratings need factorisation on observed entries, or the link to PCA"]
+    h: ["Which singular values carry most of the matrix?"]
+    fu: ["How would you pick k, and what happens if it is too large?", "Most ratings are missing. Why can't you simply fill the gaps with zeros first?"]
+    m: "Compressing with SVD throws away information at random."
+    s: ["States the optimality result", "Interprets factors"]
+
+  dx_ml_separation_hard:
+    c: [logistic_regression, regularisation]
+    d: hard
+    t: debugging
+    f: "perfect separation"
+    q: "While training logistic regression, the weights keep growing and the solver warns that it did not converge. What is happening, and what do you do?"
+    a: "The training data is probably perfectly separable: some combination of features, sometimes a single feature, splits the classes with no mistakes, which is common when there are many features and few rows. Then the log loss can always be lowered further by scaling the weights up, pushing predicted probabilities towards exactly 0 and 1, so there is no finite minimum and the weights run off towards infinity. Probabilities become overconfident and coefficients meaningless. Adding L2 regularisation gives the problem a finite optimum. Also check whether a feature predicts the label perfectly because it leaks the answer, and consider removing or merging sparse features, Firth's penalised regression, or collecting more data."
+    k: ["!Identifies perfect or near-perfect separation of the classes", "!Explains the loss keeps falling as weights grow, so there is no finite optimum", "!Proposes L2 regularisation to make the optimum finite", "Suggests checking for a leaked feature that predicts the label perfectly"]
+    h: ["What if a straight line separates the two classes with no errors?"]
+    fu: ["A single column splits defaulters from payers with no mistakes at all. What would you check before celebrating?", "With the penalty added, how should you read the size of the weights now?"]
+    m: "Non-convergence always means the learning rate is wrong."
+    s: ["Explains why no optimum exists", "Checks for leakage"]
+
+  dx_ml_framing_selection_hard:
+    c: [ml_problem_framing, data_leakage]
+    d: hard
+    t: scenario
+    f: "labels only for past decisions"
+    q: "A bank wants to predict which loan applicants will repay, but it only knows outcomes for people it approved in the past. Why is that a problem, and how would you handle it?"
+    a: "The labels come only from applicants the old policy judged safe, so the training data is a biased sample. The model never sees what happens to the kinds of people who were always rejected, so its predictions for them are guesses, and once deployed it shapes who gets approved and therefore which outcomes are ever observed, a feedback loop. The most reliable fix is controlled exploration: approve a small, random share of borderline applicants, with a capped budget, to learn their real outcomes. Other options are reject inference, estimating outcomes for rejected applicants, which is risky, and using credit-bureau data on how rejected applicants later repaid elsewhere. Evaluate with this bias in mind and monitor after launch."
+    k: ["!Identifies selection bias because outcomes exist only for previously approved applicants", "!Explains the model may be wrong for the kinds of people who were always rejected", "!Proposes controlled exploration, such as approving a small random sample of borderline applicants", "Mentions reject inference, outside credit data or the feedback loop after deployment"]
+    h: ["Whose repayment does the bank never get to see?"]
+    fu: ["Approving risky applicants on purpose costs money. How would you size and justify that experiment?", "After the new model goes live, why might next year's data be even more one-sided?"]
+    m: "More historical data from approved customers removes the bias."
+    s: ["Names the feedback loop", "Offers exploration"]
+
+  dx_ml_leaderboard_hard:
+    c: [overfitting, cross_validation]
+    d: hard
+    t: scenario
+    f: "overfitting to a leaderboard"
+    q: "Your Kaggle public leaderboard score rose steadily over 200 submissions, but you fell 300 places on the private leaderboard. What happened?"
+    a: "You overfitted the public leaderboard. It is scored on a small part of the test data, and every submission tells you a little about that part, so choosing models by public score is effectively tuning on the test set and adapting to its noise. The private leaderboard, on unseen rows, showed the true generalisation. The remedy is to build a local cross-validation scheme that mirrors the test split, check that it moves together with the leaderboard, and make decisions, including the final submissions, by cross-validation rather than public score. Fewer, more meaningful submissions and robust models such as ensembles also help. The same mistake at work is tuning on the test set."
+    k: ["!Explains choosing models by public leaderboard score overfits that small test subset", "!Says each submission leaks information, like tuning on the test set", "!Recommends trusting a robust local cross-validation for final choices", "Mentions the public subset is small and noisy, or checking that local scores and the leaderboard agree"]
+    h: ["How large is the public part of the test set?"]
+    fu: ["Your local validation and the public leaderboard disagree about which model is better. Which do you believe?", "Where does the same mistake happen in an ordinary company project?"]
+    m: "A higher public leaderboard score always means a better model."
+    s: ["Names the leak", "Trusts local validation"]
+
+  dx_ml_recsys_intro:
+    c: [recommender_systems]
+    d: intro
+    t: conceptual
+    f: "collaborative and content-based"
+    q: "What is the difference between collaborative filtering and content-based recommendation? Use a movie app as the example."
+    a: "Content-based recommendation suggests movies whose features resemble those a user liked, such as genre, actors or plot keywords. It can recommend a brand-new film immediately because it only needs the film's description, but it tends to keep offering more of the same. Collaborative filtering ignores features and uses behaviour: people who liked the films you liked also liked this one, either by comparing users, comparing items, or learning hidden factors. It can find surprising matches, but it struggles with new users and new films that have no history, the cold-start problem, and needs a lot of interaction data. Most real systems are hybrids that combine both."
+    k: ["!Explains content-based recommends items with features similar to what the user liked", "!Explains collaborative filtering uses other users' behaviour patterns", "!Says collaborative filtering struggles with new users and items", "Mentions hybrids or that content-based tends to repeat the same kind of item"]
+    h: ["Does the method need to know what the movie is about?"]
+    fu: ["A brand-new film is added tonight. Which approach can recommend it tomorrow, and why?", "Why can the behaviour-based approach suggest something the other one never would?"]
+    m: "Collaborative filtering needs detailed descriptions of every item."
+    s: ["Contrasts the inputs each uses", "Names cold start"]
+
+  dx_ml_reg_scaling_hard:
+    c: [regularisation, feature_engineering]
+    d: hard
+    t: debugging
+    f: "penalties and feature units"
+    q: "You add L2 regularisation to a linear model without standardising the features first. Why can that quietly hurt the model?"
+    a: "The penalty adds the sum of squared weights, treating every weight the same, but a weight's size depends on its feature's units. Income in rupees needs a tiny weight while income in lakhs needs a large one for the same effect, so features whose units call for large weights are shrunk much harder for no real reason. The model then depends on arbitrary unit choices, and changing metres to kilometres changes the predictions. Standardise features to zero mean and unit variance, fitted on training data only, so the penalty is fair across features. Do not penalise the intercept. The same issue decides which features L1 drops, so lasso selection is unreliable on unscaled data."
+    k: ["!Explains the penalty depends on weight size, which depends on each feature's units", "!Says features needing large weights are shrunk more for no real reason", "!Recommends standardising features, fitted on training data, before regularising", "Mentions not penalising the intercept or that L1 selection also depends on scale"]
+    h: ["What happens to a weight if you change a column from metres to kilometres?"]
+    fu: ["Converting one column from metres to kilometres changed your predictions. Should it?", "Why do tree-based models not need this step?"]
+    m: "Regularisation automatically accounts for the scale of each feature."
+    s: ["Links weight size to units", "Gives the correct order of steps"]
+
+  dx_ml_sklearn_unseen_hard:
+    c: [scikit_learn, feature_engineering]
+    d: hard
+    t: design
+    f: "estimators and pipelines"
+    q: "Your scikit-learn model handles numeric and categorical columns, and in production a new category value appears and prediction crashes. How would you build the pipeline so that cannot happen?"
+    a: "Use a ColumnTransformer with one branch per column type. Numeric columns get an imputer and a scaler. Categorical columns get an imputer and a OneHotEncoder with handle_unknown set to ignore, or to group infrequent values, so an unseen category becomes all zeros or the infrequent bucket instead of an error. Wrap the transformer and the model in a single Pipeline, fit it on training data only, and select columns by name rather than position. Validate the incoming schema and types before prediction, and add a test that feeds a row with an unseen category and missing values. Save and load the whole pipeline together, with library versions pinned, so training and serving apply identical steps."
+    k: ["!Uses a ColumnTransformer with separate numeric and categorical branches", "!Sets the one-hot encoder to ignore unknown categories or group infrequent ones", "!Wraps preprocessing and model in one Pipeline fitted on training data only", "Mentions imputers for missing values, schema checks or a test row with an unseen category"]
+    h: ["What should an encoder do with a value it never saw in training?"]
+    fu: ["A column arrives as the text '12' instead of the number 12. Where should that be caught?", "Why save everything as one object instead of the model and encoder separately?"]
+    m: "Retraining the model whenever a new category appears is the only fix."
+    s: ["Handles unknowns explicitly", "Keeps training and serving identical"]
+
+  dx_ml_adversarial_validation_hard:
+    c: [train_test_split, data_leakage]
+    d: hard
+    t: practical
+    f: "detecting train-test shift"
+    q: "Your test data comes from a later period, and you suspect it differs from your training data. How can you measure how different it is, and what do you do if it is?"
+    a: "Use adversarial validation: combine the two sets, label training rows 0 and test rows 1, and train a classifier to tell them apart. An AUC near 0.5 means the sets look alike; a high AUC means they differ, and the classifier's most important features show what drifted, often something time-like such as an id or a date-derived value. Then drop or transform drifting features that carry no real signal, build the validation set from the training rows that look most like the test set, or reweight training rows by how test-like they appear. Per-feature checks such as distribution plots or a population stability index complement it. If the shift is real, retrain on more recent data."
+    k: ["!Describes training a classifier to tell training rows from test rows", "!Says an AUC near 0.5 means similar sets and a high AUC means a shift", "!Uses the classifier's important features to find what drifted", "Proposes dropping drifting features, test-like validation rows or reweighting"]
+    h: ["What if a model tried to guess which set each row came from?"]
+    fu: ["The most telling input turns out to be a row number. What does that suggest?", "Why is this different from leaking test labels into training?"]
+    m: "If the same columns exist in both sets, the data cannot have shifted."
+    s: ["Describes the method end to end", "Acts on the result"]
+
+  dx_ml_batch_size_core:
+    c: [gradient_descent, optimisers]
+    d: core
+    t: tradeoff
+    f: "batch size"
+    q: "What changes in training if you raise the batch size from 32 to 4,096 examples per step?"
+    a: "Each gradient becomes a much better estimate of the full-data gradient, the GPU is used more efficiently, and an epoch needs far fewer steps, so wall-clock time per epoch usually drops. But each step costs more memory, and the noise of small batches, which acts as a regulariser and helps escape sharp minima, mostly disappears, so large-batch training can generalise worse. To keep progress per epoch, the learning rate is usually scaled up roughly in proportion to batch size, with a warm-up period, and very large batches need special optimisers such as LARS or LAMB. If memory is the limit, gradient accumulation simulates a large batch with several small ones. The best batch size is an empirical trade-off."
+    k: ["!Says larger batches give less noisy gradients and fewer, more efficient steps per epoch", "!Explains small-batch noise regularises, so very large batches can generalise worse", "!Mentions scaling the learning rate with batch size, with warm-up", "Mentions memory limits or gradient accumulation"]
+    h: ["What happens to the noise in each gradient estimate?"]
+    fu: ["Your GPU fits only 64 examples, but the paper used 1,024. How do you reproduce it?", "Training became faster per epoch but validation accuracy dropped. What would you try?"]
+    m: "Bigger batches are always better because they are more accurate."
+    s: ["Weighs speed against generalisation", "Knows the learning-rate adjustment"]

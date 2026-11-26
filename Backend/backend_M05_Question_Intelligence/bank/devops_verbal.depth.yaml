@@ -1,0 +1,61 @@
+# =============================================================================
+#  DEPTH BANK — devops_verbal (2026-11-26). Concepts sitting at three questions
+#  get a fourth, in the difficulty band each still lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: devops_verbal
+provenance: generated
+items:
+  dx_ops_aws_basics_intro:
+    c: [aws]
+    d: intro
+    t: conceptual
+    f: "IAM"
+    q: "What are EC2, S3 and IAM in AWS, and how would a simple web app use each one?"
+    a: "EC2 provides virtual machines, so the app's backend server runs on an EC2 instance. S3 is object storage: durable, cheap storage for files such as user uploads, images, static website assets and backups, addressed by bucket and key. IAM controls who and what may do which actions on which resources: people get users or single sign-on with multi-factor authentication, and services get roles. In a simple app, the EC2 instance is given an IAM role that allows reading and writing only that app's bucket, so no access keys are stored on the server, and permissions follow least privilege. Choosing a region close to users, and spreading across availability zones, comes next."
+    k: ["!Describes EC2 as virtual machines for running the application", "!Describes S3 as object storage for files such as uploads and static assets", "!Describes IAM as controlling who and what can access which resources", "Mentions giving the server an IAM role instead of stored keys, or least privilege"]
+    h: ["Which service holds files, which runs code, and which decides permissions?"]
+    fu: ["Why is putting access keys in the app's config file a bad idea?", "Your bucket was made public by mistake. What could happen?"]
+    m: "S3 is a database for storing application tables."
+    s: ["Clear role for each service", "Uses roles, not keys"]
+
+  dx_ops_azure_bill_hard:
+    c: [azure]
+    d: hard
+    t: debugging
+    f: "compute choices"
+    q: "Your company's Azure bill doubled this month with no new features released. How would you find out why and bring it down?"
+    a: "Open Cost Management and break the spend down by service, resource group and tag, day by day, to find when and where it jumped. Typical culprits: a virtual machine or test environment someone forgot to delete, an App Service plan or cluster that autoscaled and never scaled back, log analytics ingesting far more data after a verbosity change, unattached disks and public IPs, or data transfer out of the region. Fix the cause, then reduce the baseline: right-size over-provisioned resources, shut development environments down at night, buy reservations or savings plans for steady workloads, and shorten log retention. Finally set budgets with alerts and require owner tags so every resource has someone responsible."
+    k: ["!Uses cost analysis broken down by service, resource group or tag over time", "!Names likely causes such as forgotten resources, autoscaling, log ingestion or data egress", "!Proposes fixes such as right-sizing, shutting down idle dev resources or reserved capacity", "Sets up budgets and alerts, or enforces tagging so costs have owners"]
+    h: ["On which day did the daily spend change?"]
+    fu: ["Nobody knows who owns half the resources. How do you prevent that next month?", "Logging now costs more than the app itself. What would you change?"]
+    m: "A higher cloud bill always means more customers are using the product."
+    s: ["Finds the jump first", "Adds lasting guardrails"]
+
+  dx_ops_deploy_why_gradual_intro:
+    c: [deployment_strategies]
+    d: intro
+    t: conceptual
+    f: "rolling blue-green and canary"
+    q: "What does deploying software mean, and why do teams avoid replacing every server with the new version at once?"
+    a: "Deploying means releasing a new version of the application to the live environment that users reach. Replacing every server at once is risky: if the new version has a bug, every user hits it at the same moment, and there may be downtime while the switch happens. Gradual strategies limit the damage. A rolling deployment replaces a few instances at a time, blue-green deployment runs the new version beside the old and switches traffic over, keeping the old one ready to switch back, and a canary release sends a small share of users to the new version first while metrics are watched. Health checks, monitoring and a quick, practised rollback make all of these safe."
+    k: ["!Explains deploying means releasing a new version to the live environment", "!Explains replacing everything at once risks a full outage if the version is broken", "!Names gradual strategies such as rolling, blue-green or canary", "Mentions health checks, monitoring or quick rollback"]
+    h: ["What happens to every user if the new version is broken?"]
+    fu: ["Your canary looks healthy on CPU and memory, but users report failed payments. What were you not watching?", "What must be true about the database for two versions to run side by side?"]
+    m: "Deploying to all servers at once is safest because everyone gets the same version."
+    s: ["Explains the risk", "Names gradual options"]
+
+  dx_ops_cloudrun_hard:
+    c: [gcp, deployment_strategies]
+    d: hard
+    t: debugging
+    f: "compute choices"
+    q: "A Cloud Run service is slow on the first request after quiet periods, and during traffic spikes it hits the database's connection limit. Explain both problems and how you would fix them."
+    a: "The slow first request is a cold start: Cloud Run scales down to zero when idle, so a new request must wait for a container to start and the app to initialise. Fixes are setting a minimum number of instances, shrinking the image, doing less work at start-up, and enabling startup CPU boost. The connection problem comes from scaling out: each new instance opens its own database connection pool, so fifty instances with ten connections each can exceed Cloud SQL's limit. Cap the maximum number of instances, use small pools, raise per-instance concurrency so fewer instances handle the same traffic, or put a connection pooler such as PgBouncer in front of the database."
+    k: ["!Explains cold starts happen when Cloud Run starts new instances from zero", "!Proposes minimum instances, smaller images or lighter start-up", "!Explains many instances each opening connection pools exceed the database limit", "Proposes capping instances, small pools, higher per-instance concurrency or a connection pooler"]
+    h: ["What does each new instance open when it starts?"]
+    fu: ["Keeping containers warm through the night costs money. How do you decide whether that spend is justified?", "Why does letting each instance handle more requests at once reduce database connections?"]
+    m: "Serverless services never have start-up delays."
+    s: ["Explains both mechanisms", "Fixes at the right layer"]

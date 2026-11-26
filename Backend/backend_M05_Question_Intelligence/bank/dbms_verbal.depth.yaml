@@ -1,0 +1,114 @@
+# =============================================================================
+#  DEPTH BANK — dbms_verbal (2026-11-26). Concepts sitting at three questions
+#  get a fourth: the difficulty band each still lacked, or an angle it had
+#  never been asked from.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: dbms_verbal
+provenance: generated
+items:
+  dx_db_joins_intro:
+    c: [joins, normalisation]
+    d: intro
+    t: conceptual
+    f: "why tables are joined"
+    q: "What is a join in SQL, and why do we split data into separate tables only to join it back together?"
+    a: "A join combines rows from two tables using a related column, usually a foreign key, for example matching each order's customer_id with the id in the customers table to show orders with customer names. Data is split into tables so that each fact is stored once: a customer's address lives in one row, not copied into every order. That saves space, means an update happens in one place, and prevents copies drifting out of step. The join reassembles the pieces when a query needs them. The join type decides what happens to rows without a match, such as customers with no orders, and an index on the join column keeps large joins fast."
+    k: ["!Explains a join combines rows from tables using a related column such as a foreign key", "!Explains data is split into tables to avoid repeating it and keep it consistent", "Gives an example such as orders joined to customers", "Mentions that the join type decides what happens to unmatched rows, or indexing the join column"]
+    h: ["What would an orders table look like if every row repeated the customer's address?"]
+    fu: ["A customer changes their phone number. Why is that easier when it lives in one table?", "A query joining two tables of a million rows each is slow. What would you look at first?"]
+    m: "Joins exist only because SQL cannot store nested data."
+    s: ["Connects joins to normalisation", "Gives a concrete example"]
+
+  dx_db_outbox_hard:
+    c: [transactions_acid, message_queues]
+    d: hard
+    t: design
+    f: "transactions across systems"
+    q: "Your order service saves an order in its database and then publishes an order-placed event to a message broker. Sometimes the order is saved but the event is lost. Why can't one ACID transaction cover both, and what is the fix?"
+    a: "A database transaction only covers that database; the broker is a separate system. If the service crashes after committing the order but before publishing, the event is lost; publishing first and then failing to commit sends an event for an order that does not exist. Two-phase commit across both is complex and rarely supported by brokers. The standard fix is the transactional outbox: in the same transaction that saves the order, insert the event into an outbox table. A separate relay, polling or using change data capture, reads unsent outbox rows, publishes them, and marks them sent. Delivery becomes at-least-once, so consumers must be idempotent, for example by recording event ids they have handled."
+    k: ["!Explains a database transaction cannot include the separate message broker", "!Shows a crash between commit and publish loses the event", "!Proposes the transactional outbox, writing the event in the same transaction and relaying it later", "Mentions at-least-once delivery requiring idempotent consumers, or change data capture"]
+    h: ["What could you write in the same transaction as the order itself?"]
+    fu: ["The relay crashes after publishing but before marking the row as sent. What do consumers see?", "Why is two-phase commit across the database and the broker rarely used here?"]
+    m: "Wrapping the publish call inside the database transaction makes both atomic."
+    s: ["Explains the dual-write problem", "Handles duplicates"]
+
+  dx_db_nosql_core:
+    c: [nosql_vs_relational, mongodb]
+    d: core
+    t: tradeoff
+    f: "flexible schema is not the whole decision"
+    q: "User profiles in your app have fields that vary a lot between users. A teammate says that means you must use MongoDB. Do you agree?"
+    a: "Not necessarily. Varying fields alone can be handled in a relational database with a JSON column, such as PostgreSQL's JSONB, which can be indexed and queried, while core fields keep proper columns, constraints, transactions and joins. A document database fits better when data is naturally read and written as whole aggregates, such as a profile with its settings, joins across documents are rare, and you need to spread data across many servers. Schemaless storage also moves validation into application code, so bad data can slip in unless you add schema validation. The decision should come from access patterns, consistency needs, reporting requirements and the team's experience, not from flexible fields alone."
+    k: ["!Says varying fields alone do not force a document database", "!Mentions a relational JSON column such as PostgreSQL JSONB, with indexing", "!Explains a document store fits data read and written as whole aggregates with few joins", "Notes that schemaless moves validation into application code, or decides by access patterns"]
+    h: ["Can a relational database store a JSON value in a column?"]
+    fu: ["Later, finance wants reports joining profiles with payments. How does your choice cope?", "How would you keep bad data out if the database enforces no schema?"]
+    m: "Any data without a fixed shape must go in a NoSQL database."
+    s: ["Offers the JSONB middle ground", "Decides by access pattern"]
+
+  dx_db_cassandra_intro:
+    c: [cassandra, nosql_vs_relational]
+    d: intro
+    t: conceptual
+    f: "modelling by query"
+    q: "What kind of workload is Cassandra built for, and why do you design its tables around your queries rather than around your entities?"
+    a: "Cassandra suits very large, write-heavy workloads that must stay available across many servers and data centres, such as chat messages, sensor readings or activity events. There is no single primary: each row's partition key is hashed to decide which nodes store it, and writes are cheap appends. Because it has no joins and only limited filtering, you design one table per query: choose a partition key so that each query reads a single partition, and clustering columns to sort rows within it, such as messages by time within a conversation. Data is duplicated across tables on purpose. Consistency can be tuned per query by choosing how many replicas must respond."
+    k: ["!Says Cassandra suits write-heavy, very large, highly available workloads such as events or messages", "!Explains the partition key decides which nodes hold the data", "!Explains there are no joins, so tables are designed per query and data is duplicated", "Mentions clustering columns ordering rows within a partition, or tunable consistency"]
+    h: ["How does Cassandra decide which machine a row lives on?"]
+    fu: ["The product team wants a new screen that filters messages by sender. What does that mean for your tables?", "Why would a single enormous partition become a problem?"]
+    m: "Cassandra is a drop-in replacement for a relational database at larger scale."
+    s: ["Explains query-first design", "Names partition and clustering keys"]
+
+  dx_db_mongodb_intro:
+    c: [mongodb, nosql_vs_relational]
+    d: intro
+    t: conceptual
+    f: "document modelling"
+    q: "What is a document in MongoDB, and how does storing an order as one document differ from storing it across several tables?"
+    a: "A document is a JSON-like record, stored as BSON, with nested fields and arrays, kept in a collection without a fixed schema. An order document can embed its line items and delivery address, so reading an order is one lookup with no joins, and writing the whole order is atomic because a single-document write is all or nothing. In a relational design the same order is spread across orders, order items and addresses tables, linked by foreign keys and joined at query time. The trade-offs: embedded data may be duplicated across many documents, documents have a 16 MB size limit, and keeping several documents consistent needs multi-document transactions."
+    k: ["!Describes a document as a JSON-like record with nested fields and arrays", "!Explains embedding line items lets one read fetch the whole order without joins", "Says writes to a single document are atomic", "Mentions duplication, the document size limit or multi-document transactions as trade-offs"]
+    h: ["What can a document contain that a single table row cannot?"]
+    fu: ["A product's price changes after the order was placed. Should the order document change? Why?", "One customer's document keeps growing with every order they place. What goes wrong eventually?"]
+    m: "MongoDB documents cannot reference other documents."
+    s: ["Explains embedding", "Names the trade-offs"]
+
+  dx_db_serializable_core:
+    c: [isolation_levels, concurrency_control]
+    d: core
+    t: tradeoff
+    f: "serializable everywhere?"
+    q: "Your app runs at read committed. A teammate wants to switch the whole database to serializable to be safe. What would that cost, and what would you suggest instead?"
+    a: "Serializable makes concurrent transactions behave as if they ran one after another, preventing every anomaly, including write skew, such as two doctors each going off call because each saw the other still on call. The cost is lower throughput and more contention: lock-based databases hold more locks for longer, and PostgreSQL's snapshot-based serializable mode aborts conflicting transactions with serialization failures that the application must catch and retry. Switching everything also slows the many transactions that never needed it. Better: keep read committed as the default, and protect the specific risky operations with serializable transactions plus retries, explicit row locks such as SELECT FOR UPDATE, constraints, or atomic updates like reducing stock only where stock is above zero."
+    k: ["!Says serializable prevents all anomalies, including write skew", "!Names the cost as lower throughput, more blocking, or aborted transactions that must be retried", "!Suggests protecting only the risky operations instead of the whole database", "Gives targeted tools such as SELECT FOR UPDATE, constraints or atomic conditional updates"]
+    h: ["Which transactions in the app can actually produce a wrong result?"]
+    fu: ["Your code now gets serialization failures under load. What must the application do?", "Book the last seat on a flight safely without changing the isolation level. How?"]
+    m: "Serializable isolation is free, so it should always be the default."
+    s: ["Names write skew", "Targets protection where needed"]
+
+  dx_db_mvcc_cost_core:
+    c: [concurrency_control, transactions_acid]
+    d: core
+    t: tradeoff
+    f: "what MVCC buys and costs"
+    q: "Why do PostgreSQL and MySQL's InnoDB use multiversion concurrency control instead of making readers lock rows, and what does that choice cost?"
+    a: "With MVCC an update writes a new version of a row instead of overwriting it, and each transaction reads from a snapshot of committed versions. Readers therefore never block writers and writers never block readers, which keeps read-heavy workloads fast and gives consistent reports without locking tables. The costs: old versions must be stored and later cleaned up, as dead tuples that VACUUM removes in PostgreSQL or undo records that InnoDB purges, so a long-running transaction keeps old versions alive and causes bloat. Two writers updating the same row still need locks and can conflict, and snapshot isolation on its own allows anomalies such as write skew, so some cases still need stronger isolation or explicit locks."
+    k: ["!Explains updates create new row versions and transactions read from a snapshot", "!Says readers and writers do not block each other", "!Names the cost of storing and cleaning up old versions, worsened by long transactions", "Mentions that write-write conflicts still need locks or that snapshot isolation allows write skew"]
+    h: ["What happens to the old value of a row when it is updated?"]
+    fu: ["A reporting transaction has been open for six hours. What is happening inside the database meanwhile?", "Two transactions update the same row at the same moment. What happens?"]
+    m: "MVCC removes the need for locks entirely."
+    s: ["Explains snapshots", "Names cleanup and bloat"]
+
+  dx_db_fd_discovery_core:
+    c: [functional_dependencies, normalisation]
+    d: core
+    t: practical
+    f: "finding dependencies in real data"
+    q: "Outside the textbook, you are handed a messy real table. How would you find out which functional dependencies actually hold in it?"
+    a: "Start from meaning: ask the people who own the data which rules must always hold, such as each pincode belonging to one district, because the data only shows what is true today, not what must stay true. Then test each candidate against the data by grouping on the determining columns and counting distinct values of the dependent column; any group with more than one value is a violation. Real data is dirty, so inspect the violating rows to decide whether the rule is wrong or the data needs cleaning, and treat rules that almost hold as approximate dependencies. Discovery algorithms such as TANE can search for every dependency, but a person must confirm the results before normalising."
+    k: ["!Starts from business rules about what must hold, not just the current data", "!Tests a candidate with GROUP BY on the determinant and COUNT DISTINCT on the dependent column", "!Inspects violating rows to separate dirty data from a wrong rule", "Mentions approximate dependencies or discovery algorithms such as TANE"]
+    h: ["How could a query reveal two different districts for one pincode?"]
+    fu: ["The rule holds in all 50,000 rows today. Why might it still not be a real dependency?", "You have the dependencies. What do you do with them next?"]
+    m: "Any rule that holds in the current data is a functional dependency."
+    s: ["Combines meaning and data", "Gives the checking query"]

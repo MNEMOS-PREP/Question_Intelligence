@@ -1,0 +1,22 @@
+# =============================================================================
+#  DEPTH BANK — embedded_verbal (2026-11-26). Concepts sitting at three
+#  questions get a fourth, in the difficulty band each still lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: embedded_verbal
+provenance: generated
+items:
+  dx_emb_odometry_drift_hard:
+    c: [robotics_fundamentals]
+    d: hard
+    t: debugging
+    f: "localisation and mapping"
+    q: "A wheeled robot estimates its position from wheel encoders, and after a few minutes of driving the estimate is a metre off. Why, and how would you correct it?"
+    a: "Wheel odometry adds up small movements measured by the encoders, so every small error is added in and never removed: wheels slip, floors are uneven, the real wheel diameter differs slightly from the configured one, and encoders have limited resolution. Errors in heading are especially damaging, because a small angle error turns into a growing sideways error with every metre driven. Calibrating wheel diameter and track width reduces the drift but cannot stop it. The fix is to fuse odometry with other sensors: an IMU's gyroscope for heading, and absolute references such as lidar scan matching, visual markers or landmarks, or GPS outdoors, combined with a Kalman filter or particle filter, or full SLAM."
+    k: ["!Explains odometry adds up small wheel errors that accumulate without bound", "!Names causes such as wheel slip, uneven floors or wrong wheel dimensions", "!Proposes fusing with other sensors, such as an IMU and absolute references like lidar or markers", "Mentions a Kalman or particle filter, SLAM, or calibrating the wheels"]
+    h: ["Does anything in the encoder data ever correct an earlier error?"]
+    fu: ["Which grows faster over distance, a small heading error or a small distance error? Why?", "In a warehouse with no GPS, what could the robot use as fixed reference points?"]
+    m: "Higher-resolution encoders alone will stop the drift."
+    s: ["Explains accumulation", "Fuses absolute references"]

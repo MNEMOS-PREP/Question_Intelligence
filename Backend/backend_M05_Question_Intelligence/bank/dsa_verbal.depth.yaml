@@ -1,0 +1,166 @@
+# =============================================================================
+#  DEPTH BANK — dsa_verbal (2026-11-26). Concepts sitting at three questions get
+#  a fourth: the difficulty band each still lacked, or an angle it had never
+#  been asked from.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: dsa_verbal
+provenance: generated
+items:
+  dx_bst_validate_hard:
+    c: [binary_search_trees, tree_traversals]
+    d: hard
+    t: debugging
+    f: "validating a BST"
+    q: "A function decides a binary tree is a BST by checking each node only against its two children, and it accepts a tree that is not a BST. Why, and how do you check correctly?"
+    a: "The BST rule is about whole subtrees, not just children: every key in a node's left subtree must be smaller than it, and every key in the right subtree larger. A local check misses deeper violations. For example, root 10 has left child 5, and 5 has right child 15: 15 is fine relative to 5, but it sits in 10's left subtree, so the tree is not a BST. The correct check passes an allowed range down the recursion: the left child gets the range low to node, the right child node to high, and every node must lie inside its range. Alternatively, an in-order traversal must be strictly increasing. Both are O(n) time and O(h) stack."
+    k: ["!Explains comparing only with children misses a deeper node that breaks an ancestor's bound", "!Gives a counterexample such as 15 in the left subtree of 10", "!Proposes passing a valid range down or checking that in-order traversal is increasing", "States O(n) time or mentions deciding a rule for duplicate keys"]
+    h: ["Can a node be fine for its parent but wrong for its grandparent?"]
+    fu: ["Two nodes may hold the same number. Where should the second one be allowed to sit, and how does your check change?", "Recursion runs out of stack on a skewed tree of a million nodes. How would you rewrite the check?"]
+    m: "A tree is a BST if every node is larger than its left child and smaller than its right child."
+    s: ["Gives a concrete counterexample", "Offers the range or in-order check"]
+
+  dx_dp_house_core:
+    c: [dynamic_programming]
+    d: core
+    t: practical
+    f: "defining state and recurrence"
+    q: "Houses in a row each hold some money, and you cannot rob two adjacent houses. How would you find the maximum you can take, and how do you know dynamic programming applies?"
+    a: "Let best of i be the most money obtainable from the first i houses. At house i there are two choices: skip it, giving best of i minus 1, or take it, giving its money plus best of i minus 2, since its neighbour must be skipped. So best of i is the larger of the two, with best of 0 as zero and best of 1 as the first house's money. Dynamic programming fits because the problem has optimal substructure, the best answer for a prefix is built from best answers for shorter prefixes, and overlapping subproblems, since plain recursion recomputes the same prefixes again and again. It runs in O(n) time, and only the last two values need to be kept, so space is O(1)."
+    k: ["!Defines the state as the best total for the first i houses", "!States the recurrence as the larger of skipping house i or taking it plus the best up to i minus 2", "!Explains optimal substructure and overlapping subproblems make dynamic programming fit", "Notes O(n) time and that two variables suffice for space"]
+    h: ["What are your two choices at the last house?"]
+    fu: ["The houses now stand in a circle, so the first and last are neighbours. What changes?", "How would you also report which houses to take, not just the total?"]
+    m: "Taking every other house, starting from the first, is always optimal."
+    s: ["States the recurrence precisely", "Justifies why DP applies"]
+
+  dx_bfs_intro:
+    c: [graph_traversal_bfs, queues]
+    d: intro
+    t: conceptual
+    f: "level-by-level order"
+    q: "What is breadth-first search, and why does it reach nodes in order of their distance from the start?"
+    a: "Breadth-first search explores a graph using a queue. It puts the start node in the queue, then repeatedly takes the oldest node out and adds each of its unvisited neighbours, marking them visited as they are added. Because the queue is first in, first out, every node at distance one is processed before any node at distance two, and so on, so the search spreads out level by level like ripples. That means the first time a node is reached, it is reached along a path with the fewest edges, which is why BFS finds shortest paths in unweighted graphs. With an adjacency list it takes O(V plus E) time."
+    k: ["!Describes using a queue and adding unvisited neighbours", "!Explains first-in first-out order processes all nodes at one distance before the next", "!Says the first visit to a node is along a path with the fewest edges", "States O(V + E) time or marks nodes visited to avoid repeats"]
+    h: ["Which node leaves the queue first, an old one or a new one?"]
+    fu: ["Roads now have different lengths in kilometres. Does reaching a town first still mean reaching it by the shortest route?", "Why mark a node when you add it to the queue rather than when you take it out?"]
+    m: "BFS and DFS find the same paths, just in a different order."
+    s: ["Explains why FIFO gives levels", "Links levels to shortest paths"]
+
+  dx_dfs_intro:
+    c: [graph_traversal_dfs, recursion]
+    d: intro
+    t: conceptual
+    f: "going deep, then backtracking"
+    q: "What is depth-first search, and how does it rely on a stack, either one you manage or the call stack?"
+    a: "Depth-first search follows one path as deep as it can before backing up. From a node it moves to an unvisited neighbour and continues from there; when it reaches a node with no unvisited neighbours, it backtracks to the previous node and tries its next neighbour. Written recursively, the call stack remembers the path back. Written iteratively, you push the start node on an explicit stack, pop a node, mark it if unvisited, and push its neighbours. A visited set stops it looping forever on cycles. It takes O(V plus E) time and is the basis for finding connected components, detecting cycles and topological sorting, but it does not find shortest paths."
+    k: ["!Explains DFS goes deep along one path before backtracking", "!Says recursion uses the call stack or an explicit stack replaces it", "Mentions a visited set to avoid looping on cycles", "Names uses such as components, cycle detection or topological sort"]
+    h: ["What do you do when you reach a node with no unvisited neighbours?"]
+    fu: ["You are searching a maze for any exit at all. Why is this a natural choice?", "Does the order in which you list each node's neighbours change what it finds?"]
+    m: "Depth-first search finds the shortest path because it explores fully."
+    s: ["Describes backtracking clearly", "Shows both stack forms"]
+
+  dx_graph_csr_hard:
+    c: [graphs_representation, caching_and_locality]
+    d: hard
+    t: optimisation
+    f: "compact read-mostly graphs"
+    q: "A road network with 10 million junctions is read far more often than it changes. Beyond ordinary adjacency lists, how would you store it compactly and make neighbour scans fast?"
+    a: "Use a compressed sparse row layout. Keep one array of all edges' destinations, grouped by source junction, and an offsets array of size V plus 1, so the neighbours of junction v are the contiguous slice from offsets of v to offsets of v plus 1. Weights go in a parallel array. This removes a list object and pointers per junction, stores roughly V plus 2E integers, and makes scanning neighbours a sequential read that the CPU cache handles well. Renumbering junctions so that nearby ones get nearby ids improves locality further. The cost is that inserting an edge means shifting data, so updates are batched or rebuilt, which suits a map that rarely changes."
+    k: ["!Proposes a compressed sparse row layout with an offsets array and one neighbours array", "!Explains neighbours become a contiguous slice, saving pointers and improving cache use", "Mentions renumbering nodes so nearby junctions get nearby ids", "Says updates are costly, which suits a read-mostly map"]
+    h: ["What if every neighbour list were laid end to end in one array?"]
+    fu: ["A new flyover opens every week. How would you add its edges without rebuilding everything?", "Estimate the memory for 10 million junctions and 25 million roads with 4-byte ids and weights."]
+    m: "An adjacency list of linked nodes is always the most compact representation of a sparse graph."
+    s: ["Describes the two arrays", "Explains the cache benefit"]
+
+  dx_matrix_sorted_search_hard:
+    c: [matrix_operations, binary_search]
+    d: hard
+    t: practical
+    f: "search in a row- and column-sorted matrix"
+    q: "Every row and every column of an n by n matrix is sorted in increasing order. How do you check whether a value is present faster than scanning every cell?"
+    a: "Start at the top-right corner. If the value there equals the target, you are done. If it is larger than the target, move left: everything below it in that column is even larger, so the whole column is ruled out. If it is smaller, move down: everything to its left in that row is even smaller, so the row is ruled out. Each step discards a full row or column, so at most 2n steps are needed, which is O(n), compared with O(n log n) for binary searching every row. Starting at the bottom-left works the same way. Starting at the top-left does not, because both moves lead to larger values and nothing is ruled out."
+    k: ["!Starts from the top-right or bottom-left corner", "!Explains each comparison rules out a whole row or column", "!States the O(n) running time, or O(m + n) for a rectangle", "Explains why the top-left corner does not work"]
+    h: ["Find a corner where one move makes values smaller and the other makes them larger."]
+    fu: ["Convince me that moving left can never skip past the target.", "Now each row's first value exceeds the previous row's last value. What faster method opens up?"]
+    m: "Binary searching each row is the fastest possible approach."
+    s: ["Explains the elimination argument", "Explains the choice of corner"]
+
+  dx_queue_two_stacks_hard:
+    c: [queues, stacks, amortized_analysis]
+    d: hard
+    t: design
+    f: "queue from two stacks"
+    q: "How would you build a queue from two stacks so that every operation costs O(1) amortised, and why is that bound honest?"
+    a: "Use one stack for incoming items and one for outgoing items. Enqueue pushes onto the incoming stack. Dequeue pops from the outgoing stack; only when the outgoing stack is empty do you pop everything from the incoming stack and push it onto the outgoing one, which reverses the order so the oldest item ends up on top. Each item is pushed and popped at most twice in its life, once on each stack, and never moves back, so n operations cost O(n) in total, which is O(1) amortised. A single dequeue that triggers the transfer can still take O(n), so the guarantee is about the sequence, not every call."
+    k: ["!Uses one stack for enqueue and another for dequeue", "!Moves items from the first stack to the second only when the second is empty", "!Explains each item moves at most once, so cost is O(1) amortised", "Notes a single dequeue can still take O(n)"]
+    h: ["Pushing everything onto a second stack reverses its order."]
+    fu: ["A trading system cannot tolerate any single slow operation. Is this design still acceptable?", "What goes wrong if you refill the second stack on every dequeue, even when it still has items?"]
+    m: "A queue built from stacks must cost O(n) for every dequeue."
+    s: ["Transfers only when empty", "Gives the amortised argument"]
+
+  dx_recurrence_uneven_hard:
+    c: [recurrence_relations, divide_and_conquer]
+    d: hard
+    t: conceptual
+    f: "uneven splits and recursion trees"
+    q: "A quicksort that always splits one third to two thirds gives T(n) = T(n/3) + T(2n/3) + n. The Master Theorem does not apply. How do you solve it?"
+    a: "The Master Theorem needs subproblems of equal size, a copies of n over b, so here a recursion tree works instead. The top level does n work. The next level does n over 3 plus 2n over 3, again n, and every full level costs about n until the shorter branches bottom out. The shallowest leaf is at depth log base 3 of n and the deepest, following the two-thirds branch, at log base 3/2 of n. So the total lies between n times log base 3 of n and n times log base 3/2 of n, which is Theta of n log n. The Akra-Bazzi method gives the same result formally. Any constant-ratio split keeps quicksort at n log n."
+    k: ["!Explains the Master Theorem needs equal-sized subproblems", "!Uses a recursion tree where each full level costs about n", "!Says the depth is logarithmic, giving Theta of n log n", "Mentions Akra-Bazzi or that any constant-ratio split stays n log n"]
+    h: ["Add up the work on each level of the tree."]
+    fu: ["What if the split were one element and n minus 1 every time?", "Does a 1 to 99 split still give n log n? Why?"]
+    m: "An unbalanced split always makes quicksort quadratic."
+    s: ["Uses the recursion tree correctly", "Bounds the depth both ways"]
+
+  dx_insertion_sort_intro:
+    c: [sorting]
+    d: intro
+    t: conceptual
+    f: "insertion sort and nearly sorted data"
+    q: "Explain insertion sort using a hand of playing cards. Why does it do so well on data that is already nearly sorted?"
+    a: "Insertion sort works like arranging cards as you pick them up: take the next card and slide it left past every larger card until it sits in the right place, shifting those larger cards one step right. In the worst case, input in reverse order, every new item travels all the way, giving O(n squared) comparisons and shifts. But on nearly sorted data each item only moves a few places, so the work is about n plus the number of out-of-order pairs, close to linear. It is also stable, sorts in place and has very low overhead, which is why hybrid library sorts such as Timsort and introsort switch to it for small pieces of the array."
+    k: ["!Describes taking each item and shifting larger ones right to insert it", "!States the O(n squared) worst case", "!Explains nearly sorted input needs few shifts, so it runs close to linear", "Mentions it is stable or used for small pieces inside hybrid sorts"]
+    h: ["How do you sort cards that are dealt to you one at a time?"]
+    fu: ["Only the last ten items of a sorted list of a million are out of place. Roughly how much work is that?", "Why would a library sort switch to this method for tiny subarrays?"]
+    m: "Simple O(n squared) sorts are never used in real libraries."
+    s: ["Uses the card analogy correctly", "Explains the adaptive behaviour"]
+
+  dx_linked_delete_core:
+    c: [linked_lists, pointers_and_references]
+    d: core
+    t: debugging
+    f: "edge cases in deletion"
+    q: "Your function that deletes a value from a singly linked list passes most tests but crashes when the list has one node or when the value is in the last node. What did it miss?"
+    a: "It probably assumes the node being deleted has a predecessor and a successor. Deleting the head must change the head pointer itself, which a function that only edits next fields cannot do unless it returns the new head or takes a pointer to the head. With a single node, the head becomes empty and any tail pointer must be cleared too. Deleting the last node must set the previous node's next to nothing and update the tail. The empty list and a value that is not present also need handling. A common clean fix is a dummy node placed before the head, so every real node has a predecessor and the special cases disappear. In C, free the node only after unlinking it."
+    k: ["!Explains deleting the head must update the head pointer itself", "!Covers the single-node and last-node cases, including the tail pointer", "!Proposes a dummy node before the head to remove the special cases", "Mentions the empty list, a missing value or freeing after unlinking"]
+    h: ["Which node has no predecessor?"]
+    fu: ["How would you write a test list that catches every one of these cases at once?", "The list is doubly linked. Which extra pointers can now go wrong?"]
+    m: "Deleting any node only requires changing the previous node's next pointer."
+    s: ["Lists the edge cases", "Offers the dummy-node fix"]
+
+  dx_two_sum_intro:
+    c: [hashing, arrays]
+    d: intro
+    t: practical
+    f: "one-pass lookup"
+    q: "Given an array and a target, how would you use a hash set to find in one pass whether any two numbers add up to the target, and what does it cost?"
+    a: "Go through the array once. For each number x, check whether target minus x is already in a hash set of the numbers seen so far; if it is, you have a pair. Otherwise add x to the set and continue. Each lookup and insert takes O(1) on average, so the whole pass is O(n) time with O(n) extra space, compared with O(n squared) for checking every pair, or O(n log n) for sorting and using two pointers, which also loses the original positions. Checking before inserting matters: with target 10 and a single 5, the 5 must not pair with itself. If positions are needed, use a map from value to index."
+    k: ["!Checks whether target minus the current number was already seen", "!Says it runs in O(n) time with O(n) extra space", "!Compares with checking every pair or sorting with two pointers", "Handles a number pairing with itself or returns indices with a map"]
+    h: ["For the current number, what partner would complete the target?"]
+    fu: ["The array has ten crore numbers and memory is tight. What would you do instead?", "How would you count how many such pairs exist, instead of stopping at one?"]
+    m: "You must sort the array before you can find a pair efficiently."
+    s: ["Clear one-pass logic", "States costs and alternatives"]
+
+  dx_window_abba_core:
+    c: [sliding_window, hashing]
+    d: core
+    t: debugging
+    f: "moving the left edge correctly"
+    q: "Your sliding-window solution for the longest substring without repeating characters returns 3 for the input 'abba' instead of 2. What is the likely bug?"
+    a: "The usual approach keeps, for each character, the index where it was last seen. When the current character repeats, the left edge jumps to just after that last index. The bug is jumping even when that last index is already behind the left edge. In 'abba', at the second b the left edge moves to index 2. At the final a, its last index is 0, so the code sets the left edge to 1, moving it backwards and bringing the duplicate b back inside the window, which gives length 3. The fix is to set the left edge to the larger of its current value and the last index plus one, so it never moves backwards. Everything stays O(n)."
+    k: ["!Explains the left edge is set from a stale last-seen index", "!Shows the left edge moving backwards on 'abba'", "!Fixes it by taking the larger of the current left edge and the last index plus one", "Notes the solution remains O(n)"]
+    h: ["Trace the left edge by hand at each of the four characters."]
+    fu: ["Write the smallest input you would add to the test suite to keep this bug from returning.", "How would the code change if you also had to return the substring itself?"]
+    m: "If the hash map is correct, the window logic cannot be wrong."
+    s: ["Traces the failing input", "Gives the one-line fix"]

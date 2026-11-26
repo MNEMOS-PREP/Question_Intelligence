@@ -1,0 +1,35 @@
+# =============================================================================
+#  DEPTH BANK — system_design_verbal (2026-11-26). Concepts sitting at three
+#  questions get a fourth, in the difficulty band each still lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: system_design_verbal
+provenance: generated
+items:
+  dx_sd_eventual_intro:
+    c: [consistency_models]
+    d: intro
+    t: conceptual
+    f: "strong versus eventual consistency"
+    q: "What does it mean for data to be eventually consistent? Give an everyday example."
+    a: "In an eventually consistent system, an update is applied to one copy first and spreads to the other copies over time, so for a short while different readers can see different values; if no new updates arrive, all copies converge to the same value. An everyday example: you change your profile picture, and a friend still sees the old one for a few seconds, or a post's like count differs between two phones. With strong consistency, every read sees the latest write, which needs more coordination between copies and can be slower or unavailable during network problems. Eventual consistency trades freshness for availability and speed, which is fine for likes and view counts but not for a bank balance."
+    k: ["!Explains copies may briefly show old data but converge if updates stop", "!Gives an everyday example such as a profile picture or like count updating late", "!Contrasts with strong consistency, where every read sees the latest write", "Says it trades freshness for availability or speed, and suits data like likes but not balances"]
+    h: ["What does a friend see in the seconds after you change something?"]
+    fu: ["You post a comment, refresh, and it is gone, then it reappears. What happened?", "How could the app at least show you your own changes immediately?"]
+    m: "Eventually consistent means the data may stay wrong forever."
+    s: ["Everyday example", "Knows where it is unacceptable"]
+
+  dx_sd_sharding_intro:
+    c: [database_sharding]
+    d: intro
+    t: conceptual
+    f: "choosing a shard key"
+    q: "What is database sharding, and why would a company do it instead of simply buying a bigger server?"
+    a: "Sharding splits one large dataset across several database servers, called shards, each holding a subset of the rows chosen by a shard key, such as a hash of the user id. A routing layer sends each query to the shard that holds its data. Companies shard when a single server hits limits on storage, write throughput or memory; a bigger machine helps for a while, but it gets very expensive and there is always a largest machine. The costs are real: queries and joins across shards become hard, transactions spanning shards are complex, a poor shard key creates hot shards, and moving data when adding shards is painful. Indexing, caching and read replicas should usually come first."
+    k: ["!Explains sharding splits data across several database servers by a shard key", "!Explains a single server eventually hits limits on storage, writes or cost", "!Names costs such as cross-shard queries, transactions or rebalancing", "Mentions trying indexing, caching or read replicas first"]
+    h: ["What happens when one machine's disk and write capacity run out?"]
+    fu: ["You shard by signup date. Why might one shard be overloaded while the others sit idle?", "Which query becomes hard once users are spread across ten shards?"]
+    m: "Sharding makes every query faster."
+    s: ["Explains the key and routing", "Names the costs"]

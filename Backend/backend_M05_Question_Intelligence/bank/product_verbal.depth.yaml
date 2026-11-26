@@ -1,0 +1,74 @@
+# =============================================================================
+#  DEPTH BANK — product_verbal (2026-11-26). Concepts sitting at three questions
+#  get a fourth, in the difficulty band each still lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: product_verbal
+provenance: generated
+items:
+  dx_pm_case_framework_intro:
+    c: [business_case_analysis]
+    d: intro
+    t: conceptual
+    f: "structuring the problem"
+    q: "In a case interview, what is a framework like 'profit equals revenue minus cost' for, and how do you use one without sounding scripted?"
+    a: "A framework breaks a vague problem into parts that do not overlap and together cover everything, so you do not miss an area. Profit splits into revenue, which is price times volume, and costs, which are fixed plus variable; you then follow the branch where the numbers show a change. To avoid sounding scripted, tailor the branches to the actual business: for a college canteen, volume becomes footfall and average bill, and costs become ingredient prices, staff and rent. Say why each branch matters, ask for data to choose which branch to explore first, and state a hypothesis early, such as 'I suspect ingredient costs rose', then test it rather than walking through every box."
+    k: ["!Explains a framework breaks the problem into parts so nothing important is missed", "!Breaks profit into revenue as price times volume and costs as fixed and variable", "!Tailors the branches to the specific business instead of reciting a template", "Mentions using data to choose a branch, or stating a hypothesis"]
+    h: ["What two things make up revenue?"]
+    fu: ["Revenue is flat but profit fell. Where do you look next?", "The interviewer says your structure is too generic. How do you respond?"]
+    m: "The best case answer recites a well-known framework in full."
+    s: ["Tailors to the business", "Drives with data and hypotheses"]
+
+  dx_pm_vanity_metrics_intro:
+    c: [product_metrics]
+    d: intro
+    t: conceptual
+    f: "choosing a north-star metric"
+    q: "What is the difference between a vanity metric and an actionable metric? Give examples for a learning app."
+    a: "A vanity metric looks impressive but does not guide decisions or show real value: total downloads, total registered users or page views mostly go up over time and can be inflated by a single campaign. An actionable metric reflects whether users get value and moves in response to product changes, so the team can learn from it: weekly active learners, the share of new users who finish their first lesson, retention after 30 days, or conversion to a paid plan. Good metrics are usually rates or cohort-based rather than running totals, can be broken down by user segment, and can be tied to experiments, so a team can see whether a change helped."
+    k: ["!Explains vanity metrics look impressive but do not guide decisions", "!Explains actionable metrics reflect real user value and respond to product changes", "!Gives examples such as total downloads versus weekly active learners or completion rate", "Mentions rates, cohorts or retention rather than running totals"]
+    h: ["Can the number ever go down?"]
+    fu: ["Downloads doubled after a campaign but weekly learners did not move. What do you conclude?", "How would you stop a team from gaming the number you chose?"]
+    m: "The more users have registered, the healthier the product."
+    s: ["Clear contrast", "Concrete examples for the app"]
+
+  dx_pm_improve_app_intro:
+    c: [product_sense]
+    d: intro
+    t: practical
+    f: "who the users are"
+    q: "If an interviewer asks you to improve an app you use every day, how would you structure your answer?"
+    a: "Start by clarifying the goal: improve it for whom, and to move which outcome, such as engagement or revenue? Then choose one user group, for example first-year students using a food-delivery app, and walk through their journey to find real pain points, like not knowing which canteens deliver to the hostel at night. Prioritise one pain point by how many people it affects and how much it hurts. Brainstorm a few solutions, pick one by weighing impact against effort, and explain why. Finish with how you would measure success, such as late-night orders from hostels, and the main risk or trade-off. The structure matters more than the feature: interviewers want to see user-first reasoning, not a wish list."
+    k: ["!Starts by clarifying the goal and choosing a specific user group", "!Identifies that group's pain points before proposing features", "!Prioritises a solution by impact versus effort", "Defines a success metric or names a risk"]
+    h: ["Whose problem are you solving?"]
+    fu: ["The interviewer says your chosen user group is too small to matter. What do you do?", "How would you test your idea cheaply before building it?"]
+    m: "A good answer lists as many new features as possible."
+    s: ["User-first structure", "Ends with a metric"]
+
+  dx_pm_shared_devs_hard:
+    c: [project_management_basics, stakeholder_communication]
+    d: hard
+    t: scenario
+    f: "risks and dependencies"
+    q: "Three projects share two senior developers, and all three managers say theirs is the top priority. As the coordinator, how do you resolve it?"
+    a: "Do not decide by who is loudest, and do not quietly split the developers across all three, because constant switching wastes much of their time. Make the conflict visible: what each project needs, its deadline, and what is lost if it slips. Take that, with two or three concrete options and their trade-offs, to the person who owns priority across all three, such as the director or sponsor, and get an explicit order with the reasons recorded. Then sequence the work and limit how much runs at once. Look for relief: trim scope, move a deadline, bring in another developer, or pair a junior with a senior. Communicate the decision to everyone and revisit it on a fixed schedule."
+    k: ["!Makes the conflict visible with capacity, deadlines and impact rather than deciding by who is loudest", "!Escalates to whoever owns overall priority with options and trade-offs", "!Avoids splitting developers across all three because of context-switching cost", "Mentions reducing scope, adding capacity, or communicating and revisiting the decision"]
+    h: ["Who in the organisation owns the order between these projects?"]
+    fu: ["The director says to just make all three work. What do you say?", "How would you show the cost of moving developers between projects every day?"]
+    m: "A good coordinator gives each project an equal share of every developer."
+    s: ["Escalates with options", "Names switching cost"]
+
+  dx_pm_public_criticism_hard:
+    c: [stakeholder_communication]
+    d: hard
+    t: scenario
+    f: "knowing what each audience needs"
+    q: "A senior stakeholder criticises your team's work in a meeting, and some of the points are right while others are wrong. How do you respond in the meeting and afterwards?"
+    a: "In the meeting, stay calm and do not defend everything. Acknowledge the points that are right, plainly. Correct factual errors briefly with evidence, or, if the detail is long, say you will follow up with the numbers, rather than arguing in front of everyone. Offer a separate conversation. Afterwards, meet the stakeholder privately to understand the concern underneath, which may be pressure from their own manager or an expectation nobody wrote down. Share the facts, agree concrete actions and dates, and set up a regular update so they are not surprised again. Tell your own team what happened and what will change, and then follow through visibly, which rebuilds trust faster than words."
+    k: ["!Stays calm in the meeting and acknowledges the valid points", "!Corrects factual errors briefly with evidence or offers to follow up rather than arguing", "!Meets privately afterwards to understand the underlying concern and agree actions", "Sets up regular communication or follows through visibly"]
+    h: ["What does the stakeholder actually need that they are not getting?"]
+    fu: ["Your own manager was in the room and said nothing. Do you raise it with them?", "How do you keep your team's morale up afterwards?"]
+    m: "The best response is to prove the stakeholder wrong on every point in the meeting."
+    s: ["Separates in-meeting and follow-up", "Seeks the real concern"]

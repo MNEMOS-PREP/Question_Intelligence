@@ -1,0 +1,74 @@
+# =============================================================================
+#  DEPTH BANK — ai_apps_verbal (2026-11-26). Concepts sitting at three
+#  questions get a fourth, in the difficulty band each still lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: ai_apps_verbal
+provenance: generated
+items:
+  dx_ai_finetune_intro:
+    c: [llm_fine_tuning]
+    d: intro
+    t: conceptual
+    f: "when to fine-tune instead of prompt"
+    q: "What does fine-tuning a language model mean, and how is it different from writing a better prompt?"
+    a: "Fine-tuning continues training an already trained model on your own examples, pairs of inputs and the outputs you want, so its weights change and the new behaviour is built in. Prompting changes only the text given to the model at request time; no weights change, so it is quick to try and needs no training data or GPUs. Fine-tuning suits teaching a consistent style, output format or narrow task, and can shorten prompts and cut latency. It is a poor way to add fresh or changing facts, which retrieval handles better. It needs good example data, often hundreds to thousands of clean examples, plus careful evaluation, and parameter-efficient methods such as LoRA make it affordable."
+    k: ["!Explains fine-tuning continues training on your own examples so the model's weights change", "!Contrasts with prompting, which changes only the input and no weights", "!Says fine-tuning suits consistent style, format or a narrow task rather than adding fresh facts", "Mentions needing quality example data, evaluation or cheaper methods like LoRA"]
+    h: ["Which of the two changes the model itself?"]
+    fu: ["The bot must know this morning's price list. Which approach fits, and why?", "How many examples might you need, and what matters more than the count?"]
+    m: "Fine-tuning is the best way to teach a model new facts that change daily."
+    s: ["Clear contrast", "Knows what fine-tuning is bad at"]
+
+  dx_ai_frameworks_intro:
+    c: [llm_frameworks]
+    d: intro
+    t: conceptual
+    f: "when a framework helps and when it hides too much"
+    q: "What do LLM frameworks such as LangChain or LlamaIndex give you, compared with calling a model's API directly?"
+    a: "They provide ready building blocks: prompt templates, one interface over many model providers, document loaders and text splitters, connectors to vector stores for retrieval, chains and agents that call tools, output parsers, and hooks for tracing. Wiring these together makes a prototype quick to build. The costs are layers of abstraction that hide the exact prompt sent to the model, APIs that change often between releases, harder debugging, and heavy dependencies. For a simple, stable production flow, a direct API call with a little of your own code is often clearer and easier to maintain, while a framework earns its place when you need many of its integrations."
+    k: ["!Names building blocks such as prompt templates, model connectors, loaders, vector stores or agents", "!Says they speed up prototyping by connecting these pieces", "!Names a cost such as hidden prompts, fast-changing APIs or harder debugging", "Says a direct API call can be clearer for a simple, stable flow"]
+    h: ["What would you otherwise have to write yourself?"]
+    fu: ["Your chain gives a strange answer. How would you see exactly what was sent to the model?", "A new release renames half the classes you use. How do you protect your project?"]
+    m: "You cannot build an LLM application without a framework."
+    s: ["Balances speed against control", "Knows when to skip it"]
+
+  dx_ai_tracking_intro:
+    c: [ml_pipelines]
+    d: intro
+    t: conceptual
+    f: "tracking experiments"
+    q: "What is experiment tracking in machine learning, and what would you record for every training run?"
+    a: "Experiment tracking means recording each training run so results can be compared and reproduced later. For every run, record the code version, such as the git commit, the exact data version or a hash of it, every hyperparameter, the random seed, and the library versions and hardware. Log metrics during training and the final evaluation scores, and save the resulting model file and useful plots. Tools such as MLflow or Weights and Biases do this with a few lines of code and add a model registry for promoting versions. Without tracking, a team cannot tell which change caused an improvement or rebuild the model that is running in production."
+    k: ["!Defines experiment tracking as recording each run so it can be compared and reproduced", "!Lists the code version, data version and hyperparameters", "!Lists metrics and the resulting model artefact", "Names a tool such as MLflow or Weights and Biases, or the random seed and library versions"]
+    h: ["What would you need to rebuild last month's best model exactly?"]
+    fu: ["Last month's best run cannot be reproduced because nobody knows which data it used. What does that cost you?", "You rerun the exact same configuration and the score moves by two points. What does that tell you about comparing runs?"]
+    m: "Saving the final model file is enough to reproduce a result."
+    s: ["Lists what to record", "Explains why it matters"]
+
+  dx_ai_edge_shrink_intro:
+    c: [model_optimisation]
+    d: intro
+    t: conceptual
+    f: "latency on a device"
+    q: "Why might a model that runs well on a server be too slow or too big for a phone, and what are the main ways to shrink it?"
+    a: "Phones have far less memory, compute and battery than a server, and usually no large GPU, so a 500 MB model in 32-bit floats may not fit or may not run in real time. Quantisation stores weights, and often activations, in 8-bit integers instead of 32-bit floats, making the model about four times smaller and faster on hardware that supports it. Pruning removes weights or whole channels that contribute little. Knowledge distillation trains a small student model to imitate a large teacher. Choosing an efficient architecture, such as MobileNet, and a mobile runtime such as TensorFlow Lite, ONNX Runtime or Core ML also helps. After each step, re-check accuracy, especially on important classes."
+    k: ["!Explains phones have limited memory, compute and battery compared with servers", "!Names quantisation as storing weights with fewer bits", "!Names pruning or distillation into a smaller student model", "Mentions efficient architectures, mobile runtimes or re-checking accuracy"]
+    h: ["How many bytes does each weight take, and does it need that many?"]
+    fu: ["After quantising, accuracy fell by six points on one class only. What would you look at?", "Should you distil first and then quantise, or the other way round?"]
+    m: "Shrinking a model always ruins its accuracy."
+    s: ["Names several techniques", "Checks accuracy after"]
+
+  dx_ai_opencv_robust_hard:
+    c: [opencv]
+    d: hard
+    t: debugging
+    f: "geometric transforms"
+    q: "A barcode reader built with OpenCV works at your desk but fails under shop lighting and when items are held at an angle. How would you make the pipeline robust?"
+    a: "Start by collecting failing frames from the real shop, so you test against reality rather than your desk. For uneven lighting, replace a single global threshold with adaptive thresholding, or improve contrast with CLAHE, and handle glare. For angles, find the code's region with contours, approximate its four corners, and apply a perspective transform to flatten it before decoding. Reject blurry frames using a sharpness measure such as the variance of the Laplacian, and try a few scales. Camera settings such as exposure and focus matter too. Then measure the success rate on a labelled set of real shop images before and after each change, rather than judging by eye."
+    k: ["!Collects failing frames from the real setting to test against", "!Uses adaptive thresholding or contrast equalisation for uneven lighting", "!Corrects angle with a perspective transform after finding the code's corners", "Rejects blurry frames using a sharpness measure, or measures success on a labelled set"]
+    h: ["Why might one fixed brightness cut-off fail near a window?"]
+    fu: ["A threshold of 128 works at your desk. Why does it fail near the shop's front window?", "How would you know the pipeline is good enough to ship?"]
+    m: "Better lighting at the desk proves the code is robust."
+    s: ["Tests on real failures", "Handles lighting and geometry separately"]

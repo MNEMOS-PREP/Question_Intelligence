@@ -1,0 +1,74 @@
+# =============================================================================
+#  DEPTH BANK — security_verbal (2026-11-26). Concepts sitting at three
+#  questions get a fourth, in the difficulty band each still lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: security_verbal
+provenance: generated
+items:
+  dx_sec_authn_authz_intro:
+    c: [identity_and_access_management]
+    d: intro
+    t: conceptual
+    f: "provisioning and deprovisioning"
+    q: "What is the difference between authentication and authorisation, and what does the principle of least privilege mean?"
+    a: "Authentication proves who you are, for example with a password and a one-time code, or by signing in through single sign-on. Authorisation decides what an authenticated identity is allowed to do, through roles, permissions or policies, such as whether a user may view an invoice or only their own. Least privilege means giving every person and every service only the access needed for its task, and for no longer than needed. If an account is stolen or someone makes a mistake, the damage is limited to that small set of permissions. In practice that means narrow roles, temporary access for one-off jobs, and regular reviews that remove access when people change roles or leave."
+    k: ["!Defines authentication as proving who you are", "!Defines authorisation as deciding what an authenticated identity may do", "!Explains least privilege as granting only the minimum access needed", "Gives an example or mentions reviewing and removing access regularly"]
+    h: ["One question is who you are; what is the other?"]
+    fu: ["An intern needs to read production logs for one week. How would you grant that?", "A signed-in user changes the id in a URL and sees another customer's invoice. Which of the two failed?"]
+    m: "Once a user has logged in, they should be able to access everything in the app."
+    s: ["Clear definitions", "Explains why least privilege limits damage"]
+
+  dx_sec_ransomware_hard:
+    c: [incident_response]
+    d: hard
+    t: scenario
+    f: "detect triage contain recover"
+    q: "Ransomware has encrypted several of a company's file servers. Walk me through the first day of the response and the decisions that matter most."
+    a: "Start the incident plan and assemble the response team. Contain first: isolate affected machines and network segments, disable accounts the attackers used, and block their access, while preserving evidence instead of wiping machines. Establish the scope: which systems are hit, how the attackers got in, and whether data was stolen before encryption, since many gangs also threaten to publish it. Check that backups are intact and were isolated from the attack before trusting them, and restore only after the attackers' foothold is removed, or they will encrypt again. Inform leadership and legal early; in India, CERT-In expects incidents to be reported within six hours. Paying the ransom is a legal and business decision, with no guarantee of recovery."
+    k: ["!Contains the attack by isolating affected systems and disabling compromised accounts", "!Preserves evidence and determines scope, including how the attackers got in and whether data was stolen", "!Checks backups are clean and isolated before restoring, after removing the attackers' access", "Mentions notifying leadership, legal and regulators such as CERT-In, or the ransom decision"]
+    h: ["What must stop spreading before anything is restored?"]
+    fu: ["The backups were on the same network and are encrypted too. What now?", "Why not simply restore everything from backup in the first hour?"]
+    m: "The first step after ransomware is to pay quickly so business can resume."
+    s: ["Contain, scope, recover in order", "Mentions reporting duties"]
+
+  dx_sec_memory_safety_intro:
+    c: [memory_corruption_and_exploitation, c_language]
+    d: intro
+    t: conceptual
+    f: "stack and heap overflows"
+    q: "What is memory safety, and why are languages such as Rust, Java and Python called memory safe while C is not?"
+    a: "A memory-safe program can only touch memory it legitimately owns: within an array's bounds, and only while that memory is still allocated. That rules out buffer overflows, reading past the end of an array, using memory after freeing it, and freeing it twice. C gives programmers raw pointers and manual memory management with no automatic bounds checks, so one mistake can silently corrupt memory, crash the program, or let an attacker take control. Java and Python check array bounds at run time and free memory with garbage collection, while Rust enforces ownership and borrowing rules at compile time without a garbage collector. Large vendors report that most of their serious security bugs in C and C++ code are memory-safety bugs."
+    k: ["!Defines memory safety as only accessing valid memory within bounds and while it is still allocated", "!Explains C allows unchecked pointers and manual memory, so mistakes corrupt memory silently", "!Explains safe languages use bounds checks and garbage collection, or Rust's compile-time ownership rules", "Mentions that most serious bugs in large C and C++ codebases are memory-safety bugs"]
+    h: ["What stops a Java program from writing past the end of an array?"]
+    fu: ["Your Python app crashes inside a C extension library. Is it still memory safe?", "Why can't companies just rewrite everything in a safe language overnight?"]
+    m: "Memory safety only matters for performance, not security."
+    s: ["Names the bug classes", "Explains how each language prevents them"]
+
+  dx_sec_sqli_intro:
+    c: [secure_coding]
+    d: intro
+    t: conceptual
+    f: "never trusting input"
+    q: "What is SQL injection, and how do parameterised queries prevent it?"
+    a: "SQL injection happens when user input is pasted into a SQL string and the database treats part of it as SQL code. For example, a login query built as username equals the typed text can be broken by typing a quote followed by OR 1 equals 1, which makes the condition always true and logs the attacker in; other inputs can read or delete whole tables. A parameterised query sends the SQL text with placeholders separately from the values, so the database always treats the values as data and they can never change the query's structure. Hand-written escaping is easy to get wrong. Use an ORM's safe methods, and give the application's database account only the permissions it needs."
+    k: ["!Explains SQL injection as user input being treated as part of the SQL code", "!Gives an example such as a quote and OR 1=1 bypassing a login", "!Explains parameterised queries send values separately so they are always treated as data", "Mentions least-privilege database accounts, ORMs or why manual escaping is fragile"]
+    h: ["What if the user types a quote character into the login box?"]
+    fu: ["Your ORM has a raw-query function that a teammate fed with string formatting. What do you check?", "A table name cannot be a placeholder. How would you safely let users choose which table to sort?"]
+    m: "Removing quote characters from input is enough to stop SQL injection."
+    s: ["Gives a working example", "Explains why parameters fix it"]
+
+  dx_sec_scan_triage_hard:
+    c: [vulnerability_assessment, secure_coding]
+    d: hard
+    t: scenario
+    f: "rating severity"
+    q: "A scan of your company's web application reports 300 findings. How do you separate real risk from noise and decide what to fix first?"
+    a: "First validate: reproduce the important findings by hand to remove false positives, and merge duplicates. Then rate each real issue in context rather than by the scanner's label alone: is it actually exploitable, is there a public exploit or is it on a known-exploited list, is the system reachable from the internet, how critical is the asset and how sensitive is its data, and do other controls already block it? Exploitable issues on internet-facing systems holding customer data come first. Group findings by root cause, since one outdated library can explain fifty entries, and fix the cause once. Agree fix deadlines by severity, track them, retest after fixes, and tune the scanner so the next report is shorter."
+    k: ["!Validates findings manually to remove false positives and duplicates", "!Prioritises by real exploitability and exposure, not only the scanner's severity", "!Weighs asset criticality and data sensitivity", "Groups findings by root cause or sets fix deadlines and retests"]
+    h: ["Which findings could an outsider actually use today?"]
+    fu: ["A critical finding is on a server nobody uses any more. Fix it, or switch the server off?", "Developers ignored your last list because most of it was wrong. How do you rebuild trust?"]
+    m: "Every scanner finding marked critical must be fixed before anything else."
+    s: ["Validates before ranking", "Fixes causes, not symptoms"]
