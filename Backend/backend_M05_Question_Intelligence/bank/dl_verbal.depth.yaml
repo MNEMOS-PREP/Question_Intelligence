@@ -1,0 +1,36 @@
+# =============================================================================
+#  DEPTH BANK — dl_verbal (2026-11-26). Concepts sitting at three questions get
+#  a fourth: the difficulty band each still lacked, or an angle it had never
+#  been asked from.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: dl_verbal
+provenance: generated
+items:
+  dx_dl_backprop_neuron_core:
+    c: [backpropagation, neural_network_basics]
+    d: core
+    t: practical
+    f: "backpropagation by hand"
+    q: "Take one neuron, output a = sigmoid(w times x plus b), with squared error loss against target t. Walk me through the gradient that w receives."
+    a: "The forward pass computes z as w times x plus b, then a as sigmoid of z, then the loss as one half of a minus t, squared. The backward pass applies the chain rule from the loss inwards. The loss changes with a at rate a minus t. The sigmoid's derivative is a times one minus a. And z changes with w at rate x. Multiplying gives the gradient for w as a minus t, times a times one minus a, times x; for b it is the same without the x. The sigmoid term is at most 0.25 and nearly zero when the neuron saturates, which slows learning. With cross-entropy loss that term cancels, leaving a minus t times x. The update subtracts the learning rate times this gradient."
+    k: ["!Writes the chain of derivatives through the loss, the sigmoid and the weighted sum", "!Gives the gradient as (a minus t) times a(1 minus a) times x", "!Notes the sigmoid derivative a(1 minus a) is at most 0.25 and vanishes when saturated", "Mentions cross-entropy cancels that term or the weight update step"]
+    h: ["Which three local derivatives sit between the loss and w?"]
+    fu: ["The output is 0.999 but the target is 0. How large is the gradient, and what does that mean for learning?", "How would you check your hand-derived gradient with numbers?"]
+    m: "The gradient for a weight depends only on the error, not on the input."
+    s: ["Correct chain of derivatives", "Spots the saturation effect"]
+
+  dx_dl_long_context_hard:
+    c: [attention_and_transformers, large_language_models]
+    d: hard
+    t: optimisation
+    f: "long-context inference cost"
+    q: "A chatbot's replies get slower and the server runs out of GPU memory as conversations grow longer. What makes transformer inference expensive for long contexts, and what helps?"
+    a: "Processing the prompt costs attention that grows with the square of its length, since every token attends to every earlier token. During generation, the keys and values of all earlier tokens are kept in a KV cache so they are not recomputed, but that cache grows with context length times layers times heads, and it soon limits how many conversations fit on a GPU. Remedies: FlashAttention computes exact attention with far less memory traffic; grouped-query or multi-query attention shares keys and values across heads to shrink the cache; paged cache management, as in vLLM, avoids fragmentation; the cache can be quantised; and the application can summarise or drop old turns, or use sliding-window attention."
+    k: ["!Explains attention cost grows quadratically with the length of the prompt", "!Explains the KV cache grows with context length and limits memory and batch size", "!Names remedies such as FlashAttention, grouped-query attention or paged caches", "Mentions trimming or summarising old turns, or quantising the cache"]
+    h: ["What must be stored for every earlier token while generating the next one?"]
+    fu: ["Estimate the cache size for 32 layers, 8 key-value heads of size 128, in 16-bit, at 32,000 tokens.", "To save memory, you replace the first hour of a chat with a short recap. What could the bot now get wrong?"]
+    m: "Long conversations are slow only because the model writes longer replies."
+    s: ["Separates prompt cost from cache cost", "Names concrete remedies"]

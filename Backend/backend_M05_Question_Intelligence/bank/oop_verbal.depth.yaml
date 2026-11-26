@@ -1,0 +1,48 @@
+# =============================================================================
+#  DEPTH BANK — oop_verbal (2026-11-26). Concepts sitting at three questions
+#  get a fourth, from an angle they had never been asked from.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: oop_verbal
+provenance: generated
+items:
+  dx_oop_parking_core:
+    c: [classes_and_objects, abstraction_and_interfaces]
+    d: core
+    t: design
+    f: "class responsibilities"
+    q: "Model a multi-storey parking lot for cars and bikes as classes. Which classes would you create, and what would each one be responsible for?"
+    a: "A ParkingLot holds its floors and the entry and exit logic, and asks floors for a free spot. Each Floor holds its ParkingSpots and can find a free spot of a given size. A ParkingSpot knows its size, whether it is occupied and which vehicle is in it. Vehicle is an abstract class or interface with a size, implemented by Car and Bike, so adding a truck later means adding one class. Parking produces a Ticket recording the vehicle, the spot and the entry time. Fee calculation lives in a separate pricing strategy, so rates can change without touching the lot. Each class has one job, and the spot-assignment rule can be swapped, for example nearest to the lift first."
+    k: ["!Names core classes such as ParkingLot, Floor, ParkingSpot, Vehicle and Ticket", "!Gives each class a single clear responsibility", "!Uses an abstract Vehicle with Car and Bike so new vehicle types are easy to add", "Separates pricing or spot assignment into a replaceable strategy"]
+    h: ["Which nouns in the problem are things that hold state?"]
+    fu: ["Two cars reach two different gates at the same moment and both are offered the last spot. How do you prevent it?", "Management adds electric charging spots. Which classes change?"]
+    m: "One large ParkingLot class with many methods is the simplest good design."
+    s: ["Clear responsibilities", "Extension without edits"]
+
+  dx_oop_api_errors_core:
+    c: [exception_handling]
+    d: core
+    t: design
+    f: "exceptions at an API boundary"
+    q: "You are designing error handling for a REST API's service layer. How would you organise your own exceptions and turn them into HTTP responses?"
+    a: "Define a small hierarchy of domain exceptions, such as NotFound, ValidationFailed and Conflict, each carrying an error code and a safe message, and throw them from the service layer where the problem is detected. A single global handler, such as a ControllerAdvice in Spring or error middleware in Express, maps each type to a status code, 404, 400 or 409, and a consistent JSON body with the code, message and a request id. Anything unexpected becomes a 500 with a generic message, while the full stack trace is logged with the request id and never sent to the client. Controllers stay free of try-catch clutter, and exceptions are not used for normal control flow."
+    k: ["!Defines domain exception types carrying an error code and a safe message", "!Maps them centrally to HTTP status codes in one global handler", "!Returns unexpected errors as a generic 500 while logging the full details server-side", "Mentions a consistent error body with a request id, or not using exceptions for normal flow"]
+    h: ["Where should the decision about the status code live?"]
+    fu: ["A database timeout reaches the client as a 500. Should the client retry, and how would it know?", "Why not catch errors inside every controller method instead?"]
+    m: "Returning the stack trace to the client helps users fix their requests."
+    s: ["Central mapping", "Safe messages"]
+
+  dx_oop_slicing_core:
+    c: [polymorphism, pointers_and_references]
+    d: core
+    t: debugging
+    f: "object slicing"
+    q: "In C++, a function takes a Shape by value, and calling draw on a Circle you pass in always runs the Shape version. Why?"
+    a: "Passing by value copies only the Shape part of the Circle into a new Shape object; this is called object slicing. Inside the function the object really is a Shape, so the virtual call goes to Shape's draw, and the Circle's extra data is gone. Virtual dispatch works only through references or pointers, which refer to the original object. The fix is to take a const Shape reference, or a pointer or smart pointer. Related rules: give the base class a virtual destructor when objects are deleted through base pointers, and consider deleting the base class's copy operations so slicing cannot compile. Java and Python avoid this because objects are always handled through references."
+    k: ["!Identifies object slicing when a derived object is passed by value", "!Explains virtual dispatch needs a reference or pointer to the original object", "!Fixes it by taking a const reference or a pointer", "Mentions virtual destructors, deleting copy operations, or why Java avoids this"]
+    h: ["What exactly gets copied when the parameter is a plain Shape?"]
+    fu: ["You store Circles and Squares in a vector of Shape. What happens, and what should the vector hold instead?", "Why can't the same bug happen in Java?"]
+    m: "Marking a method virtual guarantees the derived version always runs."
+    s: ["Names slicing", "Gives the reference fix"]

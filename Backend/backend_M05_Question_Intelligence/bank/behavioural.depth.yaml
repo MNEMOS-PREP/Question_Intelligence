@@ -1,0 +1,89 @@
+# =============================================================================
+#  DEPTH BANK — behavioural (2026-11-26). Concepts sitting at three questions
+#  get a fourth, in the difficulty band each still lacked. As in the rest of
+#  this track, a question asks about the student's own experience, and the
+#  key points describe what a strong answer SHOWS.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: behavioural
+provenance: generated
+items:
+  dx_beh_failure_story_hard:
+    c: [answer_structuring, ownership_and_accountability]
+    d: hard
+    t: behavioural
+    f: "structuring a failure story"
+    q: "Tell me about a project that went badly, in a way that is honest about your own part and still shows what you are capable of."
+    a: "A strong answer picks a genuine failure, not a success in disguise, such as a hackathon app that crashed during the demo. It gives the context in a sentence or two, then owns the candidate's specific part, for example skipping load testing to add one more feature, without blaming teammates. It explains what they did once it went wrong, how they limited the damage or recovered, and what the result was. It ends with a concrete lesson and evidence that it changed later behaviour, such as always freezing features a day before a demo in the next three projects. The structure stays tight: situation, own decision, consequence, recovery, lasting change."
+    k: ["!Chooses a genuine failure rather than a disguised success", "!Owns their own part without blaming teammates", "!Explains what they did to recover or limit the damage", "Gives a lesson with evidence it changed later behaviour"]
+    h: ["What decision of yours would you make differently?"]
+    fu: ["If a teammate from that project were here, how would they describe your role?", "What would you do in the first week if that project started again tomorrow?"]
+    m: "The safest failure story is one where the failure was really someone else's."
+    s: ["Honest ownership", "Proof of a changed habit"]
+
+  dx_beh_real_need_hard:
+    c: [clarifying_questions, stakeholder_communication]
+    d: hard
+    t: behavioural
+    f: "when the request is not the need"
+    q: "Tell me about a time your clarifying questions showed that what someone asked for was not what they actually needed. What did you do?"
+    a: "A strong answer describes a real request, such as a faculty member asking for a faster attendance report, and the specific questions the student asked: who reads it, when, and what decision it drives. It shows what those answers revealed, for example that the teacher only needed a daily alert listing students below 75 percent, not a faster report. It then explains how the student proposed the alternative tactfully, checked it against the original goal, and got agreement before building. It ends with the outcome, such as a two-day job instead of a two-week one, with the person happier, and a lesson about asking what a request is for before deciding how to build it."
+    k: ["!Describes a real request whose stated form differed from the real need", "!Names the specific questions that revealed the difference", "!Explains how they proposed the alternative and got agreement", "Gives the outcome and what it saved"]
+    h: ["What decision was the person trying to make with what they asked for?"]
+    fu: ["What if the person had insisted on exactly what they first asked for?", "How do you ask why someone needs something without sounding like you are refusing?"]
+    m: "Asking why a task is needed is disrespectful to the person asking."
+    s: ["Specific questions", "Tactful redirection"]
+
+  dx_beh_stepped_in_hard:
+    c: [ownership_and_accountability]
+    d: hard
+    t: behavioural
+    f: "going beyond the assignment"
+    q: "Tell me about a time something went wrong that was not strictly your responsibility, but you stepped in anyway. How did you decide, and what did it cost you?"
+    a: "A strong answer describes a specific problem outside the candidate's own job, such as a club's event registration form failing the night before an event while its owner was unreachable. It explains why they acted: the impact, the deadline, and that nobody else was positioned to. It shows how they involved the actual owner instead of quietly taking over, for example messaging them and fixing only what was needed. It describes the concrete actions and the result. A mature answer is honest about the cost, perhaps their own assignment slipping, how they handled that, and where they draw the line, such as not overriding someone's decisions when the owner is available."
+    k: ["!Describes a specific problem outside their own responsibility", "!Explains how they decided to step in and involved the actual owner", "!Describes concrete actions and the result", "Is honest about the cost to their own work and where they draw the line"]
+    h: ["Who owned the problem, and did they know you were stepping in?"]
+    fu: ["When is stepping in the wrong thing to do?", "How did the person who owned it react afterwards?"]
+    m: "Taking ownership means doing other people's work without telling them."
+    s: ["Respects the real owner", "Counts the cost honestly"]
+
+  dx_beh_prioritise_intro:
+    c: [prioritisation_under_pressure]
+    d: intro
+    t: behavioural
+    f: "competing deadlines"
+    q: "How do you decide what to do first when several assignments are due in the same week? Give me a real example."
+    a: "A strong answer uses a real week, such as a lab record, a mini-project demo and a quiz falling in the same three days. It shows a clear way of ranking: listing each task with its deadline, its weight or consequence, and the effort it needs, then starting with what is both due soon and costly to miss. It mentions breaking big tasks into small steps, setting time limits, and doing a rough version of everything before polishing. It also shows communicating early when something could not be done well, such as asking a guide for one extra day, rather than missing it silently. It ends with how the week turned out and what they would repeat."
+    k: ["!Gives a specific week or situation from their own experience", "!Explains a clear way of ranking tasks, such as deadline, weight and effort", "Mentions breaking tasks into steps or time limits", "Mentions communicating early when something cannot be done, and the outcome"]
+    h: ["What made one task more urgent than another?"]
+    fu: ["A friend asks for help with their project that same week. What do you do?", "Which task did you leave until last, and was that the right call?"]
+    m: "Working on everything a little at the same time is the best way to prioritise."
+    s: ["Explicit ranking", "Early communication"]
+
+  dx_beh_confidently_wrong_hard:
+    c: [saying_i_dont_know, receiving_feedback]
+    d: hard
+    t: behavioural
+    f: "being confidently wrong"
+    q: "Tell me about a time you were confidently wrong about something technical in front of other people. How did you find out, and what did you do?"
+    a: "A strong answer describes a specific moment, for example insisting in a team meeting that a database query was safe from duplicates, and how the error surfaced, such as a teammate's test or a bug report. It shows the candidate acknowledging the mistake openly and quickly, for example messaging the group to correct it, rather than hoping nobody noticed. It covers repairing any harm the wrong claim caused, such as fixing the code or reopening a decision made on that basis. It ends with a lesson about calibration: saying 'I think' or 'I am not sure' when that is the truth, and checking before stating something as fact, with an example of doing so since."
+    k: ["!Describes a specific moment of being confidently wrong in front of others", "!Explains acknowledging the mistake openly and correcting it", "!Describes repairing any harm the wrong claim caused", "Draws a lesson about stating confidence levels or verifying before asserting"]
+    h: ["What did others decide because of what you said?"]
+    fu: ["How do you now signal how sure you are when you answer a question?", "What would you have lost by staying quiet about it?"]
+    m: "Admitting you were wrong in front of others damages your credibility for good."
+    s: ["Open correction", "Calibrated confidence afterwards"]
+
+  dx_beh_reasoning_challenged_hard:
+    c: [thinking_aloud, disagreeing_respectfully]
+    d: hard
+    t: behavioural
+    f: "reasoning aloud under challenge"
+    q: "Tell me about a time you had to explain your reasoning live while someone senior challenged every step. How did you keep your thinking clear?"
+    a: "A strong answer names a real situation, such as a project viva or a design review where an examiner questioned each design choice. It describes concrete techniques: restating the challenge to be sure of the question, separating assumptions from conclusions, pausing briefly to think instead of answering at once, and sketching on the board when words got tangled. It shows the candidate changing their reasoning openly when a challenge was right, while holding their ground politely with evidence when it was not. It ends with the outcome and what they learned, for example preparing a list of the weakest points in their own design before any review."
+    k: ["!Describes a real situation where their reasoning was challenged live", "!Explains concrete techniques such as restating the challenge or separating assumptions from conclusions", "!Shows them revising their reasoning openly when a challenge was right", "Describes the outcome and what they learned"]
+    h: ["What did you do in the few seconds after each challenge?"]
+    fu: ["The senior person was wrong on one point. How did you handle it?", "How do you think aloud without sounding unsure of everything?"]
+    m: "Under challenge, the best strategy is to defend every original statement."
+    s: ["Concrete techniques", "Open to being corrected"]

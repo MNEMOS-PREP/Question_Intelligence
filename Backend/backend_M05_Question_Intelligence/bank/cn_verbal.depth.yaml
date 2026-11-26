@@ -1,0 +1,75 @@
+# =============================================================================
+#  DEPTH BANK — cn_verbal (2026-11-26). Concepts sitting at three questions get
+#  a fourth: the difficulty band each still lacked, or an angle it had never
+#  been asked from.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: cn_verbal
+provenance: generated
+items:
+  dx_cn_dns_migration_hard:
+    c: [dns]
+    d: hard
+    t: scenario
+    f: "TTL and migrations"
+    q: "You moved your website to a new server and updated the DNS record, but some users keep reaching the old server for hours. Why, and how should such a move be planned?"
+    a: "Resolvers, operating systems and browsers cache a DNS answer for its time to live. If the record's TTL was a day, many clients will keep using the old address for up to a day, and a few resolvers hold records even longer than they should. Plan the move by lowering the TTL, say to five minutes, at least one old TTL before the switch, so caches already hold the short value when you change the address. Keep the old server running, or forwarding traffic to the new one, until requests to it die away. Afterwards raise the TTL again. Check progress by querying several public resolvers with dig."
+    k: ["!Explains resolvers and clients cache the old record until its TTL expires", "!Proposes lowering the TTL well before the move, at least one old TTL ahead", "!Says to keep the old server running or forwarding until traffic stops", "Mentions resolvers that ignore TTL, or checking several resolvers with dig"]
+    h: ["How long is each resolver allowed to remember the old answer?"]
+    fu: ["Why not keep the TTL at 60 seconds forever?", "How would you confirm which address users in different cities are being given right now?"]
+    m: "DNS changes take effect everywhere the moment you save them."
+    s: ["Explains caching by TTL", "Plans the order of steps"]
+
+  dx_cn_quic_hard:
+    c: [tcp_vs_udp, http_and_rest]
+    d: hard
+    t: conceptual
+    f: "why HTTP/3 uses UDP"
+    q: "HTTP/3 runs over UDP instead of TCP. Why would anyone rebuild reliable delivery on top of UDP?"
+    a: "TCP delivers one ordered byte stream, so when HTTP/2 multiplexes many requests over one connection, a single lost packet stalls every stream until it is retransmitted: head-of-line blocking. TCP also lives in operating-system kernels and is inspected by middleboxes, so it is very hard to change, and TCP plus TLS needs extra round trips to set up. QUIC, the transport under HTTP/3, runs over UDP and implements reliability, congestion control and encryption in user space: each stream recovers losses independently, the transport and TLS 1.3 handshakes are combined, and connection ids let a connection survive a switch from Wi-Fi to mobile data. The costs are more CPU work, and networks that block UDP force a fallback to TCP."
+    k: ["!Explains TCP's head-of-line blocking stalls all streams when one packet is lost", "!Says QUIC builds per-stream reliability and congestion control on UDP in user space", "!Mentions faster connection setup by combining the transport and TLS handshakes", "Mentions connection migration, easier evolution than kernel TCP, or UDP being blocked on some networks"]
+    h: ["What happens to every request on a connection when one packet goes missing?"]
+    fu: ["You walk out of the office mid-download and your phone changes networks. What happens to the download with each protocol?", "Some office firewalls block UDP entirely. What should a browser do then?"]
+    m: "UDP is unreliable, so anything built on it must lose data."
+    s: ["Names head-of-line blocking", "Explains user-space transport"]
+
+  dx_cn_rest_library_core:
+    c: [http_and_rest]
+    d: core
+    t: design
+    f: "resource and status-code design"
+    q: "Design the REST endpoints for a college library app: searching books, borrowing a book and returning it. Which methods, paths and status codes would you use?"
+    a: "Model resources as nouns. GET /books with query parameters such as title, author and page searches and paginates; GET /books/{id} fetches one book, returning 404 if it does not exist. Borrowing creates a loan: POST /loans with the book id returns 201 Created and the new loan's location, or 409 Conflict if no copy is available. Returning updates that loan, PATCH /loans/{id} setting a return date, or a POST to /loans/{id}/return if you prefer an explicit action. GET /users/{id}/loans lists a student's loans. Missing authentication returns 401, and reading someone else's loan returns 403. Keep verbs out of paths and make retries safe with idempotency keys."
+    k: ["!Uses noun resources such as books and loans rather than verbs in paths", "!Creates a loan with POST returning 201, and uses GET for search with pagination", "!Uses suitable error codes such as 404, 409 for an unavailable book, 401 and 403", "Mentions modelling a return as an update to the loan, or safe retries"]
+    h: ["What new thing comes into existence when a student borrows a book?"]
+    fu: ["A student double-taps the borrow button on a slow network. How do you avoid two loans?", "The catalogue has two lakh books. How would results be split across responses?"]
+    m: "Every action needs its own verb endpoint, such as /borrowBook."
+    s: ["Resource-oriented design", "Precise status codes"]
+
+  dx_cn_cert_outage_core:
+    c: [https_and_tls]
+    d: core
+    t: scenario
+    f: "certificate incidents"
+    q: "On Monday morning every visitor to your company's site sees a certificate warning, though nothing was deployed. What are the likely causes, and how do you stop it happening again?"
+    a: "The most common cause is an expired certificate, since nothing else needs to change for it to break. Other causes are a renewal that installed the certificate without its intermediate chain, so some clients cannot link it to a trusted root, or a certificate that does not cover the hostname in use, such as a new subdomain. Check the expiry date, chain and names with the browser's certificate view or openssl s_client. Fix it by installing a valid certificate with the full chain. To prevent a repeat, automate renewal with ACME, for example Let's Encrypt with certbot or the load balancer's managed certificates, alert on expiry weeks ahead, and test the chain after every renewal."
+    k: ["!Names an expired certificate as the most likely cause", "!Mentions a missing intermediate chain or a hostname not covered by the certificate", "!Proposes automated renewal such as ACME or Let's Encrypt", "Mentions expiry monitoring with alerts or checking with openssl s_client"]
+    h: ["What changes about a certificate even when nobody touches it?"]
+    fu: ["Only older Android phones show the warning. What does that point to?", "Why do certificate lifetimes keep getting shorter, even though that means more renewals?"]
+    m: "A certificate warning always means the site has been hacked."
+    s: ["Puts expiry first", "Automates prevention"]
+
+  dx_cn_layers_troubleshoot_intro:
+    c: [osi_and_tcp_ip_model, dns]
+    d: intro
+    t: practical
+    f: "bottom-up troubleshooting"
+    q: "A friend says the internet is not working on their laptop. How would you use the network layers to troubleshoot from the bottom up, and what test checks each layer?"
+    a: "Work upwards so each passing test rules out the layers below. First the link: is Wi-Fi connected, and does the laptop have a proper IP address rather than a self-assigned 169.254 one, which means DHCP failed? Next routing: ping the router's gateway address, then a public IP such as 8.8.8.8; if both answer, the path to the internet works. Then DNS: look up a name with nslookup; if names fail while IP addresses work, the resolver is the problem. Finally transport and application: open a site on port 443 with curl or the browser, which exposes firewalls, proxies or certificate errors. Each step halves the search instead of guessing."
+    k: ["!Works from the link and IP address up through routing, DNS and the application", "!Names a test for each step, such as checking the IP address, pinging the gateway and a public IP, and an nslookup", "!Explains that a self-assigned 169.254 address points to a DHCP failure", "Says each passing test rules out the layers below it"]
+    h: ["What is the very first thing a laptop needs before it can reach anything?"]
+    fu: ["Pinging 8.8.8.8 works but every website fails to load. What do you check next?", "Everything works except one office application on port 5432. Where do you look?"]
+    m: "Restarting the router is the only real way to diagnose a network problem."
+    s: ["Ordered, layer-by-layer tests", "Interprets each result"]

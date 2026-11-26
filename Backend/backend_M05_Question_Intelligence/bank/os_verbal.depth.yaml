@@ -1,0 +1,75 @@
+# =============================================================================
+#  DEPTH BANK — os_verbal (2026-11-26). Concepts sitting at three questions get
+#  a fourth: the difficulty band each still lacked, or an angle it had never
+#  been asked from.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: os_verbal
+provenance: generated
+items:
+  dx_os_fsync_hard:
+    c: [file_systems]
+    d: hard
+    t: debugging
+    f: "durability and fsync"
+    q: "A program writes a file and closes it, and the machine loses power a second later. After reboot the file is empty or cut short. Why, and how do databases make writes durable?"
+    a: "A write call only copies data into the operating system's page cache; the kernel writes it to disk later, often seconds afterwards, and closing the file does not force that. Journaling keeps the file system's own structure consistent after a crash, but by default it does not guarantee your most recent data. To make data durable, call fsync on the file, and for a newly created or renamed file also fsync its directory. The safe replace pattern is to write a temporary file, fsync it, rename it over the old one atomically, then fsync the directory. Databases append changes to a write-ahead log and fsync it at commit, grouping several commits into one flush to stay fast."
+    k: ["!Explains writes land in the page cache and reach disk later, so close does not make them durable", "!Proposes fsync on the file, and on the directory for new or renamed files", "!Describes writing a temporary file, syncing it and renaming it atomically", "Mentions a write-ahead log synced at commit, or that journaling protects structure rather than recent data"]
+    h: ["Where does the data sit right after write returns?"]
+    fu: ["Calling fsync after every tiny write makes the service slow. How do databases keep commits both safe and fast?", "The disk itself has a write cache. Can data still be lost after fsync returns?"]
+    m: "Once close returns, the data is safely on disk."
+    s: ["Explains the page cache", "Gives the rename pattern"]
+
+  dx_os_gil_core:
+    c: [process_vs_thread, concurrency_synchronisation]
+    d: core
+    t: debugging
+    f: "threads, processes and the GIL"
+    q: "A CPU-heavy Python service uses threads, yet under load only one core is busy while the others sit idle. Why, and would switching to processes help?"
+    a: "In CPython the global interpreter lock lets only one thread execute Python bytecode at a time, so CPU-bound threads take turns on one core instead of running in parallel. Threads still help for I/O-bound work, because the lock is released while waiting on the network or disk, and libraries such as NumPy release it inside their native code. For CPU-bound Python, separate processes, for example a process pool, each have their own interpreter and lock, so they really use all cores. The cost is more memory per worker and copying or serialising data between processes instead of sharing it. Newer free-threaded Python builds remove the lock but are still maturing."
+    k: ["!Names the global interpreter lock as letting one thread run Python bytecode at a time", "!Says threads still suit I/O-bound work because the lock is released while waiting", "!Proposes processes, which each have their own interpreter and use all cores", "Mentions the memory and data-copying cost of processes, or native libraries releasing the lock"]
+    h: ["What stops two Python threads running bytecode at the same instant?"]
+    fu: ["The heavy work is one big NumPy matrix multiply. Would threads help then?", "Your process pool spends more time sending data to workers than computing. What would you change?"]
+    m: "More threads always means more CPU cores in use."
+    s: ["Names the lock and its scope", "Weighs processes' costs"]
+
+  dx_os_bounded_buffer_core:
+    c: [concurrency_synchronisation]
+    d: core
+    t: design
+    f: "producer-consumer"
+    q: "Producer threads add log lines to a fixed-size buffer and consumer threads write them to disk. What synchronisation do you need so nobody overfills it, reads from it empty, or busy-waits?"
+    a: "A mutex protects the buffer's contents and indices so only one thread changes them at a time. Two condition variables handle waiting: producers wait on not-full while the buffer is full, and consumers wait on not-empty while it is empty. After adding an item a producer signals not-empty; after removing one a consumer signals not-full. Each wait sits inside a while loop that rechecks the condition, because wake-ups can be spurious or another thread may take the slot first. Two counting semaphores, one for free slots and one for filled slots, plus the mutex, are an equivalent design. The slow disk write should happen after releasing the mutex, so producers are not blocked while a consumer does I/O."
+    k: ["!Uses a mutex to protect the buffer's shared state", "!Uses condition variables or counting semaphores so producers wait when full and consumers wait when empty", "!Rechecks the condition in a loop after waking", "Mentions doing the slow disk write outside the lock"]
+    h: ["What should a producer do when there is no room, other than spin?"]
+    fu: ["You wrote if instead of while around the wait. Describe a run where that breaks.", "At shutdown, consumers are asleep waiting for items that will never come. How do you end cleanly?"]
+    m: "A single lock around the buffer is enough to make producer-consumer correct."
+    s: ["Separates mutual exclusion from waiting", "Rechecks after waking"]
+
+  dx_os_container_oom_core:
+    c: [memory_management, virtual_memory]
+    d: core
+    t: debugging
+    f: "memory beyond the heap"
+    q: "A Java service in a container with a 2 GB limit keeps getting killed for using too much memory, though its heap is capped at 1.5 GB and never fills. Where is the rest going?"
+    a: "The heap is only part of a process's memory. Each thread has its own stack, often about 1 MB, so hundreds of threads add hundreds of megabytes. The JVM also uses metaspace for class data, a code cache for compiled code, garbage-collector structures, and direct or off-heap buffers used by networking libraries, plus memory from native libraries. The container's limit counts the whole resident memory of the process, so when heap plus all of this crosses 2 GB, the kernel's out-of-memory killer stops it. To fix it, measure with the JVM's native memory tracking, cut the thread count, cap direct memory and metaspace, and size the heap at about 70 to 75 percent of the container limit."
+    k: ["!Explains the heap is only part of the process's memory", "!Names other consumers such as thread stacks, metaspace, code cache or direct buffers", "!Says the container limit counts the whole process's resident memory", "Proposes measuring native memory and sizing the heap below the container limit"]
+    h: ["What else besides objects does a running JVM keep in memory?"]
+    fu: ["Under heavy load the service starts a new thread for every request. What does that do to memory?", "How would you show which of these areas is actually growing?"]
+    m: "If the heap never fills, the process cannot run out of memory."
+    s: ["Lists non-heap memory", "Explains what the limit counts"]
+
+  dx_os_huge_pages_hard:
+    c: [paging_and_segmentation, virtual_memory]
+    d: hard
+    t: tradeoff
+    f: "huge pages"
+    q: "Some databases run with 2 MB huge pages instead of normal 4 KB pages. What does a database gain from them, and what does it give up?"
+    a: "The TLB caches only a fixed number of address translations. With 4 KB pages, a database touching tens of gigabytes misses the TLB constantly, and each miss walks the page tables. A 2 MB page covers 512 times more memory per entry, so TLB misses fall sharply, page tables shrink, and memory-heavy work speeds up. The costs: memory is handed out in big chunks, so small or sparse use wastes space; the kernel needs physically contiguous 2 MB regions, which may require compaction; and transparent huge pages can cause sudden latency spikes when the kernel compacts or splits pages in the background. That is why many databases recommend explicit, preallocated huge pages but disabling transparent ones."
+    k: ["!Explains huge pages let each TLB entry cover far more memory, so TLB misses fall", "!Mentions smaller page tables or cheaper translation as a gain", "!Names a cost such as wasted memory from coarse allocation or needing contiguous physical memory", "Mentions latency spikes from transparent huge pages and preferring explicit ones"]
+    h: ["How much memory can the TLB cover with each page size?"]
+    fu: ["A service allocates many small, short-lived objects scattered across memory. Would this help it?", "Why might a database manual tell you to switch off the transparent variant specifically?"]
+    m: "Bigger pages are always better because there are fewer of them."
+    s: ["Links page size to the TLB", "Names the background-compaction risk"]

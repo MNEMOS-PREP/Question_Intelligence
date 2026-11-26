@@ -1,0 +1,22 @@
+# =============================================================================
+#  DEPTH BANK — systems_verbal (2026-11-26). Concepts sitting at three questions
+#  get a fourth, in the difficulty band each still lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: systems_verbal
+provenance: generated
+items:
+  dx_sys_sprint_carryover_hard:
+    c: [sdlc_and_agile]
+    d: hard
+    t: scenario
+    f: "estimating and planning"
+    q: "Your team's two-week sprints keep ending with half the stories unfinished and carried over. What would you look at, and what would you change?"
+    a: "First find the cause rather than pushing harder. Are stories too large? Split them into thin vertical slices that can be finished and shown in a few days. Is the team committing beyond its past velocity, or losing capacity to unplanned work such as production issues? Plan from measured velocity and reserve capacity for interruptions. Are too many stories started at once? Limit work in progress so people finish and swarm on blocked items before starting more. Do stories enter the sprint with unclear acceptance criteria or dependencies on other teams? Refine them first. Use the retrospective to pick one change at a time and track carry-over over the next sprints to see whether it helped."
+    k: ["!Checks whether stories are too large and proposes splitting them into thin vertical slices", "!Compares commitments with past velocity and unplanned work", "!Mentions limiting work in progress so the team finishes before starting more", "Mentions unclear acceptance criteria, outside dependencies or using the retrospective to test one change"]
+    h: ["How big is a typical story compared with the sprint?"]
+    fu: ["The manager's answer is to make sprints three weeks long. What do you think?", "How would you show the team whether your change actually helped?"]
+    m: "Unfinished sprints mean the team needs to work longer hours."
+    s: ["Diagnoses before fixing", "Measures the change"]

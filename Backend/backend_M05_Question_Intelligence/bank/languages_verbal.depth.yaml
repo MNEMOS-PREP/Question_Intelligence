@@ -1,0 +1,48 @@
+# =============================================================================
+#  DEPTH BANK — languages_verbal (2026-11-26). Concepts sitting at three
+#  questions get a fourth, in the difficulty band each still lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: languages_verbal
+provenance: generated
+items:
+  dx_lang_c_pointers_intro:
+    c: [c_language, pointers_and_references]
+    d: intro
+    t: conceptual
+    f: "pointers and arrays"
+    q: "What is a pointer in C, and what do the ampersand and star operators do?"
+    a: "A pointer is a variable that holds the memory address of another variable. The ampersand operator gives an address: p equals ampersand x stores where x lives. The star has two jobs: in a declaration, int star p says p points to an int; in an expression, star p dereferences the pointer, reaching the value it points to, so star p equals 5 changes x itself. Pointers let a function change its caller's variables, as in a swap function, and they are how C handles arrays, strings and memory from malloc. The danger is that C does not check them: an uninitialised, null or dangling pointer leads to crashes or undefined behaviour."
+    k: ["!Defines a pointer as a variable holding the address of another variable", "!Explains & gives an address and * dereferences to reach the value", "!Gives a use such as a swap function, dynamic memory or arrays", "Warns about uninitialised, null or dangling pointers"]
+    h: ["What is stored inside a pointer variable?"]
+    fu: ["A function receives two plain ints and exchanges them, yet the caller's values do not change. Why?", "What happens if you dereference a pointer you never initialised?"]
+    m: "A pointer stores a copy of the value it points to."
+    s: ["Explains both operators", "Names the dangers"]
+
+  dx_lang_cpp_vs_c_intro:
+    c: [cpp_language, c_language]
+    d: intro
+    t: conceptual
+    f: "RAII and smart pointers"
+    q: "How is C++ different from C, and what does it add that helps you manage resources safely?"
+    a: "C++ keeps C's low-level control and mostly compiles C code, but adds classes with constructors and destructors, references, templates for generic code, namespaces, exceptions, and a large standard library of containers and algorithms such as vector, map and string. The key safety idea is that a destructor runs automatically when an object goes out of scope, so a resource can be tied to an object's lifetime and released without the programmer remembering to. That is why idiomatic C++ uses a vector instead of a malloc'd array, a std::string instead of a char array, and unique_ptr instead of raw new and delete. These abstractions are designed to cost nothing extra at run time."
+    k: ["!Names additions such as classes, templates, references and the standard library", "!Explains destructors release resources automatically when objects go out of scope", "!Gives safer replacements such as vector, string or smart pointers instead of manual memory", "Mentions that C++ keeps low-level control and compatibility with C"]
+    h: ["What runs automatically when an object goes out of scope?"]
+    fu: ["Why prefer a std::string over a char array for user input?", "When would you still write plain C instead?"]
+    m: "C++ is simply C with classes and offers no safety benefits."
+    s: ["Ties destructors to safety", "Gives idiomatic replacements"]
+
+  dx_lang_go_map_race_hard:
+    c: [go_language, concurrency_synchronisation]
+    d: hard
+    t: debugging
+    f: "goroutines and channels"
+    q: "Two goroutines update a shared map, and the program occasionally crashes with 'concurrent map writes'. How do you find and fix data races like this in Go?"
+    a: "Go's built-in map is not safe for concurrent writes, and the runtime deliberately panics when it detects them rather than silently corrupting data. To find races generally, run tests and staging builds with the race detector, using the -race flag, which instruments memory accesses and reports conflicting reads and writes with stack traces; it only sees races that actually happen during the run. To fix this one, protect the map with a sync.Mutex, or an RWMutex if reads dominate, or redesign so one goroutine owns the map and others send it requests over channels, sharing memory by communicating. sync.Map suits narrow cases such as keys written once and read many times, and atomics suit simple counters."
+    k: ["!Explains Go maps are not safe for concurrent writes and the runtime panics", "!Uses the race detector with the -race flag to find data races", "!Fixes with a mutex or by letting one goroutine own the map and communicate through channels", "Mentions RWMutex, sync.Map or atomics for specific cases"]
+    h: ["Is anything protecting the map when two goroutines write at once?"]
+    fu: ["The race detector found nothing in your tests, yet production still crashes. Why?", "When is sync.Map a better choice than a map with a mutex?"]
+    m: "Goroutines are safe by default, so shared maps need no protection."
+    s: ["Uses the detector", "Offers both lock and ownership designs"]

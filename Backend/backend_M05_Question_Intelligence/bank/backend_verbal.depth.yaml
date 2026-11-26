@@ -1,0 +1,61 @@
+# =============================================================================
+#  DEPTH BANK — backend_verbal (2026-11-26). Concepts sitting at three
+#  questions get a fourth, in the difficulty band each still lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: backend_verbal
+provenance: generated
+items:
+  dx_be_django_race_hard:
+    c: [django, concurrency_control]
+    d: hard
+    t: debugging
+    f: "models and the ORM"
+    q: "Two users buy the last unit of a product at the same moment in your Django shop, and both orders succeed. Why, and how do you fix it in Django?"
+    a: "It is a read-modify-write race. Each request loads the product, sees a stock of 1, passes the in-stock check, subtracts one in Python and saves, so both succeed before either sees the other's change. Fix it in the database rather than in Python. One way is a conditional atomic update: filter on the product id and stock at least 1, update stock to F of stock minus 1, and check how many rows changed; zero means it sold out. Another is to wrap the purchase in transaction.atomic and load the product with select_for_update, which locks the row until the transaction ends. Add a database check constraint so stock can never go below zero, whatever the code does."
+    k: ["!Explains both requests read stock as 1 before either saves, a read-modify-write race", "!Proposes a conditional atomic update with an F expression, checking the rows updated", "!Mentions select_for_update inside transaction.atomic to lock the row", "Adds a database check constraint so stock can never go negative"]
+    h: ["What does each request see when it reads the stock?"]
+    fu: ["The purchase finds nothing left to sell. What should the page tell the shopper, and what should happen to their payment?", "Why does testing on your laptop with one browser never show this bug?"]
+    m: "Django's save method is atomic, so this cannot happen."
+    s: ["Explains the race", "Moves the check into the database"]
+
+  dx_be_queue_why_intro:
+    c: [message_queues]
+    d: intro
+    t: conceptual
+    f: "retries and dead letters"
+    q: "Why would a web app put work such as sending emails onto a message queue instead of doing it inside the request?"
+    a: "The request can return to the user immediately while slow work happens in the background, so pages stay fast. If the email provider is slow or down, the user's request no longer hangs or fails; the message waits in the queue and is retried later. The queue also absorbs bursts, such as ten thousand sign-ups after an advert, letting workers process them at a steady pace, and workers can be scaled separately from the web servers. The costs are extra infrastructure to run and monitor, work that completes a little later rather than instantly, handlers that must cope with retries without sending duplicates, and a dead-letter queue for messages that keep failing."
+    k: ["!Says the request can return quickly while slow work happens later", "!Explains a failing or slow downstream service no longer breaks the user's request", "!Mentions buffering bursts and retrying failed work", "Mentions extra infrastructure, delayed completion or scaling workers separately"]
+    h: ["What does the user wait for if the email is sent inside the request?"]
+    fu: ["The email service is down for an hour. What happens to the messages, and to users?", "How does a user learn whether their export has finished?"]
+    m: "Queues make background work happen instantly."
+    s: ["Explains decoupling", "Names the costs"]
+
+  dx_be_nestjs_intro:
+    c: [nestjs]
+    d: intro
+    t: conceptual
+    f: "modules providers and controllers"
+    q: "What is NestJS, and how does it organise an application compared with plain Express?"
+    a: "NestJS is a TypeScript framework for Node.js that runs on top of Express or Fastify. It gives applications a fixed structure: modules group related features, controllers map routes to handler methods using decorators, and services, called providers, hold the business logic and are supplied to controllers through dependency injection. It also has standard places for cross-cutting concerns: pipes for validation, guards for authorisation, interceptors for logging or transforming responses, and exception filters. Plain Express gives you routing and middleware and leaves the structure to you, which is flexible but drifts in large teams. Nest's consistency and testability cost more boilerplate and a steeper learning curve."
+    k: ["!Describes NestJS as a TypeScript framework on top of Express or Fastify", "!Names modules, controllers and injectable services as its building blocks", "!Contrasts with plain Express leaving structure to the developer", "Mentions guards, pipes or interceptors, or the cost of extra boilerplate"]
+    h: ["Where does business logic live in Nest, and how does a controller get it?"]
+    fu: ["A teammate is building a three-endpoint webhook receiver. Would you use NestJS?", "Where would input validation go in a Nest application?"]
+    m: "NestJS replaces Node.js with a different runtime."
+    s: ["Names the building blocks", "Weighs structure against boilerplate"]
+
+  dx_be_redis_intro:
+    c: [redis]
+    d: intro
+    t: conceptual
+    f: "Redis as a cache lock and queue"
+    q: "What is Redis, and why is it so much faster than a typical database for jobs such as caching?"
+    a: "Redis is an in-memory key-value store. Because its data lives in RAM rather than on disk, reads and writes take well under a millisecond. It offers simple, fast operations on useful data structures, strings, hashes, lists, sets and sorted sets, and runs commands one at a time, avoiding locking overhead. Common uses are caching database results, storing sessions, rate limiting, leaderboards with sorted sets, and simple queues. Keys can expire automatically. Persistence to disk is optional, through snapshots or an append-only log, but memory is limited and recent writes can be lost on a crash, so it usually sits in front of a primary database, with an eviction policy deciding what to drop when memory fills."
+    k: ["!Describes Redis as an in-memory key-value store", "!Explains keeping data in memory makes operations very fast", "!Names typical uses such as caching, sessions or leaderboards", "Mentions optional persistence, memory limits, eviction or expiry times"]
+    h: ["Where does Redis keep its data?"]
+    fu: ["Redis restarts. What happens to your cached data, and should users notice?", "Memory is full and a new key arrives. What can Redis do?"]
+    m: "Redis is a full replacement for a relational database."
+    s: ["Explains the speed", "Knows the durability limits"]

@@ -1,0 +1,35 @@
+# =============================================================================
+#  DEPTH BANK — mobile_verbal (2026-11-26). Concepts sitting at three questions
+#  get a fourth, in the difficulty band each still lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: mobile_verbal
+provenance: generated
+items:
+  dx_mob_android_lifecycle_intro:
+    c: [kotlin_android]
+    d: intro
+    t: conceptual
+    f: "activity and fragment lifecycle"
+    q: "What is an activity in an Android app, and what does the activity lifecycle mean for how you write it?"
+    a: "An activity is a single screen that the Android system creates and manages; the app does not control when it lives or dies. As the user navigates, takes a call or rotates the phone, the system moves the activity through lifecycle states, calling onCreate, onStart, onResume, onPause, onStop and onDestroy. You set up the screen in onCreate, start and stop things like camera access or location updates as the screen becomes visible or hidden, and release resources when stopped. Rotation by default destroys and recreates the activity, so state must live in a ViewModel or saved instance state, not in the activity's fields. Kotlin adds null safety and coroutines tied to these lifecycles."
+    k: ["!Describes an activity as a screen the system creates and manages", "!Explains the system moves the activity through lifecycle states with callbacks such as onCreate, onPause and onStop", "!Says rotation recreates the activity, so state must be kept in a ViewModel or saved state", "Mentions starting and stopping resources with visibility, or Kotlin features like coroutines"]
+    h: ["Who decides when a screen is created or destroyed?"]
+    fu: ["A user gets a phone call in the middle of filling a form. Which callbacks run?", "Where should a network request live so turning the phone sideways does not repeat it?"]
+    m: "An activity stays alive as long as the app is installed."
+    s: ["Names the callbacks", "Explains rotation"]
+
+  dx_mob_cross_platform_intro:
+    c: [react_native_and_flutter]
+    d: intro
+    t: tradeoff
+    f: "how cross-platform rendering works"
+    q: "What does cross-platform mobile development mean, and why might a startup choose Flutter or React Native over building two native apps?"
+    a: "Cross-platform development means writing one codebase that produces both an Android and an iOS app. Flutter uses Dart and draws every pixel with its own rendering engine, while React Native uses JavaScript or TypeScript and drives the platforms' native components. For a startup the appeal is speed and cost: one team, shared business logic, a consistent look, and hot reload for fast iteration. The drawbacks are that platform-specific features may need native code through plugins or bridges, apps can be larger, some heavy graphics or animations perform worse, and support for brand-new OS features can lag. Native apps remain better for camera-heavy, graphics-intensive or deeply OS-integrated products."
+    k: ["!Explains one codebase builds apps for both Android and iOS", "!Gives benefits such as faster development, one team and shared logic", "!Names drawbacks such as native features needing extra code, app size or performance", "Says when native development is still the better choice"]
+    h: ["How many teams and codebases does each option need?"]
+    fu: ["Your app's main feature is real-time camera filters. Does that change the choice?", "How would you add a payment SDK that ships only as native libraries?"]
+    m: "Cross-platform apps can never access device features like the camera."
+    s: ["Weighs speed against limits", "Knows when to go native"]

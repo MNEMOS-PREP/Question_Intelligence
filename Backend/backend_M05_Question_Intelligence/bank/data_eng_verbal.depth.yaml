@@ -1,0 +1,22 @@
+# =============================================================================
+#  DEPTH BANK — data_eng_verbal (2026-11-26). Concepts sitting at three
+#  questions get a fourth, in the difficulty band each still lacked.
+#  Drafted by Claude (Opus 5.5). NOT reviewed: provenance generated, practised
+#  and never scored until a reviewer approves it in the queue (FR-5.6).
+# =============================================================================
+format: compact
+track: data_eng_verbal
+provenance: generated
+items:
+  dx_de_quality_intro:
+    c: [data_quality_and_governance]
+    d: intro
+    t: conceptual
+    f: "checks that catch bad data"
+    q: "What does data quality mean for a data pipeline, and what simple checks would you add to one?"
+    a: "Data is good quality when it is fit for its use. The usual dimensions are completeness, with no missing required values; validity, with correct types, formats and ranges; uniqueness, with no duplicate records; consistency, where values agree across tables and foreign keys point to real rows; and freshness, where data arrives on time. Simple checks cover these: compare row counts with the expected or previous load, check key columns for nulls, check that ids are unique, check ranges such as no negative prices, check that references match, and check the latest timestamp. Tools such as dbt tests or Great Expectations run them automatically, and a failing check should stop the load or alert someone before bad data reaches dashboards."
+    k: ["!Names quality dimensions such as completeness, validity, uniqueness, consistency or freshness", "!Lists concrete checks such as null, uniqueness, range or row-count checks", "!Says checks should stop the load or alert before bad data reaches reports", "Mentions tools such as dbt tests or Great Expectations"]
+    h: ["What would you check before trusting today's numbers?"]
+    fu: ["Today's load has 40 percent fewer rows than yesterday. Is that an error?", "A check fails at 3 a.m. Should the pipeline stop or continue?"]
+    m: "If a pipeline runs without errors, its data must be correct."
+    s: ["Names the dimensions", "Stops bad data early"]
